@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  nginx:
+    build: srcs/nginx/
+    container_name: container_nginx
+    image: image_nginx
+    networks:
+      - transcendence_network
+    restart: on-failure
+    ports:
+      - "8080:80"
+
+networks:
+  transcendence_network:
+    driver: bridge
