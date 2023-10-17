@@ -7,12 +7,24 @@ let scoreOne = 0;
 let scoreTwo = 0;
 let isGameRunning = false;
 
+function getRandomInt(max) {
+	return Math.floor(Math.random() * max);
+}
+
 document.onkeydown = function doKeyDown(e) {
 	const key = e.key;
 	if (key == "Enter" && isGameRunning == false)
 	{
-		ball.speed = 1;
-		ball.gravity = 1;
+		if (getRandomInt(2) == 0) {
+			ball.speed = 2;
+		} else {
+			ball.speed = -2;
+		}
+		if (getRandomInt(2) == 0) {
+			ball.gravity = 2;
+		} else {
+			ball.gravity = -2;
+		}
 		isGameRunning = true;
 	}
 
@@ -131,11 +143,6 @@ function ballWallCollision() {
 		&& ball.x + ball.speed <= playerOne.x + playerOne.width
 		&& ball.y + ball.gravity <= playerOne.y + playerOne.height)) {
 		ball.speed = ball.speed * -1;
-		if (ball.speed > 0) {
-			ball.speed += 1;
-		} else {
-			ball.speed -= 1;
-		}
 	} else if (ball.x + ball.speed < playerOne.x) {
 		scoreTwo += 1;
 		isGameRunning = false;

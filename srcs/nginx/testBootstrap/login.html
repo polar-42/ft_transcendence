@@ -42,16 +42,37 @@
 				</div>
 			</nav>
 		</main>
-        <div class="container text-center my-5">
-            <div class="fs-1 fw-bold text-center my-4">
-                <span >Pong v2</span>
-            </div>
-            <div class="my-4">
-                <canvas id="pongGame", style="background-color: black;"></canvas>
-                <script type="module" src="script/pong.js"></script>
-            </div>
-        </div>
-		</header>
+		<div class="d-flex align-items-center justify-content-center vh-100">
+			<div class="card shadow-lg">
+			  <div class="card-header bg-light">
+				<h2>
+				  <i class="fa-solid fa-user"></i>
+				  Login
+				</h2>
+			  </div>
+			  <div class="card-body">
+				<form action="">
+				  <div class="mb-3">
+					<label for="nickName" class="form-label">Username</label>
+					<input placeholder="Your username" class="form-control" name="userName" id="userName"/>
+				  </div>
+				  <div class="mb-3">
+					<label for="password" class="form-label">Password</label>
+					<input placeholder="Your password" class="form-control" type="password" name="password" id="password"/>
+				  </div>
+				  <div class="container d-flex justify-content-end">
+					<button class="btn btn-danger">Login</button>
+					<button type="reset" class="btn btn-secondary">Reset all</button>
+				  </div>
+				</form>
+			  </div>
+			  <div class="container d-flex justify-content-end">
+			  	<div>Not register ?
+					<a href="register.html"><button>click here</button></a>
+				</div>
+			  </div>
+			</div>
+		</div>
 		<!-- Bootstrap core JS-->
 	</body>
 	<footer class="footer mt-auto py-1 border-top border-2 border-grey">
