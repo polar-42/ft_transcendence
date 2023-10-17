@@ -7,9 +7,6 @@ let scoreOne = 0;
 let scoreTwo = 0;
 let isGameRunning = false;
 
-/*Key movements*/
-//window.addEventListener("keypress", doKeyDown);
-
 document.onkeydown = function doKeyDown(e) {
 	const key = e.key;
 	if (key == "Enter" && isGameRunning == false)

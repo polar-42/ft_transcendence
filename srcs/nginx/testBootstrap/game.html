@@ -1,52 +1,79 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <meta name="description" content="" />
-        <meta name="author" content="" />
-        <title>Modern Business - Start Bootstrap Template</title>
-        <!-- Favicon-->
-        <link rel="icon" type="image/x-icon" href="assets/img.png" />
-        <!-- Bootstrap icons-->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
-        <!-- Core theme CSS (includes Bootstrap)-->
-        <link href="style.css" rel="stylesheet" />
-    </head>
-    <body class="d-flex flex-column h-100">
-        <main class="flex-shrink-0">
-            <!-- Navigation-->
-            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-                <div class="container px-5">
-                    <a class="navbar-brand" href="index.html">42_transcendence</a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                            <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-                            <li class="nav-item"><a class="nav-link" href="index.html">About</a></li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" id="navbarDropdownBlog" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Games</a>
-                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownBlog">
-                                    <li><a class="dropdown-item" href="index.html">Pong</a></li>
-                                    <li><a class="dropdown-item" href="index.html">Morpion</a></li>
-                                </ul>
-                            </li>
-                            <li class="nav-item"><a class="nav-link" href="index.html">Contact</a></li>
-                            <li class="nav-item"><a class="nav-link" href="index.html">Docs</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
+<html lang="en" class="h-100">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes"/>
+		<meta name="description" content=""/>
+		<meta name="author" content="" />
+		<title>42_transcendence</title>
+		<link rel="icon" type="image/x-icon" href="assets/img.png"/>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+			integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+			crossorigin="anonymous">
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+		<!-- Core theme CSS (includes Bootstrap)-->
+	</head>
+	<body class="d-flex flex-column h-100">
+		<main class="flex-shrink-0">
+			<!-- Navigation-->
+			<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+				<div class="container">
+					<a class="navbar-brand" href="index.html">42_transcendence</a>
+					<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+					<div class="collapse navbar-collapse" id="navbarSupportedContent">
+						<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+							<li class="nav-item dropdown">
+								<a class="nav-link dropdown-toggle" id="navbarDropdownBlog" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Games</a>
+								<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownBlog">
+									<li><a class="dropdown-item" href="game.html">Pong</a></li>
+									<li><a class="dropdown-item" href="index.html">Morpion</a></li>
+								</ul>
+							</li>
+							<li class="nav-item"><a class="nav-link" href="index.html">About</a></li>
+							<li class="nav-item"><a class="nav-link" href="index.html">Contact</a></li>
+							<li class="nav-item"><a class="nav-link" href="index.html">Docs</a></li>
+						</ul>
+						<ul class="nav navbar-nav">
+							<li class="nav-item"><a class="nav-link" href="#">Login</a></li>
+							<li class="nav-item"><a class="nav-link" href="#">Register</a></li>
+						</ul>
+					</div>
+				</div>
+			</nav>
+		</main>
+        <div class="container text-center my-5">
+            <div class="fs-1 fw-bold text-center my-4">
+                <span >Pong v2</span>
+            </div>
+            <div class="my-4">
+                <canvas id="pongGame", style="background-color: black;"></canvas>
+                <script type="module" src="script/pong.js"></script>
+            </div>
+        </div>
+		</header>
+		<!-- Bootstrap core JS-->
+	</body>
+	<footer class="footer mt-auto py-1 border-top border-2 border-grey">
+		<div class="container">
+			<div class="row">
+				<div class="col text-center">
+					<a href="https://42.fr" target="_blank"><img src="assets/42_Logo.svg.png" alt="42" width="40" height="40"></a>
+				</div>
+				<div class="col text-center">
+					<a href="https://www.youtube.com/watch?v=cQ-Ka0d5KkU" target="_blank"><img src="assets/logo_yt.png" alt="42" width="40" height="40"></a>
+				</div>
+				<div class="col text-center">
+					<a href="https://twitter.com/42born2code" target="_blank"><img src="assets/e.png" alt="42" width="40" height="40"></a>
+				</div>
+			</div>
+		</div>
+	</footer>
+</html>
 
     <section>
         <body>
-            <canvas id="pongGame", style="background-color: black;"></canvas>
-            <script src="pong.js"></script>
         </body>
     </section>
-        <!-- Bootstrap core JS-->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-        <!-- Core theme JS-->
-        <script src="js/scripts.js"></script>
     </body>
 </html>
