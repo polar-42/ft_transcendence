@@ -173,6 +173,11 @@ function ballWallCollision() {
 		&& ball.x + ball.speed <= playerOne.x + playerOne.width
 		&& ball.y + ball.gravity <= playerOne.y + playerOne.height)) {
 		ball.speed = ball.speed * -1;
+		if (ball.speed > 0) {
+			ball.speed += 1;
+		} else {
+			ball.speed -= 1;
+		}
 	} else if (ball.x + ball.speed < playerOne.x) {
 		scoreTwo += 1;
 		isGameRunning = false;
