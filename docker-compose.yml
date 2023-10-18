@@ -3,8 +3,18 @@ version: '3'
 services:
   nginx:
     build: srcs/nginx/
-    container_name: container_nginx
-    image: image_nginx
+    container_name: containerNginx
+    image: imageNginx
+    networks:
+      - transcendence_network
+    restart: on-failure
+    ports:
+      - "8080:80"
+
+  django:
+    build: srcs/django
+    container_name: containerDjango
+    image: imageDjango
     networks:
       - transcendence_network
     restart: on-failure
