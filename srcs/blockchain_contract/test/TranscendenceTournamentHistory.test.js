@@ -9,7 +9,7 @@ describe('TranscendenceTournamentHistory', function () {
 
     const contract = await ContractTranscendenceTournamentHistory.deploy();
     await contract.deployed();
-  
+
     console.log('Current size of players:', await contract.getNumberPlayer());
 
     const tx = await contract.addPlayer('PlayerOne');

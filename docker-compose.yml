@@ -1,15 +1,17 @@
 version: '3'
 
 services:
-  #nginx:
-  #  build: srcs/nginx/
-  #  container_name: containerNginx
-  #  image: imageNginx
-  #  networks:
-  #    - transcendence_network
-  #  restart: on-failure
-  #  ports:
-  #    - "8080:80"
+  nginx:
+    build: srcs/nginx/
+    container_name: container_nginx
+    image: image_nginx
+    networks:
+      - transcendence_network
+    volumes:
+      - blockchain:/var/blockchain
+    restart: on-failure
+    ports:
+      - "8080:80"
 
   #django:
   #  build: srcs/django
@@ -32,7 +34,7 @@ services:
     volumes:
       - blockchain:/var/blockchain
     restart: on-failure
-    expose: 
+    expose:
       - "8545"
 
   blockchain_contract:
@@ -49,13 +51,27 @@ services:
     depends_on:
       - blockchain_node
 
+  #test_contract:
+  #  build: srcs/test_contract
+  #  container_name: container_test_contract
+  #  image: image_test_contract
+  #  env_file:
+  #    - .env
+  #  networks:
+  #    - transcendence_network
+  #  volumes:
+  #    - blockchain:/var/blockchain
+  #  restart: on-failure
+  #  depends_on:
+  #    - blockchain_contract
+
 volumes:
   blockchain:
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: '/Users/felixletolguenec/data/blockchain'
+      device: '/home/fle-tolg/data/blockchain'
 
 networks:
   transcendence_network:

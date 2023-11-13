@@ -12,9 +12,6 @@ WORKDIR /usr/share/app/hardhat
 
 RUN mkdir contracts scripts test
 
-COPY contracts/TranscendenceTournamentHistory.sol contracts/
-COPY test/TranscendenceTournamentHistory.test.js test/
-COPY scripts/deploy.js scripts/
 COPY scripts/getData.js scripts/
 COPY hardhat.sh .
 COPY hardhat.config.js .
