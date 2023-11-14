@@ -20,15 +20,15 @@ contract TranscendenceTournamentHistory {
         owner = msg.sender;
         numberPlayers = 0;
     }
-    
+
     ///////////////////
     //OWNER FUNCTIONS//
     ///////////////////
-    
+
     //Function to add a player to the players tab
     function addPlayer(string memory userName) public {
         require(msg.sender == owner, "You're not the contract owner");
-        
+
         if (isPlayerExist(userName) == false) {
             players.push(Player(userName, 0));
             numberPlayers++;
@@ -47,7 +47,7 @@ contract TranscendenceTournamentHistory {
     ////////////////////
     //GETTER FUNCTIONS//
     ////////////////////
-    
+
     //Function to get the total player
     function getNumberPlayer() public view returns (uint) {
         return numberPlayers;

@@ -47,12 +47,11 @@ x=0
 
 while [ "$x" -lt 30 ]; do
     if [ -f "/var/blockchain/check" ]; then
-        echo find
+        echo find check
         rm -rf /var/blockchain/check
         break
     else
         if [ "$x" -lt 30 ]; then
-            echo plus one
             x=$((x + 1))
             sleep 1
         else
@@ -67,7 +66,6 @@ done
 
 echo "running npx hardhat run --network localhost scripts/deploy.js";
 npx hardhat run --network localhost scripts/deploy.js;
-
 
 export CONTRACT_ADDRESS=$(cat contract_address.txt);
 mv contract_address.txt /var/blockchain;

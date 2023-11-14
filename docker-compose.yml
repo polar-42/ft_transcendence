@@ -12,6 +12,7 @@ services:
     restart: on-failure
     ports:
       - "8080:80"
+      - "8545"
 
   #django:
   #  build: srcs/django
