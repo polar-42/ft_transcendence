@@ -2,7 +2,7 @@ version: '3'
 
 services:
   nginx:
-    build: srcs/nginx/
+    build: modules/nginx/
     container_name: container_nginx
     image: image_nginx
     networks:
@@ -15,7 +15,7 @@ services:
       - "8545"
 
   #django:
-  #  build: srcs/django
+  #  build: modules/django
   #  container_name: containerDjango
   #  image: imageDjango
   #  networks:
@@ -24,10 +24,10 @@ services:
   #  ports:
   #    - "8080:80"
 
-  blockchain_node:
-    build: srcs/blockchain_node
-    container_name: container_blockchain_node
-    image: image_blockchain_node
+  ganache:
+    build: modules/blockchain/ganache
+    container_name: container_ganache
+    image: image_ganache
     env_file:
       - .env
     networks:
@@ -36,12 +36,12 @@ services:
       - blockchain:/var/blockchain
     restart: on-failure
     expose:
-      - "8545:8545"
+      - "8545"
 
-  blockchain_contract:
-    build: srcs/blockchain_contract
-    container_name: container_blockchain_contract
-    image: image_blockchain_contract
+  contract_deployement:
+    build: modules/blockchain/contract_deployement
+    container_name: container_contract_deployement
+    image: image_contract_deployement
     env_file:
       - .env
     networks:
@@ -50,23 +50,9 @@ services:
       - blockchain:/var/blockchain
     restart: on-failure
     depends_on:
-      - blockchain_node
+      - ganache
     expose:
       - "8545"
-
-  #test_contract:
-  #  build: srcs/test_contract
-  #  container_name: container_test_contract
-  #  image: image_test_contract
-  #  env_file:
-  #    - .env
-  #  networks:
-  #    - transcendence_network
-  #  volumes:
-  #    - blockchain:/var/blockchain
-  #  restart: on-failure
-  #  depends_on:
-  #    - blockchain_contract
 
 volumes:
   blockchain:
