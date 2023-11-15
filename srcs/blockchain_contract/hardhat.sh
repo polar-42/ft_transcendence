@@ -1,54 +1,45 @@
 #!/bin/sh
-#if npm ls | grep hardhat@2.18. > /dev/null 2>&1; then
-#    true
-#else
-#    echo "running npm install --save-dev -g hardhat";
-#    npm install --save-dev "hardhat@^2.18.1" > /dev/null 2>&1;
-#fi
 
-
-if npm ls | grep chai > /dev/null 2>&1; then
-    true
-else
-    echo "running npm install --save-dev -g chai";
+if [[ "$(npm list chai)" =~ "empty" ]]; then
+    echo "Installing chai"
     npm install chai > /dev/null 2>&1;
+else
+    echo "chai is already installed"
 fi
 
-
-if npm ls | grep mocha > /dev/null 2>&1; then
-    true
-else
-    echo "running npm install mocha";
+if [[ "$(npm list mocha)" =~ "empty" ]]; then
+    echo "Installing mocha"
     npm install mocha > /dev/null 2>&1;
+else
+    echo "mocha is already installed"
 fi
 
-
-if npm ls | grep nomiclabs/hardhat-waffle > /dev/null 2>&1; then
-    true
-else
-    echo "running npm install nomiclabs/hardhat-waffle";
+if [[ "$(npm list @nomiclabs/hardhat-waffle)" =~ "empty" ]]; then
+    echo "Installing nomiclabs/hardhat-waffle"
     npm install @nomiclabs/hardhat-waffle > /dev/null 2>&1;
-fi
-
-
-if npm ls | grep nomiclabs/hardhat-ethers > /dev/null 2>&1; then
-    true
 else
-    echo "running npm install nomiclabs/hardhat-ethers";
-    npm install @nomiclabs/hardhat-ethers > /dev/null 2>&1;
+    echo "nomiclabs/hardhat-waffle is already installed"
 fi
 
-echo "running npx hardhat compile";
-npx hardhat compile;
+if [[ "$(npm list @nomiclabs/hardhat-ethers)" =~ "empty" ]]; then
+    echo "Installing nomiclabs/hardhat-ethers"
+    npm install @nomiclabs/hardhat-ethers > /dev/null 2>&1;
+else
+    echo "nomiclabs/hardhat-ethers is already installed"
+fi
+
+if [ ! -f "/var/blockchain/contract_address.txt" ]; then
+    echo "running npx hardhat compile";
+    npx hardhat compile;
+fi
 
 export IP_NODE=$(cat /var/blockchain/hostname);
 
 x=0
 
 while [ "$x" -lt 30 ]; do
-    if [ -f "/var/blockchain/check" ]; then
-        echo find check
-        rm -rf /var/blockchain/check
+    if [ -d "/var/blockchain/state" ] && [ -f "/var/blockchain/check" ]; then
+        echo find state
         break
     else
         if [ "$x" -lt 30 ]; then
@@ -64,11 +55,15 @@ done
 #echo "running npx hardhat test --network localhost";
 #npx hardhat test --network localhost;
 
-echo "running npx hardhat run --network localhost scripts/deploy.js";
-npx hardhat run --network localhost scripts/deploy.js;
+if [ ! -f "/var/blockchain/contract_address.txt" ]; then
+    echo "running npx hardhat run --network ganache scripts/deploy.js";
+    npx hardhat run --network ganache scripts/deploy.js;
+    cp contract_address.txt /var/blockchain/;
+    echo Contract address file is create;
+    export CONTRACT_ADDRESS=$(cat /var/blockchain/contract_address.txt);
+else
+    export CONTRACT_ADDRESS=$(cat /var/blockchain/contract_address.txt);
+    npx hardhat run --network ganache scripts/test.js;
+    echo Contract address already file is create;
+fi
 
-export CONTRACT_ADDRESS=$(cat contract_address.txt);
-mv contract_address.txt /var/blockchain;
-echo Contract address file is create;
-
-sh

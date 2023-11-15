@@ -12,13 +12,13 @@ module.exports = {
         }
       }
     },
-    defaultNetwork: "localhost",
+    defaultNetwork: "ganache",
     networks: {
-      localhost: {
+      ganache: {
         url: 'http://' + process.env.IP_NODE + ':8545', // Hardhat Network URL
         chainId: 31337, // Chain ID for Hardhat Network
         accounts: [
-          process.env.ACCOUNT1,
+          process.env.GANACHEPRIVATEKEY,
           process.env.ACCOUNT2,
         ],
       },
