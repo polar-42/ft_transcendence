@@ -1,58 +1,79 @@
 version: '3'
 
 services:
-  nginx:
-    build: modules/nginx/
-    container_name: container_nginx
-    image: image_nginx
+
+#  nginx:
+#    build: modules/nginx/
+#    container_name: container_nginx
+#    image: image_nginx
+#    networks:
+#      - transcendence_network
+#    volumes:
+#      - blockchain:/var/blockchain
+#    restart: on-failure
+#    ports:
+#      - "8080:80"
+#      - "8545"
+
+  django:
+    build: modules/django
+    container_name: container_django
+    image: image_django
+    env_file:
+      - .env
     networks:
       - transcendence_network
-    volumes:
-      - blockchain:/var/blockchain
     restart: on-failure
+    volumes:
+      - db:/var/db
+    depends_on:
+      - postgresql
     ports:
-      - "8080:80"
-      - "8545"
+      - "8080:8080"
 
-  #django:
-  #  build: modules/django
-  #  container_name: containerDjango
-  #  image: imageDjango
+  postgresql:
+    build: modules/postgresql
+    container_name: container_postgresql
+    image: image_postgresql
+    env_file:
+      - .env
+    networks:
+      - transcendence_network
+    restart: on-failure
+    volumes:
+      - db:/var/db
+    ports:
+      - "5432:5432"
+
+  #ganache:
+  #  build: modules/blockchain/ganache
+  #  container_name: container_ganache
+  #  image: image_ganache
+  #  env_file:
+  #    - .env
   #  networks:
   #    - transcendence_network
+  #  volumes:
+  #    - blockchain:/var/blockchain
   #  restart: on-failure
-  #  ports:
-  #    - "8080:80"
+  #  expose:
+  #    - "8545"
 
-  ganache:
-    build: modules/blockchain/ganache
-    container_name: container_ganache
-    image: image_ganache
-    env_file:
-      - .env
-    networks:
-      - transcendence_network
-    volumes:
-      - blockchain:/var/blockchain
-    restart: on-failure
-    expose:
-      - "8545"
-
-  contract_deployement:
-    build: modules/blockchain/contract_deployement
-    container_name: container_contract_deployement
-    image: image_contract_deployement
-    env_file:
-      - .env
-    networks:
-      - transcendence_network
-    volumes:
-      - blockchain:/var/blockchain
-    restart: on-failure
-    depends_on:
-      - ganache
-    expose:
-      - "8545"
+  #contract_deployement:
+  #  build: modules/blockchain/contract_deployement
+  #  container_name: container_contract_deployement
+  #  image: image_contract_deployement
+  #  env_file:
+  #    - .env
+  #  networks:
+  #    - transcendence_network
+  #  volumes:
+  #    - blockchain:/var/blockchain
+  #  restart: on-failure
+  #  depends_on:
+  #    - ganache
+  #  expose:
+  #    - "8545"
 
 volumes:
   blockchain:
@@ -61,6 +82,12 @@ volumes:
       type: 'none'
       o: 'bind'
       device: '/home/fle-tolg/data/blockchain'
+  db:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '/home/fle-tolg/data/db'
 
 networks:
   transcendence_network:
