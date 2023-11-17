@@ -1,0 +1,97 @@
+#title
+{
+	margin-top: 2.5%;
+	margin-left: auto;
+    margin-right: auto;
+	max-width:fit-content;
+	display: flex;
+	justify-content:center;
+}
+
+#title h1
+{
+	max-width: fit-content;
+}
+
+#title img
+{
+	height: 50px;
+	width: 50px;
+	margin-right: 15px;
+	transform: translateY(+12.5%);
+}
+
+#about
+{
+	border: 2px solid;
+	border-radius: 15px;
+	border-color: black;
+	background-color: aqua;
+	width: 75%;
+	min-height: 100px;
+	margin-left: auto;
+    margin-right: auto;
+	padding-left: 10px;
+	padding-left: 10px;
+}
+
+#connexion
+{
+	margin-top: 5%;
+	margin-left: auto;
+	margin-right: auto;
+	max-width:fit-content;
+	justify-content: space-between;
+	padding: 1%
+}
+
+#connexion #btn2
+{
+	margin-left: 250px;
+}
+
+.btn-standard
+{
+	background-color: #04AA6D; /* Green */
+	border: none;
+	color: black;
+	font-size: large;
+	font-weight: bold;
+	padding-left: 20px;
+	padding-right: 20px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	border-radius: 15px;
+	transition-duration: 0.4s;
+}
+
+.btn-standard:hover
+{
+	background-color: #007248; /* Green */
+	color: white;
+}
+
+#studIcon
+{
+	width: 100%;
+	height: 100%;
+	border-radius: 50%;
+	border-color: black;
+	border: 2px solid;
+}
+
+#studIcon:hover
+{
+	border-color: white;
+	content: url(../assets/stud/gpasquet.jpg);
+}
+
+#studList
+{
+	margin-top: 5%;
+	margin-bottom: 5%;
+	justify-content: center;
+	display: grid;
+	grid-template-columns: 20% 20% 20% 20%;
+	grid-column-gap: 5%;
+}
