@@ -27,12 +27,13 @@ info:
 	@docker network ls
 
 stop:
-	@docker stop container_ganache container_nginx container_contract_deployement container_django
+	@docker stop container_ganache container_nginx container_contract_deployement container_django container_postgresql
 	@echo All containers have been stopped
 
 clean:
+	@docker stop container_ganache container_nginx container_contract_deployement container_django container_postgresql; true
 	@docker system prune -af
-	@docker volume rm srcs_blockchain; true
+	@docker volume rm srcs_db
 	@sudo rm -rf /home/fle-tolg/data/*
 	@echo All images, stopped containers, networks and volumes have been deleted
 
