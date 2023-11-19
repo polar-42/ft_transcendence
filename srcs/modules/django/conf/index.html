@@ -1,0 +1,17 @@
+<!-- myapp/templates/myapp/index.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Django App</title>
+</head>
+<body>
+    <h1>Hello, Django!</h1>
+    <p>This is a simple Django app.</p>
+    <button onclick="testFunction()">Click Me!</button>
+    <div id="sucess-message"></div>
+</body>
+<script src="{% static 'transcendence/js/script.js' %}"></script>
+</html>

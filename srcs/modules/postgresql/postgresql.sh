@@ -7,8 +7,14 @@ else
 	echo initialisation already done;
 fi
 
-sleep 5;
 export DB_HOST=$(hostname -i);
+
+echo $DB_HOST > /var/db/ip_db
+
+while [ ! -f /var/db/ip_django ] ; do
+	sleep 1
+done
+
 export IP_DJANGO=$(cat /var/db/ip_django);
 #export DB_NAME="transcendence_db"
 #export DB_USER="user_db"
@@ -16,9 +22,8 @@ export IP_DJANGO=$(cat /var/db/ip_django);
 #export PORT="5432"
 
 
-echo $DB_HOST > /var/db/ip_db
 echo "host $DB_NAME all $IP_DJANGO/32 trust" >> /var/db/pg_hba.conf
-echo "host $DB_NAME all 192.168.64.1/32 trust" >> /var/db/pg_hba.conf
+echo "host $DB_NAME all 172.19.0.1/32 trust" >> /var/db/pg_hba.conf
 
 pg_ctl -D /var/db start > /dev/null 2>&1;
 
@@ -37,5 +42,6 @@ fi
 pg_ctl -D /var/db stop > /dev/null 2>&1;
 
 echo $DB_NAME is launching...;
+touch /var/db/check
 
 postgres -D /var/db;

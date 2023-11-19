@@ -1,19 +1,19 @@
 all:
-	@mkdir -p /home/fle-tolg/data/blockchain
-	@mkdir -p /home/fle-tolg/data/db
+	@mkdir -p ~/data/blockchain
+	@mkdir -p ~/data/db
 	@echo Docker is launching...
 	@docker compose -f srcs/docker-compose.yml up --build
 	@echo Docker is launch in detach mode
 
 detach:
-	@mkdir -p /home/fle-tolg/data/blockchain
-	@mkdir -p /home/fle-tolg/data/db
+	@mkdir -p ~/data/blockchain
+	@mkdir -p ~/data/db
 	@echo Docker is launching...
 	@docker compose -f srcs/docker-compose.yml up --build -d
 
 restart:
-	@mkdir -p /home/fle-tolg/data/blockchain
-	@mkdir -p /home/fle-tolg/data/db
+	@mkdir -p ~/data/blockchain
+	@mkdir -p ~/data/db
 	@echo Docker is launching...
 	@docker compose -f srcs/docker-compose.yml up -d
 	@echo Docker is launch in detach mode
@@ -33,8 +33,9 @@ stop:
 clean:
 	@docker stop container_ganache container_nginx container_contract_deployement container_django container_postgresql; true
 	@docker system prune -af
-	@docker volume rm srcs_db
-	@sudo rm -rf /home/fle-tolg/data/*
+	@docker volume prune -af
+	@docker volume rm srcs_db; true
+	@sudo rm -rf ~/data/*
 	@echo All images, stopped containers, networks and volumes have been deleted
 
 re: stop clean all

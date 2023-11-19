@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+	os.environ.get('APP_NAME'),
 ]
 
 MIDDLEWARE = [
@@ -77,11 +78,15 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('NAME_DB'),
-		'USER': os.environ.get('USER_DB'),
-        'PASSWORD': os.environ.get('PASSWORD_DB'),
-        'HOST': os.environ.get('HOST_DB'),
-        'PORT': os.environ.get('PORT_DB'),
+		#'OPTIONS': {
+		#	'service': 'my_service',
+		#	'passfile': '.mypg_pass',
+        #},
+        'NAME': os.environ.get('DB_NAME'),
+		'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': os.environ.get('DB_PORT'),
     }
 }
 

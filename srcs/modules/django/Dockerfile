@@ -4,16 +4,14 @@ RUN apk update && apk add postgresql-client && apk add vim
 
 WORKDIR /usr/src/app
 
-COPY requirements.txt .
+COPY conf/ ./conf
 COPY django.sh .
-COPY settings.py .
 
 RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+RUN pip install -r conf/requirements.txt
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-
 
 EXPOSE 8080
 

@@ -26,8 +26,9 @@ services:
     restart: on-failure
     volumes:
       - db:/var/db
-    depends_on:
-      - postgresql
+    #depends_on:
+    #  postgresql:
+    #    condition: service_healthy
     ports:
       - "8080:8080"
 
@@ -44,6 +45,11 @@ services:
       - db:/var/db
     ports:
       - "5432:5432"
+    #healthcheck:
+    #  test: ["CMD", "pg_isready", "-h", "localhost", "-p", "5432"]
+    #  interval: 10s
+    #  timeout: 30s
+    #  retries: 5
 
   #ganache:
   #  build: modules/blockchain/ganache
