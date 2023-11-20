@@ -52,6 +52,11 @@
 
 .btn-standard
 {
+	-webkit-appearance: button;
+    -moz-appearance: button;
+    appearance: button;
+
+    text-decoration: none;
 	background-color: #04AA6D; /* Green */
 	border: none;
 	color: black;
