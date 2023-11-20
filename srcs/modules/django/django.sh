@@ -18,6 +18,7 @@ while [ ! -f /var/db/ip_db ] ; do
 done
 
 export DB_HOST=$(cat /var/db/ip_db);
+rm -rf /var/db/ip_db
 
 echo "cd mysite";
 cd mysite;
@@ -29,24 +30,27 @@ rm -rf /var/db/check
 
 
 export APP_NAME="transcendence";
-python manage.py startapp $APP_NAME;
 
-mkdir -p $APP_NAME/templates/$APP_NAME;
-mkdir -p $APP_NAME/static/$APP_NAME/js;
+if [ ! -d "$APP_NAME/" ] ; then
+	python manage.py startapp $APP_NAME;
 
-cat ../conf/settings.py > mysite/settings.py;
-cp ../conf/index.html $APP_NAME/templates/$APP_NAME;
-cp ../conf/script.js $APP_NAME/static/$APP_NAME/js;
-cat ../conf/models.py > $APP_NAME/models.py;
-cat ../conf/views.py > $APP_NAME/views.py;
-cat ../conf/urls_app.py > $APP_NAME/urls.py;
-cat ../conf/urls_project.py > mysite/urls.py;
+	mkdir -p $APP_NAME/templates/$APP_NAME;
+	mkdir -p $APP_NAME/static/$APP_NAME/js;
 
-echo "python manage.py makemigrations";
-python manage.py makemigrations;
+	cat ../conf/settings.py > mysite/settings.py;
+	cp ../conf/index.html $APP_NAME/templates/$APP_NAME;
+	cp ../conf/script.js $APP_NAME/static/$APP_NAME/js;
+	cat ../conf/models.py > $APP_NAME/models.py;
+	cat ../conf/views.py > $APP_NAME/views.py;
+	cat ../conf/urls_app.py > $APP_NAME/urls.py;
+	cat ../conf/urls_project.py > mysite/urls.py;
 
-echo "python manage.py migrate";
-python manage.py migrate;
+	echo "python manage.py makemigrations";
+	python manage.py makemigrations;
+
+	echo "python manage.py migrate";
+	python manage.py migrate;
+fi
 
 echo "python mysite/manage.py runserver";
 python manage.py runserver $(hostname -i):8080;
