@@ -1,6 +1,8 @@
 const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
 
+const winPoints = 5;
+
 const PlayerH = 100;
 const PlayerW = 20;
 
@@ -8,6 +10,9 @@ const ballRadius = 10;
 
 let dx = 2
 let dy = 2
+
+let y1Point = 0;
+let y2Point = 0;
 
 let x = canvas.width / 2 - 5;
 let y = canvas.height / 2 - 5;
@@ -31,12 +36,12 @@ function drawPlayers()
 {
 	ctx.beginPath();
 	ctx.rect(PlayerW, y1, PlayerW, PlayerH)
-	ctx.fillStyle = "blue";
+	ctx.fillStyle = "blue"; // Menu customisation couleur?
 	ctx.fill();
 	ctx.closePath();
 	ctx.beginPath();
 	ctx.rect(canvas.width - PlayerW - 40 / 2, y2, PlayerW, PlayerH)
-	ctx.fillStyle = "blue";
+	ctx.fillStyle = "blue"; // Menu customisation couleur?
 	ctx.fill();
 	ctx.closePath();
 }
@@ -57,9 +62,17 @@ function movePlayer()
 		y1 -= 7;
 }
 
+function drawScore()
+{
+	ctx.font = "150px Arial";
+	ctx.fillStyle = "#0095DD";
+	ctx.fillText(`${y1Point}  |  ${y2Point}`, canvas.width / 2 - 200 ,150);
+}
+
 function draw()
 {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	drawScore();
 	drawBall();
 	checkBorder();
 	drawPlayers();
