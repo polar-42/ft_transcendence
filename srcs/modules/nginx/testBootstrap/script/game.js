@@ -17,8 +17,16 @@ let BoatList = [
 	{ name : 'PatrolBoat', x : 0, y : 0, startX : 700, startY : 550, ArrayX : -1, ArrayY : -1, size : 2, horizontal : true, isDragging : false }
 ];
 
+let BoardArray = [];
+
 function initGame()
 {
+	for ( let y = 0; y < gridSizeY; y++)
+	{
+		BoardArray[y] = [];
+		for ( let x = 0; x < gridSizeX; x++)
+			BoardArray[y][x] = 0;
+	}
 	BoatList.forEach(element => {
 		element.x = element.startX;
 		element.y = element.startY;
@@ -59,6 +67,7 @@ function isHover(element, mouseX, mouseY)
 	return false;
 }
 
+let tmpBoat = {x : 0, y : 0, horizontal : true};
 
 canvas.addEventListener('mousedown', (e) => 
 {
@@ -70,6 +79,28 @@ canvas.addEventListener('mousedown', (e) =>
 	BoatList.forEach(element => {
 		if (isHover(element, mouseX, mouseY) == true)
 		{
+			tmpBoat.x = element.x;
+			tmpBoat.y = element.y;
+			tmpBoat.horizontal = element.horizontal;
+			if (element.ArrayX != -1)
+			{
+				if (element.horizontal == true) 
+				{
+					for (let i = 0; i < element.size; i++) 
+					{
+						if (BoardArray[element.ArrayY][element.ArrayX + i] == 1)
+							BoardArray[element.ArrayY][element.ArrayX + i] = 0;
+					}
+				}
+				else 
+				{
+					for (let i = 0; i < element.size; i++) 
+					{
+						if (BoardArray[element.ArrayY + i][element.ArrayX] == 1)
+							BoardArray[element.ArrayY + i][element.ArrayX] = 0;
+					}
+				}
+			}
 			// Start dragging
 			element.isDragging = true;
 	
@@ -83,27 +114,49 @@ canvas.addEventListener('mousedown', (e) =>
 	});
 });
 
-function drawBoats()
+function drawBoats( dragging )
 {
 	BoatList.forEach(element => 
 	{
-		ctx.beginPath();
-		if (element.horizontal == true)
-			ctx.rect(element.x, element.y, element.size * boxSize, boxSize);	
-		else
-			ctx.rect(element.x, element.y, boxSize, element.size * boxSize);
-		ctx.fillStyle = "blue";
-		ctx.fill();
-		ctx.closePath();
+		if (element.isDragging == false || dragging == true)
+		{
+			ctx.beginPath();
+			if (element.horizontal == true)
+				ctx.rect(element.x, element.y, element.size * boxSize, boxSize);	
+			else
+				ctx.rect(element.x, element.y, boxSize, element.size * boxSize);
+			ctx.fillStyle = "blue";
+			ctx.fill();
+			ctx.closePath();
+		}
 	});
+}
+
+function drawDragged()
+{
+	BoatList.forEach(element => 
+		{
+			if (element.isDragging == true)
+			{
+				ctx.beginPath();
+				if (element.horizontal == true)
+					ctx.rect(element.x, element.y, element.size * boxSize, boxSize);	
+				else
+					ctx.rect(element.x, element.y, boxSize, element.size * boxSize);
+				ctx.fillStyle = "red";
+				ctx.fill();
+				ctx.closePath();
+			}
+		});
 }
 
 function draw()
 {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	drawBoats(false);
 	drawGrid();
 	drawTitle();
-	drawBoats();
+	drawDragged();
 }
 
 canvas.addEventListener('contextmenu', function(event) {
@@ -152,6 +205,28 @@ function isValidPos(element)
 {
 	let X = Math.round((element.x - offsetX) / boxSize);
 	let Y = Math.round((element.y - offsetY) / boxSize);
+
+	if (element.horizontal == true)
+	{
+		if (X + element.size - 1  >= gridSizeX)
+			return false;
+		for (let i = 0; i < element.size; i++)
+		{
+			if (BoardArray[Y][X + i] == 1)
+				return false;
+		}
+	}
+	else
+	{
+		if (Y + element.size - 1  >= gridSizeY)
+			return false;
+		for (let i = 0; i < element.size; i++)
+		{
+			if (BoardArray[Y + i][X] == 1)
+				return false;
+		}
+	}
+	return true;
 }
 
 canvas.addEventListener('mouseup', (e) =>
@@ -165,10 +240,36 @@ canvas.addEventListener('mouseup', (e) =>
     		element.isDragging = false;
 			if ( element.x > offsetX - boxSize / 2 && element.x < (offsetX + gridSizeX * boxSize) - boxSize / 2 && element.y > offsetY - boxSize / 2  && element.y < (offsetY + gridSizeY * boxSize) -boxSize / 2 )
 			{
-				element.ArrayX = Math.round((element.x - offsetX) / boxSize);
-				element.ArrayY = Math.round((element.y - offsetY) / boxSize);
-				element.x = element.ArrayX * boxSize + offsetX;
-				element.y = element.ArrayY * boxSize + offsetY;
+				if (isValidPos(element) == true)
+				{
+					
+					element.ArrayX = Math.round((element.x - offsetX) / boxSize);
+					element.ArrayY = Math.round((element.y - offsetY) / boxSize);
+					element.x = element.ArrayX * boxSize + offsetX;
+					element.y = element.ArrayY * boxSize + offsetY;
+					if (element.horizontal == true) 
+					{
+						for (let i = 0; i < element.size; i++) 
+						{
+							if (BoardArray[element.ArrayY][element.ArrayX + i] == 0)
+								BoardArray[element.ArrayY][element.ArrayX + i] = 1;
+						}
+					}
+					else 
+					{
+						for (let i = 0; i < element.size; i++) 
+						{
+							if (BoardArray[element.ArrayY + i][element.ArrayX] == 0)
+								BoardArray[element.ArrayY + i][element.ArrayX] = 1;
+						}
+					}
+				}
+				else
+				{
+					element.x = tmpBoat.x;
+					element.y = tmpBoat.y;
+					element.horizontal = tmpBoat.horizontal;
+				}
 			}
 			else
 			{
