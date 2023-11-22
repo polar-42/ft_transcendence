@@ -1,109 +1,201 @@
 const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
 
-const winPoints = 5;
+const gridSizeX = 10
+const gridSizeY = 10
 
-const PlayerH = 100;
-const PlayerW = 20;
+const boxSize = 60
 
-const ballRadius = 10;
+const offsetX = 10
+const offsetY = 100
 
-let dx = 2
-let dy = 2
+let BoatList = [
+	{ name : 'Carrier', x : 0, y : 0, startX : 700, startY : 150, ArrayX : -1, ArrayY : -1, size : 5, horizontal : true, isDragging : false },
+	{ name : 'BattleShip', x : 0, y : 0, startX : 700, startY : 250, ArrayX : -1, ArrayY : -1, size : 4, horizontal : true, isDragging : false },
+	{ name : 'Destroyer', x : 0, y : 0, startX : 700, startY : 350, ArrayX : -1, ArrayY : -1, size : 3, horizontal : true, isDragging : false },
+	{ name : 'Submarine', x : 0, y : 0, startX : 700, startY : 450, ArrayX : -1, ArrayY : -1, size : 3, horizontal : true, isDragging : false },
+	{ name : 'PatrolBoat', x : 0, y : 0, startX : 700, startY : 550, ArrayX : -1, ArrayY : -1, size : 2, horizontal : true, isDragging : false }
+];
 
-let y1Point = 0;
-let y2Point = 0;
-
-let x = canvas.width / 2 - 5;
-let y = canvas.height / 2 - 5;
-
-let y1 = canvas.height / 2 - 50;
-let y2 = canvas.height / 2 - 50;
-
-let y1Up = false;
-let y1Down = false;
-
-function drawBall()
+function initGame()
 {
-	ctx.beginPath();
-	ctx.arc(x, y, ballRadius, 0, Math.PI * 2, false);
-	ctx.fillStyle = "white";
-	ctx.fill();
-	ctx.closePath();
+	BoatList.forEach(element => {
+		element.x = element.startX;
+		element.y = element.startY;
+	});
+	draw();
 }
 
-function drawPlayers()
+function drawTitle()
 {
-	ctx.beginPath();
-	ctx.rect(PlayerW, y1, PlayerW, PlayerH)
-	ctx.fillStyle = "blue"; // Menu customisation couleur?
-	ctx.fill();
-	ctx.closePath();
-	ctx.beginPath();
-	ctx.rect(canvas.width - PlayerW - 40 / 2, y2, PlayerW, PlayerH)
-	ctx.fillStyle = "blue"; // Menu customisation couleur?
-	ctx.fill();
-	ctx.closePath();
-}
-
-function checkBorder()
-{
-	if (y + dy > canvas.height - ballRadius || y + dy < ballRadius)
-	{
-		dy = -dy;
-	}
-}
-
-function movePlayer()
-{
-	if (y1Down && y1 + 7 + PlayerH < canvas.height)
-		y1 += 7;
-	else if (y1Up && y1 - 7 > 0)
-		y1 -= 7;
-}
-
-function drawScore()
-{
-	ctx.font = "150px Arial";
+	ctx.font = "40px Arial";
+	ctx.textAlign = "center"
 	ctx.fillStyle = "#0095DD";
-	ctx.fillText(`${y1Point}  |  ${y2Point}`, canvas.width / 2 - 200 ,150);
+	ctx.fillText(`Please, Place your navire`, canvas.width / 2 , 65);
+}
+
+function drawABox(x, y)
+{
+	ctx.beginPath();
+	ctx.rect(offsetX + x * boxSize, offsetY + y * boxSize, 2, boxSize);
+	ctx.rect(offsetX + x * boxSize, offsetY + y * boxSize, boxSize, 2);
+	ctx.rect(offsetX + x * boxSize + boxSize, offsetY + y * boxSize, 2, boxSize);
+	ctx.rect(offsetX + x * boxSize, offsetY + y * boxSize + boxSize, boxSize, 2);
+	ctx.fillStyle = "green";
+	ctx.fill();
+	ctx.closePath();
+}
+
+function isHover(element, mouseX, mouseY)
+{
+	if (element.horizontal == true)
+	{
+		if (mouseX > element.x && mouseX < element.x + element.size * boxSize && mouseY > element.y && mouseY < element.y + boxSize)
+			return true;
+		return false;
+	}
+	if (mouseX > element.x && mouseX < element.x + boxSize && mouseY > element.y && mouseY < element.y + element.size * boxSize)
+		return true;
+	return false;
+}
+
+
+canvas.addEventListener('mousedown', (e) => 
+{
+	if (e.button != 0)
+		return ;
+    const mouseX = e.clientX - canvas.getBoundingClientRect().left;
+    const mouseY = e.clientY - canvas.getBoundingClientRect().top;
+
+	BoatList.forEach(element => {
+		if (isHover(element, mouseX, mouseY) == true)
+		{
+			// Start dragging
+			element.isDragging = true;
+	
+			// Save the offset to adjust the position while dragging
+			element.offsetX = mouseX - element.x;
+			element.offsetY = mouseY - element.y;
+	
+			// Change cursor style while dragging
+			canvas.style.cursor = 'grabbing';
+		}
+	});
+});
+
+function drawBoats()
+{
+	BoatList.forEach(element => 
+	{
+		ctx.beginPath();
+		if (element.horizontal == true)
+			ctx.rect(element.x, element.y, element.size * boxSize, boxSize);	
+		else
+			ctx.rect(element.x, element.y, boxSize, element.size * boxSize);
+		ctx.fillStyle = "blue";
+		ctx.fill();
+		ctx.closePath();
+	});
 }
 
 function draw()
 {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	drawScore();
-	drawBall();
-	checkBorder();
-	drawPlayers();
-	movePlayer();
-	/*if (x + dx > canvas.width - ballRadius || x + dx < ballRadius)
-	{
-		dx = -dx;
-	}*/
-
-	x += dx;
-	y += dy;
+	drawGrid();
+	drawTitle();
+	drawBoats();
 }
 
-function keyDownHandler(e) {
-	if (e.key === "Up" || e.key === "ArrowUp") {
-	  y1Up = true;
-	} else if (e.key === "Down" || e.key === "ArrowDown") {
-		y1Down = true;
-	}
-  }
-  
-  function keyUpHandler(e) {
-	if (e.key === "Up" || e.key === "ArrowUp") {
-		y1Up = false;
-	} else if (e.key === "Down" || e.key === "ArrowDown") {
-		y1Down = false;
-	}
-  }
-  
+canvas.addEventListener('contextmenu', function(event) {
+    // Prevent the default context menu behavior
+    event.preventDefault();
+	const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+    const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+	BoatList.forEach(element => 
+	{
+		if (element.isDragging)
+		{
+			element.x =  mouseX;
+			element.y =  mouseY;
+			element.offsetX = mouseX - element.x;
+			element.offsetY = mouseY - element.y;
+			element.horizontal = !element.horizontal;
+			draw();
+		}
+	});
+});
 
-document.addEventListener("keydown", keyDownHandler, false);
-document.addEventListener("keyup", keyUpHandler, false);
+canvas.addEventListener('mousemove', (e) => 
+{
+	BoatList.forEach(element => 
+	{
+    	if (element.isDragging) 
+		{
+    	    const mouseX = e.clientX - canvas.getBoundingClientRect().left;
+    	    const mouseY = e.clientY - canvas.getBoundingClientRect().top;
 
-setInterval(draw, 10)
+    	    // Update the position of the draggable item
+    	    element.x = mouseX - element.offsetX;
+    	    element.y = mouseY - element.offsetY;
+
+    	    // Clear the canvas and redraw the draggable item
+    	    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    	    draw();
+
+    	    // Change cursor style while dragging
+    	    canvas.style.cursor = 'grabbing';
+    	}
+	});
+});
+
+function isValidPos(element)
+{
+	let X = Math.round((element.x - offsetX) / boxSize);
+	let Y = Math.round((element.y - offsetY) / boxSize);
+}
+
+canvas.addEventListener('mouseup', (e) =>
+{
+	if (e.button != 0)
+		return ;
+	BoatList.forEach(element => 
+	{
+		if (element.isDragging == true)
+		{
+    		element.isDragging = false;
+			if ( element.x > offsetX - boxSize / 2 && element.x < (offsetX + gridSizeX * boxSize) - boxSize / 2 && element.y > offsetY - boxSize / 2  && element.y < (offsetY + gridSizeY * boxSize) -boxSize / 2 )
+			{
+				element.ArrayX = Math.round((element.x - offsetX) / boxSize);
+				element.ArrayY = Math.round((element.y - offsetY) / boxSize);
+				element.x = element.ArrayX * boxSize + offsetX;
+				element.y = element.ArrayY * boxSize + offsetY;
+			}
+			else
+			{
+				element.horizontal = true;
+				element.x = element.startX;
+				element.y = element.startY;
+				element.ArrayX = -1;
+				element.ArrayY = -1;
+			}
+			draw();
+		}
+    	// Change cursor style back to default
+    	canvas.style.cursor = 'grab';
+	});
+});
+
+
+function drawGrid()
+{
+	for (let y = 0; y < gridSizeY; y++)
+	{
+		for(let x = 0; x < gridSizeX; x++)
+		{
+			drawABox(x, y);
+		}
+	}
+}
+
+canvas.onload = initGame();
+//setInterval(draw, 10)
