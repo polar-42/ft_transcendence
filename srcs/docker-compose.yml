@@ -87,13 +87,13 @@ volumes:
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: '/home/fle-tolg/data/blockchain'
+      device: '~/data/blockchain'
   db:
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: '/home/fle-tolg/data/db'
+      device: '~/data/db'
 
 networks:
   transcendence_network:

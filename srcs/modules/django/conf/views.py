@@ -22,6 +22,9 @@ def create_user(request):
         password = data.get('password')
         passwordConfirmation = data.get('passwordConfirmation')
 
+        if len(username) == 0 or len(email) == 0 or len(password) == 0 or len(passwordConfirmation) == 0:
+            return JsonResponse({'error': 'One of the field is empty'})
+        
         if password != passwordConfirmation:
             return JsonResponse({'error': 'Password do not match'})
 
@@ -56,6 +59,9 @@ def connect_user(request):
         username = data.get('username')
         password = data.get('password')
 
+        if len(username) == 0 or len(password) == 0 :
+            return JsonResponse({'error': 'One of the field is empty'})
+
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
@@ -64,19 +70,9 @@ def connect_user(request):
         else:
             return JsonResponse({'error': 'Username or Password is invalid'})
 
-        #try:
-        #    user = User.objects.get(username=username)
-
-        #    if check_password(password, user.password):
-        #        return JsonResponse({'message': 'Connexion successfull'})
-        #    else:
-        #        return JsonResponse({'message': 'Username or Password is invalid'})
-        #except User.DoesNotExist:
-        #    return JsonResponse({'error': 'Username or Password is invalid'})
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=400)
 
-#def check_connexion(request):
 
 def check_connexion(request):
     if request.user.is_authenticated:

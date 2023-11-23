@@ -59,11 +59,6 @@ function connexionButton() {
         var username = document.getElementById('usernameConnexion').value;
         var password = document.getElementById('passwordConnexion').value;
 
-        if (username == "" || password == "") {
-                document.getElementById('messageConnexion').innerHTML = 'One of the field is empty';
-                return ;
-        }
-
         var data = {
                 username: username,
                 password: password
@@ -106,11 +101,6 @@ function inscriptionButton() {
         var password = document.getElementById('password').value;
         var passwordConfirmation = document.getElementById('passwordConfirmation').value;
 
-        if (username == "" || email == "" || password == "" || passwordConfirmation == "") {
-                document.getElementById('messageInscription').innerHTML = 'One of the field is empty';
-                return ;
-        }
-
         var data = {
                 username: username,
                 email: email,
@@ -148,6 +138,38 @@ function inscriptionButton() {
                 document.getElementById('messageInscription').innerHTML = data.message;
         })
 }
+
+function socket_function() {
+        const socket = new WebSocket('ws://' + window.location.host + '/ws/some_path/');
+
+        socket.onmessage = function(e) {
+                const data = JSON.parse(e.data);
+                console.log(data.message);
+
+                if (data.type === 'chat') {
+                        let message_send_back = document.getElementById('message_send_back');
+                        message_send_back.innerHTML = data.message;
+                 }
+        }
+        
+        socket.onclose = function(e) {
+                console.error('Chat socket closed');
+        }
+
+        let socket_test = document.getElementById('socket_test');
+        socket_test.addEventListener('submit', (e) => {
+                e.preventDefault();
+                let message = socket_test.querySelector('#message').value;
+                let targetUser = socket_test.querySelector('#target_user').value;
+                socket.send(JSON.stringify({
+                        'message': message,
+                        'target_user': targetUser
+                }))
+                socket_test.reset();
+        })
+}
+
+socket_function();
 
         // Call the fetchData function when the page loads
 //document.addEventListener('DOMContentLoaded', fetchData);
