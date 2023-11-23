@@ -28,7 +28,6 @@ while [ ! -f /var/db/check ] ; do
 done
 rm -rf /var/db/check
 
-
 export APP_NAME="transcendence";
 
 if [ ! -d "$APP_NAME/" ] ; then
@@ -44,6 +43,11 @@ if [ ! -d "$APP_NAME/" ] ; then
 	cat ../conf/views.py > $APP_NAME/views.py;
 	cat ../conf/urls_app.py > $APP_NAME/urls.py;
 	cat ../conf/urls_project.py > mysite/urls.py;
+
+	#TEST SOCKETS
+	cp ../conf/asgi.py mysite/asgi.py
+	cp ../conf/consumers.py $APP_NAME/consumers.py
+	cp ../conf/routing.py $APP_NAME/routing.py
 
 	echo "python manage.py makemigrations";
 	python manage.py makemigrations;

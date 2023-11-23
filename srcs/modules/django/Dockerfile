@@ -1,6 +1,14 @@
 FROM python:3.10-alpine
 
 RUN apk update && apk add postgresql-client && apk add vim
+RUN apk add py-configobj 
+RUN apk add libusb
+RUN apk add py-pip
+RUN apk add musl-dev
+RUN apk add libffi-dev
+RUN apk add openssl-dev
+RUN apk add gcc 
+RUN apk add linux-headers
 
 WORKDIR /usr/src/app
 
