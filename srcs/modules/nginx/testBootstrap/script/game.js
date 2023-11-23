@@ -9,6 +9,17 @@ const boxSize = 60
 const offsetX = 10
 const offsetY = 100
 
+const BTN_Validate = 
+{
+	x : (offsetX + boxSize * gridSizeX + 2) + ((canvas.width - (offsetX + boxSize * gridSizeX + 2)) / 2) - 100,
+	y : 600,
+	w : 200,
+	h : 50,
+	label : 'Confirme',
+	color : 'blue',
+	hoverColor : 'red'
+}
+
 let BoatList = [
 	{ name : 'Carrier', x : 0, y : 0, startX : 700, startY : 150, ArrayX : -1, ArrayY : -1, size : 5, horizontal : true, isDragging : false },
 	{ name : 'BattleShip', x : 0, y : 0, startX : 700, startY : 250, ArrayX : -1, ArrayY : -1, size : 4, horizontal : true, isDragging : false },
@@ -18,6 +29,8 @@ let BoatList = [
 ];
 
 let BoardArray = [];
+
+let validated = false;
 
 function initGame()
 {
@@ -39,7 +52,15 @@ function drawTitle()
 	ctx.font = "40px Arial";
 	ctx.textAlign = "center"
 	ctx.fillStyle = "#0095DD";
-	ctx.fillText(`Please, Place your navire`, canvas.width / 2 , 65);
+	let placedBoat = 0;
+	BoatList.forEach(element => {
+		if (element.ArrayX != -1)
+			placedBoat++;
+	});
+	if (validated == false)
+		ctx.fillText(`Please, Place your navire (` + placedBoat + `/5)`, canvas.width / 2 , 65);
+	else
+	ctx.fillText(`Please, wait for your opponent`, canvas.width / 2 , 65);
 }
 
 function drawABox(x, y)
@@ -71,7 +92,7 @@ let tmpBoat = {x : 0, y : 0, horizontal : true};
 
 canvas.addEventListener('mousedown', (e) => 
 {
-	if (e.button != 0)
+	if (e.button != 0 || validated == true)
 		return ;
     const mouseX = e.clientX - canvas.getBoundingClientRect().left;
     const mouseY = e.clientY - canvas.getBoundingClientRect().top;
@@ -150,6 +171,32 @@ function drawDragged()
 		});
 }
 
+function drawValidateButton()
+{
+	let boatCount = 0;
+	BoatList.forEach(element =>
+		{
+			if (element.ArrayX != -1)
+				boatCount++;
+		});
+	if (boatCount == 5)
+	{
+		const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+		const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+		if (mouseX > BTN_Validate.x && mouseX < BTN_Validate.x + BTN_Validate.w && mouseY > BTN_Validate.y && mouseY < BTN_Validate.y + BTN_Validate.h)
+			ctx.fillStyle = BTN_Validate.hoverColor;
+		else
+			ctx.fillStyle = BTN_Validate.color; // Button color
+		ctx.fillRect(BTN_Validate.x, BTN_Validate.y, BTN_Validate.w, BTN_Validate.h);
+
+		ctx.fillStyle = '#fff'; // Text color
+		ctx.font = '16px Arial';
+		ctx.textAlign = 'center';
+		ctx.textBaseline = 'middle';
+		ctx.fillText(BTN_Validate.label, BTN_Validate.x + BTN_Validate.w / 2, BTN_Validate.y + BTN_Validate.h / 2);
+	}
+}
+
 function draw()
 {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -157,6 +204,7 @@ function draw()
 	drawGrid();
 	drawTitle();
 	drawDragged();
+	drawValidateButton();
 }
 
 canvas.addEventListener('contextmenu', function(event) {
@@ -228,6 +276,16 @@ function isValidPos(element)
 	}
 	return true;
 }
+
+canvas.addEventListener('click', function(e)
+{
+	if (e.button != 0)
+		return ;
+    const mouseX = e.clientX - canvas.getBoundingClientRect().left;
+    const mouseY = e.clientY - canvas.getBoundingClientRect().top;
+	if (mouseX > BTN_Validate.x && mouseX < BTN_Validate.x + BTN_Validate.w && mouseY > BTN_Validate.y && mouseY < BTN_Validate.y + BTN_Validate.h)
+		validated = !validated;
+});
 
 canvas.addEventListener('mouseup', (e) =>
 {
