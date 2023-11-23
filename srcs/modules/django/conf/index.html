@@ -1,0 +1,56 @@
+<!-- myapp/templates/myapp/index.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Django App</title>
+</head>
+<body>
+    <h1>Hello, Django!</h1>
+    <p>This is a simple Django app.</p>
+    <!--<button onclick="testFunction()">Click Me!</button>-->
+    <h2>Insciption form test</h2>
+    <form>
+        {% csrf_token %}
+        <label for="username">Username:</label><br/>
+        <input type="text" id="username" name="username" required="required"><br/>
+
+        <label for="email">Mail:</label><br/>
+        <input type="email" id="email" name="email" required><br/>
+
+        <label for="password">Password:</label><br/>
+        <input type="password" id="password" name="password"><br/>
+
+        <label for="passwordConfirmation">Password confirmation:</label><br/>
+        <input type="password" id="passwordConfirmation" name="passwordConfirmation"><br/>
+
+        <p id="messageInscription"></p>
+    </form>
+    <button onclick="inscriptionButton()">Confirm inscription</button>
+
+    <h2>Connexion form test</h2>
+    <form>
+        {% csrf_token %}
+        <label for="usernameConnexion">Username:</label><br/>
+        <input type="text" id="usernameConnexion" name="usernameConnexion" required="required"><br/>
+
+        <label for="passwordConnexion">Password:</label><br/>
+        <input type="password" id="passwordConnexion" name="passwordConnexion"><br/>
+
+        <p id="messageConnexion"></p>
+    </form>
+    <button onclick="connexionButton()">Connexion</button>
+
+    <h2>Connexion test button</h2>
+    <button onclick="checkConnexion()">Try connexion</button>
+    <p id="checkConnexionText"></p>
+
+    <h2>Disconnexion test button</h2>
+    <button onclick="checkDisconnexion()">Try disconnexion</button>
+    <p id="checkDisconnexionText"></p>
+</body>
+<script src="{% static 'transcendence/js/script.js' %}"></script>
+<script src="script.js"></script>
+</html>
