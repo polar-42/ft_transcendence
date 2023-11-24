@@ -1,16 +1,17 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="{% static 'transcendence/css/base.css' %}">
     <meta name="ft_transcendence" content="width=device-width, initial-scale=1.0">
     <title>ft_transcendence</title>
 </head>
 
 <body>
     <div id="title">
-        <img src="assets/logo/icon.ico">
+        <img src="{% static 'transcendence/assets/logo/icon.ico' %}">
         <h1>ft_transcendence</h1>
     </div>
     <div id="about">
@@ -25,12 +26,12 @@
         <h2 id="title">About</h2>
         <p id="text"> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vulputate turpis at ultricies consectetur. Cras ac massa feugiat quam varius vulputate. Proin a nisl venenatis urna imperdiet condimentum a a odio. Integer interdum elit mi, nec mollis felis porta in. Pellentesque viverra, orci nec vehicula viverra, nisi enim dapibus nisi, sed fringilla leo odio ac arcu. Integer et malesuada dui, vel egestas dui. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Suspendisse lacus urna, interdum a iaculis in, scelerisque placerat elit. Mauris tempor urna eros, vulputate rutrum lacus lobortis sed. Duis eu arcu orci. Sed ut iaculis nunc. Morbi laoreet nisl sit amet magna pellentesque tincidunt. Mauris sed cursus diam, elementum mattis augue. Duis ut interdum orci. Aenean bibendum lacus sed nisl commodo, id gravida justo mattis. </p>
         <div id="studList">
-            <a href="https://github.com/polar-42"><img src="assets/stud/fle-tolg.jpg" id="studIcon" ></a>
-            <a href="https://github.com/m-juin"><img src="assets/stud/fle-tolg.jpg" id="studIcon" ></a>
-            <a href="https://github.com/TheEmperorPenguin"><img src="assets/stud/fle-tolg.jpg" id="studIcon" ></a>
-            <a href="https://github.com/GreenPG"><img src="assets/stud/fle-tolg.jpg" id="studIcon" ></a>
+            <a href="https://github.com/polar-42"><img src="{% static 'transcendence/assets/studs/fle-tolg.jpg' %}" id="studIcon" ></a>
+            <a href="https://github.com/m-juin"><img src="{% static 'transcendence/assets/studs/fle-tolg.jpg' %}" id="studIcon" ></a>
+            <a href="https://github.com/TheEmperorPenguin"><img src="{% static 'transcendence/assets/studs/fle-tolg.jpg' %}" id="studIcon" ></a>
+            <a href="https://github.com/GreenPG"><img src="{% static 'transcendence/assets/studs/fle-tolg.jpg' %}" id="studIcon" ></a>
         </div>
     </div>
 </body>
-
+<script src="{% static 'transcendence/js/script.js' %}"></script>
 </html>

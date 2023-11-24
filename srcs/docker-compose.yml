@@ -2,18 +2,20 @@ version: '3'
 
 services:
 
-#  nginx:
-#    build: modules/nginx/
-#    container_name: container_nginx
-#    image: image_nginx
-#    networks:
-#      - transcendence_network
-#    volumes:
-#      - blockchain:/var/blockchain
-#    restart: on-failure
-#    ports:
-#      - "8080:80"
-#      - "8545"
+  # nginx:
+  #  build: modules/nginx/
+  #  container_name: container_nginx
+  #  image: image_nginx
+  #  networks:
+  #    - transcendence_network
+  #  volumes:
+  #    - blockchain:/var/blockchain
+  #  depends_on:
+  #    - django
+  #  restart: on-failure
+  #  ports:
+  #    - "8080:80"
+  #    - "8545"
 
   django:
     build: modules/django
