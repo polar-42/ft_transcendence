@@ -24,7 +24,7 @@ import os
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path(os.environ.get('APP_NAME') + '/', include(os.environ.get('APP_NAME') + '.urls')),
+    path('', include(os.environ.get('APP_NAME') + '.urls')),
 ]
 
 #application = ProtocolTypeRouter({

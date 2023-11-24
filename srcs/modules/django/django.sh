@@ -34,14 +34,20 @@ if [ ! -d "$APP_NAME/" ] ; then
 	python manage.py startapp $APP_NAME;
 
 	mkdir -p $APP_NAME/templates/$APP_NAME;
-	mkdir -p $APP_NAME/static/$APP_NAME/js;
+	mkdir -p $APP_NAME/static/$APP_NAME;
+	mkdir -p $APP_NAME/templates/$APP_NAME/files;
 
 	cat ../conf/settings.py > mysite/settings.py;
-	mv ../site_files/html/index.html $APP_NAME/templates/$APP_NAME;
-	mv ../site_files/css/ $APP_NAME/static/$APP_NAME/
-	mv ../site_files/html/ $APP_NAME/templates/$APP_NAME/files;
-	mv ../site_files/js/ $APP_NAME/static/$APP_NAME/js;
-	mv ../site_files/assets/ $APP_NAME/static/$APP_NAME/;
+	ln -s /var/site_files/html/index.html $APP_NAME/templates/$APP_NAME/index.html
+	ln -s /var/site_files/css/ $APP_NAME/static/$APP_NAME/
+	ln -s /var/site_files/html/ $APP_NAME/templates/$APP_NAME/files;
+	ln -s /var/site_files/js/ $APP_NAME/static/$APP_NAME/;
+	ln -s /var/site_files/assets/ $APP_NAME/static/$APP_NAME/;
+	# mv ../site_files/html/index.html $APP_NAME/templates/$APP_NAME;
+	# mv ../site_files/css/ $APP_NAME/static/$APP_NAME/
+	# mv ../site_files/html/ $APP_NAME/templates/$APP_NAME/files;
+	# mv ../site_files/js/ $APP_NAME/static/$APP_NAME/js;
+	# mv ../site_files/assets/ $APP_NAME/static/$APP_NAME/;
 	cat ../conf/models.py > $APP_NAME/models.py;
 	cat ../conf/views.py > $APP_NAME/views.py;
 	cat ../conf/urls_app.py > $APP_NAME/urls.py;

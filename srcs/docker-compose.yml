@@ -28,6 +28,7 @@ services:
     restart: on-failure
     volumes:
       - db:/var/db
+      - site:/var/site_files
     #depends_on:
     #  postgresql:
     #    condition: service_healthy
@@ -96,7 +97,12 @@ volumes:
       type: 'none'
       o: 'bind'
       device: '~/data/db'
-
+  site:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: './modules/django/site_files'
 networks:
   transcendence_network:
     driver: bridge

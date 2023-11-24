@@ -10,11 +10,13 @@ RUN apk add openssl-dev
 RUN apk add gcc 
 RUN apk add linux-headers
 
+RUN mkdir -p /var/site_files
+
 WORKDIR /usr/src/app
 
 COPY conf/ ./conf
 COPY django.sh .
-COPY site_files/ ./site_files
+# COPY site_files/ ./site_files
 
 RUN pip install --upgrade pip
 RUN pip install -r conf/requirements.txt
