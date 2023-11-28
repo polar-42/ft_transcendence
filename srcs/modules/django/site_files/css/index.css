@@ -27,10 +27,12 @@ body {
 }
 
 #app {
-    margin: 2em;
-    line-height: 1.5;
+    margin: 0;
+    /* line-height: 1.5; */
     font-weight: 500;
+    min-height: 100vh;
 }
+
 
 a {
     color: #009579;

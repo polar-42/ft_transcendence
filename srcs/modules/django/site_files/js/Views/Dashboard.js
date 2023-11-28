@@ -18,8 +18,21 @@ export default class extends AbstractView
             <p>
                 <a href="/postslist" data-link> View recent posts</a>
             </p>
-            
-
         `;
+    }
+
+    async getJs()
+    {
+        return "";
+    }
+
+    async unLoad()
+    {
+        return "";
+    }
+
+    async Load()
+    {
+
     }
 }

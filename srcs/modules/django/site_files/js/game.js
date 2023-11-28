@@ -1,5 +1,5 @@
-const canvas = document.getElementById("myCanvas");
-const ctx = canvas.getContext("2d");
+let canvas = null;
+let ctx = null;
 
 const gridSizeX = 10
 const gridSizeY = 10
@@ -9,9 +9,18 @@ const boxSize = 60
 const offsetX = 10
 const offsetY = 100
 
+export function UnLoad()
+{
+	canvas.removeEventListener('click', mouseClick);
+	canvas.removeEventListener('contextmenu', mouseRightClick);
+	canvas.removeEventListener('mousedown', mouseDown);
+	canvas.removeEventListener('mousemove', mouseMove);
+	canvas.removeEventListener('mouseup', mouseUp);
+}
+
 const BTN_Validate = 
 {
-	x : (offsetX + boxSize * gridSizeX + 2) + ((canvas.width - (offsetX + boxSize * gridSizeX + 2)) / 2) - 100,
+	x : (offsetX + boxSize * gridSizeX + 2) + ((1080 - (offsetX + boxSize * gridSizeX + 2)) / 2) - 100,
 	y : 600,
 	w : 200,
 	h : 50,
@@ -20,20 +29,31 @@ const BTN_Validate =
 	hoverColor : 'red'
 }
 
-let BoatList = [
-	{ name : 'Carrier', x : 0, y : 0, startX : 700, startY : 150, ArrayX : -1, ArrayY : -1, size : 5, horizontal : true, isDragging : false },
-	{ name : 'BattleShip', x : 0, y : 0, startX : 700, startY : 250, ArrayX : -1, ArrayY : -1, size : 4, horizontal : true, isDragging : false },
-	{ name : 'Destroyer', x : 0, y : 0, startX : 700, startY : 350, ArrayX : -1, ArrayY : -1, size : 3, horizontal : true, isDragging : false },
-	{ name : 'Submarine', x : 0, y : 0, startX : 700, startY : 450, ArrayX : -1, ArrayY : -1, size : 3, horizontal : true, isDragging : false },
-	{ name : 'PatrolBoat', x : 0, y : 0, startX : 700, startY : 550, ArrayX : -1, ArrayY : -1, size : 2, horizontal : true, isDragging : false }
-];
+let BoatList = [];
 
 let BoardArray = [];
 
 let validated = false;
 
-function initGame()
+export function initGame()
 {
+	BoatList = [
+		{ name : 'Carrier', x : 0, y : 0, startX : 700, startY : 150, ArrayX : -1, ArrayY : -1, size : 5, horizontal : true, isDragging : false },
+		{ name : 'BattleShip', x : 0, y : 0, startX : 700, startY : 250, ArrayX : -1, ArrayY : -1, size : 4, horizontal : true, isDragging : false },
+		{ name : 'Destroyer', x : 0, y : 0, startX : 700, startY : 350, ArrayX : -1, ArrayY : -1, size : 3, horizontal : true, isDragging : false },
+		{ name : 'Submarine', x : 0, y : 0, startX : 700, startY : 450, ArrayX : -1, ArrayY : -1, size : 3, horizontal : true, isDragging : false },
+		{ name : 'PatrolBoat', x : 0, y : 0, startX : 700, startY : 550, ArrayX : -1, ArrayY : -1, size : 2, horizontal : true, isDragging : false },
+	];
+
+	BoardArray = [];
+	validated = false;
+	canvas = document.getElementById("myCanvas");
+	ctx = canvas.getContext("2d");
+	canvas.addEventListener('click', mouseClick);
+	canvas.addEventListener('contextmenu', mouseRightClick);
+	canvas.addEventListener('mousedown', mouseDown);
+	canvas.addEventListener('mousemove', mouseMove);
+	canvas.addEventListener('mouseup', mouseUp);
 	for ( let y = 0; y < gridSizeY; y++)
 	{
 		BoardArray[y] = [];
@@ -90,12 +110,12 @@ function isHover(element, mouseX, mouseY)
 
 let tmpBoat = {x : 0, y : 0, horizontal : true};
 
-canvas.addEventListener('mousedown', (e) => 
+function mouseDown(e)
 {
 	if (e.button != 0 || validated == true)
-		return ;
-    const mouseX = e.clientX - canvas.getBoundingClientRect().left;
-    const mouseY = e.clientY - canvas.getBoundingClientRect().top;
+	return ;
+	const mouseX = e.clientX - canvas.getBoundingClientRect().left;
+	const mouseY = e.clientY - canvas.getBoundingClientRect().top;
 
 	BoatList.forEach(element => {
 		if (isHover(element, mouseX, mouseY) == true)
@@ -124,16 +144,112 @@ canvas.addEventListener('mousedown', (e) =>
 			}
 			// Start dragging
 			element.isDragging = true;
-	
+
 			// Save the offset to adjust the position while dragging
 			element.offsetX = mouseX - element.x;
 			element.offsetY = mouseY - element.y;
-	
+
 			// Change cursor style while dragging
 			canvas.style.cursor = 'grabbing';
 		}
 	});
-});
+}
+
+function mouseMove(e) {
+	BoatList.forEach(element => {
+		if (element.isDragging) {
+			const mouseX = e.clientX - canvas.getBoundingClientRect().left;
+			const mouseY = e.clientY - canvas.getBoundingClientRect().top;
+
+			// Update the position of the draggable item
+			element.x = mouseX - element.offsetX;
+			element.y = mouseY - element.offsetY;
+
+			// Clear the canvas and redraw the draggable item
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			draw();
+
+			// Change cursor style while dragging
+			canvas.style.cursor = 'grabbing';
+		}
+	});
+}
+
+function mouseUp(e) {
+	if (e.button != 0)
+		return;
+	BoatList.forEach(element => {
+		if (element.isDragging == true) {
+			element.isDragging = false;
+			if (element.x > offsetX - boxSize / 2 && element.x < (offsetX + gridSizeX * boxSize) - boxSize / 2 && element.y > offsetY - boxSize / 2 && element.y < (offsetY + gridSizeY * boxSize) - boxSize / 2) {
+				if (isValidPos(element) == true) {
+
+					element.ArrayX = Math.round((element.x - offsetX) / boxSize);
+					element.ArrayY = Math.round((element.y - offsetY) / boxSize);
+					element.x = element.ArrayX * boxSize + offsetX;
+					element.y = element.ArrayY * boxSize + offsetY;
+					if (element.horizontal == true) {
+						for (let i = 0; i < element.size; i++) {
+							if (BoardArray[element.ArrayY][element.ArrayX + i] == 0)
+								BoardArray[element.ArrayY][element.ArrayX + i] = 1;
+						}
+					}
+					else {
+						for (let i = 0; i < element.size; i++) {
+							if (BoardArray[element.ArrayY + i][element.ArrayX] == 0)
+								BoardArray[element.ArrayY + i][element.ArrayX] = 1;
+						}
+					}
+				}
+				else {
+					element.x = tmpBoat.x;
+					element.y = tmpBoat.y;
+					element.horizontal = tmpBoat.horizontal;
+				}
+			}
+			else {
+				element.horizontal = true;
+				element.x = element.startX;
+				element.y = element.startY;
+				element.ArrayX = -1;
+				element.ArrayY = -1;
+			}
+			draw();
+		}
+		// Change cursor style back to default
+		canvas.style.cursor = 'grab';
+	});
+}
+
+function mouseClick(e)
+{
+	if (e.button != 0)
+		return;
+	const mouseX = e.clientX - canvas.getBoundingClientRect().left;
+	const mouseY = e.clientY - canvas.getBoundingClientRect().top;
+	if (mouseX > BTN_Validate.x && mouseX < BTN_Validate.x + BTN_Validate.w && mouseY > BTN_Validate.y && mouseY < BTN_Validate.y + BTN_Validate.h)
+		validated = !validated;
+}
+
+function mouseRightClick(e)
+{
+	// Prevent the default context menu behavior
+    e.preventDefault();
+	const mouseX = e.clientX - canvas.getBoundingClientRect().left;
+    const mouseY = e.clientY - canvas.getBoundingClientRect().top;
+	BoatList.forEach(element => 
+	{
+		if (element.isDragging)
+		{
+			element.x =  mouseX;
+			element.y =  mouseY;
+			element.offsetX = mouseX - element.x;
+			element.offsetY = mouseY - element.y;
+			element.horizontal = !element.horizontal;
+			draw();
+		}
+	});
+}
 
 function drawBoats( dragging )
 {
@@ -207,48 +323,6 @@ function draw()
 	drawValidateButton();
 }
 
-canvas.addEventListener('contextmenu', function(event) {
-    // Prevent the default context menu behavior
-    event.preventDefault();
-	const mouseX = event.clientX - canvas.getBoundingClientRect().left;
-    const mouseY = event.clientY - canvas.getBoundingClientRect().top;
-	BoatList.forEach(element => 
-	{
-		if (element.isDragging)
-		{
-			element.x =  mouseX;
-			element.y =  mouseY;
-			element.offsetX = mouseX - element.x;
-			element.offsetY = mouseY - element.y;
-			element.horizontal = !element.horizontal;
-			draw();
-		}
-	});
-});
-
-canvas.addEventListener('mousemove', (e) => 
-{
-	BoatList.forEach(element => 
-	{
-    	if (element.isDragging) 
-		{
-    	    const mouseX = e.clientX - canvas.getBoundingClientRect().left;
-    	    const mouseY = e.clientY - canvas.getBoundingClientRect().top;
-
-    	    // Update the position of the draggable item
-    	    element.x = mouseX - element.offsetX;
-    	    element.y = mouseY - element.offsetY;
-
-    	    // Clear the canvas and redraw the draggable item
-    	    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    	    draw();
-
-    	    // Change cursor style while dragging
-    	    canvas.style.cursor = 'grabbing';
-    	}
-	});
-});
-
 function isValidPos(element)
 {
 	let X = Math.round((element.x - offsetX) / boxSize);
@@ -277,74 +351,6 @@ function isValidPos(element)
 	return true;
 }
 
-canvas.addEventListener('click', function(e)
-{
-	if (e.button != 0)
-		return ;
-    const mouseX = e.clientX - canvas.getBoundingClientRect().left;
-    const mouseY = e.clientY - canvas.getBoundingClientRect().top;
-	if (mouseX > BTN_Validate.x && mouseX < BTN_Validate.x + BTN_Validate.w && mouseY > BTN_Validate.y && mouseY < BTN_Validate.y + BTN_Validate.h)
-		validated = !validated;
-});
-
-canvas.addEventListener('mouseup', (e) =>
-{
-	if (e.button != 0)
-		return ;
-	BoatList.forEach(element => 
-	{
-		if (element.isDragging == true)
-		{
-    		element.isDragging = false;
-			if ( element.x > offsetX - boxSize / 2 && element.x < (offsetX + gridSizeX * boxSize) - boxSize / 2 && element.y > offsetY - boxSize / 2  && element.y < (offsetY + gridSizeY * boxSize) -boxSize / 2 )
-			{
-				if (isValidPos(element) == true)
-				{
-					
-					element.ArrayX = Math.round((element.x - offsetX) / boxSize);
-					element.ArrayY = Math.round((element.y - offsetY) / boxSize);
-					element.x = element.ArrayX * boxSize + offsetX;
-					element.y = element.ArrayY * boxSize + offsetY;
-					if (element.horizontal == true) 
-					{
-						for (let i = 0; i < element.size; i++) 
-						{
-							if (BoardArray[element.ArrayY][element.ArrayX + i] == 0)
-								BoardArray[element.ArrayY][element.ArrayX + i] = 1;
-						}
-					}
-					else 
-					{
-						for (let i = 0; i < element.size; i++) 
-						{
-							if (BoardArray[element.ArrayY + i][element.ArrayX] == 0)
-								BoardArray[element.ArrayY + i][element.ArrayX] = 1;
-						}
-					}
-				}
-				else
-				{
-					element.x = tmpBoat.x;
-					element.y = tmpBoat.y;
-					element.horizontal = tmpBoat.horizontal;
-				}
-			}
-			else
-			{
-				element.horizontal = true;
-				element.x = element.startX;
-				element.y = element.startY;
-				element.ArrayX = -1;
-				element.ArrayY = -1;
-			}
-			draw();
-		}
-    	// Change cursor style back to default
-    	canvas.style.cursor = 'grab';
-	});
-});
-
-
 function drawGrid()
 {
 	for (let y = 0; y < gridSizeY; y++)
@@ -355,6 +361,4 @@ function drawGrid()
 		}
 	}
 }
-
-canvas.onload = initGame();
 //setInterval(draw, 10)
