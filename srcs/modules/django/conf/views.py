@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.http import JsonResponse
 from transcendence.models import User
+from transcendence.managers import PongGameManager
 from datetime import date
 from django.contrib.auth.hashers import make_password, check_password
 from django.views.decorators.csrf import csrf_exempt
@@ -77,9 +78,9 @@ def connect_user(request):
 
 def check_connexion(request):
     if request.user.is_authenticated:
-        return JsonResponse({'message': 'You are connected!'})
+        return JsonResponse({'message': 'You are connected!', 'connexionStatus': True})
     else:
-        return JsonResponse({'message': 'You are not connected. Please log in.'})
+        return JsonResponse({'message': 'You are not connected. Please log in.', 'connexionStatus': False})
 
 def check_disconnexion(request):
     if request.user.is_authenticated:
@@ -92,3 +93,39 @@ def check_disconnexion(request):
 def get_data(request):
     data = {'message': 'Information is empty', 'value': 42}
     return JsonResponse(data)
+
+
+#TEST PONG GAME
+
+pong_game_manager = PongGameManager()
+
+def create_game_view(request):
+    player1 = request.POST.get('player1')
+    player2 = request.POST.get('player2')
+
+    # Create a game using the PongGameManager
+    game_id = f'game_{len(pong_game_manager.get_all_games()) + 1}'
+    game = pong_game_manager.create_game(game_id, player1, player2)
+
+    return JsonResponse({'game': game})
+
+def get_all_games_view(request):
+    # Retrieve all games using the PongGameManager
+    games = pong_game_manager.get_all_games()
+
+    return JsonResponse({'games': games})
+
+def get_game_view(request, game_id):
+    # Retrieve the game using the PongGameManager
+    game = pong_game_manager.get_game(game_id)
+
+    if game:
+        return JsonResponse({'game': game})
+    else:
+        return JsonResponse({'error': 'Game not found'}, status=404)
+
+def delete_game_view(request, game_id):
+    # Delete the game using the PongGameManager
+    pong_game_manager.delete_game(game_id)
+
+    return JsonResponse({'message': 'Game deleted'})

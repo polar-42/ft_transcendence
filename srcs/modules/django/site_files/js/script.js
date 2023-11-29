@@ -1,21 +1,4 @@
-//function fetchData() {
-//        fetch('/transcendence/get_data/')
-//                .then(response => response.json())
-//                .then(data => {
-//                        console.log(data);
-//                        var sucessElement = document.getElementById('sucess-message');
-//                        sucessElement.textContent = data.message;
-//                })
-//                .catch(error => console.error('Error:', error));
-//}
-
-//function testFunction()
-//{
-//        fetch('/transcendence/create_object/');
-//        console.log('test');
-//}
-
-//testFunction();
+const { FetchCancelSignal } = require("ethers");
 
 function checkConnexion() {
         var crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value;
@@ -47,6 +30,7 @@ function checkDisconnexion() {
                 .then(data => {
                         console.log(data.message);
                         document.getElementById('checkDisconnexionText').innerHTML = data.message;
+                        document.reload();
                 })
                 .catch(error => {
                         console.error('Error:', error);
@@ -55,7 +39,7 @@ function checkDisconnexion() {
 
 function connexionButton() {
         //Forbidden (CSRF token from the 'X-Csrftoken' HTTP header incorrect.): /transcendence/connect_user/
-        //ERROR
+
         var username = document.getElementById('usernameConnexion').value;
         var password = document.getElementById('passwordConnexion').value;
 
@@ -85,6 +69,7 @@ function connexionButton() {
                 console.log(data);
                 if (data.message) {
                         document.getElementById('messageConnexion').innerHTML = data.message;
+                        location.reload();
                 } else {
                         document.getElementById('messageConnexion').innerHTML = data.error;
                 }
@@ -129,6 +114,7 @@ function inscriptionButton() {
                 console.log(data);
                 if (data.message) {
                         document.getElementById('messageInscription').innerHTML = data.message;
+                        socket_function();
                 } else {
                         document.getElementById('messageInscription').innerHTML = data.error;
                 }
@@ -140,36 +126,96 @@ function inscriptionButton() {
 }
 
 function socket_function() {
-        const socket = new WebSocket('ws://' + window.location.host + '/ws/some_path/');
 
-        socket.onmessage = function(e) {
-                const data = JSON.parse(e.data);
-                console.log(data.message);
+        var crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value;
 
-                if (data.type === 'chat') {
-                        let message_send_back = document.getElementById('message_send_back');
-                        message_send_back.innerHTML = data.message;
-                 }
-        }
-        
-        socket.onclose = function(e) {
-                console.error('Chat socket closed');
-        }
+        var headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+        headers.append('X-CSRFToken', crsf_token);
 
-        let socket_test = document.getElementById('socket_test');
-        socket_test.addEventListener('submit', (e) => {
-                e.preventDefault();
-                let message = socket_test.querySelector('#message').value;
-                let targetUser = socket_test.querySelector('#target_user').value;
-                socket.send(JSON.stringify({
-                        'message': message,
-                        'target_user': targetUser
-                }))
-                socket_test.reset();
-        })
+        fetch('/transcendence/check_connexion/')
+                .then(response => response.json())
+                .then(data => {
+                        console.log(data.connexionStatus);
+                        if (data.connexionStatus == true) {
+
+                                const socket = new WebSocket('ws://' + window.location.host + '/ws/some_path/');
+
+                                socket.onmessage = function(e) {
+                                        const data = JSON.parse(e.data);
+                                        console.log(data.message);
+                                
+                                        if (data.type === 'chat') {
+                                                let message_send_back = document.getElementById('message_send_back');
+                                                message_send_back.innerHTML = data.message;
+                                         }
+                                }
+
+                                socket.onclose = function(e) {
+                                        console.error('Chat socket closed');
+                                }
+                        
+                                let socket_test = document.getElementById('socket_test');
+                                socket_test.addEventListener('submit', (e) => {
+                                        e.preventDefault();
+                                        let message = socket_test.querySelector('#message').value;
+                                        let targetUser = socket_test.querySelector('#target_user').value;
+                                        socket.send(JSON.stringify({
+                                                'message': message,
+                                                'target_user': targetUser
+                                        }))
+                                        socket_test.reset();
+                                })
+
+                                return (socket);
+                        }
+
+                })
+                .catch(error => {
+                        console.error('Error:', error);
+                });
 }
 
-socket_function();
+//socket_function();
 
-        // Call the fetchData function when the page loads
-//document.addEventListener('DOMContentLoaded', fetchData);
+function startGame(playerToPlayAgainst) {
+
+        var crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+
+        var headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+        headers.append('X-CSRFToken', crsf_token);
+
+        var checkConnexion = false;
+
+        fetch('/transcendence/check_connexion/')
+                .then(response => response.json())
+                .then(data => {
+                        checkConnexion = data.connexionStatus;
+
+                        if (checkConnexion == false) {
+                                document.getElementById('test_game_message').innerHTML = 'You re not connected';
+                                return;
+                        }
+                })
+                .catch(error => {
+                        console.error('Error:', error);
+                });
+        
+                fetch('/transcendence/create_game/', {
+                        method: 'POST',
+                        headers: headers,
+                        body: JSON.stringify({
+                                playerToPlayAgainst: playerToPlayAgainst,
+                        }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Game created:', data.game);
+                })
+                .catch(error => {
+                    console.error('Error creating game:', error);
+                });
+
+        //requestAnimationFrame(startGame);
+}
