@@ -1,4 +1,5 @@
 <!-- myapp/templates/myapp/index.html -->
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -47,9 +48,9 @@
     <button onclick="checkConnexion()">Try connexion</button>
     <p id="checkConnexionText"></p>
 
-    <h2>Disconnexion test button</h2>
+    <!--<h2>Disconnexion test button</h2>
     <button onclick="checkDisconnexion()">Try disconnexion</button>
-    <p id="checkDisconnexionText"></p>
+    <p id="checkDisconnexionText"></p>-->
 
     <h2>Test Socket</h2>
     <form id="socket_test">
@@ -58,6 +59,11 @@
         <button type="submit">Send</button>
         <div id="message_send_back"></div>
     </form>
+
+    <h2>Test Game</h2>
+    <button onclick="startGame()">Launch Game</button>
+    <div id="test_game_message"></div>
 </body>
 <script src="{% static 'transcendence/js/script.js' %}"></script>
+<!--<script src="./script.js"></script>-->
 </html>

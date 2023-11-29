@@ -44,16 +44,25 @@ if [ ! -d "$APP_NAME/" ] ; then
 	cat ../conf/urls_app.py > $APP_NAME/urls.py;
 	cat ../conf/urls_project.py > mysite/urls.py;
 
+
 	#TEST SOCKETS
 	cp ../conf/asgi.py mysite/asgi.py
 	cp ../conf/consumers.py $APP_NAME/consumers.py
 	cp ../conf/routing.py $APP_NAME/routing.py
+
+	cp ../conf/managers.py $APP_NAME/managers.py
 
 	echo "python manage.py makemigrations";
 	python manage.py makemigrations;
 
 	echo "python manage.py migrate";
 	python manage.py migrate;
+
+	#ADD USER TEST WITH PASSWORD 123456789
+	mkdir -p $APP_NAME/management/commands
+	cp ../conf/createuser.py $APP_NAME/management/commands/createuser.py
+	python manage.py createuser;
+
 fi
 
 echo "python mysite/manage.py runserver";
