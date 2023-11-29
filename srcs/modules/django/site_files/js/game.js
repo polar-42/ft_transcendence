@@ -80,7 +80,7 @@ function drawTitle()
 	if (validated == false)
 		ctx.fillText(`Please, Place your navire (` + placedBoat + `/5)`, canvas.width / 2 , 65);
 	else
-	ctx.fillText(`Please, wait for your opponent`, canvas.width / 2 , 65);
+		ctx.fillText(`Please, wait for your opponent`, canvas.width / 2 , 65);
 }
 
 function drawABox(x, y)
@@ -113,7 +113,7 @@ let tmpBoat = {x : 0, y : 0, horizontal : true};
 function mouseDown(e)
 {
 	if (e.button != 0 || validated == true)
-	return ;
+		return ;
 	const mouseX = e.clientX - canvas.getBoundingClientRect().left;
 	const mouseY = e.clientY - canvas.getBoundingClientRect().top;
 
@@ -228,7 +228,10 @@ function mouseClick(e)
 	const mouseX = e.clientX - canvas.getBoundingClientRect().left;
 	const mouseY = e.clientY - canvas.getBoundingClientRect().top;
 	if (mouseX > BTN_Validate.x && mouseX < BTN_Validate.x + BTN_Validate.w && mouseY > BTN_Validate.y && mouseY < BTN_Validate.y + BTN_Validate.h)
+	{
 		validated = !validated;
+		draw();
+	}
 }
 
 function mouseRightClick(e)
