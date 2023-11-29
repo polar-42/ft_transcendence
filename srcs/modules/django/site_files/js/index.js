@@ -1,6 +1,5 @@
 import Dashboard from "./Views/Dashboard.js";
 import Battleship from "./Views/Battleship.js";
-import Settings from "./Views/Settings.js";
 import PageNotFound from "./Views/PageNotFound.js";
 
 let OldRoute = null;
@@ -17,7 +16,6 @@ const router = async () =>
 		{ path: "404", view: PageNotFound},
 		{ path: "/", view: Dashboard},
 		{ path: "/battleship", view: Battleship},
-		{ path: "/settings", view: Settings},
 	];
 	// Test each routes if one of them match
 	const Potentialroutes = routes.map(route => 

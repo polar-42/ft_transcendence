@@ -10,6 +10,7 @@ export default class extends AbstractView
 
     async Load()
     {
+        
     }
 
     async getHtml()
