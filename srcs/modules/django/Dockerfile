@@ -14,7 +14,7 @@ RUN mkdir -p /var/site_files
 
 WORKDIR /usr/src/app
 
-COPY conf/ ./conf
+COPY confV2/ ./conf
 COPY django.sh .
 # COPY site_files/ ./site_files
 
