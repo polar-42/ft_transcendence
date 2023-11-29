@@ -16,7 +16,7 @@ export default class extends AbstractView
     async getHtml()
     {
         return `
-        <img src="static/transcendence/assets/logo/tmp_404.jpg"></img>
+        <img src="static/assets/logo/tmp_404.jpg"></img>
         `;
     }
 

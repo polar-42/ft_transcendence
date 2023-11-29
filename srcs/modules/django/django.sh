@@ -7,11 +7,14 @@ export APP_NAME="Dashboard";
 if [ ! -d $SITE_NAME ]; then
 	django-admin startproject $SITE_NAME;
 	mkdir -p  $SITE_NAME/templates
-	mkdir  $SITE_NAME/static
+	mkdir -p  $SITE_NAME/static
 	mv ./conf/settings.py ./$SITE_NAME/$SITE_NAME/settings.py
 	mv ./conf/urls.py ./$SITE_NAME/$SITE_NAME/urls.py
 	mv ./conf/views.py ./$SITE_NAME/$SITE_NAME/views.py
 	ln -s /var/site_files/html/index.html ./$SITE_NAME/templates/
+	ln -s /var/site_files/css/ ./$SITE_NAME/static/
+	ln -s /var/site_files/js/ ./$SITE_NAME/static/
+	ln -s /var/site_files/assets/ ./$SITE_NAME/static/
 	echo "launch django-admin startproject mysite;";
 	
 fi

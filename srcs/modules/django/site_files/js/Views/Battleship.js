@@ -24,7 +24,7 @@ export default class extends AbstractView
 
     async getJs()
     {
-        return "static/transcendence/js/game.js";
+        return "static/js/game.js";
     }
 
     async unLoad()
