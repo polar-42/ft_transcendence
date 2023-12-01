@@ -13,7 +13,7 @@ export default class extends AbstractView
         
     }
 
-    async getHtml()
+    async getHtml(url)
     {
         return `
         <img src="static/assets/logo/tmp_404.jpg"></img>

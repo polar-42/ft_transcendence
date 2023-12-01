@@ -1,8 +1,11 @@
 import Dashboard from "./Views/Dashboard.js";
 import Battleship from "./Views/Battleship.js";
 import PageNotFound from "./Views/PageNotFound.js";
+import NeedLog from "./Views/NeedLog.js";
 
 let OldRoute = null;
+
+let isLog = true;
 
 const navigateTo = url =>
 {
@@ -10,38 +13,57 @@ const navigateTo = url =>
 	router();
 }
 
-const router = async () => 
+function getRoute(RoutePath)
 {
 	const routes = [
-		{ path: "404", view: PageNotFound},
-		{ path: "/", view: Dashboard},
-		{ path: "/battleship", view: Battleship},
+		{ path: "/404", view: PageNotFound, LogStatus: 2},
+		{ path: "/NotConnected", view: NeedLog, LogStatus: 0},
+		{ path: "/", view: Dashboard, LogStatus: 2},
+		{ path: "/battleship", view: Battleship, LogStatus: 1},
 	];
-	// Test each routes if one of them match
+
 	const Potentialroutes = routes.map(route => 
 		{
 			return { 
 				route: route,
-				isMatch: location.pathname === route.path
+				isMatch: RoutePath === (document.location.origin + route.path)
 			};
 		});
-
 	let match = Potentialroutes.find(route => route.isMatch);
+	return match;
+}
 
+function OnLogChange()
+{
+	document.querySelectorAll('.nav__link').forEach(function(button) {
+		let match = getRoute(button.href);
+		if (match == null || (match.route.LogStatus == 1 && isLog == false))
+			button.style.display = "none";
+		else
+			button.style.display = "block";
+	});
+}
+
+const router = async () => 
+{
+	let match = getRoute(document.location.origin + location.pathname);
 	/* define 404 error page */
 	if (!match)
 	{
-		match = {
-			route : routes[0],
-			isMatch : true
-		}
+		match = getRoute(document.location.origin + "/");
 	}
-
+	else if (match.route.LogStatus == 1 && isLog == false)
+	{
+		match = getRoute(document.location.origin + "/NotConnected");
+	}
 	const view = new match.route.view();
 	if (OldRoute != null)
+	{
 		OldRoute.unLoad();
+	}
 	OldRoute = view;
-	document.querySelector("#app").innerHTML = await view.getHtml();
+	console.log(match.route.path)
+	document.querySelector("#app").innerHTML = await view.getHtml(match.route.path);
     var oldScript = document.querySelector("#ViewScript")
 	var script = await view.getJs()
 	if (script != "")
@@ -55,6 +77,11 @@ const router = async () =>
 		else
 			document.body.appendChild(newScript);
 	}
+	else if (oldScript != null)
+	{
+		document.body.removeChild(oldScript);
+	}
+	OnLogChange();
 	view.Load();
 };
 

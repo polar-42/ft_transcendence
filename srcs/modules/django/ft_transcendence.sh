@@ -3,22 +3,6 @@
 export SITE_NAME="ft_transcendence";
 export APP_NAME="Dashboard";
 
-
-if [ ! -d $SITE_NAME ]; then
-	django-admin startproject $SITE_NAME;
-	mkdir -p  $SITE_NAME/templates
-	mkdir -p  $SITE_NAME/static
-	mv ./conf/settings.py ./$SITE_NAME/$SITE_NAME/settings.py
-	mv ./conf/urls.py ./$SITE_NAME/$SITE_NAME/urls.py
-	mv ./conf/views.py ./$SITE_NAME/$SITE_NAME/views.py
-	ln -s /var/site_files/html/index.html ./$SITE_NAME/templates/
-	ln -s /var/site_files/css/ ./$SITE_NAME/static/
-	ln -s /var/site_files/js/ ./$SITE_NAME/static/
-	ln -s /var/site_files/assets/ ./$SITE_NAME/static/
-	echo "launch django-admin startproject mysite;";
-	
-fi
-
 export IP_DJANGO=$(hostname -i);
 echo $IP_DJANGO > /var/db/ip_django
 
@@ -38,6 +22,25 @@ while [ ! -f /var/db/check ] ; do
 	sleep 1
 done
 rm -rf /var/db/check
+
+if [ ! -d $SITE_NAME ]; then
+	django-admin startproject $SITE_NAME;
+	mkdir -p  $SITE_NAME/templates
+	mkdir -p  $SITE_NAME/static
+	mv ./conf/settings.py ./$SITE_NAME/$SITE_NAME/settings.py
+	mv ./conf/urls.py ./$SITE_NAME/$SITE_NAME/urls.py
+	mv ./conf/views.py ./$SITE_NAME/$SITE_NAME/views.py
+	ln -s /var/site_files/html/index.html ./$SITE_NAME/templates/
+	ln -s /var/site_files/html/dashboard.html ./$SITE_NAME/templates/
+	ln -s /var/site_files/html/game.html ./$SITE_NAME/templates/
+	ln -s /var/site_files/css/ ./$SITE_NAME/static/
+	ln -s /var/site_files/js/ ./$SITE_NAME/static/
+	ln -s /var/site_files/assets/ ./$SITE_NAME/static/
+	chmod +x ./conf/authApp/authApp.sh
+	./conf/authApp/authApp.sh &
+	wait
+	
+fi
 
 cd $SITE_NAME
 

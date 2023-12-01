@@ -2,7 +2,6 @@ export default class
 {
     constructor()
     {
-
     }
 
     setTitle(title)
@@ -20,7 +19,7 @@ export default class
         
     }
 
-    async getJs()
+    async getJs(url)
     {
         return "";
     }

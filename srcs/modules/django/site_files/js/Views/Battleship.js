@@ -15,11 +15,11 @@ export default class extends AbstractView
         initGame();
     }
 
-    async getHtml()
+    async getHtml(url)
     {
-        return `
-        <canvas id="myCanvas" width="1080" height="720"></canvas>
-        `;
+        const response = await fetch(url);
+        const html = await response.text();
+        return html
     }
 
     async getJs()

@@ -15,7 +15,7 @@ RUN mkdir -p /var/site_files
 WORKDIR /usr/src/app
 
 COPY confV2/ ./conf
-COPY django.sh .
+COPY ft_transcendence.sh .
 # COPY site_files/ ./site_files
 
 RUN pip install --upgrade pip
@@ -26,4 +26,4 @@ ENV PYTHONUNBUFFERED=1
 
 EXPOSE 8080
 
-CMD [ "sh", "django.sh" ]
+CMD [ "sh", "ft_transcendence.sh" ]
