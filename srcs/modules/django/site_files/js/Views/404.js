@@ -15,9 +15,9 @@ export default class extends AbstractView
 
     async getHtml(url)
     {
-        return `
-        <img src="static/assets/logo/tmp_404.jpg"></img>
-        `;
+        const response = await fetch(url + "/?valid=True");
+        const html = await response.text();
+        return html
     }
 
     async getJs()

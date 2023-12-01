@@ -10,7 +10,7 @@ export default class extends AbstractView
 
     async getHtml(url)
     {
-        const response = await fetch(url + "dashboard");
+        const response = await fetch(url + "dashboard" + "/?valid=True");
         const html = await response.text();
         return html
     }

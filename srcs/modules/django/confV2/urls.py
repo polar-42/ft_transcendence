@@ -20,8 +20,10 @@ from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('dashboard', views.dashboard_view),
-    path('game', views.battleship_view),
+    re_path('dashboard/', views.dashboard_view),
+    path('battleship/', views.battleship_view),
+	path('404/', views.PNF_view),
+	path('needlog/', views.NeedLog_view),
     path('', views.index_view),
 	re_path(r'^.*/?$', views.index_view),
 ]

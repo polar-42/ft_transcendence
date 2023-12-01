@@ -17,7 +17,7 @@ export default class extends AbstractView
 
     async getHtml(url)
     {
-        const response = await fetch(url);
+        const response = await fetch(url + "/?valid=True");
         const html = await response.text();
         return html
     }

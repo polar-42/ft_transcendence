@@ -1,6 +1,6 @@
 import Dashboard from "./Views/Dashboard.js";
 import Battleship from "./Views/Battleship.js";
-import PageNotFound from "./Views/PageNotFound.js";
+import PageNotFound from "./Views/404.js";
 import NeedLog from "./Views/NeedLog.js";
 
 let OldRoute = null;
@@ -50,7 +50,7 @@ const router = async () =>
 	/* define 404 error page */
 	if (!match)
 	{
-		match = getRoute(document.location.origin + "/");
+		match = getRoute(document.location.origin + "/404");
 	}
 	else if (match.route.LogStatus == 1 && isLog == false)
 	{
@@ -62,7 +62,6 @@ const router = async () =>
 		OldRoute.unLoad();
 	}
 	OldRoute = view;
-	console.log(match.route.path)
 	document.querySelector("#app").innerHTML = await view.getHtml(match.route.path);
     var oldScript = document.querySelector("#ViewScript")
 	var script = await view.getJs()
