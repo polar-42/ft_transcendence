@@ -1,15 +1,12 @@
 from django.shortcuts import render
 import os
 
-def index_view(request):
-    return render(request, 'index.html')\
-
 def logPage(request):
-    validation = request.GET.get('valid', '')
-    if validation == "True":
-        return render(request, 'authApp/login.html')
-    else:
-        return render(request, 'index.html')
+	validation = request.GET.get('valid', '')
+	if validation == "True":
+		return render(request, 'authApp/login.html')
+	else:
+		 return render(request, 'index.html')
     
 def register(request):
     validation = request.GET.get('valid', '')

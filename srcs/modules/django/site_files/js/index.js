@@ -50,6 +50,7 @@ function OnLogChange()
 
 const router = async () => 
 {
+
 	let match = getRoute(document.location.origin + location.pathname);
 	/* define 404 error page */
 	if (!match)
@@ -58,7 +59,6 @@ const router = async () =>
 	}
 	else if (match.route.LogStatus == 1 && isLog == false)
 	{
-		console.log("toto");
 		match = getRoute(document.location.origin + "/needlog");
 	}
 	const view = new match.route.view();

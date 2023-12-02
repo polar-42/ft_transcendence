@@ -5,7 +5,6 @@ def index_view(request):
     return render(request, 'index.html')
 def battleship_view(request):
 	validation = request.GET.get('valid', '')
-	print(validation)
 	if validation == "True":
 		return render(request, 'game.html')
 	else:
@@ -13,14 +12,12 @@ def battleship_view(request):
 		
 def dashboard_view(request):
 	validation = request.GET.get('valid', '')
-	print(validation)
 	if validation == "True":
 		return render(request, 'dashboard.html')
 	else:
 		return render(request, 'index.html')
 def PNF_view(request):
 	validation = request.GET.get('valid', '')
-	print(validation)
 	if validation == "True":
 		return render(request, '404.html')
 	else:
@@ -28,7 +25,6 @@ def PNF_view(request):
 
 def NeedLog_view(request):
 	validation = request.GET.get('valid', '')
-	print(validation)
 	if validation == "True":
 		return render(request, 'needlog.html')
 	else:
