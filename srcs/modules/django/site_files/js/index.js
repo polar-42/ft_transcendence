@@ -2,10 +2,12 @@ import Dashboard from "./Views/Dashboard.js";
 import Battleship from "./Views/Battleship.js";
 import PageNotFound from "./Views/404.js";
 import NeedLog from "./Views/NeedLog.js";
+import register from "./Views/authApp/register.js";
+import login from "./Views/authApp/login.js";
 
 let OldRoute = null;
 
-let isLog = true;
+let isLog = false;
 
 const navigateTo = url =>
 {
@@ -17,9 +19,11 @@ function getRoute(RoutePath)
 {
 	const routes = [
 		{ path: "/404", view: PageNotFound, LogStatus: 2},
-		{ path: "/NotConnected", view: NeedLog, LogStatus: 0},
+		{ path: "/needlog", view: NeedLog, LogStatus: 0},
 		{ path: "/", view: Dashboard, LogStatus: 2},
 		{ path: "/battleship", view: Battleship, LogStatus: 1},
+		{ path: "/authApp/login", view: login, LogStatus: 0},
+		{ path: "/authApp/register", view: register, LogStatus: 0},
 	];
 
 	const Potentialroutes = routes.map(route => 
@@ -54,7 +58,8 @@ const router = async () =>
 	}
 	else if (match.route.LogStatus == 1 && isLog == false)
 	{
-		match = getRoute(document.location.origin + "/NotConnected");
+		console.log("toto");
+		match = getRoute(document.location.origin + "/needlog");
 	}
 	const view = new match.route.view();
 	if (OldRoute != null)

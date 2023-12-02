@@ -25,10 +25,11 @@ def PNF_view(request):
 		return render(request, '404.html')
 	else:
 		return render(request, 'index.html')
+
 def NeedLog_view(request):
 	validation = request.GET.get('valid', '')
 	print(validation)
 	if validation == "True":
-		return render(request, 'game.html')
+		return render(request, 'needlog.html')
 	else:
 		return render(request, 'index.html')
