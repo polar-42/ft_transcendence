@@ -7,7 +7,7 @@ import login from "./Views/authApp/login.js";
 
 let OldRoute = null;
 
-let isLog = false;
+let isLog = true;
 
 const navigateTo = url =>
 {

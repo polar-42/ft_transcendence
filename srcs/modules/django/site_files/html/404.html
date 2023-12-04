@@ -1,5 +1,4 @@
 <!-- game.html -->
-
-{% block content %}
-	<img src="static/assets/logo/tmp_404.jpg"></img>
-{% endblock %}
+{% load static %}
+<script type="module" src="{% static '/js/loading.js' %}"></script>
+	<img src="{% static '/assets/logo/tmp_404.jpg' %}"></img>

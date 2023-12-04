@@ -1,6 +1,7 @@
 <!-- game.html -->
-
+{% load static %}
+<script type="module" src="{% static '/js/loading.js' %}"></script>
 {% block content %}
 <h1>You need to  be logged to access this page</h1>
-<a href="/authApp/login">Go to log page</a>
+<a href="/authApp/login" data-link>Go to log page</a>
 {% endblock %}
