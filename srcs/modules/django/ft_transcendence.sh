@@ -22,24 +22,7 @@ while [ ! -f /var/db/check ] ; do
 	sleep 1
 done
 rm -rf /var/db/check
-
-if [ ! -d $SITE_NAME ]; then
-	django-admin startproject $SITE_NAME;
-	# mkdir -p  $SITE_NAME/templates
-	mkdir -p  $SITE_NAME/static
-	mv ./conf/settings.py ./$SITE_NAME/$SITE_NAME/settings.py
-	mv ./conf/urls.py ./$SITE_NAME/$SITE_NAME/urls.py
-	mv ./conf/views.py ./$SITE_NAME/$SITE_NAME/views.py
-	ln -s /var/site_files/html/ ./$SITE_NAME/templates
-	ln -s /var/site_files/css/ ./$SITE_NAME/static/
-	ln -s /var/site_files/js/ ./$SITE_NAME/static/
-	ln -s /var/site_files/assets/ ./$SITE_NAME/static/
-	chmod +x ./conf/authApp/authApp.sh
-	./conf/authApp/authApp.sh &
-	wait
-	
-fi
-
+ln -s /var/conf/ft_transcendence .
 cd $SITE_NAME
 
 # if [ ! -d "$APP_NAME/" ] ; then
@@ -87,4 +70,7 @@ cd $SITE_NAME
 
 # tail -f /dev/null/
 echo "python mysite/manage.py runserver";
+python manage.py makemigrations
+python manage.py migrate
+python manage.py createsuperuser
 python manage.py runserver $(hostname -i):8080;

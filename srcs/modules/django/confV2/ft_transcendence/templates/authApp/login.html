@@ -1,0 +1,13 @@
+<!-- authApp/login.html -->
+{% load static %}
+<script type="module" src="{% static '/js/loading.js' %}"></script>
+{% block content %}
+<p>{{ message }}</p>
+    <form method="post">
+        {{ form.as_p }}
+        {% csrf_token %}
+        <button type="submit" >Submit</button>
+    </form>
+    {% endblock content %}
+
+<a href="/authApp/register" data-link>If you need to create an account.</a>

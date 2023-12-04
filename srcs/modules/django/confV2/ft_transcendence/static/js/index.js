@@ -1,10 +1,4 @@
-import Dashboard from "./Views/Dashboard.js";
-import Battleship from "./Views/Battleship.js";
-import PageNotFound from "./Views/404.js";
-import NeedLog from "./Views/NeedLog.js";
-import register from "./Views/authApp/register.js";
-import login from "./Views/authApp/login.js";
-
+import { initGame } from "./game.js";
 let OldRoute = null;
 
 let isLog = true;
@@ -18,12 +12,12 @@ const navigateTo = url =>
 function getRoute(RoutePath)
 {
 	const routes = [
-		{ path: "/404", view: PageNotFound, LogStatus: 2},
-		{ path: "/needlog", view: NeedLog, LogStatus: 0},
-		{ path: "/", view: Dashboard, LogStatus: 2},
-		{ path: "/battleship", view: Battleship, LogStatus: 1},
-		{ path: "/authApp/login", view: login, LogStatus: 0},
-		{ path: "/authApp/register", view: register, LogStatus: 0},
+		{ path: "/404", init: null, title:"404", LogStatus: 2},
+		{ path: "/needlog", init: null, title:"Login required", LogStatus: 0},
+		{ path: "/", init: null, title:"Home", LogStatus: 2},
+		{ path: "/battleship", init: initGame, title:"Battleship", LogStatus: 1},
+		{ path: "/authApp/login",init: null, title:"Login", LogStatus: 0},
+		{ path: "/authApp/register", init: null, title:"Register", LogStatus: 0},
 	];
 
 	const Potentialroutes = routes.map(route => 
@@ -50,7 +44,6 @@ function OnLogChange()
 
 const router = async () => 
 {
-
 	let match = getRoute(document.location.origin + location.pathname);
 	/* define 404 error page */
 	if (!match)
@@ -61,32 +54,38 @@ const router = async () =>
 	{
 		match = getRoute(document.location.origin + "/needlog");
 	}
-	const view = new match.route.view();
-	if (OldRoute != null)
+	var response = "";
+	if (match.route.path == "/")
 	{
-		OldRoute.unLoad();
+		response = await fetch(match.route.path + "dashboard");
 	}
-	OldRoute = view;
-	document.querySelector("#app").innerHTML = await view.getHtml(match.route.path);
-    var oldScript = document.querySelector("#ViewScript")
-	var script = await view.getJs()
-	if (script != "")
+	else
 	{
-		var newScript = document.createElement('script');
-		newScript.type = 'module';
-		newScript.id = 'ViewScript';
-		newScript.src = script;
-		if (oldScript != null)
-			oldScript.parentNode.replaceChild(newScript, oldScript);
-		else
-			document.body.appendChild(newScript);
+		response = await fetch(match.route.path);
 	}
-	else if (oldScript != null)
-	{
-		document.body.removeChild(oldScript);
-	}
+	
+	console.log(match.route.path)
+	document.querySelector("#app").innerHTML = await response.text();
+	if (match.route.init != null)
+		match.route.init()
+    // var oldScript = document.querySelector("#ViewScript")
+	// var script = await view.getJs()
+	// if (script != "")
+	// {
+		// var newScript = document.createElement('script');
+		// newScript.type = 'module';
+		// newScript.id = 'ViewScript';
+		// newScript.src = script;
+		// if (oldScript != null)
+			// oldScript.parentNode.replaceChild(newScript, oldScript);
+		// else
+			// document.body.appendChild(newScript);
+	// }
+	// else if (oldScript != null)
+	// {
+		// document.body.removeChild(oldScript);
+	// }
 	OnLogChange();
-	view.Load();
 };
 
 window.addEventListener("popstate", router);
