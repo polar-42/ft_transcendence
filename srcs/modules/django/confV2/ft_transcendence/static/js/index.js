@@ -1,7 +1,13 @@
+import { initLoggin, initRegister } from "./authApp.js";
 import { initGame } from "./game.js";
 let OldRoute = null;
 
 let isLog = true;
+
+export function navto(urlpath)
+{
+	navigateTo(urlpath);
+}
 
 const navigateTo = url =>
 {
@@ -16,8 +22,8 @@ function getRoute(RoutePath)
 		{ path: "/needlog", init: null, title:"Login required", LogStatus: 0},
 		{ path: "/", init: null, title:"Home", LogStatus: 2},
 		{ path: "/battleship", init: initGame, title:"Battleship", LogStatus: 1},
-		{ path: "/authApp/login",init: null, title:"Login", LogStatus: 0},
-		{ path: "/authApp/register", init: null, title:"Register", LogStatus: 0},
+		{ path: "/authApp/login",init: initLoggin, title:"Login", LogStatus: 0},
+		{ path: "/authApp/register", init: initRegister, title:"Register", LogStatus: 0},
 	];
 
 	const Potentialroutes = routes.map(route => 
@@ -42,9 +48,8 @@ function OnLogChange()
 	});
 }
 
-const router = async () => 
+const router = async (urlpath = "") => 
 {
-	console.log(document.location.origin + location.pathname)
 	let match = getRoute(document.location.origin + location.pathname);
 	/* define 404 error page */
 	if (!match)
@@ -64,6 +69,7 @@ const router = async () =>
 	{
 		response = await fetch(match.route.path + "/?valid=True");
 	}
+	document.title = match.route.title
 	document.querySelector("#app").innerHTML = await response.text();
 	if (match.route.init != null)
 		match.route.init()

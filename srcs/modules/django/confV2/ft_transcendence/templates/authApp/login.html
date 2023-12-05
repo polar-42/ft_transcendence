@@ -1,13 +1,18 @@
 <!-- authApp/login.html -->
 {% load static %}
 <script type="module" src="{% static '/js/loading.js' %}"></script>
+<script type="module" src="{% static '/js/authApp.js' %}"></script>
 {% block content %}
-<p>{{ message }}</p>
-    <form method="post">
-        {{ form.as_p }}
-        {% csrf_token %}
-        <button type="submit" >Submit</button>
+	<h1 id="messageConnexion">test</h1>
+    <form>
+		{% csrf_token %}
+		<label for="Input_usr">Username:</label><br/>
+        <input type="text" id="Input_usr" required="required"><br/>
+
+        <label for="Input_pwd">Password:</label><br/>
+        <input type="password" id="Input_pwd"><br/>
+        <button class="submit_BTN">Submit</button>
     </form>
     {% endblock content %}
 
-<a href="/authApp/register" data-link>If you need to create an account.</a>
+<br/><br/><a href="/authApp/register" data-link>If you need to create an account.</a>

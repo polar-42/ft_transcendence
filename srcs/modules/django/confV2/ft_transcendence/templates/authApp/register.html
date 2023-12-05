@@ -1,5 +1,22 @@
 <!-- authApp/login.html -->
 {% load static %}
 <script type="module" src="{% static '/js/loading.js' %}"></script>
-<h1>Hello this is the register Page: not beautiful today</h1>
+{% block content %}
+	<h1 id="register">Hello this is the register Page: not beautiful today</h1>
+    <form>
+		{% csrf_token %}
+		<label for="Input_usr">Username:</label><br/>
+        <input type="text" id="Input_usr" required="required"><br/>
+
+        <label for="Input_mail">mail:</label><br/>
+        <input type="email" id="Input_mail"><br/>
+
+        <label for="Input_pwd">Password:</label><br/>
+        <input type="password" id="Input_pwd"><br/>
+
+		<label for="Input_confirm_pwd">confirm Password:</label><br/>
+        <input type="password" id="Input_confirm_pwd"><br/>
+        <button class="submit_BTN">Submit</button>
+    </form>
+    {% endblock content %}
 <a href="/authApp/login" data-link>If you need to login an account.</a>
