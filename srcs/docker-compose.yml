@@ -28,7 +28,6 @@ services:
     restart: on-failure
     volumes:
       - db:/var/db
-      - site:/var/site_files
       - django_v:/var/conf
     #depends_on:
     #  postgresql:
@@ -98,12 +97,6 @@ volumes:
       type: 'none'
       o: 'bind'
       device: '~/data/db'
-  site:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: './modules/django/site_files'
   django_v:
     driver: local
     driver_opts:

@@ -44,6 +44,7 @@ function OnLogChange()
 
 const router = async () => 
 {
+	console.log(document.location.origin + location.pathname)
 	let match = getRoute(document.location.origin + location.pathname);
 	/* define 404 error page */
 	if (!match)
@@ -57,14 +58,12 @@ const router = async () =>
 	var response = "";
 	if (match.route.path == "/")
 	{
-		response = await fetch(match.route.path + "dashboard");
+		response = await fetch(match.route.path + "dashboard/?valid=True");
 	}
 	else
 	{
-		response = await fetch(match.route.path);
+		response = await fetch(match.route.path + "/?valid=True");
 	}
-	
-	console.log(match.route.path)
 	document.querySelector("#app").innerHTML = await response.text();
 	if (match.route.init != null)
 		match.route.init()
