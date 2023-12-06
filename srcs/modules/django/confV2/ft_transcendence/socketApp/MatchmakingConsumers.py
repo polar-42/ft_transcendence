@@ -3,31 +3,16 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import get_channel_layer
 
 class socket(AsyncWebsocketConsumer):
+	connected_users = []
 	async def connect(self):
-		user_id = self.scope['user'].id
-
-		await self.channel_layer.group_add(
-            f"user_{user_id}",
-            self.channel_name
-        )
-
-		connected_users = await self.channel_layer.group_channels(f"user_*")
-		user_list = [channel.split("_")[1] for channel in connected_users]
-		await print(json.dumps({'connected_users': user_list}))
+		self.connected_users.append(self.scope['user'])
+		for user in self.connected_users:
+			print(({'connected_users': user.username}))
 		await self.accept()
 
 	async def disconnect(self, close_code):
-		user_id = self.scope['user'].id
-		await self.channel_layer.group_discard(
-            f"user_{user_id}",
-            self.channel_name
-        )
+		self.connected_users.remove(self.scope['user'])
 		print(f"Utilisateur déconnecté: {self.scope['user']}")
 
 	async def receive(self, text_data):
 		data = json.loads(text_data)
-
-        # Vérifier le type du message
-		if data['type'] == 'disconnect':
-            # Traitement de la déconnexion
-			self.close()  # Fermer la connexion WebSocket
