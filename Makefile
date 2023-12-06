@@ -1,4 +1,4 @@
-all:
+all: stop
 	@mkdir -p ~/data/blockchain
 	@mkdir -p ~/data/db
 	@echo Docker is launching...
@@ -27,7 +27,7 @@ info:
 	@docker network ls
 
 stop:
-	@docker stop container_ganache container_nginx container_contract_deployement container_django container_postgresql
+	@docker compose -f srcs/docker-compose.yml down 
 	@echo All containers have been stopped
 
 clean:

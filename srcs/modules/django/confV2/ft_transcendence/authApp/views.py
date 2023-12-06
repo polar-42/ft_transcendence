@@ -29,7 +29,7 @@ def logPage(request):
 			return render(request, 'authApp/login.html')
 	else:
 		return render(request, 'index.html')
-	
+
 def register(request):
 	if (request.method == "GET" and request.GET["valid"] == "True") or (request.method == "POST"):
 		if request.method == "POST":
@@ -69,4 +69,24 @@ def register(request):
 		else:
 			return render(request, 'authApp/register.html')
 	else:
-		return render(request, 'index.html')
+		return render(request, 'index.html',)
+
+def socket(request):
+	if (request.method == "GET" and request.GET["valid"] == "True"):
+		return render(request, 'authApp/testSocket.html')
+	else:
+		return render(request, 'index.html',)
+
+def disconnect(request):
+	if (request.user.is_authenticated):
+		logout(request)
+		return JsonResponse({'success': True})
+	else:
+		return JsonResponse({'success': False})
+
+
+def check_connexion(request):
+	if (request.user.is_authenticated):
+		return JsonResponse({'connexionStatus': True})
+	else:
+		return JsonResponse({'connexionStatus': False})

@@ -38,7 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'authApp'
+    'channels',
+    'authApp',
+    'socketApp',
+    'battleshipApp',
 ]
 
 MIDDLEWARE = [
@@ -70,6 +73,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'ft_transcendence.wsgi.application'
+
+ASGI_APPLICATION = 'ft_transcendence.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases

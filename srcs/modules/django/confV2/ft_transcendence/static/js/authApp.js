@@ -10,6 +10,59 @@ export function initRegister()
 	document.getElementsByClassName("submit_BTN")[0].addEventListener("click", register)
 }
 
+export function initSocket()
+{
+	document.getElementsByClassName("submit_BTN")[0].addEventListener("click", testSocket)
+}
+
+export async function logout(event)
+{
+	event.preventDefault()
+	const Response = await fetch(document.location.origin + '/authApp/logout/',
+	{
+		method: 'GET'
+	})
+	if (Response.ok)
+	{
+		var vari = await Response.json();
+		if(vari.success == false)
+			return false
+		return true
+	}
+	else
+		return false
+}
+
+export async function checkConnexion()
+{
+	const Response = await fetch(document.location.origin + '/authApp/check_connexion/',
+	{
+		method: 'GET'
+	})
+	if (Response.ok)
+	{
+		var vari = await Response.json();
+		if(vari.connexionStatus == false)
+			return false
+		return true
+	}
+	else
+		return false
+}
+
+var newSocket = null
+
+function testSocket()
+{
+	if(newSocket != null || newSocket.readyState === WebSocket.OPEN) 
+		return 
+	newSocket = new WebSocket("ws://" + window.location.host + "/socketApp/TchatSocket/")
+	newSocket.onopen = function()
+	{
+		console.log(newSocket)
+	}
+}
+
 function connect(event)
 {
 	event.preventDefault();
@@ -89,7 +142,6 @@ function register(event)
 			throw new Error('Network response was not okay');
 		}
 		return Response.json();
-		window.URL
 	})
 	.then(data =>
 	{

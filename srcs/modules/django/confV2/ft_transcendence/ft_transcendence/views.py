@@ -3,12 +3,7 @@ import os
 
 def index_view(request):
     return render(request, 'index.html')
-	
-def battleship_view(request):
-	if (request.method == "GET" and request.GET["valid"] == "True") or (request.method == "POST"):
-		return render(request, 'game.html')
-	else:
-		return render(request, 'index.html')
+
 def dashboard_view(request):
 	if (request.method == "GET" and request.GET["valid"] == "True") or (request.method == "POST"):
 		return render(request, 'dashboard.html')

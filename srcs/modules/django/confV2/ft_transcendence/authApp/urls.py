@@ -5,4 +5,7 @@ from . import views
 urlpatterns = [
     path('login/', views.logPage),
     path('register/', views.register),
+    path('logout/', views.disconnect),
+    path('check_connexion/', views.check_connexion),
+    path('testSocket/', views.socket),
 ]
