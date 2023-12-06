@@ -10,11 +10,6 @@ export function initRegister()
 	document.getElementsByClassName("submit_BTN")[0].addEventListener("click", register)
 }
 
-export function initSocket()
-{
-	document.getElementsByClassName("submit_BTN")[0].addEventListener("click", testSocket)
-}
-
 export async function logout(event)
 {
 	event.preventDefault()

@@ -1,4 +1,5 @@
-import { checkConnexion, initLoggin, initRegister, initSocket } from "./authApp.js";
+import { checkConnexion, initLoggin, initRegister } from "./authApp.js";
+import { initMatchmaking } from "./battleshipApp.js";
 import { initDashboard } from "./dashboard.js";
 import { initGame } from "./game.js";
 
@@ -13,21 +14,23 @@ const navigateTo = url =>
 	router();
 }
 
+
+
 function getRoute(RoutePath)
 {
 	const routes = [
-		{ path: "/404", init: null, title:"404", LogStatus: 2},
-		{ path: "/needlog", init: null, title:"Login required", LogStatus: 0},
-		{ path: "/", init: initDashboard, title:"Home", LogStatus: 2},
-		{ path: "/battleship", init: initGame, title:"Battleship", LogStatus: 1},
-		{ path: "/authApp/login",init: initLoggin, title:"Login", LogStatus: 0},
-		{ path: "/authApp/register", init: initRegister, title:"Register", LogStatus: 0},
-		{ path: "/authApp/testSocket", init: initSocket, title:"Socket", LogStatus: 1},
+		{ path: "/404", init: null, unload: null, title:"404", LogStatus: 2},
+		{ path: "/needlog", init: null, unload: null, title:"Login required", LogStatus: 0},
+		{ path: "/", init: initDashboard, unload: null, title:"Home", LogStatus: 2},
+		{ path: "/battleship", init: initGame, unload: null, title:"Battleship", LogStatus: 1},
+		{ path: "/battleship/matchmake", init: initMatchmaking, unload: null, title:"Battleship", LogStatus: 1},
+		{ path: "/authApp/login",init: initLoggin, unload: null, title:"Login", LogStatus: 0},
+		{ path: "/authApp/register", init: initRegister, unload: null, title:"Register", LogStatus: 0},
 	];
 
 	const Potentialroutes = routes.map(route => 
 		{
-			return { 
+			return {
 				route: route,
 				isMatch: RoutePath === (document.location.origin + route.path)
 			};
@@ -75,23 +78,6 @@ const router = async () =>
 	document.querySelector("#app").innerHTML = await response.text();
 	if (match.route.init != null)
 		match.route.init()
-    // var oldScript = document.querySelector("#ViewScript")
-	// var script = await view.getJs()
-	// if (script != "")
-	// {
-		// var newScript = document.createElement('script');
-		// newScript.type = 'module';
-		// newScript.id = 'ViewScript';
-		// newScript.src = script;
-		// if (oldScript != null)
-			// oldScript.parentNode.replaceChild(newScript, oldScript);
-		// else
-			// document.body.appendChild(newScript);
-	// }
-	// else if (oldScript != null)
-	// {
-		// document.body.removeChild(oldScript);
-	// }
 	OnLogChange();
 };
 
