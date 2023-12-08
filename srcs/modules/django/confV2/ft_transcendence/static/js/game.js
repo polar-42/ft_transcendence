@@ -1,3 +1,5 @@
+import { navto } from "./index.js";
+
 let canvas = null;
 let ctx = null;
 
@@ -35,7 +37,25 @@ let BoardArray = [];
 
 let validated = false;
 
+var battleshipSocket = null
+var gameId = null
+
 export function initGame()
+{
+	if (arguments[0] == undefined)
+	{
+		navto('/battleship/matchmake')
+		return
+	}
+	gameId = arguments[0]
+	console.log("GameID = " + gameId)
+	console.log("ws://" + window.location.host + '/socketApp/battleship/' + gameId)
+	battleshipSocket = new WebSocket("ws://" + window.location.host + '/socketApp/battleship/' + gameId)
+	console.log(battleshipSocket)
+	tmp()
+}
+
+function tmp()
 {
 	BoatList = [
 		{ name : 'Carrier', x : 0, y : 0, startX : 700, startY : 150, ArrayX : -1, ArrayY : -1, size : 5, horizontal : true, isDragging : false },

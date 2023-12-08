@@ -9,9 +9,9 @@ class socket(AsyncWebsocketConsumer):
 			await self.close()
 			return
 		await self.accept()
-
+		print("BattleshipGame" + self.scope['url_route']['kwargs']['gameId'])
 		await self.channel_layer.group_add(
-			"BattleshipGame",
+			"BattleshipGame" + self.scope['url_route']['kwargs']['gameId'],
 			self.channel_name
 		)
 

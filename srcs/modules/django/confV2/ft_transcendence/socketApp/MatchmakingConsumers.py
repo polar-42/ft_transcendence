@@ -6,25 +6,33 @@ from . import BattleshipMatchmaking
 Matchmake = BattleshipMatchmaking.Matchmaking()
 
 class socket(AsyncWebsocketConsumer):
-	global Matchmaking_users, loop
 
 	async def connect(self):
-		user = self.scope['user']
-		Matchmake.userList.append(user)
-		await self.accept()
-
+		self.user = self.scope['user']
+		if await Matchmake.AddUser(self.user) == True:
+			await self.accept()
+		else:
+			await self.close()
+			return
+		
+		await self.channel_layer.group_add(
+			Matchmake.channelName,
+			self.channel_name
+		)
 		# print(f"Utilisateur connecté: {self.scope['user']}")
 
 
 	async def disconnect(self, close_code):
-		Matchmake.userList.remove(self.scope['user'])
-		print(f"Utilisateur déconnecté: {self.scope['user']}")
+		if Matchmake.RemoveUser(self.user) == True:
+			print(f"Utilisateur déconnecté: {self.user}")
 
 	async def receive(self, text_data):
-		data = json.loads(text_data)
+		data = json.loads(text_data) 
 
-	# async def createGames(self):
-		# random.shuffle(self.connected_users)
-		# for user in self.connected_users:
-			# print(user.username)
+	async def CreateGameMessage(self, event):
+		if (self.user.id == event['user1'] or self.user.id == event['user2']):
+			print ("Send message to " + self.user.username)
+			await self.send(text_data=json.dumps({
+				'gameId': event['gameId']
+			}))
 

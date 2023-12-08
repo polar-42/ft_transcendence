@@ -5,13 +5,15 @@ import { initGame } from "./game.js";
 
 export function navto(urlpath)
 {
-	navigateTo(urlpath);
+	console.log(urlpath)
+	history.pushState(null, null, urlpath);
+	router([].slice.call(arguments, 1));
 }
 
 const navigateTo = url =>
 {
 	history.pushState(null, null, url);
-	router();
+	router(null);
 }
 
 
@@ -51,7 +53,7 @@ async function OnLogChange()
 	});
 }
 
-const router = async () => 
+const router = async (arg) => 
 {
 	let match = getRoute(document.location.origin + location.pathname);
 	/* define 404 error page */
@@ -77,7 +79,7 @@ const router = async () =>
 	document.title = match.route.title
 	document.querySelector("#app").innerHTML = await response.text();
 	if (match.route.init != null)
-		match.route.init()
+		match.route.init(arg)
 	OnLogChange();
 };
 
