@@ -81,10 +81,32 @@ function updateGameData(data)
 		ball.x = data.ball_pos_x;
 		ball.y = data.ball_pos_y;
 
-		//context.clearRect(0, 0, canvas.width, canvas.height);
+		context.clearRect(0, 0, canvas.width, canvas.height);
 		drawElement(playerOne);
         drawElement(playerTwo);
         drawElement(ball);
+	}
+}
+
+document.onkeydown = function doKeyDown(e)
+{
+	if (pongGameSocket && pongGameSocket.readyState === WebSocket.OPEN) {
+			const key = e.key;
+			if (key == "ArrowUp") {
+					e.preventDefault();
+					console.log('ArrowUp');
+					pongGameSocket.send(JSON.stringify({
+							'message': 'input',
+							'input': 'ArrowUp'
+					}))
+			} else if (key == 'ArrowDown') {
+					e.preventDefault();
+					console.log('ArrowDown');
+					pongGameSocket.send(JSON.stringify({
+							'message': 'input',
+							'input': 'ArrowDown'
+					}))
+			}
 	}
 }
 

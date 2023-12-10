@@ -1,4 +1,4 @@
-import threading, time
+import threading, time, json
 import random
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync, sync_to_async
@@ -10,18 +10,18 @@ class pongGameLoop(threading.Thread):
     def __init__(self, current) :
         super().__init__()
         self.pong = current
-        self.pongGame = pongGameClasses.GameState()
+        self.game = pongGameClasses.GameState()
         self.isGameRunning = False
 
-    def run(self):
+    async def run_async(self):
         x = 0
         while True:
             if self.isGameRunning is True:
-                game = self.pongGame.get_ball()
+                game = self.game.get_ball()
                 ball_pos_x, ball_pos_y = game.get_pos()
                 ball_gravity, ball_speed = game.get_gravity_speed()
 
-                player1, player2 = self.pongGame.get_players()
+                player1, player2 = self.game.get_players()
                 player1_pos_x, player1_pos_y = player1.get_pos()
                 player2_pos_x, player2_pos_y = player2.get_pos()
 
@@ -49,30 +49,50 @@ class pongGameLoop(threading.Thread):
                 else:
                     ball_pos_y += ball_gravity
                     ball_pos_x += ball_speed
-                self.pongGame.update_ball_gravity_speed(ball_gravity, ball_speed)
-                self.pongGame.update_ball_pos(ball_pos_x, ball_pos_y)
+                self.game.update_ball_gravity_speed(ball_gravity, ball_speed)
+                self.game.update_ball_pos(ball_pos_x, ball_pos_y)
 
-                asyncio.run(self.pong.sendDataFromGame(self.pongGame))
+                await send_data_async(self.pong, self.game)
 
-                time.sleep(0.1)
+                await asyncio.sleep(0.1)
                 print('in game loop, x =', x)
                 x = x + 1
-                #print('game_loop')
+
+    def run(self):
+        asyncio.run(self.run_async())
 
 
     def start_game(self):
         self.isGameRunning = True
 
+    def inputGame(self, input, player):
+        if input == 'ArrowUp':
+            if player == 0:
+                self.game.move_up_player1()
+            else:
+                self.game.move_up_player2()
+        elif input == 'ArrowDown':
+            if player == 0:
+                self.game.move_down_player1()
+            else:
+                self.game.move_down_player2()
+
+async def send_data_async(ping_game_instance, game):
+    await ping_game_instance.sendDataFromGame(game)
 
 
 class pongGame():
     is_running = False
     channelName = ""
+    users = []
 
     def __init__(self):
         self.channel_layer = get_channel_layer()
+        self.pongGameLoopTask = None
+        #self.pongGame = pongGameClasses.GameState()
 
-    async def launchGame(self, channelName):
+    async def launchGame(self, channelName, users):
+            self.users = users
             if channelName != '':
                 self.mythread = pongGameLoop(self)
 
@@ -83,7 +103,6 @@ class pongGame():
                 self.mythread.start_game()
 
     async def sendDataFromGame(self, pongGame):
-
         game = pongGame.get_ball()
         ball_pos_x, ball_pos_y = game.get_pos()
 
@@ -91,52 +110,20 @@ class pongGame():
         player1_pos_x, player1_pos_y = player1.get_pos()
         player2_pos_x, player2_pos_y = player2.get_pos()
 
-        await self.channel_layer.group_send(
-            self.channelName,
-            {
-                'type': 'gameData',
-                #'ball_pos_x': ball_pos_x,
-                #'ball_pos_y': ball_pos_y,
-                #'playerone_pos_y': player1_pos_y,
-                #'playertwo_pos_y': player2_pos_y,
-			}
-		)
+        for x in self.users:
+            await x.send(text_data=json.dumps({
+    			'type': 'game_data',
+    			'ball_pos_x': ball_pos_x,
+                'ball_pos_y': ball_pos_y,
+                'playerone_pos_y': player1_pos_y,
+                'playertwo_pos_y': player2_pos_y,
+    		}))
 
-    #async def AddUser(self, user):
-    #    if self.userList.__contains__(user) == False:
-    #        self.userList.append(user)
-    #        return True
-    #    return False
-
-    #def RemoveUser(self, user):
-    #    if self.userList.__contains__(user) == True:
-    #        self.userList.remove(user)
-    #        return True
-    #    return False
-
-    #def getUserList(self):
-    #    return self.userList
-
-    #async def createGame(self, user1, user2):
-    #    if (user1.is_authenticated == False or user2.is_authenticated == False):
-    #        if user1.is_authenticated == False:
-    #            self.matchmake.removeUser(user1)
-    #        if user2.is_authenticated == False:
-    #            self.matchmake.removeUser(user2)
-    #        return
-    #    game_id = "PongGame_" + str(user1.id) + "_" + str(user2.id)
-    #    print("PongGame id = " + game_id)
-    #    await (self.channel_layer.group_send(
-    #        self.channelName,
-    #        {
-    #            'type' : 'CreatePongGameMessage',
-    #            'user1': user1.id,
-    #            'user2': user2.id,
-    #            'gameId': game_id
-    #        }
-    #    ))
-    #    self.RemoveUser(user1)
-    #    self.RemoveUser(user2)
-
-
-
+    async def inputGame(self, input, player):
+        print('input is', input, 'by', player.username)
+        i = 0
+        for x in self.users:
+            if x == player:
+                if i == 0:
+                    self.mythread.inputGame(input, x)
+            i = i + 1
