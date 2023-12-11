@@ -11,7 +11,6 @@ function JoinMatchmaking()
 {
 	if(matchmakingSocket != null) 
 		return
-	console.log("ws://" + window.location.host + "/socketApp/matchmaking/")
 	matchmakingSocket = new WebSocket("ws://" + window.location.host + "/socketApp/matchmaking/")
 	matchmakingSocket.onopen = UpdateButtonJoin
 	matchmakingSocket.onclose = UpdateButtonLeave
@@ -20,7 +19,6 @@ function JoinMatchmaking()
 
 function UpdateButtonJoin()
 {
-	console.log(matchmakingSocket)
 	document.getElementsByClassName("matchmake_BTN")[0].innerHTML = 'Leave matchmaking'
 	document.getElementsByClassName("matchmake_BTN")[0].removeEventListener("click", JoinMatchmaking)
 	document.getElementsByClassName("matchmake_BTN")[0].addEventListener("click", LeaveMatchmaking)
