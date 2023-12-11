@@ -80,11 +80,15 @@ function updateGameData(data)
 		playerTwo.y = data.playertwo_pos_y;
 		ball.x = data.ball_pos_x;
 		ball.y = data.ball_pos_y;
+		let playerOne_score = data.playerone_score;
+		let playerTwo_score = data.playertwo_score;
 
 		context.clearRect(0, 0, canvas.width, canvas.height);
 		drawElement(playerOne);
         drawElement(playerTwo);
         drawElement(ball);
+		context.fillText(playerOne_score, canvas.width / 2 - 60, 30)
+		context.fillText(playerTwo_score, canvas.width / 2 + 60, 30)
 	}
 }
 
@@ -126,6 +130,13 @@ function FinishGame()
 	console.log('Pong game is finish');
 }
 
+function FinishGameByScore(data)
+{
+	//if (data.)
+	console.log(data)
+	//navto("/pongGame/endGame");
+}
+
 function OnMessage(e)
 {
 	const data = JSON.parse(e.data)
@@ -134,5 +145,9 @@ function OnMessage(e)
 	{
 		console.log('game_data is received');
 		updateGameData(data);
+	}
+	else if (data.type == 'game_ending')
+	{
+		FinishGameByScore(data);
 	}
 }

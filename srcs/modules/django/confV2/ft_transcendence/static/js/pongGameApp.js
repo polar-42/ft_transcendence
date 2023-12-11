@@ -40,13 +40,15 @@ function LeaveMatchmaking()
 	matchmakingPongGame.close()
 
 	matchmakingPongGame = null
+	console.log('Matchmaking disconnect');
 }
 
 function OnMessage(e)
 {
-	const data = JSON.parse(e.data)
-	document.getElementsByClassName("matchmake_BTN")[0].removeEventListener("click", LeaveMatchmaking)
-	matchmakingPongGame.onclose = null
-	navto("/pongGame", data.gameId)
+	const data = JSON.parse(e.data);
+	document.getElementsByClassName("matchmake_BTN")[0].removeEventListener("click", LeaveMatchmaking);
+	LeaveMatchmaking();
+	//matchmakingPongGame.onclose = null
+	navto("/pongGame", data.gameId);
 }
 

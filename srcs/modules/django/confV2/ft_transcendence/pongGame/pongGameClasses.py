@@ -32,7 +32,9 @@ class Ball:
 
 
 class Player:
-    def __init__(self, x, y):
+    def __init__(self, x, y, player_id):
+        self.player_id = player_id
+        self.score = 0
         self.x = x
         self.y = y
         self.height = PLAYER_HEIGHT
@@ -53,15 +55,24 @@ class Player:
                 self.y = self.y + 1
             i = i + 1
 
+    def add_point(self):
+        self.score = self.score + 1
+
     def get_pos(self):
         return self.x, self.y
 
+    def get_score(self):
+        return self.score
+
+    def get_id(self):
+        return self.player_id
+
 
 class GameState:
-    def __init__(self):
+    def __init__(self, players):
         self.ball = Ball()
-        self.playerOne = Player(10, (PLAYGROUND_HEIGHT / 2) - (PLAYER_HEIGHT / 2))
-        self.playerTwo = Player(PLAYGROUND_WIDHT - PLAYER_WIDTH - 10, (PLAYGROUND_HEIGHT / 2) - (PLAYER_HEIGHT / 2))
+        self.playerOne = Player(10, (PLAYGROUND_HEIGHT / 2) - (PLAYER_HEIGHT / 2), players[0])
+        self.playerTwo = Player(PLAYGROUND_WIDHT - PLAYER_WIDTH - 10, (PLAYGROUND_HEIGHT / 2) - (PLAYER_HEIGHT / 2), players[1])
 
     def move_up_player1(self):
         self.playerOne.move_up()
@@ -81,6 +92,12 @@ class GameState:
 
     def update_ball_pos(self, x, y):
         self.ball.change_position(x, y)
+
+    def update_score(self, player):
+        if player == 1:
+            self.playerOne.add_point()
+        elif player == 2:
+            self.playerTwo.add_point()
 
     def get_ball(self):
         return self.ball

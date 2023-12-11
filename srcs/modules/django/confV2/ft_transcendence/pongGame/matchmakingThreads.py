@@ -35,13 +35,13 @@ class pongMatchmaking():
 
 
     async def AddUser(self, user):
-        if self.userList.__contains__(user) == False:
+        if user not in self.userList:
             self.userList.append(user)
             return True
         return False
 
     def RemoveUser(self, user):
-        if self.userList.__contains__(user) == True:
+        if user in self.userList:
             self.userList.remove(user)
             return True
         return False
