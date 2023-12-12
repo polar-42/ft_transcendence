@@ -11,16 +11,19 @@ const boxSize = 60
 const offsetX = 10
 const offsetY = 100
 
-export function UnLoad()
+export function FP_UnLoad()
 {
-	canvas.removeEventListener('click', mouseClick);
-	canvas.removeEventListener('contextmenu', mouseRightClick);
-	canvas.removeEventListener('mousedown', mouseDown);
-	canvas.removeEventListener('mousemove', mouseMove);
-	canvas.removeEventListener('mouseup', mouseUp);
+	canvas.removeEventListener('click', FP_mouseClick);
+	canvas.removeEventListener('contextmenu', FP_mouseRightClick);
+	canvas.removeEventListener('mousedown', FP_mouseDown);
+	canvas.removeEventListener('mousemove', FP_mouseMove);
+	canvas.removeEventListener('mouseup', FP_mouseUp);
+	if (curInterval != undefined)
+		clearInterval(curInterval)
+	curInterval = undefined
 }
 
-const BTN_Validate = 
+const FP_BTN_Validate = 
 {
 	x : (offsetX + boxSize * gridSizeX + 2) + ((1080 - (offsetX + boxSize * gridSizeX + 2)) / 2) - 100,
 	y : 600,
@@ -40,6 +43,8 @@ let validated = false;
 var battleshipSocket = null
 var gameId = null
 
+var curInterval = undefined
+
 export function initGame()
 {
 	if (arguments[0] == undefined)
@@ -51,11 +56,55 @@ export function initGame()
 	console.log("GameID = " + gameId)
 	console.log("ws://" + window.location.host + '/socketApp/battleship/' + gameId)
 	battleshipSocket = new WebSocket("ws://" + window.location.host + '/socketApp/battleship/' + gameId)
-	console.log(battleshipSocket)
-	tmp()
+	battleshipSocket.onmessage = e => OnMessage(e)
 }
 
-function tmp()
+function OnMessage(e)
+{
+	const data = JSON.parse(e.data)
+	console.log(data);
+	switch (data.function) {
+		case 'initGame':
+			FP_Init()
+			break;
+		case 'StartGame':
+			FP_UnLoad()
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			SP_Load()
+			break;
+		case 'StartTurn':
+			SP_drawTitle("Your Turn")
+			canvas.addEventListener('mousemove', SP_mouseMove);
+			break
+		case 'StartEnemyTurn':
+			SP_drawTitle(data.playerName + " Turn")
+			canvas.removeEventListener('mousemove', SP_mouseMove);
+			break
+		case 'User Disconnnect':
+			break
+		default:
+			break;
+	}
+	currentTimer = data.timer
+}
+
+function SP_mouseMove(event)
+{
+	const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+	const mouseY = event.clientY - canvas.getBoundingClientRect().top; 
+	console.log("Mouse X = " + mouseX + " MouseY = " + mouseY)
+}
+
+//#region FirstPart
+
+function FP_Timer()
+{
+	if (currentTimer != -1 )
+		currentTimer -= 1
+	FP_draw()
+}
+
+function FP_Init()
 {
 	BoatList = [
 		{ name : 'Carrier', x : 0, y : 0, startX : 700, startY : 150, ArrayX : -1, ArrayY : -1, size : 5, horizontal : true, isDragging : false },
@@ -69,11 +118,11 @@ function tmp()
 	validated = false;
 	canvas = document.getElementById("myCanvas");
 	ctx = canvas.getContext("2d");
-	canvas.addEventListener('click', mouseClick);
-	canvas.addEventListener('contextmenu', mouseRightClick);
-	canvas.addEventListener('mousedown', mouseDown);
-	canvas.addEventListener('mousemove', mouseMove);
-	canvas.addEventListener('mouseup', mouseUp);
+	canvas.addEventListener('click', FP_mouseClick);
+	canvas.addEventListener('contextmenu', FP_mouseRightClick);
+	canvas.addEventListener('mousedown', FP_mouseDown);
+	canvas.addEventListener('mousemove', FP_mouseMove);
+	canvas.addEventListener('mouseup', FP_mouseUp);
 	for ( let y = 0; y < gridSizeY; y++)
 	{
 		BoardArray[y] = [];
@@ -84,10 +133,11 @@ function tmp()
 		element.x = element.startX;
 		element.y = element.startY;
 	});
-	draw();
+	curInterval = setInterval(FP_Timer, 1000)
+	FP_draw();
 }
 
-function drawTitle()
+function FP_drawTitle()
 {
 	ctx.font = "40px Arial";
 	ctx.textAlign = "center"
@@ -103,19 +153,7 @@ function drawTitle()
 		ctx.fillText(`Please, wait for your opponent`, canvas.width / 2 , 65);
 }
 
-function drawABox(x, y)
-{
-	ctx.beginPath();
-	ctx.rect(offsetX + x * boxSize, offsetY + y * boxSize, 2, boxSize);
-	ctx.rect(offsetX + x * boxSize, offsetY + y * boxSize, boxSize, 2);
-	ctx.rect(offsetX + x * boxSize + boxSize, offsetY + y * boxSize, 2, boxSize);
-	ctx.rect(offsetX + x * boxSize, offsetY + y * boxSize + boxSize, boxSize, 2);
-	ctx.fillStyle = "green";
-	ctx.fill();
-	ctx.closePath();
-}
-
-function isHover(element, mouseX, mouseY)
+function FP_isHover(element, mouseX, mouseY)
 {
 	if (element.horizontal == true)
 	{
@@ -128,9 +166,9 @@ function isHover(element, mouseX, mouseY)
 	return false;
 }
 
-let tmpBoat = {x : 0, y : 0, horizontal : true};
+let FP_tmpBoat = {x : 0, y : 0, horizontal : true};
 
-function mouseDown(e)
+function FP_mouseDown(e)
 {
 	if (e.button != 0 || validated == true)
 		return ;
@@ -138,11 +176,11 @@ function mouseDown(e)
 	const mouseY = e.clientY - canvas.getBoundingClientRect().top;
 
 	BoatList.forEach(element => {
-		if (isHover(element, mouseX, mouseY) == true)
+		if (FP_isHover(element, mouseX, mouseY) == true)
 		{
-			tmpBoat.x = element.x;
-			tmpBoat.y = element.y;
-			tmpBoat.horizontal = element.horizontal;
+			FP_tmpBoat.x = element.x;
+			FP_tmpBoat.y = element.y;
+			FP_tmpBoat.horizontal = element.horizontal;
 			if (element.ArrayX != -1)
 			{
 				if (element.horizontal == true) 
@@ -175,7 +213,7 @@ function mouseDown(e)
 	});
 }
 
-function mouseMove(e) {
+function FP_mouseMove(e) {
 	BoatList.forEach(element => {
 		if (element.isDragging) {
 			const mouseX = e.clientX - canvas.getBoundingClientRect().left;
@@ -187,7 +225,7 @@ function mouseMove(e) {
 
 			// Clear the canvas and redraw the draggable item
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
-			draw();
+			FP_draw();
 
 			// Change cursor style while dragging
 			canvas.style.cursor = 'grabbing';
@@ -195,14 +233,14 @@ function mouseMove(e) {
 	});
 }
 
-function mouseUp(e) {
+function FP_mouseUp(e) {
 	if (e.button != 0)
 		return;
 	BoatList.forEach(element => {
 		if (element.isDragging == true) {
 			element.isDragging = false;
 			if (element.x > offsetX - boxSize / 2 && element.x < (offsetX + gridSizeX * boxSize) - boxSize / 2 && element.y > offsetY - boxSize / 2 && element.y < (offsetY + gridSizeY * boxSize) - boxSize / 2) {
-				if (isValidPos(element) == true) {
+				if (FP_isValidPos(element) == true) {
 
 					element.ArrayX = Math.round((element.x - offsetX) / boxSize);
 					element.ArrayY = Math.round((element.y - offsetY) / boxSize);
@@ -222,9 +260,9 @@ function mouseUp(e) {
 					}
 				}
 				else {
-					element.x = tmpBoat.x;
-					element.y = tmpBoat.y;
-					element.horizontal = tmpBoat.horizontal;
+					element.x = FP_tmpBoat.x;
+					element.y = FP_tmpBoat.y;
+					element.horizontal = FP_tmpBoat.horizontal;
 				}
 			}
 			else {
@@ -234,27 +272,31 @@ function mouseUp(e) {
 				element.ArrayX = -1;
 				element.ArrayY = -1;
 			}
-			draw();
+			FP_draw();
 		}
 		// Change cursor style back to default
 		canvas.style.cursor = 'grab';
 	});
 }
 
-function mouseClick(e)
+function FP_mouseClick(e)
 {
 	if (e.button != 0)
 		return;
 	const mouseX = e.clientX - canvas.getBoundingClientRect().left;
 	const mouseY = e.clientY - canvas.getBoundingClientRect().top;
-	if (mouseX > BTN_Validate.x && mouseX < BTN_Validate.x + BTN_Validate.w && mouseY > BTN_Validate.y && mouseY < BTN_Validate.y + BTN_Validate.h)
+	if (mouseX > FP_BTN_Validate.x && mouseX < FP_BTN_Validate.x + FP_BTN_Validate.w && mouseY > FP_BTN_Validate.y && mouseY < FP_BTN_Validate.y + FP_BTN_Validate.h)
 	{
 		validated = !validated;
-		draw();
+		battleshipSocket.send(JSON.stringify({
+			'function': 'sendBoats',
+			'input': BoatList
+		}))
+		FP_draw();
 	}
 }
 
-function mouseRightClick(e)
+function FP_mouseRightClick(e)
 {
 	// Prevent the default context menu behavior
     e.preventDefault();
@@ -269,12 +311,12 @@ function mouseRightClick(e)
 			element.offsetX = mouseX - element.x;
 			element.offsetY = mouseY - element.y;
 			element.horizontal = !element.horizontal;
-			draw();
+			FP_draw();
 		}
 	});
 }
 
-function drawBoats( dragging )
+function FP_drawBoats( dragging )
 {
 	BoatList.forEach(element => 
 	{
@@ -292,7 +334,7 @@ function drawBoats( dragging )
 	});
 }
 
-function drawDragged()
+function FP_drawDragged()
 {
 	BoatList.forEach(element => 
 		{
@@ -310,7 +352,7 @@ function drawDragged()
 		});
 }
 
-function drawValidateButton()
+function FP_drawValidateButton()
 {
 	let boatCount = 0;
 	BoatList.forEach(element =>
@@ -320,33 +362,29 @@ function drawValidateButton()
 		});
 	if (boatCount == 5)
 	{
-		const mouseX = event.clientX - canvas.getBoundingClientRect().left;
-		const mouseY = event.clientY - canvas.getBoundingClientRect().top;
-		if (mouseX > BTN_Validate.x && mouseX < BTN_Validate.x + BTN_Validate.w && mouseY > BTN_Validate.y && mouseY < BTN_Validate.y + BTN_Validate.h)
-			ctx.fillStyle = BTN_Validate.hoverColor;
-		else
-			ctx.fillStyle = BTN_Validate.color; // Button color
-		ctx.fillRect(BTN_Validate.x, BTN_Validate.y, BTN_Validate.w, BTN_Validate.h);
+		ctx.fillStyle = FP_BTN_Validate.color; // Button color
+		ctx.fillRect(FP_BTN_Validate.x, FP_BTN_Validate.y, FP_BTN_Validate.w, FP_BTN_Validate.h);
 
 		ctx.fillStyle = '#fff'; // Text color
 		ctx.font = '16px Arial';
 		ctx.textAlign = 'center';
 		ctx.textBaseline = 'middle';
-		ctx.fillText(BTN_Validate.label, BTN_Validate.x + BTN_Validate.w / 2, BTN_Validate.y + BTN_Validate.h / 2);
+		ctx.fillText(FP_BTN_Validate.label, FP_BTN_Validate.x + FP_BTN_Validate.w / 2, FP_BTN_Validate.y + FP_BTN_Validate.h / 2);
 	}
 }
 
-function draw()
+function FP_draw()
 {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	drawBoats(false);
+	drawTimer()
+	FP_drawBoats(false);
 	drawGrid();
-	drawTitle();
-	drawDragged();
-	drawValidateButton();
+	FP_drawTitle();
+	FP_drawDragged();
+	FP_drawValidateButton();
 }
 
-function isValidPos(element)
+function FP_isValidPos(element)
 {
 	let X = Math.round((element.x - offsetX) / boxSize);
 	let Y = Math.round((element.y - offsetY) / boxSize);
@@ -374,6 +412,75 @@ function isValidPos(element)
 	return true;
 }
 
+//#endregion
+
+//#region SecondPart
+
+function SP_Load()
+{
+	setInterval(SP_Timer, 1000)
+	SP_Draw()
+	battleshipSocket.send(JSON.stringify({
+		'function': 'LoadEnded',
+	}))
+}
+
+function SP_Timer()
+{
+	if (currentTimer != -1 )
+		currentTimer -= 1
+	drawTimer()
+}
+
+function SP_Draw()
+{
+	ctx.clearRect(offsetX, offsetY, gridSizeX * boxSize, gridSizeY * boxSize)
+	drawGrid()
+}
+
+function SP_drawTitle(message)
+{
+	ctx.clearRect(canvas.width / 2 + canvas.width / 4 + canvas.width / 8, 50, 50, 50)
+	ctx.font = "40px Arial";
+	ctx.textAlign = "center"
+	ctx.fillStyle = "#0095DD";
+	ctx.fillText(message, canvas.width / 2 , 65);
+}
+
+//#endregion
+
+//#region CommonPart
+
+
+var currentTimer = -1
+
+function drawTimer()
+{
+	if (currentTimer == -1)
+		return
+	ctx.clearRect(canvas.width / 2 + canvas.width / 4 + canvas.width / 8 - 25, 50 - 25, 50, 50)
+	ctx.beginPath();
+	ctx.fillStyle = '#fff'; // Text color
+	ctx.font = '16px Arial';
+	ctx.textAlign = 'center';
+	ctx.textBaseline = 'middle';
+	ctx.fillText(currentTimer.toString(), canvas.width / 2 + canvas.width / 4 + canvas.width / 8, 50);
+	ctx.closePath();
+}
+
+function drawABox(x, y)
+{
+
+	ctx.beginPath();
+	ctx.rect(offsetX + x * boxSize, offsetY + y * boxSize, 2, boxSize);
+	ctx.rect(offsetX + x * boxSize, offsetY + y * boxSize, boxSize, 2);
+	ctx.rect(offsetX + x * boxSize + boxSize, offsetY + y * boxSize, 2, boxSize);
+	ctx.rect(offsetX + x * boxSize, offsetY + y * boxSize + boxSize, boxSize, 2);
+	ctx.fillStyle = "green";
+	ctx.fill();
+	ctx.closePath();
+}
+
 function drawGrid()
 {
 	for (let y = 0; y < gridSizeY; y++)
@@ -384,4 +491,4 @@ function drawGrid()
 		}
 	}
 }
-//setInterval(draw, 10)
+//#endregion
