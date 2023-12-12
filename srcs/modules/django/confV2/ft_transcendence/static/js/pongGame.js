@@ -92,6 +92,16 @@ function updateGameData(data)
 	}
 }
 
+function addTimer(data)
+{
+	if (pongGameSocket && pongGameSocket.readyState === WebSocket.OPEN)
+	{
+		let secondLeft = data.second_left;
+
+		context.fillText(secondLeft, canvas.width / 2, canvas.height / 2 - 60);
+	}
+}
+
 document.onkeydown = function doKeyDown(e)
 {
 	if (pongGameSocket && pongGameSocket.readyState === WebSocket.OPEN) {
@@ -124,7 +134,6 @@ function LaunchGame()
 	console.log('Pong Game is launch');
 }
 
-
 function FinishGame()
 {
 	console.log('Pong game is finish');
@@ -132,9 +141,10 @@ function FinishGame()
 
 function FinishGameByScore(data)
 {
-	//if (data.)
 	console.log(data)
-	//navto("/pongGame/endGame");
+	canvas.style.display="none";
+	let message = "Game is finished, " + data.winner + " is the winner by the score of " + data.playerone_score + " to " + data.playertwo_score;
+	document.getElementById('gameMessage').innerHTML = message
 }
 
 function OnMessage(e)
@@ -145,6 +155,11 @@ function OnMessage(e)
 	{
 		console.log('game_data is received');
 		updateGameData(data);
+	}
+	else if (data.type == 'game_timer')
+	{
+		updateGameData(data);
+		addTimer(data);
 	}
 	else if (data.type == 'game_ending')
 	{

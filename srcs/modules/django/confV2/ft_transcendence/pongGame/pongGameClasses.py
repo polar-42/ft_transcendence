@@ -1,3 +1,5 @@
+import random
+
 BALL_HEIGHT = 10
 BALL_WIDTH = 10
 PLAYER_HEIGHT = 60
@@ -11,8 +13,14 @@ class Ball:
         self.y = PLAYGROUND_HEIGHT / 2 - BALL_HEIGHT / 2
         self.height = BALL_HEIGHT
         self.width = BALL_WIDTH
-        self.speed = 4
-        self.gravity = 4
+        if random.randint(1, 2) == 1:
+            self.speed = 4
+        else:
+            self.speed = -4
+        if random.randint(1, 2) == 1:
+            self.gravity = 4
+        else:
+            self.gravity = -4
 
     def change_speed(self, speed):
         self.speed = speed
@@ -35,6 +43,7 @@ class Player:
     def __init__(self, x, y, player_id):
         self.player_id = player_id
         self.score = 0
+        self.ball_touch = 0
         self.x = x
         self.y = y
         self.height = PLAYER_HEIGHT
@@ -58,6 +67,9 @@ class Player:
     def add_point(self):
         self.score = self.score + 1
 
+    def add_ball_touch(self):
+        self.ball_touch = self.ball_touch + 1
+
     def get_pos(self):
         return self.x, self.y
 
@@ -66,6 +78,9 @@ class Player:
 
     def get_id(self):
         return self.player_id
+
+    def get_ball_touch(self):
+        return self.ball_touch
 
 
 class GameState:
@@ -98,6 +113,12 @@ class GameState:
             self.playerOne.add_point()
         elif player == 2:
             self.playerTwo.add_point()
+
+    def update_ball_touch(self, player):
+        if player == 1:
+            self.playerOne.add_ball_touch()
+        elif player == 2:
+            self.playerTwo.add_ball_touch()
 
     def get_ball(self):
         return self.ball

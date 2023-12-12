@@ -2,7 +2,8 @@ import json, asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import get_channel_layer
 from . import pongThreads
-#from . import PongGameModels
+from .models import PongGameModels
+from channels.db import database_sync_to_async
 
 
 class PongGameSocket(AsyncWebsocketConsumer):
@@ -35,14 +36,9 @@ class PongGameSocket(AsyncWebsocketConsumer):
 		if len(self.connected_users) == 2:
 			self.players_game.append(self.connected_users[0])
 			self.players_game.append(self)
-			self.add_players_list(self.connected_users[0], self)
-
-		#for user in self.connected_users:
-		#	print(({'Pong game user connected': user.username}))
+			await self.connected_users[0].add_players_list(self.connected_users[0], self)
 
 		if len(self.connected_users) == 2:
-			print("self.connected_users = ", self.connected_users)
-
 			self.pongGame.append(pongThreads.pongGame())
 
 			cpy = self.connected_users.copy()
@@ -51,7 +47,7 @@ class PongGameSocket(AsyncWebsocketConsumer):
 			self.game.append(cpy)
 			self.connected_users.clear()
 
-	def add_players_list(self, p1, p2):
+	async def add_players_list(self, p1, p2):
 		self.players_game.append(p1)
 		self.players_game.append(p2)
 
@@ -81,7 +77,7 @@ class PongGameSocket(AsyncWebsocketConsumer):
 
 		i = 0
 		for x in self.game:
-			if self in x:
+			if self in x and self.pongGame[i] is not None:
 				if message == 'input':
 					await self.pongGame[i].inputGame(data['input'], self)
 			else:
@@ -96,20 +92,24 @@ class PongGameSocket(AsyncWebsocketConsumer):
 			self.channel_name
 		)
 
+		if self.players_game[0] is self:
+			player1 = self
+			player2 = self.players_game[1]
+		else:
+			player1 = self
+			player2 = self.players_game[0]
+
 		await self.send(text_data=json.dumps({
     			'type': 'game_ending',
-				'winner': str(self.username),
+				'winner': self.username.username,
 				'reason': 'disconnexion',
+				'playerone_score': 3,
+				'playertwo_score': 0,
+				'playerone_username': player1.username.username,
+				'playertwo_username': player2.username.username,
     	}))
 
-		#TO CHANGE!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		#PongGameModels.objects.create(
-		#	player1=str(self.players_game[0].username),
-		#	player2=str(self.players_game[1].username),
-		#	score_player1=3,
-		#	score_player2=0,
-		#	winner=str(self.username)
-		#)
+		await addToDb(player1.username.username, player2.username.username, 3, 0, self.username.username, 3, 0, 'disconnexion')
 
 		await self.close()
 
@@ -137,22 +137,39 @@ class PongGameSocket(AsyncWebsocketConsumer):
 		playerone_score = event['playerone_score']
 		playertwo_score = event['playertwo_score']
 
+		n_ball_touch_player1 = event['number_ball_touch_player1']
+		n_ball_touch_player2 = event['number_ball_touch_player2']
+
 		await self.send(text_data=json.dumps({
     			'type': 'game_ending',
 				'winner': winner.username,
 				'reason': 'score',
 				'playerone_score': str(playerone_score),
 				'playertwo_score': str(playertwo_score),
+				'playerone_username': self.players_game[0].username.username,
+				'playertwo_username': self.players_game[1].username.username,
     	}))
 
+		if winner.username == str(self.username):
 
-		#TO CHANGE!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		#PongGameModels.objects.create(
-		#	player1=str(self.players_game[0].username),
-		#	player2=str(self.players_game[1].username),
-		#	score_player1=str(playerone_score),
-		#	score_player2=str(playertwo_score),
-		#	winner=str(winner.username)
-		#)
+			await addToDb(self.players_game[0].username, self.players_game[1].username, playerone_score, playertwo_score, winner.username, n_ball_touch_player1, n_ball_touch_player2, 'score')
 
 		await self.close()
+
+@database_sync_to_async
+def addToDb(playerone_username, playertwo_username, playerone_score, playertwo_score, winner, n_ball_touch_player1, n_ball_touch_player2, reason_end):
+
+	obj = PongGameModels.objects.create(
+			player1=playerone_username,
+			player2=playertwo_username,
+			score_player1=str(playerone_score),
+			score_player2=str(playertwo_score),
+			number_ball_touch_player1=str(n_ball_touch_player1),
+			number_ball_touch_player2=str(n_ball_touch_player2),
+			winner=str(winner),
+			reason=reason_end
+	)
+
+	obj.save
+
+	print('game is add to database')
