@@ -34,6 +34,8 @@ const FP_BTN_Validate =
 	hoverColor : 'red'
 }
 
+let BoardCases = [];
+
 let BoatList = [];
 
 let BoardArray = [];
@@ -75,24 +77,27 @@ function OnMessage(e)
 		case 'StartTurn':
 			SP_drawTitle("Your Turn")
 			canvas.addEventListener('mousemove', SP_mouseMove);
+			canvas.addEventListener('click', SP_mouseClick);
 			break
 		case 'StartEnemyTurn':
 			SP_drawTitle(data.playerName + " Turn")
+			SP_selected = undefined
+			SP_hovered = undefined
+			SP_Draw()
 			canvas.removeEventListener('mousemove', SP_mouseMove);
+			canvas.removeEventListener('click', SP_mouseClick);
 			break
 		case 'User Disconnnect':
+			break
+		case 'GotHit':
+			break
+		case 'HitEnemy':
+			SP_HitCase(data.case, data.result)
 			break
 		default:
 			break;
 	}
 	currentTimer = data.timer
-}
-
-function SP_mouseMove(event)
-{
-	const mouseX = event.clientX - canvas.getBoundingClientRect().left;
-	const mouseY = event.clientY - canvas.getBoundingClientRect().top; 
-	console.log("Mouse X = " + mouseX + " MouseY = " + mouseY)
 }
 
 //#region FirstPart
@@ -113,8 +118,13 @@ function FP_Init()
 		{ name : 'Submarine', x : 0, y : 0, startX : 700, startY : 450, ArrayX : -1, ArrayY : -1, size : 3, horizontal : true, isDragging : false },
 		{ name : 'PatrolBoat', x : 0, y : 0, startX : 700, startY : 550, ArrayX : -1, ArrayY : -1, size : 2, horizontal : true, isDragging : false },
 	];
-
-	BoardArray = [];
+	for (let y = 0; y < gridSizeY; y++)
+	{
+		for(let x = 0; x < gridSizeX; x++)
+		{
+			BoardCases.push(CreateABox(x, y));
+		}
+	}
 	validated = false;
 	canvas = document.getElementById("myCanvas");
 	ctx = canvas.getContext("2d");
@@ -377,8 +387,9 @@ function FP_draw()
 {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	drawTimer()
+	drawGrid(2);
 	FP_drawBoats(false);
-	drawGrid();
+	drawGrid(1);
 	FP_drawTitle();
 	FP_drawDragged();
 	FP_drawValidateButton();
@@ -416,6 +427,89 @@ function FP_isValidPos(element)
 
 //#region SecondPart
 
+var SP_selected = undefined
+var SP_hovered = undefined
+
+function SP_HitCase(Tcase, result)
+{
+	BoardCases.forEach(element => {
+		if (element.ArrayPosX == Tcase.ArrayPosX && element.ArrayPosY == Tcase.ArrayPosY)
+		{
+			element.status = result == false ? -1 : 1
+			return 
+		}
+	});
+}
+
+function SP_mouseMove(event)
+{
+	const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+	const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+	const ArrayPos = CP_getArrayPos(mouseX, mouseY)
+	if (ArrayPos.x == - 1)
+	{
+		if (SP_hovered != undefined)
+		{
+			SP_hovered = undefined
+			SP_Draw();
+		}
+	}
+	else
+	{
+		BoardCases.forEach( element => {
+			if (element.ArrayPosX == ArrayPos.x && element.ArrayPosY == ArrayPos.y)
+				if (SP_hovered != element)
+				{
+					SP_hovered = element
+					SP_Draw();
+				}
+				return;
+			})
+	}
+}
+
+function SP_mouseClick(event)
+{
+	const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+	const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+	const ArrayPos = CP_getArrayPos(mouseX, mouseY)
+	if (ArrayPos.x == - 1)
+	{
+		if (SP_selected != undefined)
+		{
+			if (mouseX > FP_BTN_Validate.x && mouseX < FP_BTN_Validate.x + FP_BTN_Validate.w && mouseY > FP_BTN_Validate.y && mouseY < FP_BTN_Validate.y + FP_BTN_Validate.h)
+			{
+				battleshipSocket.send(JSON.stringify({
+					'function': 'HitCase',
+					'input': SP_selected
+				}))
+			}
+			else
+			{
+				SP_selected = undefined
+				SP_Draw()
+				SP_drawSendBTN()
+			}
+		}
+	}
+	else
+	{
+		BoardCases.forEach( element => {
+			if (element.ArrayPosX == ArrayPos.x && element.ArrayPosY == ArrayPos.y)
+			{
+				if (SP_selected == undefined)
+					SP_drawSendBTN()
+				if (SP_selected != element)
+				{
+					SP_selected = element
+					SP_Draw();
+				}
+			}
+			return;
+		})
+	}
+}
+
 function SP_Load()
 {
 	setInterval(SP_Timer, 1000)
@@ -435,16 +529,36 @@ function SP_Timer()
 function SP_Draw()
 {
 	ctx.clearRect(offsetX, offsetY, gridSizeX * boxSize, gridSizeY * boxSize)
-	drawGrid()
+	drawGrid(0)
+	SP_drawSendBTN()
 }
 
 function SP_drawTitle(message)
 {
-	ctx.clearRect(canvas.width / 2 + canvas.width / 4 + canvas.width / 8, 50, 50, 50)
+	ctx.clearRect(canvas.width / 2 - 100, 25, 200, 70)
+	ctx.beginPath()
 	ctx.font = "40px Arial";
 	ctx.textAlign = "center"
 	ctx.fillStyle = "#0095DD";
 	ctx.fillText(message, canvas.width / 2 , 65);
+	ctx.closePath()
+}
+
+function SP_drawSendBTN()
+{
+	ctx.clearRect(FP_BTN_Validate.x, FP_BTN_Validate.y, FP_BTN_Validate.w, FP_BTN_Validate.h)
+	if (SP_selected == undefined)
+		return
+	ctx.beginPath()
+	ctx.fillStyle = FP_BTN_Validate.color; // Button color
+	ctx.fillRect(FP_BTN_Validate.x, FP_BTN_Validate.y, FP_BTN_Validate.w, FP_BTN_Validate.h);
+
+	ctx.fillStyle = '#fff'; // Text color
+	ctx.font = '16px Arial';
+	ctx.textAlign = 'center';
+	ctx.textBaseline = 'middle';
+	ctx.fillText("Send", FP_BTN_Validate.x + FP_BTN_Validate.w / 2, FP_BTN_Validate.y + FP_BTN_Validate.h / 2);
+	ctx.closePath()
 }
 
 //#endregion
@@ -468,27 +582,63 @@ function drawTimer()
 	ctx.closePath();
 }
 
-function drawABox(x, y)
+function CreateABox(x, y)
 {
-
-	ctx.beginPath();
-	ctx.rect(offsetX + x * boxSize, offsetY + y * boxSize, 2, boxSize);
-	ctx.rect(offsetX + x * boxSize, offsetY + y * boxSize, boxSize, 2);
-	ctx.rect(offsetX + x * boxSize + boxSize, offsetY + y * boxSize, 2, boxSize);
-	ctx.rect(offsetX + x * boxSize, offsetY + y * boxSize + boxSize, boxSize, 2);
-	ctx.fillStyle = "green";
-	ctx.fill();
-	ctx.closePath();
-}
-
-function drawGrid()
-{
-	for (let y = 0; y < gridSizeY; y++)
-	{
-		for(let x = 0; x < gridSizeX; x++)
-		{
-			drawABox(x, y);
-		}
+	let Box = {
+		ArrayPosX : x,
+		ArrayPosY : y,
+		status: 0
 	}
+	return Box
 }
+
+function drawGrid(drawPart)
+{
+	BoardCases.forEach(element => {
+		if(drawPart == 1 || drawPart == 0)
+		{
+			ctx.beginPath();
+			ctx.rect(offsetX + element.ArrayPosX * boxSize, offsetY + element.ArrayPosY * boxSize, 2, boxSize);
+			ctx.rect(offsetX + element.ArrayPosX * boxSize, offsetY + element.ArrayPosY * boxSize, boxSize, 2);
+			ctx.rect(offsetX + element.ArrayPosX * boxSize + boxSize, offsetY + element.ArrayPosY * boxSize, 2, boxSize);
+			ctx.rect(offsetX + element.ArrayPosX * boxSize, offsetY + element.ArrayPosY * boxSize + boxSize, boxSize, 2);
+			ctx.fillStyle = "green";
+			ctx.fill();
+			ctx.closePath();
+		}
+		if(drawPart == 0 || drawPart == 2)
+		{
+			ctx.beginPath();
+			ctx.rect(offsetX + (element.ArrayPosX * boxSize) + 2, offsetY + (element.ArrayPosY * boxSize) + 2, boxSize - 2, boxSize - 2)
+			console.log(element.status)
+			if (element.status != 0)
+			{
+				if (element.status == 1)
+					ctx.fillStyle = "blue";
+				else if (element.status == -1)
+					ctx.fillStyle = "rgb(155, 155, 3)";
+			}
+			else if (SP_selected != undefined && SP_selected == element)
+				ctx.fillStyle = "grey";
+			else if (SP_hovered != undefined && SP_hovered == element)
+				ctx.fillStyle = "red";
+			else
+				ctx.fillStyle = "rgb(186, 252, 3)";
+			ctx.fill();
+			ctx.closePath();
+		}
+	});
+}
+
+function CP_getArrayPos(mouseX, mouseY)
+{
+	const BoardLimitX = offsetX + 2 + gridSizeX * boxSize
+	const BoardLimitY = offsetY + 2 + gridSizeY * boxSize
+	if (mouseX < offsetX || mouseX > BoardLimitX || mouseY < offsetY || mouseY > BoardLimitY)
+		return {x : -1, y : -1}
+	return {x : Math.floor((mouseX - (offsetX + 2)) / boxSize), y : Math.floor((mouseY - (offsetY + 2)) / boxSize)}
+}
+
+
+
 //#endregion

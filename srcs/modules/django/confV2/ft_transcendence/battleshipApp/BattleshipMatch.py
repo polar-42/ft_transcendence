@@ -3,6 +3,7 @@ from channels.layers import get_channel_layer
 from enum import Enum
 import threading, time
 import random
+import socketApp
 
 class GameState(Enum):
     Initialisation = 0
@@ -10,6 +11,60 @@ class GameState(Enum):
     Playing = 2
     Ending = 3
     
+
+class Case():
+
+    def __init__(self, x, y):
+        self.PosX = x
+        self.PosY = y
+        pass
+    def __str__(self) -> str:
+        return "posX = " + str(self.PosX) + " PosY = " + str(self.PosY)
+
+class Boat():
+    def __init__(self, name, size, orientation, posX, posY):
+        self.Name = name
+        self.BoatArray = []
+        self. HittedArray = []
+        while size > 0:
+            if (orientation == 'V'):
+                self.BoatArray.append(Case(posX, posY + size - 1))
+            else:
+                self.BoatArray.append(Case(posX + size - 1, posY))
+            size -= 1
+    def Hit(self, posX, posY):
+        for case in self.BoatArray:
+            if case.PosX == posX and case.PosY == posY:
+                if self.HittedArray.__contains__(case) == True:
+                    return False
+                else:
+                    self.HittedArray.append(case)
+                    return True
+        return False
+
+class User():
+    def __init__(self, user):
+        self.BoatList = []
+        self.sock_user = user
+        self.Name = self.sock_user.username
+        pass
+
+    def ParseBoats(self, boatsList):
+        if (len(self.BoatList) != 0):
+            self.BoatList.clear()
+        else:
+            for boat in boatsList:
+                ori = 'H' if boat['horizontal'] is True else 'V'
+                self.BoatList.append(Boat(boat['name'], boat['size'], ori, boat['ArrayX'], boat['ArrayY']))
+            for boat in self.BoatList:
+                    for cases in boat.BoatArray:
+                        print(self.Name + " " + boat.Name + " " + str(cases))
+    
+    def Hit(self, case):
+        for boat in self.BoatList:
+            if (boat.Hit(case['ArrayPosX'], case['ArrayPosY']) == True):
+                return True
+        return False
 
 class MatchmakingLoop(threading.Thread):
     def __init__(self, current) :
@@ -31,7 +86,7 @@ class MatchmakingLoop(threading.Thread):
 class BattleShipGameManager():
     _MatchList = {}
 
-    async def JoinGame(self, gameId, user, ChannelName):
+    async def JoinGame(self, gameId, ChannelName, user):
         if (gameId not in self._MatchList.keys()):
             self._MatchList[gameId] = BattleshipMatch(gameId, ChannelName)
             await self._MatchList[gameId].JoinGame(user)
@@ -44,7 +99,6 @@ class BattleShipGameManager():
         asyncio.wait (await self._MatchList[gameId].StopGame(user))
         self._MatchList.pop(gameId)
 
-
 class BattleshipMatch():
 
     user1 = None
@@ -52,8 +106,6 @@ class BattleshipMatch():
 
     currentTimer = -1
 
-    user1Boats = None
-    user2Boats = None
     thread = None
     TurnUser = None
 
@@ -76,11 +128,10 @@ class BattleshipMatch():
         pass
 
     async def JoinGame(self, user):
-        if self.user1 is not None and self.user1 is not user:
-            self.user2 = user
-            print("Game " + str(self.gameId) + " was joined by user " + str(self.user2.username) + ".")
+        if self.user1 is not None and self.user1.sock_user is not user:
+            self.user2 = User(user)
         elif self.user1 is None:
-            self.user1 = user
+            self.user1 = User(user)
         if (self.user1 is not None and self.user2 is not None):
             await self.initGame()
 
@@ -107,12 +158,12 @@ class BattleshipMatch():
 
     async def RCV_BoatsList(self, user, BoatList):
         if (self.Gamestatus is not GameState.BoatPlacement):
+            return
+        user = self.getUser(user)
+        if (user is None):
             return 
-        if (user is self.user1):
-            self.user1Boats = BoatList if self.user1Boats is None else None
-        elif (user is self.user2):
-            self.user2Boats = BoatList if self.user2Boats is None else None
-        if (self.user2Boats is not None and self.user1Boats is not None):
+        user.ParseBoats(BoatList)
+        if (len(self.user1.BoatList) != 0 and len(self.user2.BoatList) != 0):
             await self.startGame()
 
     OnLoadNumber = 0
@@ -142,4 +193,40 @@ class BattleshipMatch():
             })
         self.thread.stop()
         self.thread.join()
+
+    def getUser(self, user):
+        if (user == self.user1.sock_user):
+            return self.user1
+        elif user == self.user2.sock_user:
+            return self.user2
+        return None
+
+    async def ChangeTurn(self):
+        self.TurnUser = self.user1 if self.TurnUser is self.user2 else self.user2
+        await self.channel_layer.group_send(
+                self.channelName,
+                {
+                    'type' : 'MSG_GiveTurn',
+                    'player' : self.TurnUser
+                })
+        self.currentTimer = 30
+
+    async def RCV_HitCase(self, user, case):
+        if (self.Gamestatus is not GameState.Playing):
+            return
+        user = self.getUser(user)
+        if user is not self.TurnUser:
+            return
+        Target = self.user1 if user is self.user2 else self.user2
+        Result = Target.Hit(case)
+        asyncio.wait(await self.channel_layer.group_send(
+            self.channelName,
+            {
+                'type' : 'MSG_HitResult',
+                'target' : Target,
+                'case' : case,
+                'result' : Result
+            }))
+        await self.ChangeTurn()
+
         

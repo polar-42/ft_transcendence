@@ -16,7 +16,7 @@ class socket(AsyncWebsocketConsumer):
 			self.channel_name
 		)
 		self.user = self.scope['user']
-		self.Game = await GameManager.JoinGame(GameManager, self.GameId, self.scope['user'], "BattleshipGame" + self.GameId)
+		self.Game = await GameManager.JoinGame(GameManager, self.GameId, "BattleshipGame" + self.GameId, self.scope['user'])
 
 	async def disconnect(self, close_code):
 		await GameManager.LeaveGame(GameManager, self.GameId, self.user)
@@ -33,6 +33,8 @@ class socket(AsyncWebsocketConsumer):
 				await self.Game.RCV_BoatsList(self.user, data['input'])
 			case 'LoadEnded':
 				await self.Game.RCV_OnLoad()
+			case 'HitCase':
+				await self.Game.RCV_HitCase(self.user, data['input'])
 
 	async def MSG_initGame(self, event):
 		await self.send(text_data=json.dumps({
@@ -48,8 +50,8 @@ class socket(AsyncWebsocketConsumer):
 
 	async def MSG_GiveTurn(self, event):
 		await self.send(text_data=json.dumps({
-			'function': "StartTurn" if event['player'].id is self.user.id else "StartEnemyTurn",
-			'playerName' : event['player'].username,
+			'function': "StartTurn" if event['player'].sock_user.id is self.user.id else "StartEnemyTurn",
+			'playerName' : event['player'].Name,
 			'timer': 30
 		}))
 
@@ -64,3 +66,11 @@ class socket(AsyncWebsocketConsumer):
 			self.channel_name
 		)
 		self.close()
+
+	async def MSG_HitResult(self, event):
+		await self.send(text_data=json.dumps({
+			'function': "GotHit" if event['target'].sock_user.id is self.user.id else "HitEnemy",
+			'case': event['case'],
+			'result' : event['result'],
+			'timer': -1
+		}))
