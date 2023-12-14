@@ -5,7 +5,7 @@ import { initLocalGamePong } from "./pongGameLocal.js";
 import { initGamePongIA } from './pongGameIA.js';
 import { initDashboard } from "./dashboard.js";
 import { initGame } from "./game.js";
-import { initGamePong } from "./pongGame.js";
+import { initGamePong, unLoadGamePong } from "./pongGame.js";
 
 export function navto(urlpath)
 {
@@ -29,7 +29,7 @@ function getRoute(RoutePath)
 		{ path: "/", init: initDashboard, unload: null, title:"Home", LogStatus: 2},
 		{ path: "/battleship", init: initGame, unload: null, title:"Battleship", LogStatus: 1},
 		{ path: "/battleship/matchmake", init: initMatchmaking, unload: null, title:"Battleship", LogStatus: 1},
-		{ path: "/pongGame", init: initGamePong, unload: null, title:"pongGame", LogStatus: 1},
+		{ path: "/pongGame", init: initGamePong, unload: unLoadGamePong, title:"pongGame", LogStatus: 1},
 		{ path: "/pongGame/pongMatchmaking", init: initMatchmakingPong, unload: null, title:"pongGame", LogStatus: 1},
 		{ path: "/pongGame/localPongGame", init: initLocalGamePong, unload: null, title:"pongGame", LogStatus: 1},
 		{ path: "/pongGame/pongGameIA", init: initGamePongIA, unload: null, title:"pongGame", LogStatus: 1},
@@ -60,6 +60,8 @@ async function OnLogChange()
 	});
 }
 
+let Prev_match = undefined
+
 const router = async (arg) =>
 {
 	let match = getRoute(document.location.origin + location.pathname);
@@ -83,10 +85,13 @@ const router = async (arg) =>
 	{
 		response = await fetch(match.route.path + "/?valid=True");
 	}
+	if (Prev_match != undefined && Prev_match.route.unload != null)
+		Prev_match.route.unload()
 	document.title = match.route.title
 	document.querySelector("#app").innerHTML = await response.text();
 	if (match.route.init != null)
 		match.route.init(arg)
+	Prev_match = match;
 	OnLogChange();
 };
 

@@ -16,9 +16,21 @@ export function initGamePong()
 	pongGameSocket = new WebSocket("ws://" + window.location.host + '/pongGame/RemoteGame/' + gameId);
 	console.log(pongGameSocket);
 
+	document.addEventListener('keydown', doKeyDown);
+
 	pongGameSocket.onopen = LaunchGame
 	pongGameSocket.onclose = FinishGame
 	pongGameSocket.onmessage = e => OnMessage(e)
+}
+
+export function unLoadGamePong()
+{
+	if (pongGameSocket != null)
+	{
+		pongGameSocket.close()
+		pongGameSocket = null;
+	}
+	document.removeEventListener('keydown', doKeyDown);
 }
 
 let canvas = null;
@@ -102,7 +114,7 @@ function addTimer(data)
 	}
 }
 
-document.onkeydown = function doKeyDown(e)
+function doKeyDown(e)
 {
 	if (pongGameSocket && pongGameSocket.readyState === WebSocket.OPEN) {
 			const key = e.key;
@@ -137,6 +149,7 @@ function LaunchGame()
 function FinishGame()
 {
 	console.log('Pong game is finish');
+	pongGameSocket = null;
 }
 
 function FinishGameByScore(data)
@@ -145,6 +158,7 @@ function FinishGameByScore(data)
 	canvas.style.display="none";
 	let message = "Game is finished, " + data.winner + " is the winner by the score of " + data.playerone_score + " to " + data.playertwo_score;
 	document.getElementById('gameMessage').innerHTML = message;
+	pongGameSocket = null
 }
 
 function OnMessage(e)
