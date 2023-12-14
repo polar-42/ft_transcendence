@@ -4,6 +4,7 @@ import { initMatchmakingPong } from "./pongGameApp.js";
 import { initLocalGamePong } from "./pongGameLocal.js";
 import { initGamePongIA } from './pongGameIA.js';
 import { initDashboard } from "./dashboard.js";
+import { initHomePage} from "./homepage.js";
 import { initGame } from "./game.js";
 import { initGamePong, unLoadGamePong } from "./pongGame.js";
 
@@ -26,7 +27,8 @@ function getRoute(RoutePath)
 	const routes = [
 		{ path: "/404", init: null, unload: null, title:"404", LogStatus: 2},
 		{ path: "/needlog", init: null, unload: null, title:"Login required", LogStatus: 0},
-		{ path: "/", init: initDashboard, unload: null, title:"Home", LogStatus: 2},
+		{ path: "/", init: initHomePage, unload: null, title:"Home", LogStatus: 2},
+		{ path: "/dashboard", init: initDashboard, unload: null, title:"Home", LogStatus: 2},
 		{ path: "/battleship", init: initGame, unload: null, title:"Battleship", LogStatus: 1},
 		{ path: "/battleship/matchmake", init: initMatchmaking, unload: null, title:"Battleship", LogStatus: 1},
 		{ path: "/pongGame", init: initGamePong, unload: unLoadGamePong, title:"pongGame", LogStatus: 1},
@@ -53,10 +55,10 @@ async function OnLogChange()
 	var logStatus = await checkConnexion()
 	document.querySelectorAll('.nav__link').forEach(function(button) {
 		let match = getRoute(button.href);
-		if (match == null || (match.route.LogStatus == 1 && logStatus == false) || match.route.LogStatus == 0 && logStatus == true)
-			button.style.display = "none";
-		else
-			button.style.display = "block";
+		// if (match == null || (match.route.LogStatus == 1 && logStatus == false) || match.route.LogStatus == 0 && logStatus == true)
+		// 	button.style.display = "none";
+		// else
+		// 	button.style.display = "block";
 	});
 }
 
@@ -79,7 +81,7 @@ const router = async (arg) =>
 	var response;
 	if (match.route.path == "/")
 	{
-		response = await fetch(match.route.path + "dashboard/?valid=True");
+		response = await fetch(match.route.path + "homepage/?valid=True");
 	}
 	else
 	{
@@ -109,3 +111,5 @@ document.addEventListener("DOMContentLoaded", () =>
 	});
 	router();
 });
+
+

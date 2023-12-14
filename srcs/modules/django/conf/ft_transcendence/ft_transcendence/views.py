@@ -4,9 +4,9 @@ import os
 def index_view(request):
     return render(request, 'index.html')
 
-def dashboard_view(request):
+def homepage_view(request):
 	if (request.method == "GET" and request.GET["valid"] == "True") or (request.method == "POST"):
-		return render(request, 'dashboard.html')
+		return render(request, 'homepage.html')
 	else:
 		return render(request, 'index.html')
 def PNF_view(request):

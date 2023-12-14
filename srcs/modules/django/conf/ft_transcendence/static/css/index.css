@@ -1,39 +1,80 @@
+/* Color Theme Swatches in Hex */
+.Hevy-App-—-Redesign-Concept-1-hex { color: #403E3F; }
+.Hevy-App-—-Redesign-Concept-2-hex { color: #2793F2; }
+.Hevy-App-—-Redesign-Concept-3-hex { color: #22A2F2; }
+.Hevy-App-—-Redesign-Concept-4-hex { color: #22B7F2; }
+.Hevy-App-—-Redesign-Concept-5-hex { color: #0D0D0D; }
+
+@font-face {
+  font-family: 'ostrich_sans';
+  src: url('../assets/fonts/ostrich-sans-master/webfonts/ostrich-sans-regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'ostrich_sans_black';
+  src: url('../assets/fonts/ostrich-sans-master/webfonts/ostrich-sans-black.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+* {
+  /* border: 1px solid red; */
+}
+
+html {
+  background-color: #403E3F;
+  background-repeat:  no-repeat;
+  color: #2793F2;
+  font-size: 20px;
+ }
+
 body {
-    --nav-width: 200px;
-    margin: 0 0 0 var(--nav-width);
-    font-family: 'Quicksand', sans-serif;
-    font-size: 18px;
+  font-family: ostrich_sans;
+  margin: 0px;
 }
 
-.nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: var(--nav-width);
-    height: 100vh;
-    background: #222222;
+header {
+  position: relative;
+  display: flex;
+  padding-top: 10px;
+  justify-content: space-between;
+  font-size: 1.4em;
+  background:
+    linear-gradient(#2793F2 0 0) bottom/ 60% 2px no-repeat;
 }
 
-.nav__link {
-    display: block;
-    padding: 12px 18px;
-    text-decoration: none;
-    color: #eeeeee;
-    font-weight: 500;
-}
-
-.nav__link:hover {
-    background: rgba(255, 255, 255, 0.05);
-}
-
-#app {
-    margin: 0;
-    /* line-height: 1.5; */
-    font-weight: 500;
-    min-height: 100vh;
+footer {
+  background-color: #;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 }
 
 
-a {
-    color: #009579;
+.home_btn {
+  font-family: ostrich_sans_black;
+  font-size: 1.6em;
+  text-shadow: 1px 1px 1px #2793F2;
+}
+
+nav {
+  align-items: center;
+}
+
+nav a {
+  margin: 15px;
+}
+
+header a {
+  text-decoration: none;
+  padding-left: 10px;
+}
+
+header a:visited {
+  color: #2793F2;
+}
+
+header a:hover {
+  font-weight: bold;
 }
