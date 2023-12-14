@@ -1,7 +1,11 @@
 import { checkConnexion, initLoggin, initRegister } from "./authApp.js";
 import { initMatchmaking } from "./battleshipApp.js";
+import { initMatchmakingPong } from "./pongGameApp.js";
+import { initLocalGamePong } from "./pongGameLocal.js";
+import { initGamePongIA } from './pongGameIA.js';
 import { initDashboard } from "./dashboard.js";
 import { initGame } from "./game.js";
+import { initGamePong } from "./pongGame.js";
 
 export function navto(urlpath)
 {
@@ -17,7 +21,6 @@ const navigateTo = url =>
 }
 
 
-
 function getRoute(RoutePath)
 {
 	const routes = [
@@ -26,11 +29,15 @@ function getRoute(RoutePath)
 		{ path: "/", init: initDashboard, unload: null, title:"Home", LogStatus: 2},
 		{ path: "/battleship", init: initGame, unload: null, title:"Battleship", LogStatus: 1},
 		{ path: "/battleship/matchmake", init: initMatchmaking, unload: null, title:"Battleship", LogStatus: 1},
+		{ path: "/pongGame", init: initGamePong, unload: null, title:"pongGame", LogStatus: 1},
+		{ path: "/pongGame/pongMatchmaking", init: initMatchmakingPong, unload: null, title:"pongGame", LogStatus: 1},
+		{ path: "/pongGame/localPongGame", init: initLocalGamePong, unload: null, title:"pongGame", LogStatus: 1},
+		{ path: "/pongGame/pongGameIA", init: initGamePongIA, unload: null, title:"pongGame", LogStatus: 1},
 		{ path: "/authApp/login",init: initLoggin, unload: null, title:"Login", LogStatus: 0},
 		{ path: "/authApp/register", init: initRegister, unload: null, title:"Register", LogStatus: 0},
 	];
 
-	const Potentialroutes = routes.map(route => 
+	const Potentialroutes = routes.map(route =>
 		{
 			return {
 				route: route,
@@ -53,7 +60,7 @@ async function OnLogChange()
 	});
 }
 
-const router = async (arg) => 
+const router = async (arg) =>
 {
 	let match = getRoute(document.location.origin + location.pathname);
 	/* define 404 error page */
@@ -85,11 +92,11 @@ const router = async (arg) =>
 
 window.addEventListener("popstate", router);
 
-document.addEventListener("DOMContentLoaded", () => 
+document.addEventListener("DOMContentLoaded", () =>
 {
-	document.body.addEventListener("click", e => 
+	document.body.addEventListener("click", e =>
 	{
-		if (e.target.matches("[data-link]")) 
+		if (e.target.matches("[data-link]"))
 		{
 			e.preventDefault();
 			navigateTo(e.target.href);

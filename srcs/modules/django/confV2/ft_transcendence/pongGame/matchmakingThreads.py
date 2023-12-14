@@ -4,7 +4,7 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync, sync_to_async
 import asyncio
 
-class MatchmakingLoop(threading.Thread):
+class pongMatchmakingLoop(threading.Thread):
 
     def __init__(self, current) :
         super().__init__()
@@ -21,27 +21,27 @@ class MatchmakingLoop(threading.Thread):
 
 
 
-class Matchmaking():
+class pongMatchmaking():
     _MatchList = []
     userList = []
     is_running = False
-    channelName = "Matchmaking"
+    channelName = "pongMatchmaking"
 
     def __init__(self):
-        mythread = MatchmakingLoop(self)
+        mythread = pongMatchmakingLoop(self)
         mythread.start()
         self.is_running = True
         self.channel_layer = get_channel_layer()
 
 
     async def AddUser(self, user):
-        if self.userList.__contains__(user) == False:
+        if user not in self.userList:
             self.userList.append(user)
             return True
         return False
 
     def RemoveUser(self, user):
-        if self.userList.__contains__(user) == True:
+        if user in self.userList:
             self.userList.remove(user)
             return True
         return False
@@ -56,12 +56,12 @@ class Matchmaking():
             if user2.is_authenticated == False:
                 self.matchmake.removeUser(user2)
             return
-        game_id = "Game_" + str(user1.id) + "_" + str(user2.id)
-        print("Game id = " + game_id)
+        game_id = "PongGame_" + str(user1.id) + "_" + str(user2.id)
+        print("PongGame id = " + game_id)
         await (self.channel_layer.group_send(
             self.channelName,
             {
-                'type' : 'CreateGameMessage',
+                'type' : 'CreatePongGameMessage',
                 'user1': user1.id,
                 'user2': user2.id,
                 'gameId': game_id
