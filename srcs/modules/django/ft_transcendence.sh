@@ -3,22 +3,19 @@
 export SITE_NAME="ft_transcendence";
 export APP_NAME="Dashboard";
 
-export IP_DJANGO_NUM=$(hostname -i);
-echo $IP_DJANGO_NUM > /var/db/ip_django
-
 export DB_NAME="transcendence_db"
 export DB_USER="user_db"
 export DB_PASSWORD="password_db"
 export DB_PORT="5432"
 
-#while [ ! -f /var/db/ip_db ] ; do
-#	sleep 1
-#done
+while true ; do
 
-#export DB_HOST=$(cat /var/db/ip_db);
-#rm -rf /var/db/ip_db
+	pg_isready --dbname=transcendence_db --host=container_postgresql --port=5432 --username=user_db > /dev/null 2>&1;
 
-while [ ! -f /var/db/check ] ; do
+	if [ $? -eq 0 ]; then
+		break
+	fi
+
 	sleep 1
 done
 
@@ -74,4 +71,5 @@ echo "python mysite/manage.py runserver";
 python manage.py makemigrations
 python manage.py migrate
 python manage.py createsuperuser
+python manage.py create_user
 python manage.py runserver $(hostname -i):8080;

@@ -3,9 +3,29 @@ import { navto } from "./index.js";
 export function initMatchmakingPong()
 {
 	document.getElementsByClassName("matchmake_BTN")[0].addEventListener("click", JoinMatchmaking)
+	document.getElementsByClassName("launchPongLocal_BTN")[0].addEventListener("click", LaunchPongLocal)
+	document.getElementsByClassName("launchPongIA_BTN")[0].addEventListener("click", LaunchPongIA)
 }
 
 var matchmakingPongGame = null
+
+function LaunchPongIA()
+{
+	document.getElementsByClassName("matchmake_BTN")[0].removeEventListener("click", LeaveMatchmaking);
+	document.getElementsByClassName("launchPongLocal_BTN")[0].removeEventListener("click", LaunchPongLocal);
+	document.getElementsByClassName("launchPongIA_BTN")[0].removeEventListener("click", LaunchPongIA);
+	LeaveMatchmaking();
+	navto("/pongGame/pongGameIA", 'True');
+}
+
+function LaunchPongLocal()
+{
+	document.getElementsByClassName("matchmake_BTN")[0].removeEventListener("click", LeaveMatchmaking);
+	document.getElementsByClassName("launchPongLocal_BTN")[0].removeEventListener("click", LaunchPongLocal);
+	document.getElementsByClassName("launchPongIA_BTN")[0].removeEventListener("click", LaunchPongIA);
+	LeaveMatchmaking();
+	navto("/pongGame/localPongGame");
+}
 
 function JoinMatchmaking()
 {
@@ -47,8 +67,9 @@ function OnMessage(e)
 {
 	const data = JSON.parse(e.data);
 	document.getElementsByClassName("matchmake_BTN")[0].removeEventListener("click", LeaveMatchmaking);
+	document.getElementsByClassName("launchPongLocal_BTN")[0].removeEventListener("click", LaunchPongLocal);
+	document.getElementsByClassName("launchPongIA_BTN")[0].removeEventListener("click", LaunchPongIA);
 	LeaveMatchmaking();
-	//matchmakingPongGame.onclose = null
 	navto("/pongGame", data.gameId);
 }
 

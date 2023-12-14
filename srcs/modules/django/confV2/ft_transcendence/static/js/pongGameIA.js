@@ -1,28 +1,29 @@
 import { navto } from "./index.js";
 
-var pongGameSocket = null;
-var gameId = null;
+let canvas = null;
+let context = null;
+let socketPongIA = null;
 
-export function initGamePong()
+export function initGamePongIA()
 {
 	if (arguments[0] == undefined)
 	{
 		navto('/pongGame/pongMatchmaking');
 		return;
 	}
-	gameId = arguments[0];
-	console.log("GameID = " + gameId);
-	console.log("ws://" + window.location.host + '/pongGame/RemoteGame/' + gameId);
-	pongGameSocket = new WebSocket("ws://" + window.location.host + '/pongGame/RemoteGame/' + gameId);
-	console.log(pongGameSocket);
 
-	pongGameSocket.onopen = LaunchGame
-	pongGameSocket.onclose = FinishGame
-	pongGameSocket.onmessage = e => OnMessage(e)
+	console.log('initGamePongIA');
+
+	console.log("ws://" + window.location.host + '/pongGame/gameVsIA');
+	socketPongIA = new WebSocket("ws://" + window.location.host + '/pongGame/gameVsIA');
+
+	document.addEventListener('keydown', doKeyDown);
+
+	socketPongIA.onopen = LaunchGame
+	socketPongIA.onclose = FinishGame
+	socketPongIA.onmessage = e => OnMessage(e)
+
 }
-
-let canvas = null;
-let context = null;
 
 class Element {
 	constructor(options) {
@@ -74,7 +75,7 @@ function drawElement(element)
 
 function updateGameData(data)
 {
-	if (pongGameSocket && pongGameSocket.readyState === WebSocket.OPEN)
+	if (socketPongIA && socketPongIA.readyState === WebSocket.OPEN)
 	{
 		playerOne.y = data.playerone_pos_y;
 		playerTwo.y = data.playertwo_pos_y;
@@ -94,7 +95,7 @@ function updateGameData(data)
 
 function addTimer(data)
 {
-	if (pongGameSocket && pongGameSocket.readyState === WebSocket.OPEN)
+	if (socketPongIA && socketPongIA.readyState === WebSocket.OPEN)
 	{
 		let secondLeft = data.second_left;
 
@@ -102,21 +103,21 @@ function addTimer(data)
 	}
 }
 
-document.onkeydown = function doKeyDown(e)
+function doKeyDown(e)
 {
-	if (pongGameSocket && pongGameSocket.readyState === WebSocket.OPEN) {
+	if (socketPongIA && socketPongIA.readyState === WebSocket.OPEN) {
 			const key = e.key;
 			if (key == "ArrowUp") {
 					e.preventDefault();
 					console.log('ArrowUp');
-					pongGameSocket.send(JSON.stringify({
+					socketPongIA.send(JSON.stringify({
 							'message': 'input',
 							'input': 'ArrowUp'
 					}))
 			} else if (key == 'ArrowDown') {
 					e.preventDefault();
 					console.log('ArrowDown');
-					pongGameSocket.send(JSON.stringify({
+					socketPongIA.send(JSON.stringify({
 							'message': 'input',
 							'input': 'ArrowDown'
 					}))
@@ -126,12 +127,12 @@ document.onkeydown = function doKeyDown(e)
 
 function LaunchGame()
 {
-	canvas = document.getElementById('pongCanvas');
+	canvas = document.getElementById('pongCanvasIA');
 	context = canvas.getContext('2d');
 	canvas.widht = 720;
 	canvas.height = 450;
 
-	console.log('Pong Game is launch');
+	console.log('Pong Game vs ia is launch');
 }
 
 function FinishGame()
@@ -143,7 +144,7 @@ function FinishGameByScore(data)
 {
 	console.log(data)
 	canvas.style.display="none";
-	let message = "Game is finished, " + data.winner + " is the winner by the score of " + data.playerone_score + " to " + data.playertwo_score;
+	let message = "Game is finished"; //+ data.winner + " is the winner by the score of " + data.playerone_score + " to " + data.playertwo_score;
 	document.getElementById('gameMessage').innerHTML = message;
 }
 

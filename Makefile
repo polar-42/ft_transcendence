@@ -1,4 +1,7 @@
+export DB_HOST_LINUX := $(shell hostname -I | awk '{print $$2}')
+
 all: stop
+	@export DB_HOST_LINUX=$(DB_HOST_LINUX)
 	@mkdir -p ~/data/blockchain
 	@mkdir -p ~/data/db
 	@echo Docker is launching...
@@ -27,7 +30,7 @@ info:
 	@docker network ls
 
 stop:
-	@docker compose -f srcs/docker-compose.yml down 
+	@docker compose -f srcs/docker-compose.yml down
 	@echo All containers have been stopped
 
 clean:
