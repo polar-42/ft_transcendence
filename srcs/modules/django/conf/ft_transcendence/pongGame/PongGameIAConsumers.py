@@ -32,9 +32,9 @@ class PongGameIASocket(AsyncWebsocketConsumer):
 
 		await self.pongGameThread.quitGame(self.username)
 
-		await self.close()
+		await addToDb(self.username.username, 'IA', 0, 3, 'IA', 0, 3, 'disconnexion')
 
-		print(self.username, 'is disconnected and game against IA is launch')
+		await self.close()
 
 	async def receive(self, text_data):
 		data = json.loads(text_data)
@@ -48,7 +48,7 @@ class PongGameIASocket(AsyncWebsocketConsumer):
 	async def end_game_by_score(self, event):
 		winner = event['winner']
 
-		print('Game is win by', winner.username)
+		print('Game is win by', winner)
 
 		await self.channel_layer.group_discard(
 			"PongGameVsIA_" + str(self.username),
@@ -65,7 +65,7 @@ class PongGameIASocket(AsyncWebsocketConsumer):
 
 		await self.send(text_data=json.dumps({
     			'type': 'game_ending',
-				'winner': winner.username,
+				'winner': winner,
 				'reason': 'score',
 				'playerone_score': str(playerone_score),
 				'playertwo_score': str(playertwo_score),
@@ -73,7 +73,7 @@ class PongGameIASocket(AsyncWebsocketConsumer):
 				'playertwo_username': 'IA',
     	}))
 
-		await addToDb(self.username.username, 'IA', playerone_score, playertwo_score, winner.username, n_ball_touch_player1, n_ball_touch_player2, 'score')
+		await addToDb(self.username.username, 'IA', playerone_score, playertwo_score, winner, n_ball_touch_player1, n_ball_touch_player2, 'score')
 
 		await self.close()
 

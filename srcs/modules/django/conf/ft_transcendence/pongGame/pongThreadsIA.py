@@ -1,7 +1,7 @@
-import threading, time, json, random, math
+import threading, json, random, math, asyncio, copy
 from channels.layers import get_channel_layer
-import asyncio
 from . import pongGameClasses
+from .PongIA import pongGameIA
 
 class pongGameLoop(threading.Thread):
 
@@ -13,9 +13,12 @@ class pongGameLoop(threading.Thread):
         self.isGameRunning = False
         self.stop_flag = threading.Event()
         self.startGameBool = False
+        self.threadIA = None
+        self.isThreadRunning = False
 
     async def run_async(self):
-        x = 0
+        await send_data_ia_async(self.pongThreadIA, self.game, self.isThreadRunning)
+        x = 30
         y = 0
         sec = 3
         while not self.stop_flag.is_set():
@@ -30,6 +33,7 @@ class pongGameLoop(threading.Thread):
                 if y > 30:
                     sec -= 1
                     y = 0
+                    await send_data_ia_async(self.pongThreadIA, self.game, self.isThreadRunning)
 
                 if sec <= 0:
                     sec = 3
@@ -37,6 +41,7 @@ class pongGameLoop(threading.Thread):
                     self.startGameBool = True
 
             else:
+                self.isThreadRunning = True
 
                 game = self.game.get_ball()
                 ball_pos_x, ball_pos_y = game.get_pos()
@@ -105,6 +110,7 @@ class pongGameLoop(threading.Thread):
                     ball_pos_y = 195
                     self.game.update_score(2)
                     self.startGameBool = False
+                    self.isThreadRunning = False
 
                     #RAND TO GET BACK TO GAME
                     if random.randint(1, 2) == 1:
@@ -123,6 +129,7 @@ class pongGameLoop(threading.Thread):
                     ball_pos_y = 195
                     self.game.update_score(1)
                     self.startGameBool = False
+                    self.isThreadRunning = False
 
                     #RAND TO GET BACK TO GAME
                     if random.randint(1, 2) == 1:
@@ -150,21 +157,19 @@ class pongGameLoop(threading.Thread):
 
                 await asyncio.sleep(0.03)
 
-                if x > 30:
-                    print('IA MOVE')
+                if x >= 30:
+                    await send_data_ia_async(self.pongThreadIA, self.game, self.isThreadRunning)
                     x = 0
-
-                #print('in game loop, x =', x)
                 x = x + 1
 
     def run(self):
         asyncio.run(self.run_async())
 
-    def start_game(self):
+    def start_game(self, pongThreadIA):
         self.isGameRunning = True
+        self.pongThreadIA = pongThreadIA
 
     def inputGame(self, input, player):
-        #print('player is', player, 'input is', input)
         if input == 'ArrowUp':
             if player == 0:
                 self.game.move_up_player1()
@@ -185,6 +190,8 @@ class pongGameLoop(threading.Thread):
 async def send_data_async(ping_game_instance, game):
     await ping_game_instance.sendDataFromGame(game)
 
+async def send_data_ia_async(threadIA, game, isRunning):
+    await threadIA.receiveDataFromGameIA(game, isRunning)
 
 async def send_timer_async(ping_game_instance, game, sec):
     await ping_game_instance.sendTimerFromGame(game, sec)
@@ -201,17 +208,22 @@ class pongGame():
         self.socket = socket
         if channelName != '':
             self.mythread = pongGameLoop(self, socket)
+            self.pongThreadIA = pongGameIA(self.mythread)
 
             print('game vs IA (', channelName, ') is launch')
 
             self.channelName = channelName
 
-            self.mythread.start_game()
+            self.mythread.start_game(self.pongThreadIA)
             self.mythread.start()
+            self.pongThreadIA.start_game()
+            self.pongThreadIA.start()
 
     async def finishGame(self):
         self.mythread.stop()
         self.mythread.join()
+        self.pongThreadIA.stop()
+        self.pongThreadIA.join()
 
     async def sendTimerFromGame(self, pongGame, secondLeft):
         game = pongGame.get_ball()
@@ -234,7 +246,6 @@ class pongGame():
             'playertwo_score': player2_score,
             'second_left': secondLeft,
         }))
-
 
     async def sendDataFromGame(self, pongGame):
         game = pongGame.get_ball()
@@ -284,3 +295,5 @@ class pongGame():
 
         self.mythread.stop()
         self.mythread.join()
+        self.pongThreadIA.stop()
+        self.pongThreadIA.join()

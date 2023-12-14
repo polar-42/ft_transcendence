@@ -7,6 +7,18 @@ export function initMatchmakingPong()
 	document.getElementsByClassName("launchPongIA_BTN")[0].addEventListener("click", LaunchPongIA)
 }
 
+export function unLoadMatchmakingPong()
+{
+	if (matchmakingPongGame != null)
+	{
+		matchmakingPongGame.close();
+	}
+	matchmakingPongGame = null;
+	document.getElementsByClassName("matchmake_BTN")[0].removeEventListener("click", LeaveMatchmaking);
+	document.getElementsByClassName("launchPongLocal_BTN")[0].removeEventListener("click", LaunchPongLocal);
+	document.getElementsByClassName("launchPongIA_BTN")[0].removeEventListener("click", LaunchPongIA);
+}
+
 var matchmakingPongGame = null
 
 function LaunchPongIA()

@@ -28,8 +28,8 @@ export function unLoadGamePong()
 	if (pongGameSocket != null)
 	{
 		pongGameSocket.close()
-		pongGameSocket = null;
 	}
+	pongGameSocket = null;
 	document.removeEventListener('keydown', doKeyDown);
 }
 
