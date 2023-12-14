@@ -1,7 +1,4 @@
-export DB_HOST_LINUX := $(shell hostname -I | awk '{print $$2}')
-
 all: stop
-	@export DB_HOST_LINUX=$(DB_HOST_LINUX)
 	@mkdir -p ~/data/blockchain
 	@mkdir -p ~/data/db
 	@echo Docker is launching...

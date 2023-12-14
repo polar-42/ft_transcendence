@@ -9,7 +9,7 @@ fi
 
 export IP_DJANGO=$(ping container_django | head -n 1 | awk '{print $3}'# | cut -c2- | rev | cut -c3- | rev)
 
-echo "host $DB_NAME all $DB_HOST_LINUX/32 trust" >> /var/db/pg_hba.conf
+# echo "host $DB_NAME all $DB_HOST_LINUX/32 trust" >> /var/db/pg_hba.conf
 echo "host $DB_NAME all $IP_DJANGO/32 trust" >> /var/db/pg_hba.conf
 
 pg_ctl -D /var/db start;

@@ -14,12 +14,11 @@ RUN mkdir -p /var/site_files
 
 WORKDIR /usr/src/app
 
-COPY confV2/ ./conf
+COPY conf/ ./conf
 COPY ft_transcendence.sh .
-# COPY site_files/ ./site_files
 
 RUN pip install --upgrade pip
-RUN pip install -r conf/requirements.txt
+RUN pip install --no-cache-dir Django==4.2.6 requests psycopg2-binary Pillow channels==3.0.4
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1

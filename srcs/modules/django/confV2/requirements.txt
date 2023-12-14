@@ -1,5 +1,0 @@
-Django==4.2.6
-requests
-psycopg2-binary
-Pillow
-channels==3.0.4

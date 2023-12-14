@@ -48,8 +48,8 @@ services:
       - db:/var/db
     ports:
       - "5432:5432"
-    environment:
-      - DB_HOST_LINUX="${DB_HOST_LINUX}"
+    # environment:
+      # - DB_HOST_LINUX="${DB_HOST_LINUX}"
     #healthcheck:
     #  test: ["CMD", "pg_isready", "-h", "localhost", "-p", "5432"]
     #  interval: 10s
@@ -104,7 +104,7 @@ volumes:
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: './modules/django/confV2'
+      device: './modules/django/conf'
 networks:
   transcendence_network:
     driver: bridge
