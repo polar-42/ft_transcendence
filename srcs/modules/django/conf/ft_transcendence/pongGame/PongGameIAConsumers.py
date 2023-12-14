@@ -65,7 +65,7 @@ class PongGameIASocket(AsyncWebsocketConsumer):
 
 		await self.send(text_data=json.dumps({
     			'type': 'game_ending',
-				'winner': winner,
+				'winner': str(winner),
 				'reason': 'score',
 				'playerone_score': str(playerone_score),
 				'playertwo_score': str(playertwo_score),
