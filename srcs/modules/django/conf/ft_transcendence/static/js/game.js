@@ -11,16 +11,13 @@ const boxSize = 60
 const offsetX = 10
 const offsetY = 100
 
-export function FP_UnLoad()
+export function unLoad()
 {
-	canvas.removeEventListener('click', FP_mouseClick);
-	canvas.removeEventListener('contextmenu', FP_mouseRightClick);
-	canvas.removeEventListener('mousedown', FP_mouseDown);
-	canvas.removeEventListener('mousemove', FP_mouseMove);
-	canvas.removeEventListener('mouseup', FP_mouseUp);
-	if (curInterval != undefined)
-		clearInterval(curInterval)
-	curInterval = undefined
+	if (battleshipSocket != null)
+		{
+			battleshipSocket.close()
+			battleshipSocket = null
+		}
 }
 
 const FP_BTN_Validate = 
@@ -55,8 +52,6 @@ export function initGame()
 		return
 	}
 	gameId = arguments[0]
-	console.log("GameID = " + gameId)
-	console.log("ws://" + window.location.host + '/socketApp/battleship/' + gameId)
 	battleshipSocket = new WebSocket("ws://" + window.location.host + '/socketApp/battleship/' + gameId)
 	battleshipSocket.onmessage = e => OnMessage(e)
 }
@@ -64,7 +59,6 @@ export function initGame()
 function OnMessage(e)
 {
 	const data = JSON.parse(e.data)
-	console.log(data);
 	switch (data.function) {
 		case 'initGame':
 			FP_Init()
@@ -92,7 +86,13 @@ function OnMessage(e)
 		case 'GotHit':
 			break
 		case 'HitEnemy':
-			SP_HitCase(data.case, data.result)
+			SP_HitCase(data.case, data.result, data.destroyedboat)
+			break
+		case 'Loose':
+			RP_Loose(data.other, data.wAliveBoat)
+			break
+		case 'Win':
+			RP_Win(data.other, data.wAliveBoat, data.lAliveBoat)
 			break
 		default:
 			break;
@@ -100,7 +100,39 @@ function OnMessage(e)
 	currentTimer = data.timer
 }
 
+//#region ResultPart
+
+function RP_Loose(other, otherBoat)
+{
+	canvas.style.display = 'none'
+	const txtNode = document.createTextNode("You loose! you destroyed only " + otherBoat + " " + other + " boats.")
+	canvas.parentElement.appendChild(txtNode)
+	battleshipSocket = null
+}
+
+function RP_Win(other, userBoat, otherBoat)
+{
+	canvas.style.display = 'none'
+	const txtNode = document.createTextNode("You win! you destroyed the " + otherBoat + " " + other + " boats when he detroyed only " + userBoat + " of yours")
+	canvas.parentElement.appendChild(txtNode)
+	battleshipSocket = null
+}
+
+//#endregion
+
 //#region FirstPart
+
+function FP_UnLoad()
+{
+	canvas.removeEventListener('click', FP_mouseClick);
+	canvas.removeEventListener('contextmenu', FP_mouseRightClick);
+	canvas.removeEventListener('mousedown', FP_mouseDown);
+	canvas.removeEventListener('mousemove', FP_mouseMove);
+	canvas.removeEventListener('mouseup', FP_mouseUp);
+	if (curInterval != undefined)
+		clearInterval(curInterval)
+	curInterval = undefined
+}
 
 function FP_Timer()
 {
@@ -112,10 +144,10 @@ function FP_Timer()
 function FP_Init()
 {
 	BoatList = [
-		{ name : 'Carrier', x : 0, y : 0, startX : 700, startY : 150, ArrayX : -1, ArrayY : -1, size : 5, horizontal : true, isDragging : false },
-		{ name : 'BattleShip', x : 0, y : 0, startX : 700, startY : 250, ArrayX : -1, ArrayY : -1, size : 4, horizontal : true, isDragging : false },
-		{ name : 'Destroyer', x : 0, y : 0, startX : 700, startY : 350, ArrayX : -1, ArrayY : -1, size : 3, horizontal : true, isDragging : false },
-		{ name : 'Submarine', x : 0, y : 0, startX : 700, startY : 450, ArrayX : -1, ArrayY : -1, size : 3, horizontal : true, isDragging : false },
+		// { name : 'Carrier', x : 0, y : 0, startX : 700, startY : 150, ArrayX : -1, ArrayY : -1, size : 5, horizontal : true, isDragging : false },
+		// { name : 'BattleShip', x : 0, y : 0, startX : 700, startY : 250, ArrayX : -1, ArrayY : -1, size : 4, horizontal : true, isDragging : false },
+		// { name : 'Destroyer', x : 0, y : 0, startX : 700, startY : 350, ArrayX : -1, ArrayY : -1, size : 3, horizontal : true, isDragging : false },
+		// { name : 'Submarine', x : 0, y : 0, startX : 700, startY : 450, ArrayX : -1, ArrayY : -1, size : 3, horizontal : true, isDragging : false },
 		{ name : 'PatrolBoat', x : 0, y : 0, startX : 700, startY : 550, ArrayX : -1, ArrayY : -1, size : 2, horizontal : true, isDragging : false },
 	];
 	for (let y = 0; y < gridSizeY; y++)
@@ -295,6 +327,14 @@ function FP_mouseClick(e)
 		return;
 	const mouseX = e.clientX - canvas.getBoundingClientRect().left;
 	const mouseY = e.clientY - canvas.getBoundingClientRect().top;
+	var count = 0;
+	BoatList.forEach(element => {
+		if (element.ArrayPosX != -1)
+			count++;
+	})
+
+	if (count != BoatList.length)
+		return
 	if (mouseX > FP_BTN_Validate.x && mouseX < FP_BTN_Validate.x + FP_BTN_Validate.w && mouseY > FP_BTN_Validate.y && mouseY < FP_BTN_Validate.y + FP_BTN_Validate.h)
 	{
 		validated = !validated;
@@ -370,7 +410,7 @@ function FP_drawValidateButton()
 			if (element.ArrayX != -1)
 				boatCount++;
 		});
-	if (boatCount == 5)
+	if (boatCount == BoatList.length)
 	{
 		ctx.fillStyle = FP_BTN_Validate.color; // Button color
 		ctx.fillRect(FP_BTN_Validate.x, FP_BTN_Validate.y, FP_BTN_Validate.w, FP_BTN_Validate.h);
@@ -430,15 +470,24 @@ function FP_isValidPos(element)
 var SP_selected = undefined
 var SP_hovered = undefined
 
-function SP_HitCase(Tcase, result)
+function SP_HitCase(Tcase, result, boat)
 {
 	BoardCases.forEach(element => {
 		if (element.ArrayPosX == Tcase.ArrayPosX && element.ArrayPosY == Tcase.ArrayPosY)
 		{
 			element.status = result == false ? -1 : 1
-			return 
+
 		}
 	});
+	if (boat != "None")
+	{
+		console.log(boat)
+		BoatList.forEach(element => {
+			if (element.name == boat)
+				element.status = false
+		})
+	}
+	SP_drawEnemyBoats()
 }
 
 function SP_mouseMove(event)
@@ -513,6 +562,14 @@ function SP_mouseClick(event)
 function SP_Load()
 {
 	setInterval(SP_Timer, 1000)
+	BoatList = [
+		// { name : 'Carrier', x : 700, y : 100, size : 5, status : true},
+		// { name : 'BattleShip', x : 700, y : 200, size : 4, status : true},
+		// { name : 'Destroyer', x : 700, y : 300, size : 3, status : true},
+		// { name : 'Submarine', x : 700, y : 400, size : 3, status : true},
+		{ name : 'PatrolBoat', x : 700, y : 500, size : 2, status : true},
+	]
+	SP_drawEnemyBoats()
 	SP_Draw()
 	battleshipSocket.send(JSON.stringify({
 		'function': 'LoadEnded',
@@ -533,9 +590,24 @@ function SP_Draw()
 	SP_drawSendBTN()
 }
 
+function SP_drawEnemyBoats()
+{
+	ctx.clearRect(650, 150, 200, 500)
+	BoatList.forEach(element => {
+			ctx.beginPath()
+			ctx.rect(element.x, element.y, element.size * boxSize, boxSize);
+			if (element.status == false)
+				ctx.fillStyle = "red"
+			else
+				ctx.fillStyle = "blue"
+			ctx.fill()
+			ctx.closePath()
+	})
+
+}
 function SP_drawTitle(message)
 {
-	ctx.clearRect(canvas.width / 2 - 100, 25, 200, 70)
+	ctx.clearRect(canvas.width / 2 - 200, 25, 400, 70)
 	ctx.beginPath()
 	ctx.font = "40px Arial";
 	ctx.textAlign = "center"
@@ -610,7 +682,6 @@ function drawGrid(drawPart)
 		{
 			ctx.beginPath();
 			ctx.rect(offsetX + (element.ArrayPosX * boxSize) + 2, offsetY + (element.ArrayPosY * boxSize) + 2, boxSize - 2, boxSize - 2)
-			console.log(element.status)
 			if (element.status != 0)
 			{
 				if (element.status == 1)

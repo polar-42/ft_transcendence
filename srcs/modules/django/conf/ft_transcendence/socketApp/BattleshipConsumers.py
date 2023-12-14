@@ -2,6 +2,7 @@ import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import get_channel_layer
 from battleshipApp import BattleshipMatch
+import asyncio
 
 GameManager = BattleshipMatch.BattleShipGameManager
 
@@ -72,5 +73,20 @@ class socket(AsyncWebsocketConsumer):
 			'function': "GotHit" if event['target'].sock_user.id is self.user.id else "HitEnemy",
 			'case': event['case'],
 			'result' : event['result'],
+			'destroyedboat' : event['destroyedboat'],
 			'timer': -1
 		}))
+	
+	async def MSG_GameEnd(self, event):
+		asyncio.wait(await self.send(text_data=json.dumps({
+			'function' : "Loose" if event['looser'].sock_user.id == self.user.id else "Win",
+			'other' : event['looser'].Name if event['winner'].sock_user.id == self.user.id else event['winner'].Name,
+			'wAliveBoat' : event['winnerBoat'],
+			'lAliveBoat' : event['looserBoat'],
+			'timer': -1
+		})))
+		await self.close()
+		await self.channel_layer.group_discard(
+				"BattleshipGame" + self.GameId,
+				self.channel_name
+			)

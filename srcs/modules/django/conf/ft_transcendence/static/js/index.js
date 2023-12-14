@@ -76,23 +76,28 @@ const router = async (arg) =>
 	}
 	else if (match.route.LogStatus == 0 && await checkConnexion() == true)
 		match = getRoute(document.location.origin + "/");
-	var response;
+	var actualRoute
 	if (match.route.path == "/")
-	{
-		response = await fetch(match.route.path + "dashboard/?valid=True");
-	}
+		actualRoute = match.route.path + "dashboard/?valid=True";
 	else
-	{
-		response = await fetch(match.route.path + "/?valid=True");
-	}
+		actualRoute = match.route.path + "/?valid=True";
 	if (Prev_match != undefined && Prev_match.route.unload != null)
 		Prev_match.route.unload()
-	document.title = match.route.title
-	document.querySelector("#app").innerHTML = await response.text();
-	if (match.route.init != null)
-		match.route.init(arg)
-	Prev_match = match;
-	OnLogChange();
+	fetch(actualRoute)
+	.then(Response => {
+		document.title = match.route.title
+		return Response.text();
+	})
+	.then(html => {
+		document.querySelector("#app").innerHTML = html
+	})
+	.then(value => 
+	{
+		if (match.route.init != null)
+			match.route.init(arg)
+		Prev_match = match;
+		OnLogChange();
+	})
 };
 
 window.addEventListener("popstate", router);

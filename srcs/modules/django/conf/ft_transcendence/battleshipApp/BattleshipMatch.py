@@ -36,11 +36,13 @@ class Boat():
         for case in self.BoatArray:
             if case.PosX == posX and case.PosY == posY:
                 if self.HittedArray.__contains__(case) == True:
-                    return False
+                    return 0
                 else:
                     self.HittedArray.append(case)
-                    return True
-        return False
+                    if (len (self.HittedArray) == len (self.BoatArray)):
+                        return 2
+                    return 1
+        return 0
 
 class User():
     def __init__(self, user):
@@ -61,10 +63,29 @@ class User():
                         print(self.Name + " " + boat.Name + " " + str(cases))
     
     def Hit(self, case):
+        result = 0
+        pos = 0
         for boat in self.BoatList:
-            if (boat.Hit(case['ArrayPosX'], case['ArrayPosY']) == True):
-                return True
+            result = boat.Hit(case['ArrayPosX'], case['ArrayPosY'])
+            if (result > 0):
+                return result if result == 1 else result + pos
+            pos += 1
         return False
+    
+    def CountDestroyedBoats(self):
+        count = 0
+        for boat in self.BoatList:
+            if (len(boat.BoatArray) == len(boat.HittedArray)):
+                count += 1
+        return count
+
+
+    def checkPlayerBoats(self):
+        count = 0
+        for boat in self.BoatList:
+            if (len(boat.BoatArray) == len(boat.HittedArray)):
+                count += 1
+        return (count == len(self.BoatList))
 
 class MatchmakingLoop(threading.Thread):
     def __init__(self, current) :
@@ -161,7 +182,10 @@ class BattleshipMatch():
             return
         user = self.getUser(user)
         if (user is None):
-            return 
+            return
+        for line in BoatList:
+            if line['ArrayX'] == -1:
+                return
         user.ParseBoats(BoatList)
         if (len(self.user1.BoatList) != 0 and len(self.user2.BoatList) != 0):
             await self.startGame()
@@ -185,14 +209,14 @@ class BattleshipMatch():
         self.currentTimer = 30
 
     async def StopGame(self, user):
+        self.thread.stop()
+        self.thread.join()
         await self.channel_layer.group_send(
             self.channelName,
             {
                 'type' : 'MSG_LeaveGame',
                 'player' : user.username
             })
-        self.thread.stop()
-        self.thread.join()
 
     def getUser(self, user):
         if (user == self.user1.sock_user):
@@ -210,6 +234,22 @@ class BattleshipMatch():
                     'player' : self.TurnUser
                 })
         self.currentTimer = 30
+            
+
+    async def EndGame(self, Winner):
+        self.thread.stop()
+        self.thread.join()
+        Looser = self.user1 if Winner is self.user2 else self.user2
+        self.Gamestatus = GameState.Ending
+        await self.channel_layer.group_send(
+                self.channelName,
+                {
+                    'type' : 'MSG_GameEnd',
+                    'winner' : Winner, 
+                    'looser' : Looser,
+                    'looserBoat' : Looser.CountDestroyedBoats(),
+                    'winnerBoat' : Winner.CountDestroyedBoats(),
+                })
 
     async def RCV_HitCase(self, user, case):
         if (self.Gamestatus is not GameState.Playing):
@@ -225,8 +265,13 @@ class BattleshipMatch():
                 'type' : 'MSG_HitResult',
                 'target' : Target,
                 'case' : case,
-                'result' : Result
+                'result' : True if Result > 0 else False,
+                'destroyedboat' : "None" if Result < 2 else Target.BoatList[Result - 2].Name
             }))
-        await self.ChangeTurn()
+        if (Target.checkPlayerBoats() == True):
+            asyncio.wait (await self.EndGame(self.TurnUser))
+            # endGame
+        else:
+            await self.ChangeTurn()
 
         
