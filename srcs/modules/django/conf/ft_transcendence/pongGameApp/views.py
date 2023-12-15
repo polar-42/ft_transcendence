@@ -3,7 +3,7 @@ from django.http import JsonResponse
 
 def game_view(request):
 	if (request.method == "GET" and request.GET["valid"] == "True"):
-		return render(request, 'pongGame/game.html')
+		return render(request, 'pongGame/pongGameRemote.html')
 	else:
 		return render(request, 'index.html')
 
@@ -15,7 +15,7 @@ def matchmake_view(request):
 
 def local_game_view(request):
 	if (request.method == "GET" and request.GET["valid"] == "True"):
-		return render(request, 'pongGame/localPongGame.html')
+		return render(request, 'pongGame/pongGameLocal.html')
 	else:
 		return render(request, 'index.html')
 

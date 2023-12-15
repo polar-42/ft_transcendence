@@ -2,7 +2,7 @@ import json, asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import get_channel_layer
 from . import pongThreads
-from .models import PongGameModels
+from ..models import PongGameModels
 from channels.db import database_sync_to_async
 
 

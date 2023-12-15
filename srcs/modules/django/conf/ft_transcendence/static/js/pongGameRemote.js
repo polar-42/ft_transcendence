@@ -139,6 +139,7 @@ function doKeyDown(e)
 function LaunchGame()
 {
 	canvas = document.getElementById('pongCanvas');
+	console.log(canvas)
 	context = canvas.getContext('2d');
 	canvas.widht = 720;
 	canvas.height = 450;

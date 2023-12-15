@@ -8,7 +8,6 @@ export function initGamePongIA()
 {
 	if (arguments[0] == undefined)
 	{
-		console.log('PAS NULL');
 		navto('/pongGame/pongMatchmaking');
 		return;
 	}

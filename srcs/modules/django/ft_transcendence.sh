@@ -8,6 +8,7 @@ export DB_USER="user_db"
 export DB_PASSWORD="password_db"
 export DB_PORT="5432"
 
+#CHECK IF POSTGRES IS LAUNCH AND TRANSCENDENCE_DB EXIST
 while true ; do
 
 	pg_isready --dbname=transcendence_db --host=container_postgresql --port=5432 --username=user_db > /dev/null 2>&1;
