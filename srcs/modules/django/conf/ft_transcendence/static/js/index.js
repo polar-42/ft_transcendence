@@ -4,12 +4,11 @@ import { initMatchmakingPong } from "./pongGameApp.js";
 import { initLocalGamePong } from "./pongGameLocal.js";
 import { initGamePongIA } from './pongGameIA.js';
 import { initDashboard } from "./dashboard.js";
-import { initGame } from "./game.js";
+import { CP_Unload, initGame } from "./game.js";
 import { initGamePong, unLoadGamePong } from "./pongGame.js";
 
 export function navto(urlpath)
 {
-	console.log(urlpath)
 	history.pushState(null, null, urlpath);
 	router([].slice.call(arguments, 1));
 }
@@ -27,7 +26,7 @@ function getRoute(RoutePath)
 		{ path: "/404", init: null, unload: null, title:"404", LogStatus: 2},
 		{ path: "/needlog", init: null, unload: null, title:"Login required", LogStatus: 0},
 		{ path: "/", init: initDashboard, unload: null, title:"Home", LogStatus: 2},
-		{ path: "/battleship", init: initGame, unload: null, title:"Battleship", LogStatus: 1},
+		{ path: "/battleship", init: initGame, unload: CP_Unload, title:"Battleship", LogStatus: 1},
 		{ path: "/battleship/matchmake", init: initMatchmaking, unload: null, title:"Battleship", LogStatus: 1},
 		{ path: "/pongGame", init: initGamePong, unload: unLoadGamePong, title:"pongGame", LogStatus: 1},
 		{ path: "/pongGame/pongMatchmaking", init: initMatchmakingPong, unload: null, title:"pongGame", LogStatus: 1},

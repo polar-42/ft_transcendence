@@ -11,15 +11,6 @@ const boxSize = 60
 const offsetX = 10
 const offsetY = 100
 
-export function unLoad()
-{
-	if (battleshipSocket != null)
-		{
-			battleshipSocket.close()
-			battleshipSocket = null
-		}
-}
-
 const FP_BTN_Validate = 
 {
 	x : (offsetX + boxSize * gridSizeX + 2) + ((1080 - (offsetX + boxSize * gridSizeX + 2)) / 2) - 100,
@@ -81,7 +72,14 @@ function OnMessage(e)
 			canvas.removeEventListener('mousemove', SP_mouseMove);
 			canvas.removeEventListener('click', SP_mouseClick);
 			break
-		case 'User Disconnnect':
+		case 'GameStop':
+			RP_GameStop(data.message)
+			break
+		case 'RetrieveBoat':
+			FP_SendBoats();
+			break
+		case 'RetrieveHit':
+			SP_SendSelected();
 			break
 		case 'GotHit':
 			break
@@ -99,8 +97,27 @@ function OnMessage(e)
 	}
 	currentTimer = data.timer
 }
-
 //#region ResultPart
+
+function RP_GameStop(message)
+{
+	canvas.style.display = 'none'
+	var txtNode = document.createTextNode(message)
+	canvas.parentElement.appendChild(txtNode)
+	battleshipSocket = null
+}
+
+function RP_EnemyGiveUp(player, gameStatus)
+{
+	canvas.style.display = 'none'
+	var txtNode = undefined
+	if (gameStatus < 2)
+		txtNode = document.createTextNode("Game canceled! " + player + " disconnected during boat placement.")
+	else
+		txtNode = document.createTextNode("You win by forfeit! " + player + " disconnected during game.")
+	canvas.parentElement.appendChild(txtNode)
+	battleshipSocket = null
+}
 
 function RP_Loose(other, otherBoat)
 {
@@ -321,12 +338,8 @@ function FP_mouseUp(e) {
 	});
 }
 
-function FP_mouseClick(e)
+function FP_SendBoats()
 {
-	if (e.button != 0)
-		return;
-	const mouseX = e.clientX - canvas.getBoundingClientRect().left;
-	const mouseY = e.clientY - canvas.getBoundingClientRect().top;
 	var count = 0;
 	BoatList.forEach(element => {
 		if (element.ArrayPosX != -1)
@@ -334,14 +347,26 @@ function FP_mouseClick(e)
 	})
 
 	if (count != BoatList.length)
-		return
+		return false
+
+	battleshipSocket.send(JSON.stringify({
+		'function': 'sendBoats',
+		'input': BoatList
+	}))
+	return true
+}
+
+function FP_mouseClick(e)
+{
+	if (e.button != 0)
+		return;
+	const mouseX = e.clientX - canvas.getBoundingClientRect().left;
+	const mouseY = e.clientY - canvas.getBoundingClientRect().top;
 	if (mouseX > FP_BTN_Validate.x && mouseX < FP_BTN_Validate.x + FP_BTN_Validate.w && mouseY > FP_BTN_Validate.y && mouseY < FP_BTN_Validate.y + FP_BTN_Validate.h)
 	{
+		if (FP_SendBoats() == false)
+			return
 		validated = !validated;
-		battleshipSocket.send(JSON.stringify({
-			'function': 'sendBoats',
-			'input': BoatList
-		}))
 		FP_draw();
 	}
 }
@@ -517,28 +542,37 @@ function SP_mouseMove(event)
 	}
 }
 
+function SP_SendSelected()
+{
+	console.log(SP_selected)
+	if (SP_selected == undefined)
+		return false
+	console.log("toto")
+	battleshipSocket.send(JSON.stringify({
+		'function': 'HitCase',
+		'input': SP_selected
+	}))
+	return true
+}
+
 function SP_mouseClick(event)
 {
 	const mouseX = event.clientX - canvas.getBoundingClientRect().left;
 	const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+	
 	const ArrayPos = CP_getArrayPos(mouseX, mouseY)
+	
 	if (ArrayPos.x == - 1)
 	{
-		if (SP_selected != undefined)
+		if (mouseX > FP_BTN_Validate.x && mouseX < FP_BTN_Validate.x + FP_BTN_Validate.w && mouseY > FP_BTN_Validate.y && mouseY < FP_BTN_Validate.y + FP_BTN_Validate.h)
 		{
-			if (mouseX > FP_BTN_Validate.x && mouseX < FP_BTN_Validate.x + FP_BTN_Validate.w && mouseY > FP_BTN_Validate.y && mouseY < FP_BTN_Validate.y + FP_BTN_Validate.h)
-			{
-				battleshipSocket.send(JSON.stringify({
-					'function': 'HitCase',
-					'input': SP_selected
-				}))
-			}
-			else
-			{
-				SP_selected = undefined
-				SP_Draw()
-				SP_drawSendBTN()
-			}
+			SP_SendSelected()
+		}
+		else if (SP_selected != undefined)
+		{
+			SP_selected = undefined
+			SP_Draw()
+			SP_drawSendBTN()
 		}
 	}
 	else
@@ -605,6 +639,7 @@ function SP_drawEnemyBoats()
 	})
 
 }
+
 function SP_drawTitle(message)
 {
 	ctx.clearRect(canvas.width / 2 - 200, 25, 400, 70)
@@ -710,6 +745,13 @@ function CP_getArrayPos(mouseX, mouseY)
 	return {x : Math.floor((mouseX - (offsetX + 2)) / boxSize), y : Math.floor((mouseY - (offsetY + 2)) / boxSize)}
 }
 
-
+export function CP_Unload()
+{
+	if (battleshipSocket == null)
+		return
+	if(battleshipSocket.readyState != 3)
+		battleshipSocket.close()
+	battleshipSocket = null
+}
 
 //#endregion

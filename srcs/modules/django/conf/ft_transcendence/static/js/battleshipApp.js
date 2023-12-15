@@ -3,14 +3,12 @@ import { navto } from "./index.js";
 export function initMatchmaking()
 {
 	document.getElementsByClassName("matchmake_BTN")[0].addEventListener("click", JoinMatchmaking)
-	console.log(matchmakingSocket)
 }
 
 var matchmakingSocket = null
 
 function JoinMatchmaking()
 {
-	console.log("JoinMatch")
 	if(matchmakingSocket != null)
 		return
 	matchmakingSocket = new WebSocket("ws://" + window.location.host + "/socketApp/matchmaking/")
