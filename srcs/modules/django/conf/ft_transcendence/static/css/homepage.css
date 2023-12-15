@@ -1,0 +1,10 @@
+body {
+}
+
+.hero {
+  height: 80vh;
+  padding: 20px;
+  background:
+      linear-gradient(to bottom, var(--secondary-bg-color) 0%, var(--main-bg-color) 65%), 
+      var(--main-bg-color);
+} 

@@ -1,36 +1,6 @@
 @import url('../assets/fonts/rajdhani/stylesheet.css');
 @import url('../assets/fonts/ostrich-sans-master/webfonts/ostrich-sans.css');
 
-@font-face {
-  font-family: 'ostrich_sans';
-  src: url('../assets/fonts/ostrich-sans-master/webfonts/ostrich-sans-regular.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'ostrich_sans_black';
-  src: url('../assets/fonts/ostrich-sans-master/webfonts/ostrich-sans-black.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'rajdhani_bold';
-  src: url('../assets/fonts/rajdhani/rajdhani-bold-webfont.woff2') format('woff2');
-  src: url('../assets/fonts/rajdhani/rajdhani-bold-webfont.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'rajdhani_regular';
-  src: url('../assets/fonts/rajdhani/rajdhani-regular-webfont.woff2') format('woff2');
-  src: url('../assets/fonts/rajdhani/rajdhani-regular-webfont.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
-}
-
 :root {
   --main-bg-color: #0D0D0D;
   --secondary-bg-color: #292929;
@@ -45,6 +15,8 @@
   margin: 0px;
   padding: 0px;
   box-sizing: border-box;
+  font-family: rajdhaniregular;
+  text-transform: capitalize;
 }
 
 html {
@@ -55,26 +27,32 @@ html {
  }
 
 body {
-  font-family: ostrich_sans;
   margin: 0px;
 }
 
+a {
+  text-decoration: none;
+}
+
 header {
+  position: sticky;
+  top: 0;
   padding: 20px 60px;
   display: flex;
   width: 100%;
   justify-content: space-between;
   align-items: end;
   font-size: 1.4em;
+  text-transform: uppercase;
   color: white;
   background:
-      linear-gradient(to bottom right, rgba(0,0,0,0) 0%, rgba(0,0,0,0.1) 85%), 
       var(--secondary-bg-color);
 }
 
 .home_btn {
   font-family: rajdhanibold;
   font-size: 32px;
+  text-transform: lowercase;
 }
 
 nav a {
@@ -84,9 +62,10 @@ nav a {
   font-size: 22px;
   font-weight: 700;
   height: 100%;
+  color: white;
 }
 
-nav a::before {
+header nav a::before {
   content: '';
   position: absolute;
   top: 100%;
@@ -94,7 +73,8 @@ nav a::before {
   width: 0;
   height: 2px;
   background: var(--main-color);
-  transition: .3s;
+  color: white;
+  transition: all .3s ease-in-out;
 }
 
 nav a:hover::before {
@@ -102,8 +82,8 @@ nav a:hover::before {
 }
 
 header a {
-  text-decoration: none;
-  transition: .3s ease-in-out;
+  color: white !important;
+  transition: all .3s ease-in-out;
 }
 
 header a:visited {
@@ -111,11 +91,11 @@ header a:visited {
 }
 
 header a:hover {
-  color: var(--main-color);
+  color: var(--main-color) !important;
 }
 
 footer {
-  position: fixed;
+  position: sticky;
   top: calc(100% - 100px);
   left: 0;
   background: 
@@ -138,7 +118,7 @@ footer a {
 footer a::before {
   content: '';
   position: absolute;
-  top: 1em;
+  top: 1.1em;
   left: 0;
   width: 0;
   height: 2px;
