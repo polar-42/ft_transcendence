@@ -26,6 +26,7 @@ urlpatterns = [
     path('authApp/', include('authApp.urls')),
     path('battleship/', include('battleshipApp.urls')),
     path('pongGame/', include('pongGameApp.urls')),
+    path('tournaments/', include('tournamentsApp.urls')),
     path('', views.index_view),
 	re_path(r'^.*/?$', views.index_view),
 ]
