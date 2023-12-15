@@ -73,3 +73,5 @@ python manage.py migrate
 python manage.py createsuperuser
 python manage.py create_user
 python manage.py runserver $(hostname -i):8080;
+#python manage.py collectstatic
+#uwsgi --http $(hostname -i):8080 --module ft_transcendence.wsgi --enable-threads
