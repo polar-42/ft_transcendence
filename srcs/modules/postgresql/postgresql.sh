@@ -29,7 +29,6 @@ fi
 pg_ctl -D /var/db stop;
 
 echo $DB_NAME is launching...;
-touch /var/db/check
 
 postgres -D /var/db;
 

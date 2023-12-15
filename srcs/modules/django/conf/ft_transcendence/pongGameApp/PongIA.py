@@ -1,5 +1,4 @@
-import threading, json, random, math, asyncio, copy
-from . import pongGameClasses
+import threading, asyncio
 
 class pongGameIA(threading.Thread):
 

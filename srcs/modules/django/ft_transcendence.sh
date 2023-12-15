@@ -19,7 +19,6 @@ while true ; do
 	sleep 1
 done
 
-rm -rf /var/db/check
 ln -s /var/conf/ft_transcendence .
 cd $SITE_NAME
 

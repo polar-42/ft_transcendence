@@ -25,7 +25,7 @@ urlpatterns = [
 	path('needlog/', views.NeedLog_view),
     path('authApp/', include('authApp.urls')),
     path('battleship/', include('battleshipApp.urls')),
-    path('pongGame/', include('pongGame.urls')),
+    path('pongGame/', include('pongGameApp.urls')),
     path('', views.index_view),
 	re_path(r'^.*/?$', views.index_view),
 ]
