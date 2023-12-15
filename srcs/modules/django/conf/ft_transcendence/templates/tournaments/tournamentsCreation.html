@@ -1,3 +1,4 @@
+<!-- tournaments/tournamentsCreation.html -->
 {% load static %}
 <script type="module" src="{% static '/js/loading.js' %}"></script>
 
@@ -5,8 +6,10 @@
     Welcome To The Tournaments Creation Page
 </p>
 
+{% block content %}
 <p><br/>
     <form>
+		{% csrf_token %}
 
         <label for="TournamentsName">Tournaments Name:</label>
         <input type="text" class="TournamentsName"><br/>
@@ -16,4 +19,5 @@
 
     </form>
     <button class="submitButtonCreateTournaments">Submit</button>
+    {% endblock content %}
 </p>
