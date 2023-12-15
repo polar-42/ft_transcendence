@@ -292,20 +292,6 @@ class BattleshipMatch():
                     'player' : self.TurnUser
                 })      
 
-    # async def EndGame(self, Winner):
-    #     Looser = self.user1 if Winner is self.user2 else self.user2
-    #     self.Gamestatus = GameState.Ending
-    #     await self.channel_layer.group_send(
-    #             self.channelName,
-    #             {
-    #                 'type' : 'MSG_GameEnd',
-    #                 'winner' : Winner, 
-    #                 'looser' : Looser,
-    #                 'looserBoat' : Looser.CountDestroyedBoats(),
-    #                 'winnerBoat' : Winner.CountDestroyedBoats(),
-    #             })
-    #     self.closeThread()
-
     async def RCV_HitCase(self, user, case):
         if (self.Gamestatus is not GameState.Playing and self.Gamestatus is not GameState.RequestHit):
             return
@@ -324,7 +310,7 @@ class BattleshipMatch():
                 'destroyedboat' : "None" if Result < 2 else Target.BoatList[Result - 2].Name
             }))
         if (Target.checkPlayerBoats() == True):
-            self.StopGame(True, True, "Game Ended! Winner is " + self.TurnUser.sock_user + ". He destroyed the " + str(Target.CountDestroyedBoats()) + " " + Target.Name + "boats while getting only " + str(self.TurnUser.CountDestroyedBoats()) + " of its own boat destroyed.")
+            await self.StopGame(True, True, "Game Ended! Winner is " + self.TurnUser.Name + ". He destroyed the " + str(Target.CountDestroyedBoats()) + " " + Target.Name + " boats while getting only " + str(self.TurnUser.CountDestroyedBoats()) + " of its own boat destroyed.")
         else:
             await self.ChangeTurn()
 
