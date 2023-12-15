@@ -1,9 +1,5 @@
-/* Color Theme Swatches in Hex */
-.Hevy-App-—-Redesign-Concept-1-hex { color: #403E3F; }
-.Hevy-App-—-Redesign-Concept-2-hex { color: #2793F2; }
-.Hevy-App-—-Redesign-Concept-3-hex { color: #22A2F2; }
-.Hevy-App-—-Redesign-Concept-4-hex { color: #22B7F2; }
-.Hevy-App-—-Redesign-Concept-5-hex { color: #0D0D0D; }
+@import url('../assets/fonts/rajdhani/stylesheet.css');
+@import url('../assets/fonts/ostrich-sans-master/webfonts/ostrich-sans.css');
 
 @font-face {
   font-family: 'ostrich_sans';
@@ -19,14 +15,42 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'rajdhani_bold';
+  src: url('../assets/fonts/rajdhani/rajdhani-bold-webfont.woff2') format('woff2');
+  src: url('../assets/fonts/rajdhani/rajdhani-bold-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'rajdhani_regular';
+  src: url('../assets/fonts/rajdhani/rajdhani-regular-webfont.woff2') format('woff2');
+  src: url('../assets/fonts/rajdhani/rajdhani-regular-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+:root {
+  --main-bg-color: #0D0D0D;
+  --secondary-bg-color: #292929;
+  --main-color: #22B7F2;
+  --secondary: #2E5F73;
+  --third: #2180A6;
+  --fourth: #009BD9;
+}
+
 * {
   /* border: 1px solid red; */
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
 }
 
 html {
-  background-color: #403E3F;
+  background-color: var(--main-bg-color);
   background-repeat:  no-repeat;
-  color: #2793F2;
+  color: white;
   font-size: 20px;
  }
 
@@ -36,45 +60,92 @@ body {
 }
 
 header {
-  position: relative;
+  padding: 20px 60px;
   display: flex;
-  padding-top: 10px;
+  width: 100%;
   justify-content: space-between;
+  align-items: end;
   font-size: 1.4em;
+  color: white;
   background:
-    linear-gradient(#2793F2 0 0) bottom/ 60% 2px no-repeat;
+      linear-gradient(to bottom right, rgba(0,0,0,0) 0%, rgba(0,0,0,0.1) 85%), 
+      var(--secondary-bg-color);
 }
-
-footer {
-  background-color: #;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-}
-
 
 .home_btn {
-  font-family: ostrich_sans_black;
-  font-size: 1.6em;
-  text-shadow: 1px 1px 1px #2793F2;
-}
-
-nav {
-  align-items: center;
+  font-family: rajdhanibold;
+  font-size: 32px;
 }
 
 nav a {
-  margin: 15px;
+  position: relative;
+  display: inline-block;
+  margin-left: 40px;
+  font-size: 22px;
+  font-weight: 700;
+  height: 100%;
+}
+
+nav a::before {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--main-color);
+  transition: .3s;
+}
+
+nav a:hover::before {
+  width: 100%;
 }
 
 header a {
   text-decoration: none;
-  padding-left: 10px;
+  transition: .3s ease-in-out;
 }
 
 header a:visited {
-  color: #2793F2;
+  color: white;
 }
 
 header a:hover {
-  font-weight: bold;
+  color: var(--main-color);
+}
+
+footer {
+  position: fixed;
+  top: calc(100% - 100px);
+  left: 0;
+  background: 
+    linear-gradient(to bottom right, rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 85%),
+    var(--secondary-bg-color);
+  height: 100px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 30px 30%;
+  color: var(--main-color);
+}
+
+footer a {
+  position: relative;
+  font-weight: 700;
+  text-align: center;
+}
+
+footer a::before {
+  content: '';
+  position: absolute;
+  top: 1em;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--main-color);
+  transition: .3s;
+}
+
+footer a:hover::before {
+  width: 100%;
 }
