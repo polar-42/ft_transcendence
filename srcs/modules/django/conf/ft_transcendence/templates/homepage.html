@@ -1,8 +1,8 @@
 <!-- homepage html -->
 {% load static %}
-<link rel="stylesheet" href="{% static '/css/homepage.css' %}">
-<script type="module" src="{% static '/js/loading.js' %}"></script>
-<script type="module" src="{% static '/js/authApp.js' %}"></script>
+  <link rel="stylesheet" href="{% static '/css/homepage.css' %}">
+  <script type="module" src="{% static '/js/loading.js' %}"></script>
+  <script type="module" src="{% static '/js/authApp.js' %}"></script>
 {% block content %}
   <section class="hero">
     <h2>Strategy at sea, Precision on the paddle</h2>
@@ -12,6 +12,39 @@
     <button type="SignIn">Sign in</button>
   </section>
   <section class="about">
-   fdfdsfds 
+    <div class="bio_wrapper">
+      <ul>
+        <li>
+          <img src="../static/assets/studs/fle-tolg.jpg" alt="Felix Le Tolguenec picture" />
+          Felix Le Tolguenec
+          <ul>
+            <a></a>
+          </ul>
+        </li>
+        <li>
+          <img src="../static/assets/studs/gpasquet.jpg" alt"Gillian Pasquette picture" />
+          Gillian Pasquette
+          <ul>
+            <a></a>
+          </ul>
+        </li>
+        <li>
+          <img src="../static/assets/studs/mjuin.jpg" alt"Mickaël Juin picture" />
+          Mickaël Juin 
+          <ul>
+            <a></a>
+          </ul>
+        </li>
+        <li>
+        </li>
+      </ul>
+    </div>
+    <p>
+      This project was made as part of the Angouleme 42 School.<br>
+      The objective was to design website hosting multiplayer
+      Pong game as Single Page Application.<br>
+      It was developped using HTML, CSS and vanilla JS for the front
+      end, and Django and PostgreSQL for the backend.
+    </p>
   </section>
-{% endblock %}
+{% endblock %} 
