@@ -6,7 +6,6 @@
     Welcome To The Tournaments Creation Page
 </p>
 
-{% block content %}
 <p><br/>
     <form>
 		{% csrf_token %}
@@ -15,9 +14,16 @@
         <input type="text" class="TournamentsName"><br/>
 
         <label for="NumberOfPlayer">Number of players:</label>
-        <input type="number" min="4" class="NumberOfPlayer"><br/>
+        <input type="number" min="4" class="NumberOfPlayer"><br/><br/>
+
+        <label>Game type:</label><br/>
+        <label for="typePong">Pong</label>
+        <input type="radio" name="TypeGame" value="Pong" class="typePong"><br/>
+        <label for="typeBattleship">Battleship</label>
+        <input type="radio" name="TypeGame" value="Battleship" class="typeBattleship"><br/>
 
     </form>
     <button class="submitButtonCreateTournaments">Submit</button>
-    {% endblock content %}
+
+    <p id="messageCreationTournaments"></p>
 </p>

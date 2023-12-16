@@ -6,8 +6,8 @@ import { initGamePongIA, unloadGamePongIA } from './pongGameIA.js';
 import { initDashboard } from "./dashboard.js";
 import { initGame } from "./game.js";
 import { initGamePong, unLoadGamePong } from "./pongGameRemote.js";
-import { initTournaments } from "./tournaments/tournamentsHome.js"
 import { initTournamentsCreation } from "./tournaments/tournamentsCreation.js";
+import { initTournamentsJoinPage } from "./tournaments/tournamentsJoinPage.js";
 
 export function navto(urlpath)
 {
@@ -35,8 +35,9 @@ function getRoute(RoutePath)
 		{ path: "/pongGame/pongMatchmaking", init: initMatchmakingPong, unload: unLoadMatchmakingPong, title:"pongGame", LogStatus: 1},
 		{ path: "/pongGame/pongGameLocal", init: initLocalGamePong, unload: null, title:"pongGame", LogStatus: 1},
 		{ path: "/pongGame/pongGameIA", init: initGamePongIA, unload: unloadGamePongIA, title:"pongGame", LogStatus: 1},
-		{ path: "/tournaments/tournamentsHome", init: initTournaments, unload: null, title:"initTournaments", LogStatus: 1},
+		{ path: "/tournaments/tournamentsHome", init: null, unload: null, title:"initTournaments", LogStatus: 1},
 		{ path: "/tournaments/tournamentsCreation", init: initTournamentsCreation, unload: null, title:"initTournaments", LogStatus: 1},
+		{ path: "/tournaments/tournamentsJoin", init: initTournamentsJoinPage, unload: null, title:"Join Tournaments", LogStatus: 1},
 		{ path: "/authApp/login", init: initLoggin, unload: null, title:"Login", LogStatus: 0},
 		{ path: "/authApp/register", init: initRegister, unload: null, title:"Register", LogStatus: 0},
 	];
