@@ -1,5 +1,5 @@
+import random, copy, json
 from enum import IntEnum
-
 
 class TypeGame(IntEnum):
 	Undefined = 0
@@ -39,3 +39,36 @@ class Tournament():
 			self._players.append(player)
 			return True
 		return False
+
+	def start(self, playersSockets):
+		self.playersSockets = playersSockets
+		print(self._name, 'is starting')
+		playersSocketsCpy = copy.copy(self.playersSockets)
+		self.matchs = []
+
+		#LOOP TO MAKE MATCHS BETWEEN PLAYERS
+		while len(playersSocketsCpy) >= 2:
+			random.shuffle(playersSocketsCpy)
+			match = []
+			match.append(playersSocketsCpy[0])
+			playersSocketsCpy.remove(playersSocketsCpy[0])
+			match.append(playersSocketsCpy[0])
+			playersSocketsCpy.remove(playersSocketsCpy[0])
+			self.matchs.append(match)
+
+		for match in self.matchs:
+			match[0].send(text_data=json.dumps({
+				'type': 'match_id',
+				'match_id': "Tournament" + str(self._id) + "_" + str(match[0].username) + "_" + str(match[1].username),
+				'player1': match[0].username,
+				'player2': match[1].username,
+				'game': self._typeGame,
+			}))
+			match[1].send(text_data=json.dumps({
+				'type': 'match_id',
+				'match_id': "Tournament" + str(self._id) + "_" + str(match[0].username) + "_" + str(match[1].username),
+				'player1': match[0].username,
+				'player2': match[1].username,
+				'game': self._typeGame,
+			}))
+

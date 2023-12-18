@@ -16,7 +16,7 @@ export function initTournaments()
 
 	tournamentSocket.onopen = launchTournamentSocket
 	tournamentSocket.onclose = quitTournamentSocket
-	tournamentSocket.onmessage = e => OnMessage(e)
+	tournamentSocket.onmessage = e => OnMessageTournament(e)
 }
 
 function launchTournamentSocket()
@@ -39,4 +39,44 @@ function leaveTournament()
 	console.log('Socket disconnected');
 	navto('/tournaments/tournamentsHome');
 	return;
+}
+
+function OnMessageTournament(e)
+{
+	const data = JSON.parse(e.data);
+	console.log(data);
+	if (data.type == 'queue_tournament_data')
+	{
+		printPlayersInTournaments(data);
+	}
+	else if (data.type == 'match_id')
+	{
+		launchGame(data);
+	}
+}
+
+function printPlayersInTournaments(data)
+{
+	document.getElementById('players_in_tournaments').innerHTML = 'There is ' + data.player_in_tournament + ' in this ' + data.size_tournaments + ' players tournament.'
+}
+
+var socketGame = undefined;
+
+function launchGame(data)
+{
+	socketGame = new WebSocket("ws://" + window.location.host + '/socketApp/tournamentsGame/' + data.match_id);
+
+	socketGame.onopen = launchMatchSocket
+	socketGame.onclose = quitMatchSocket
+	socketGame.onmessage = e => OnMessageGame(e)
+}
+
+function launchMatchSocket()
+{
+	console.log('launchMatchSocket');
+}
+
+function quitMatchSocket()
+{
+	console.log('quitMatchSocket');
 }
