@@ -5,7 +5,7 @@
 <script type="module" src="{% static '/js/authApp.js' %}"></script>
 {% block content %}
 <section class="hero">
-  <div id="catchprase">
+  <div id="catchphrase">
     <img id="paddle" src="../static/assets/logo/ping-pong.png" alt="Ping pong paddles illustrations" />
     <h2>Strategy at sea, Precision on the paddle</h2>
     <p>Enjoy the experience of classical games !</p>
@@ -13,8 +13,10 @@
   </div>
   <div id="login-signin">
     <img id="boat" src="../static/assets/logo/battleship.png" alt="Battleshipi llustrations" />
-    <button type="LogIn">Log in</button>
-    <button type="SignIn">Sign in</button>
+    <div>
+      <button type="LogIn" data-link>Log in</button>
+      <button type="SignIn" data-link>Sign in</button>
+    </div>
   </div>
 </section>
 <section class="about">
