@@ -148,7 +148,7 @@ class pongGameLoop(threading.Thread):
 
                 await asyncio.sleep(0.03)
 
-                #print('in game loop, x =', x)
+                print('in game loop, x =', x)
                 x = x + 1
 
     def run(self):

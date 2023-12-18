@@ -3,6 +3,7 @@ from channels.generic.websocket import WebsocketConsumer
 from .views import get_tournaments_manager
 
 class TournamentSocket(WebsocketConsumer):
+	#IL FAUT FAIRE DES DICT CAR C'EST COMMUN A TOUS LES SOCKETS MIKA JE TE LAISSE FAIRE JE VAIS EN VACANSE <3
 	owner = None
 	players = []
 	sizeTournaments = -1
