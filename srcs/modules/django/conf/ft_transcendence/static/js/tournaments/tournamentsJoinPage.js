@@ -1,10 +1,10 @@
 
+import { navto } from '../index.js'
 
-export function initTournamentsJoinPage()
+export async function initTournamentsJoinPage()
 {
 	//Print tournaments
-	console.log(document.location.origin + "/tournaments/get_tournaments/")
-	fetch(document.location.origin + "/tournaments/get_tournaments_html/",
+	await fetch(document.location.origin + "/tournaments/get_tournaments_html/",
 	{
 		method: 'GET',
 	})
@@ -18,49 +18,21 @@ export function initTournamentsJoinPage()
 	})
 	.then(data =>
 	{
-		document.getElementById("listOfTournaments").innerHTML = data
+		document.getElementById("listOfTournaments").innerHTML = data;
+		console.log(data);
 	})
 	.catch(error =>
 	{
 		console.error('Error:', error);
 	})
 
-	//Add event listeners of tournaments join button
-	console.log(document.location.origin + "/tournaments/get_tournaments/")
-	fetch(document.location.origin + "/tournaments/get_tournaments/",
-	{
-		method: 'GET',
-	})
-	.then(Response =>
-	{
-		if (!Response.ok)
-		{
-			throw new Error('Network response was not okay');
-		}
-		return Response.json();
-	})
-	.then(data =>
-	{
-		if (data.games.length > 0) {
-			putEventListener(data.games);
-		}
-	})
-	.catch(error =>
-	{
-		console.error('Error:', error);
-	})
+	var buttons = document.querySelectorAll('.joinGame_BTN');
+	buttons.forEach(element => {
+		element.addEventListener('click', function() {joinTournaments(element.id);})
+	});
 }
 
-function putEventListener(games)
-{
-	for (let i = 0; i < games.length; i++)
-	{
-		let id ='Tournaments' + i;
-		document.getElementById(id).addEventListener('click', function() {joinTournaments(id, games[i].name);} );
-	}
-}
-
-function joinTournaments(tournamentsId, name)
+function joinTournaments(tournamentsId)
 {
 	console.log('Ca lance avec', tournamentsId);
 
@@ -71,7 +43,6 @@ function joinTournaments(tournamentsId, name)
 	headers.append('X-CSRFToken', crsf_token);
 
 	var data = {
-		'name': name,
 		'tournamentsId': tournamentsId,
 	}
 
@@ -91,7 +62,23 @@ function joinTournaments(tournamentsId, name)
 	})
 	.then(data =>
 	{
-		console.log(data);
+		if (data.error != undefined)
+		{
+			console.log('Error:', data.error);
+			if (data.canJoin == true)
+			{
+				navto("tournament", tournamentsId);
+				return;
+			}
+			else
+			{
+				navto("tournaments");
+				return;
+			}
+		}
+		navto("tournament", tournamentsId)
+		return;
+
 	})
 	.catch(error =>
 	{

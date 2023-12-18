@@ -7,7 +7,7 @@ from .TournamentManager import TournamentsManager
 TournamentManager = TournamentsManager()
 
 # Create your views here.
-def tournaments_view(request):
+def Home_view(request):
 	if (request.method == "GET" and request.GET["valid"] == "True"):
 		return render(request, 'tournaments/tournamentsHome.html')
 	else:
@@ -45,19 +45,19 @@ def create_tournaments(request):
 	#l = ['player1', 'player2', 'player3']
 	#listJson = json.dumps(l)
 
-	obj = TournamentsModels.objects.create(
-		tournamentsName=tournamentName,
-		numberOfPlayers=numberOfPlayers,
-		creatorId=request.user.username,
-		privateGame=False,
-		description='TOURNOIS',
-		tournamentsType=typeGame
-	)
-	print(type(request.user))
+	#obj = TournamentsModels.objects.create(
+	#	tournamentsName=tournamentName,
+	#	numberOfPlayers=numberOfPlayers,
+	#	creatorId=request.user.username,
+	#	privateGame=False,
+	#	description='TOURNOIS',
+	#	tournamentsType=typeGame
+	#)
+	#print(type(request.user))
 
-	obj.save()
+	#obj.save()
 
-	print(obj.tournamentsName)
+	#print(obj.tournamentsName)
 
 	#jsonDec = json.decoder.JSONDecoder()
 	#l = jsonDec.decode(obj.playersId)
@@ -77,7 +77,7 @@ def get_tournaments_html(request):
 	x = 0
 	for tour in tournamentL:
 		dictionnary.append({
-			'index': str(x),
+			'index': tour._id,
 			'name': tour._name,
 			'typeGame': tour._typeGame,
 			'numberPlayers': len(tour._players),
@@ -108,24 +108,30 @@ def get_tournaments(request):
 
 def join_tournaments(request):
 	if request.user.is_authenticated is False:
-		return JsonResponse({'error': 'You are not authentiated'})
+		return JsonResponse({'error': 'You are not authentiated', 'canJoin': False})
 	if request.method != 'POST':
-		return JsonResponse({'error': 'Method is invalid'})
+		return JsonResponse({'error': 'Method is invalid', 'canJoin': False})
 
 	data = json.loads(request.body)
-	tournamentName = data.get('name')
 	tournamentsId = data.get('tournamentsId')
 
-	print(request.user, 'is joining', tournamentName)
-	if TournamentManager.AddUser(request.user, tournamentName) is False:
-		return JsonResponse({'error': 'Error while joining the tournament'})
-
-	return JsonResponse({'message': 'Join the tournaments'})
-
-
+	print(request.user, 'is trying yo join tournament number', tournamentsId)
+	messageAddUser, isJoin, canJoin = TournamentManager.AddUser(request.user, tournamentsId)
+	if isJoin is False:
+		return JsonResponse({'error': messageAddUser, 'canJoin': canJoin})
+	return JsonResponse({'message': messageAddUser, 'canJoin': canJoin})
 
 def view_JoinPage(request):
 	if (request.method == "GET" and request.GET["valid"] == "True"):
 		return render(request, 'tournaments/tournamentsListPage.html')
 	else:
 		return render(request, 'index.html')
+
+def Tournament_view(request):
+	if (request.method == "GET" and request.GET["valid"] == "True"):
+		return render(request, 'tournaments/tournament.html')
+	else:
+		return render(request, 'index.html')
+
+def get_tournaments_manager():
+	return TournamentManager

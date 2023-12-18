@@ -8,6 +8,7 @@ import { initGame } from "./game.js";
 import { initGamePong, unLoadGamePong } from "./pongGameRemote.js";
 import { initTournamentsCreation } from "./tournaments/tournamentsCreation.js";
 import { initTournamentsJoinPage } from "./tournaments/tournamentsJoinPage.js";
+import { initTournaments } from "./tournaments/tournament.js";
 
 export function navto(urlpath)
 {
@@ -38,6 +39,7 @@ function getRoute(RoutePath)
 		{ path: "/tournaments/tournamentsHome", init: null, unload: null, title:"initTournaments", LogStatus: 1},
 		{ path: "/tournaments/tournamentsCreation", init: initTournamentsCreation, unload: null, title:"initTournaments", LogStatus: 1},
 		{ path: "/tournaments/tournamentsJoin", init: initTournamentsJoinPage, unload: null, title:"Join Tournaments", LogStatus: 1},
+		{ path: "/tournaments/tournament", init: initTournaments, unload: null, title:"Tournament", LogStatus: 1},
 		{ path: "/authApp/login", init: initLoggin, unload: null, title:"Login", LogStatus: 0},
 		{ path: "/authApp/register", init: initRegister, unload: null, title:"Register", LogStatus: 0},
 	];

@@ -7,8 +7,8 @@ class TypeGame(IntEnum):
 	Battleship = 2
 
 class Tournament():
-
-	def __init__(self, creator, typeGame : TypeGame, numberOfPlayer : int, privateGame : bool, description : str, name: str):
+	def __init__(self, id, creator, typeGame : TypeGame, numberOfPlayer : int, privateGame : bool, description : str, name: str):
+		self._id = id
 		self._creator = creator
 		self._typeGame = typeGame
 		self._playerAmount = numberOfPlayer
@@ -18,7 +18,10 @@ class Tournament():
 		self._players = [self._creator]
 
 	def __str__(self) -> str:
-		return str(self._typeGame) + " private = " + str(self._private) + " game : " + self._name + " created by " + self._creator.username + " with " + str(self._playerAmount) + " players. desc = " + self._desc
+		return "id is " + str(self._id) + " name = " + str(self._typeGame) + " private = " + str(self._private) + " game : " + self._name + " created by " + self._creator.username + " with " + str(self._playerAmount) + " players. desc = " + self._desc
+
+	def getTournament(self):
+		return self
 
 	def IsUserPresent(self, user):
 		for users in self._players:
@@ -26,10 +29,13 @@ class Tournament():
 				return True
 		return False
 
-	def IsTournamentExist(self, tournamentName):
-		if self._name == tournamentName:
+	def IsTournamentExist(self, tournamentId):
+		if int(self._id) is int(tournamentId):
 			return True
 		return False
 
 	def addPlayer(self, player):
-		self._players.append(player)
+		if player not in self._players:
+			self._players.append(player)
+			return True
+		return False
