@@ -1,14 +1,48 @@
-body {
-}
-
-img {
-  width: 50px; 
-}
-
 .hero {
-  height: 50vh;
-  padding: 20px;
+  padding: 20px 80px;
   background:
       linear-gradient(to bottom, var(--secondary-bg-color) 0%, var(--main-bg-color) 65%), 
       var(--main-bg-color);
+}
+
+.hero h2 {
+  font-family: rajdhanibold;
+  font-size: 2.5em;
+  text-shadow: 1px 0 10px var(--fourth);
+  text-transform: uppercase;
+  color: var(--main-color);
 } 
+
+#catchphrase {
+  margin: 10px;
+}
+
+#paddle {
+  float: left;
+  max-width: 25%;
+  height: auto;
+  margin: 30px;
+}
+
+#boat {
+  float: right;
+  max-width: 20%;
+  height: auto;
+}
+
+#login-signin button {
+  border: none;
+  margin: 0;
+  padding: 0;
+  width: auto;
+  overflow: visible;
+  background: transparent;
+  color: white;
+}
+
+.about img {
+  width: 50px;
+}
+
+.about {
+}
