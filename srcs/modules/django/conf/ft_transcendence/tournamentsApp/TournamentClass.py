@@ -1,5 +1,6 @@
 import random, copy, json
 from enum import IntEnum
+from channels.layers import get_channel_layer
 
 class TypeGame(IntEnum):
 	Undefined = 0
@@ -15,7 +16,7 @@ class Tournament():
 		self._private = privateGame
 		self._desc = description
 		self._name = name
-		self._players = [self._creator]
+		self._players = []
 
 	def __str__(self) -> str:
 		return "id is " + str(self._id) + " name = " + str(self._typeGame) + " private = " + str(self._private) + " game : " + self._name + " created by " + self._creator.username + " with " + str(self._playerAmount) + " players. desc = " + self._desc
@@ -27,6 +28,8 @@ class Tournament():
 		for users in self._players:
 			if users.id == user:
 				return True
+		if user == self._creator.id:
+			return True
 		return False
 
 	def IsTournamentExist(self, tournamentId):
@@ -35,8 +38,18 @@ class Tournament():
 		return False
 
 	def addPlayer(self, player):
+
+		print(player, type(player), str(player), self._players)
+
 		if player not in self._players:
 			self._players.append(player)
+			channel_layer = get_channel_layer()
+			channel_layer.group_send(
+				"Tournaments" + str(self._id),
+				{
+					'type': 'new_connexion_on_tournament',
+				}
+			)
 			return True
 		return False
 

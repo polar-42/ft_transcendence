@@ -28,19 +28,19 @@ def create_tournaments(request):
 	numberOfPlayers = data.get('numberOfPlayers')
 	typeGame = data.get('typeGame')
 	if len(numberOfPlayers) <= 0:
-		return JsonResponse({'message': 'Tournaments number of player cant be empty', 'isCreated': 'false'})
+		return JsonResponse({'message': 'Tournaments number of player cant be empty', 'isCreated': False})
 
 	if len(tournamentName) < 3 or len(tournamentName) > 16:
-		return JsonResponse({'message': 'Tournaments name must be a least 3 characters and max 16 characters', 'isCreated': 'false'})
+		return JsonResponse({'message': 'Tournaments name must be a least 3 characters and max 16 characters', 'isCreated': False})
 
 	if (typeGame != "Pong" and typeGame != "Battleship"):
-		return JsonResponse({'message': 'Tournaments Type must be a Pong or a Battleship', 'isCreated': 'false'})
+		return JsonResponse({'message': 'Tournaments Type must be a Pong or a Battleship', 'isCreated': False})
 	numberOfPlayers = int(numberOfPlayers)
 	if numberOfPlayers != 4 and numberOfPlayers != 8 and numberOfPlayers != 16:
-		return JsonResponse({'message': 'Tournaments number of player must be a least 4, 8 or 16', 'isCreated': 'false'})
-
-	if (TournamentManager.CreateTournaments(request.user, data) is False):
-		return JsonResponse({'message': 'Failed creating game (creator already in lobby)', 'isCreated': 'false'})
+		return JsonResponse({'message': 'Tournaments number of player must be a least 4, 8 or 16', 'isCreated': False})
+	Joined, id = TournamentManager.CreateTournaments(request.user, data)
+	if (Joined is False):
+		return JsonResponse({'message': 'Failed creating game (creator already in lobby)', 'isCreated': False})
 
 	#l = ['player1', 'player2', 'player3']
 	#listJson = json.dumps(l)
@@ -69,7 +69,7 @@ def create_tournaments(request):
 	#print(obj.playersId)
 
 	print(tournamentName, 'is create with', numberOfPlayers, 'players')
-	return JsonResponse({'message': 'Tournaments ' + tournamentName + ' is created', 'isCreated': 'true'})
+	return JsonResponse({'message': 'Tournaments ' + tournamentName + ' is created', 'isCreated': True, 'id' : id})
 
 def get_tournaments_html(request):
 	tournamentL = TournamentManager.GetTournaments()
@@ -116,7 +116,8 @@ def join_tournaments(request):
 	tournamentsId = data.get('tournamentsId')
 
 	print(request.user, 'is trying yo join tournament number', tournamentsId)
-	messageAddUser, isJoin, canJoin = TournamentManager.AddUser(request.user, tournamentsId)
+
+	messageAddUser, isJoin, canJoin = TournamentManager.canJoin(request.user, tournamentsId)
 	if isJoin is False:
 		return JsonResponse({'error': messageAddUser, 'canJoin': canJoin})
 	return JsonResponse({'message': messageAddUser, 'canJoin': canJoin})

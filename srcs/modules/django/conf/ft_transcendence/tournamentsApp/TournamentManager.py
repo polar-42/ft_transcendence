@@ -12,7 +12,7 @@ class TournamentsManager():
 
 		for tournament in self._Tournaments:
 			if tournament.IsUserPresent(user.id) is True:
-				return False
+				return False, -1
 
 		# Change Private and Desc to their value
 		typeGame = 1 if data.get('typeGame') == "Pong" else 2
@@ -32,6 +32,7 @@ class TournamentsManager():
 		self._Tournaments.append(nTournament)
 		for tournament in self._Tournaments:
 			print(str(tournament))
+		return True, nTournament._id
 
 	def GetTournament(self, id):
 		for tournament in self._Tournaments:
@@ -42,14 +43,27 @@ class TournamentsManager():
 	def GetTournaments(self):
 		return self._Tournaments
 
-	def AddUser(self, user, tournamentId):
+	def canJoin(self, user, tournamentId):
 		for tournament in self._Tournaments:
 			if tournament.IsUserPresent(user.id) is True:
 				return 'Already in the tournament', False, True
 
+
 		for tournament in self._Tournaments:
 			if tournament.IsTournamentExist(tournamentId) is True:
-				tournament.addPlayer(user)
 				return 'Player is add to the tournaments', True, True
 
 		return 'Error while joining the tournament', False, False
+
+
+	def AddUser(self, user, tournamentId):
+		for tournament in self._Tournaments:
+			if tournament.IsUserPresent(user.id) is True:
+				return True
+
+		for tournament in self._Tournaments:
+			if tournament.IsTournamentExist(tournamentId) is True:
+				tournament.addPlayer(user)
+				return True
+
+		return False

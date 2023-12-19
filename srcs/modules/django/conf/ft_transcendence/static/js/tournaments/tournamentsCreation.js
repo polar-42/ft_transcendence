@@ -39,17 +39,19 @@ function createTournaments()
 		return response.json();
 	})
 	.then(data => {
+		console.log	(data)
 		if (data.isCreated == true)
 		{
 			creationTournamentsValidate(data.message)
+			navto('/tournaments/tournament', data.id)
 		}
 		else
 		{
-			document.getElementById('messageCreationTournaments').innerHTML = data.message
-			navto('/tournaments/tournamentsHome');
+			throw new Error(data.message);
 		}
 	})
 	.catch(error => {
+		document.getElementById('messageCreationTournaments').innerHTML = error
 		console.log('Error:', error);
 	})
 }
