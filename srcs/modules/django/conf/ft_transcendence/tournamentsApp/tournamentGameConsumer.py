@@ -1,7 +1,6 @@
 import json
 from channels.generic.websocket import WebsocketConsumer
-from pongGameApp.Remote import pongThreads
-import asyncio
+from .pongGameSync import pongGame
 
 class TournamentGameSocket(WebsocketConsumer):
 	pongGameThread = {}
@@ -24,12 +23,10 @@ class TournamentGameSocket(WebsocketConsumer):
 			players_in_game.append(self)
 			self.players[self.gameId] = players_in_game
 
-		#print(self.players)
-
 		print(len(self.players[self.gameId]))
 		if len(self.players[self.gameId]) >= 2:
-			self.pongGameThread[self.gameId] = pongThreads.pongGame()
-			asyncio.run(self.pongGameThread[self.gameId].launchGame(self.gameId, self.players[self.gameId]))
+			self.pongGameThread[self.gameId] = pongGame()
+			self.pongGameThread[self.gameId].launchGame(self.gameId, self.players[self.gameId])
 
 		self.accept()
 
@@ -47,3 +44,4 @@ class TournamentGameSocket(WebsocketConsumer):
 
 		print(self.scope['user'].username + " receive")
 		print(data)
+		self.pongGameThread[self.gameId].inputGame(data['input'], self)
