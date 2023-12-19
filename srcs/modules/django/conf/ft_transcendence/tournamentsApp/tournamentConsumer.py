@@ -1,6 +1,7 @@
 import json
 from channels.generic.websocket import WebsocketConsumer
 from .views import get_tournaments_manager
+from asgiref.sync import async_to_sync
 
 class TournamentSocket(WebsocketConsumer):
 	#IL FAUT FAIRE DES DICT CAR C'EST COMMUN A TOUS LES SOCKETS MICKA JE TE LAISSE FAIRE JE VAIS EN VACANSE <3
@@ -21,10 +22,11 @@ class TournamentSocket(WebsocketConsumer):
 		self.tournamentId = self.scope['url_route']['kwargs']['tournamentId']
 
 		self.channel_tournament = "Tournaments" + self.tournamentId
+		print("User = " + self.channel_tournament)
 
 		self.username = self.scope['user'].username
 
-		self.channel_layer.group_add(
+		async_to_sync(self.channel_layer.group_add)(
 			self.channel_tournament,
 			self.channel_name
 		)
@@ -58,15 +60,25 @@ class TournamentSocket(WebsocketConsumer):
 		print(self.scope['user'].username + " receive")
 		print(data)
 
-	def new_connexion_on_tournament(self, event):
+	def MSG_NewUser(self, event):
 		print('new_connexion_on_tournament')
 
 		#if self.scope['user'].id == new_user.id:
 		#	return
-
-		self.send(text_data=json.dumps({
-			'type': 'queue_tournament_data',
-			'size_tournaments': self.sizeTournaments,
-			'player_in_tournament': len(self.players)
+		PL = []
+		for player in self.tournament._players:
+			PL.append(player.username)
+		(self.send)(text_data=json.dumps({
+			'type': 'SendPlayersList',
+			# 'size_tournaments': self.sizeTournaments,
+			'players': PL
+		}))
+	
+	def MSG_Match(self, event):
+		(self.send)(text_data=json.dumps({
+			'type': 'SendMatchList',
+			# 'size_tournaments': self.sizeTournaments,
+			'step': event['step'],
+			'matchList': event['matchList']
 		}))
 

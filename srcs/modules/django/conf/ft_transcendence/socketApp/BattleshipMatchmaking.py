@@ -1,6 +1,7 @@
 import threading, time
 import random
 from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 import asyncio
 
 class MatchmakingLoop(threading.Thread):
@@ -14,7 +15,7 @@ class MatchmakingLoop(threading.Thread):
             self.queueProcess = True
             random.shuffle(self.matchmake.userList)
             while (len(self.matchmake.userList) > 1):
-                asyncio.run(self.matchmake.createGame(self.matchmake.userList[0], self.matchmake.userList[1]))
+                self.matchmake.createGame(self.matchmake.userList[0], self.matchmake.userList[1])
             self.queueProcess = False
             time.sleep(5)
 
@@ -57,7 +58,7 @@ class Matchmaking():
             return
         game_id = "Game_" + str(user1.id) + "_" + str(user2.id)
         print("Game id = " + game_id)
-        (self.channel_layer.group_send(
+        async_to_sync(self.channel_layer.group_send)(
             self.channelName,
             {
                 'type' : 'CreateGameMessage',
@@ -65,7 +66,7 @@ class Matchmaking():
                 'user2': user2.id,
                 'gameId': game_id
             }
-        ))
+        )
         self.RemoveUser(user1)
         self.RemoveUser(user2)
 

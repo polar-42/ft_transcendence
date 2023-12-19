@@ -1,12 +1,14 @@
 import asyncio
 import json
-from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.generic.websocket import WebsocketConsumer
 from channels.layers import get_channel_layer
 from . import BattleshipMatchmaking
+from asgiref.sync import async_to_sync
+
 
 Matchmake = BattleshipMatchmaking.Matchmaking()
 
-class socket(AsyncWebsocketConsumer):
+class socket(WebsocketConsumer):
 
 	def connect(self):
 		self.user = self.scope['user']
@@ -16,7 +18,7 @@ class socket(AsyncWebsocketConsumer):
 			self.close()
 			return
 
-		self.channel_layer.group_add(
+		async_to_sync(self.channel_layer.group_add)(
 			Matchmake.channelName,
 			self.channel_name
 		)
@@ -33,11 +35,11 @@ class socket(AsyncWebsocketConsumer):
 	def CreateGameMessage(self, event):
 		if (self.user.id == event['user1'] or self.user.id == event['user2']):
 			print ("Send message to " + self.user.username)
-			asyncio.wait(await self.send(text_data=json.dumps({
+			(self.send)(text_data=json.dumps({
 				'gameId': event['gameId']
-			})))
-			await self.close()
-			await self.channel_layer.group_discard(
+			}))
+			(self.close)()
+			self.channel_layer.group_discard(
 				Matchmake.channelName,
 				self.channel_name
 			)

@@ -3,6 +3,7 @@ from channels.layers import get_channel_layer
 from enum import IntEnum
 import threading, time
 import random
+from asgiref.sync import async_to_sync
 import socketApp
 
 class GameState(IntEnum):
@@ -120,7 +121,7 @@ class BattleShipGameManager():
         if gameId not in self._MatchList.keys():
             return 
         asyncio.wait (self._MatchList[gameId].StopGame(user))
-        asyncio.wait (await self._MatchList[gameId].StopGame(True, True, "User " + user.username + " leave the game"))
+        asyncio.wait (self._MatchList[gameId].StopGame(True, True, "User " + user.username + " leave the game"))
 
     def CloseGame(self, gameId):
         if gameId not in self._MatchList.keys():
@@ -152,7 +153,7 @@ class BattleshipMatch():
                 self.Gamestatus = GameState.RequestBoat
                 if len(self.user1.BoatList) == 0:
                     print ("Request " + self.user1.sock_user.username + " boats from server")
-                    self.channel_layer.group_send(
+                    async_to_sync(self.channel_layer.group_send)(
                         self.channelName,
                         {
                             'type' : 'MSG_RequestBoat',
@@ -160,7 +161,7 @@ class BattleshipMatch():
                         })
                 if len(self.user2.BoatList) == 0:
                     print ("Request " + self.user2.Name + " boats from server")
-                    self.channel_layer.group_send(
+                    async_to_sync(self.channel_layer.group_send)(
                         self.channelName,
                         {
                             'type' : 'MSG_RequestBoat',
@@ -177,7 +178,7 @@ class BattleshipMatch():
                     Target = self.user2.Name
                 self.StopGame(True, True, "Game cancel! User " + Target + " not send is boats to the server!")
             case GameState.Playing:
-                self.channel_layer.group_send(
+                async_to_sync(self.channel_layer.group_send)(
                     self.channelName,
                     {
                         'type' : 'MSG_RequestHit',
@@ -200,7 +201,7 @@ class BattleshipMatch():
             user = user1.sock_user.id
         elif user2 == True:
             user = user2.sock_user.id
-        self.channel_layer.group_send(
+        async_to_sync(self.channel_layer.group_send)(
             self.channelName,
             {
                 'type' : 'MSG_GameStop',
@@ -208,7 +209,7 @@ class BattleshipMatch():
                 'message' : message
             })
     
-    async def closeThread(self):
+    def closeThread(self):
         if (self.thread == None):
             return
         self.thread.stop()
@@ -216,7 +217,7 @@ class BattleshipMatch():
         self.thread = None
         self.gm.CloseGame(self.gm, self.gameId)
 
-    async def JoinGame(self, user):
+    def JoinGame(self, user):
         if self.user1 is not None and self.user1.sock_user is not user:
             self.user2 = User(user)
         elif self.user1 is None:
@@ -225,27 +226,27 @@ class BattleshipMatch():
             self.initGame()
 
     def initGame(self):
-        (self.channel_layer.group_send(
+        async_to_sync(self.channel_layer.group_send)(
             self.channelName,
             {
                 'type' : 'MSG_initGame',
             }
-        ))
+        )
         self.Gamestatus = GameState.BoatPlacement
         self.currentTimer = 60
         self.thread = MatchmakingLoop(self)
         self.thread.start()
 
-    async def startGame(self):
+    def startGame(self):
         self.currentTimer = -1
         self.Gamestatus = GameState.Playing
-        self.channel_layer.group_send(
+        async_to_sync(self.channel_layer.group_send)(
             self.channelName,
             {
                 'type' : 'MSG_StartGame',
             })
 
-    async def RCV_BoatsList(self, user, BoatList):
+    def RCV_BoatsList(self, user, BoatList):
         if (self.Gamestatus is not GameState.BoatPlacement and self.Gamestatus is not GameState.RequestBoat):
             return
         user = self.getUser(user)
@@ -268,7 +269,7 @@ class BattleshipMatch():
         if (self.OnLoadNumber == 2 and self.TurnUser is None):
             player = random.randint(1,2)
             self.TurnUser = self.user1 if player == 1 else self.user2
-            self.channel_layer.group_send(
+            async_to_sync(self.channel_layer.group_send)(
                 self.channelName,
                 {
                     'type' : 'MSG_GiveTurn',
@@ -283,18 +284,16 @@ class BattleshipMatch():
             return self.user2
         return None
 
-    async def ChangeTurn(self):
+    def ChangeTurn(self):
         self.currentTimer = 30    
         self.TurnUser = self.user1 if self.TurnUser is self.user2 else self.user2
-        self.channel_layer.group_send(
+        async_to_sync(self.channel_layer.group_send)(
                 self.channelName,
                 {
                     'type' : 'MSG_GiveTurn',
                     'player' : self.TurnUser
                 })      
-
-    def RCV_HitCase(self, user, case):
-        if (self.Gamestatus is not GameState.Playing):
+    
     def RCV_HitCase(self, user, case):
         if (self.Gamestatus is not GameState.Playing and self.Gamestatus is not GameState.RequestHit):
             return
@@ -303,7 +302,7 @@ class BattleshipMatch():
             return
         Target = self.user1 if user is self.user2 else self.user2
         Result = Target.Hit(case)
-        asyncio.wait(self.channel_layer.group_send(
+        async_to_sync(self.channel_layer.group_send)(
             self.channelName,
             {
                 'type' : 'MSG_HitResult',
@@ -311,7 +310,7 @@ class BattleshipMatch():
                 'case' : case,
                 'result' : True if Result > 0 else False,
                 'destroyedboat' : "None" if Result < 2 else Target.BoatList[Result - 2].Name
-            }))
+            })
         if (Target.checkPlayerBoats() == True):
             self.StopGame(True, True, "Game Ended! Winner is " + self.TurnUser.Name + ". He destroyed the " + str(Target.CountDestroyedBoats()) + " " + Target.Name + " boats while getting only " + str(self.TurnUser.CountDestroyedBoats()) + " of its own boat destroyed.")
         else:
