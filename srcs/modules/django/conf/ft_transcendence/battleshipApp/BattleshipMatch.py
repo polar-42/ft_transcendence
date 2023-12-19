@@ -86,17 +86,17 @@ class MatchmakingLoop(threading.Thread):
 class BattleShipGameManager():
     _MatchList = {}
 
-    async def JoinGame(self, gameId, ChannelName, user):
+    def JoinGame(self, gameId, ChannelName, user):
         if (gameId not in self._MatchList.keys()):
             self._MatchList[gameId] = BattleshipMatch(gameId, ChannelName)
-            await self._MatchList[gameId].JoinGame(user)
+            self._MatchList[gameId].JoinGame(user)
         else:
-            await self._MatchList[gameId].JoinGame(user)
+            self._MatchList[gameId].JoinGame(user)
         return self._MatchList[gameId]
-    async def LeaveGame(self, gameId, user):
+    def LeaveGame(self, gameId, user):
         if gameId not in self._MatchList.keys():
             return 
-        asyncio.wait (await self._MatchList[gameId].StopGame(user))
+        asyncio.wait (self._MatchList[gameId].StopGame(user))
         self._MatchList.pop(gameId)
 
 class BattleshipMatch():
@@ -115,7 +115,7 @@ class BattleshipMatch():
         self.gameId = gameId
         self.channel_layer = get_channel_layer()
 
-    async def ForceStep(self):
+    def ForceStep(self):
         match (self.Gamestatus):
             case GameState.Initialisation:
                 pass
@@ -127,16 +127,16 @@ class BattleshipMatch():
                 pass
         pass
 
-    async def JoinGame(self, user):
+    def JoinGame(self, user):
         if self.user1 is not None and self.user1.sock_user is not user:
             self.user2 = User(user)
         elif self.user1 is None:
             self.user1 = User(user)
         if (self.user1 is not None and self.user2 is not None):
-            await self.initGame()
+            self.initGame()
 
-    async def initGame(self):
-        await (self.channel_layer.group_send(
+    def initGame(self):
+        (self.channel_layer.group_send(
             self.channelName,
             {
                 'type' : 'MSG_initGame',
@@ -147,16 +147,16 @@ class BattleshipMatch():
         self.thread = MatchmakingLoop(self)
         self.thread.start()
 
-    async def startGame(self):
+    def startGame(self):
         self.Gamestatus = GameState.Playing
-        await self.channel_layer.group_send(
+        self.channel_layer.group_send(
             self.channelName,
             {
                 'type' : 'MSG_StartGame',
             })
         self.currentTimer = -1
 
-    async def RCV_BoatsList(self, user, BoatList):
+    def RCV_BoatsList(self, user, BoatList):
         if (self.Gamestatus is not GameState.BoatPlacement):
             return
         user = self.getUser(user)
@@ -164,11 +164,11 @@ class BattleshipMatch():
             return 
         user.ParseBoats(BoatList)
         if (len(self.user1.BoatList) != 0 and len(self.user2.BoatList) != 0):
-            await self.startGame()
+            self.startGame()
 
     OnLoadNumber = 0
 
-    async def RCV_OnLoad(self):
+    def RCV_OnLoad(self):
         if (self.OnLoadNumber == 2):
             self.OnLoadNumber = 1
         else:
@@ -176,7 +176,7 @@ class BattleshipMatch():
         if (self.OnLoadNumber == 2 and self.TurnUser is None):
             player = random.randint(1,2)
             self.TurnUser = self.user1 if player == 1 else self.user2
-            await self.channel_layer.group_send(
+            self.channel_layer.group_send(
                 self.channelName,
                 {
                     'type' : 'MSG_GiveTurn',
@@ -184,8 +184,8 @@ class BattleshipMatch():
                 })
         self.currentTimer = 30
 
-    async def StopGame(self, user):
-        await self.channel_layer.group_send(
+    def StopGame(self, user):
+        self.channel_layer.group_send(
             self.channelName,
             {
                 'type' : 'MSG_LeaveGame',
@@ -201,9 +201,9 @@ class BattleshipMatch():
             return self.user2
         return None
 
-    async def ChangeTurn(self):
+    def ChangeTurn(self):
         self.TurnUser = self.user1 if self.TurnUser is self.user2 else self.user2
-        await self.channel_layer.group_send(
+        self.channel_layer.group_send(
                 self.channelName,
                 {
                     'type' : 'MSG_GiveTurn',
@@ -211,7 +211,7 @@ class BattleshipMatch():
                 })
         self.currentTimer = 30
 
-    async def RCV_HitCase(self, user, case):
+    def RCV_HitCase(self, user, case):
         if (self.Gamestatus is not GameState.Playing):
             return
         user = self.getUser(user)
@@ -219,7 +219,7 @@ class BattleshipMatch():
             return
         Target = self.user1 if user is self.user2 else self.user2
         Result = Target.Hit(case)
-        asyncio.wait(await self.channel_layer.group_send(
+        asyncio.wait(self.channel_layer.group_send(
             self.channelName,
             {
                 'type' : 'MSG_HitResult',
@@ -227,6 +227,6 @@ class BattleshipMatch():
                 'case' : case,
                 'result' : Result
             }))
-        await self.ChangeTurn()
+        self.ChangeTurn()
 
         

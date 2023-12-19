@@ -1,7 +1,6 @@
 import threading, time
 import random
 from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync, sync_to_async
 import asyncio
 
 class MatchmakingLoop(threading.Thread):
@@ -34,7 +33,7 @@ class Matchmaking():
         self.channel_layer = get_channel_layer()
 
 
-    async def AddUser(self, user):
+    def AddUser(self, user):
         if self.userList.__contains__(user) == False:
             self.userList.append(user)
             return True
@@ -49,7 +48,7 @@ class Matchmaking():
     def getUserList(self):
         return self.userList
 
-    async def createGame(self, user1, user2):
+    def createGame(self, user1, user2):
         if (user1.is_authenticated == False or user2.is_authenticated == False):
             if user1.is_authenticated == False:
                 self.matchmake.removeUser(user1)
@@ -58,7 +57,7 @@ class Matchmaking():
             return
         game_id = "Game_" + str(user1.id) + "_" + str(user2.id)
         print("Game id = " + game_id)
-        await (self.channel_layer.group_send(
+        (self.channel_layer.group_send(
             self.channelName,
             {
                 'type' : 'CreateGameMessage',
