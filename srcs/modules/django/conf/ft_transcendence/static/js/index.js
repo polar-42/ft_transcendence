@@ -1,4 +1,4 @@
-import { checkConnexion, initLoggin, initRegister } from "./authApp.js";
+import { checkConnexion, initLoggin, initRegister, logout } from "./authApp.js";
 import { initMatchmaking } from "./battleshipApp.js";
 import { initMatchmakingPong } from "./pongGameApp.js";
 import { initLocalGamePong } from "./pongGameLocal.js";
@@ -50,18 +50,18 @@ function getRoute(RoutePath)
 	return match;
 }
 
-async function OnLogChange()
-{
-	var logStatus = await checkConnexion()
-	document.querySelectorAll('.nav__link').forEach(function(button) {
-		let match = getRoute(button.href);
-		// if (match == null || (match.route.LogStatus == 1 && logStatus == false) || match.route.LogStatus == 0 && logStatus == true)
-		// 	button.style.display = "none";
-		// else
-		// 	button.style.display = "block";
-	});
-}
-
+// async function OnLogChange()
+// {
+// 	var logStatus = await checkConnexion()
+// 	document.querySelectorAll('.nav__link').forEach(function(button) {
+// 		let match = getRoute(button.href);
+// 		if (match == null || (match.route.LogStatus == 1 && logStatus == false) || match.route.LogStatus == 0 && logStatus == true)
+// 			button.style.display = "none";
+// 		else
+// 			button.style.display = "block";
+// 	});
+// }
+//
 let Prev_match = undefined
 
 const router = async (arg) =>
@@ -112,4 +112,4 @@ document.addEventListener("DOMContentLoaded", () =>
 	router();
 });
 
-
+document.querySelector("button[name='logout']").addEventListener("click", logout);
