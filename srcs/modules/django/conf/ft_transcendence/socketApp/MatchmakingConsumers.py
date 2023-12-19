@@ -1,3 +1,4 @@
+import asyncio
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import get_channel_layer
@@ -32,7 +33,12 @@ class socket(AsyncWebsocketConsumer):
 	def CreateGameMessage(self, event):
 		if (self.user.id == event['user1'] or self.user.id == event['user2']):
 			print ("Send message to " + self.user.username)
-			self.send(text_data=json.dumps({
+			asyncio.wait(await self.send(text_data=json.dumps({
 				'gameId': event['gameId']
-			}))
+			})))
+			await self.close()
+			await self.channel_layer.group_discard(
+				Matchmake.channelName,
+				self.channel_name
+			)
 

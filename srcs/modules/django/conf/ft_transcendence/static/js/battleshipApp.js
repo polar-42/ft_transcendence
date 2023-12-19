@@ -26,17 +26,22 @@ function UpdateButtonJoin()
 
 function UpdateButtonLeave()
 {
-	document.getElementsByClassName("matchmake_BTN")[0].innerHTML = 'Join matchmaking'
-	document.getElementsByClassName("matchmake_BTN")[0].removeEventListener("click", LeaveMatchmaking)
-	document.getElementsByClassName("matchmake_BTN")[0].addEventListener("click", JoinMatchmaking)
+	const btn = document.getElementsByClassName("matchmake_BTN")[0];
+	if (btn != null)
+	{
+		btn.innerHTML = 'Join matchmaking'
+		btn.removeEventListener("click", LeaveMatchmaking)
+		btn.addEventListener("click", JoinMatchmaking)
+	}
+	LeaveMatchmaking()
 }
 
 function LeaveMatchmaking()
 {
 	if (matchmakingSocket == null)
 		return
-	matchmakingSocket.close()
-
+	if(matchmakingSocket.readyState != 3)
+		matchmakingSocket.close()
 	matchmakingSocket = null
 }
 
@@ -44,7 +49,7 @@ function OnMessage(e)
 {
 	const data = JSON.parse(e.data)
 	document.getElementsByClassName("matchmake_BTN")[0].removeEventListener("click", LeaveMatchmaking)
-	matchmakingSocket.onclose = null
+	// matchmakingSocket.onclose = null
 	navto("/battleship", data.gameId)
 }
 

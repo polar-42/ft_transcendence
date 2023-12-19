@@ -1,14 +1,16 @@
 import asyncio
 from channels.layers import get_channel_layer
-from enum import Enum
+from enum import IntEnum
 import threading, time
 import random
 import socketApp
 
-class GameState(Enum):
+class GameState(IntEnum):
+    RequestBoat = -1
     Initialisation = 0
     BoatPlacement = 1
     Playing = 2
+    RequestHit = 4
     Ending = 3
     
 
@@ -36,11 +38,13 @@ class Boat():
         for case in self.BoatArray:
             if case.PosX == posX and case.PosY == posY:
                 if self.HittedArray.__contains__(case) == True:
-                    return False
+                    return 0
                 else:
                     self.HittedArray.append(case)
-                    return True
-        return False
+                    if (len (self.HittedArray) == len (self.BoatArray)):
+                        return 2
+                    return 1
+        return 0
 
 class User():
     def __init__(self, user):
@@ -61,10 +65,29 @@ class User():
                         print(self.Name + " " + boat.Name + " " + str(cases))
     
     def Hit(self, case):
+        result = 0
+        pos = 0
         for boat in self.BoatList:
-            if (boat.Hit(case['ArrayPosX'], case['ArrayPosY']) == True):
-                return True
+            result = boat.Hit(case['ArrayPosX'], case['ArrayPosY'])
+            if (result > 0):
+                return result if result == 1 else result + pos
+            pos += 1
         return False
+    
+    def CountDestroyedBoats(self):
+        count = 0
+        for boat in self.BoatList:
+            if (len(boat.BoatArray) == len(boat.HittedArray)):
+                count += 1
+        return count
+
+
+    def checkPlayerBoats(self):
+        count = 0
+        for boat in self.BoatList:
+            if (len(boat.BoatArray) == len(boat.HittedArray)):
+                count += 1
+        return (count == len(self.BoatList))
 
 class MatchmakingLoop(threading.Thread):
     def __init__(self, current) :
@@ -88,7 +111,7 @@ class BattleShipGameManager():
 
     def JoinGame(self, gameId, ChannelName, user):
         if (gameId not in self._MatchList.keys()):
-            self._MatchList[gameId] = BattleshipMatch(gameId, ChannelName)
+            self._MatchList[gameId] = BattleshipMatch(gameId, ChannelName, self)
             self._MatchList[gameId].JoinGame(user)
         else:
             self._MatchList[gameId].JoinGame(user)
@@ -97,8 +120,13 @@ class BattleShipGameManager():
         if gameId not in self._MatchList.keys():
             return 
         asyncio.wait (self._MatchList[gameId].StopGame(user))
-        self._MatchList.pop(gameId)
+        asyncio.wait (await self._MatchList[gameId].StopGame(True, True, "User " + user.username + " leave the game"))
 
+    def CloseGame(self, gameId):
+        if gameId not in self._MatchList.keys():
+            return
+        self._MatchList.pop(gameId)
+        
 class BattleshipMatch():
 
     user1 = None
@@ -109,7 +137,8 @@ class BattleshipMatch():
     thread = None
     TurnUser = None
 
-    def __init__(self, gameId, ChannelName):
+    def __init__(self, gameId, ChannelName, GameManager):
+        self.gm = GameManager
         self.Gamestatus = GameState.Initialisation
         self.channelName = ChannelName 
         self.gameId = gameId
@@ -120,14 +149,74 @@ class BattleshipMatch():
             case GameState.Initialisation:
                 pass
             case GameState.BoatPlacement:
-                pass
+                self.Gamestatus = GameState.RequestBoat
+                if len(self.user1.BoatList) == 0:
+                    print ("Request " + self.user1.sock_user.username + " boats from server")
+                    self.channel_layer.group_send(
+                        self.channelName,
+                        {
+                            'type' : 'MSG_RequestBoat',
+                            'user' : self.user1.sock_user.id,
+                        })
+                if len(self.user2.BoatList) == 0:
+                    print ("Request " + self.user2.Name + " boats from server")
+                    self.channel_layer.group_send(
+                        self.channelName,
+                        {
+                            'type' : 'MSG_RequestBoat',
+                            'user' : self.user2.sock_user.id,
+                        })
+                self.currentTimer = 1
+            case GameState.RequestBoat:
+                if len(self.user1.BoatList) == 0 and len(self.user2.BoatList) == 0:
+                    self.StopGame(True, True, "Game cancel! None of the user send their boats to the server!")
+                    return
+                elif len(self.user1.BoatList) == 0:
+                    Target = self.user1.Name
+                else:
+                    Target = self.user2.Name
+                self.StopGame(True, True, "Game cancel! User " + Target + " not send is boats to the server!")
             case GameState.Playing:
-                pass
+                self.channel_layer.group_send(
+                    self.channelName,
+                    {
+                        'type' : 'MSG_RequestHit',
+                        'user' : self.TurnUser.sock_user.id,
+                    })
+                self.Gamestatus = GameState.RequestHit
+                self.currentTimer = 1
+            case GameState.RequestHit:
+                Winner = self.user1.Name if self.TurnUser == self.user2 else self.user2.Name
+                self.StopGame(True, True, "Game ended by forfeit! User " + Winner + " win since " + self.TurnUser.Name + " not send is selected case to the server!")
+            
             case GameState.Ending:
                 pass
         pass
 
-    def JoinGame(self, user):
+    def StopGame(self, user1, user2, message):
+        if user1 == True and user2 == True:
+            user = -1
+        elif user1 == True:
+            user = user1.sock_user.id
+        elif user2 == True:
+            user = user2.sock_user.id
+        self.channel_layer.group_send(
+            self.channelName,
+            {
+                'type' : 'MSG_GameStop',
+                'user' : user,
+                'message' : message
+            })
+    
+    async def closeThread(self):
+        if (self.thread == None):
+            return
+        self.thread.stop()
+        self.thread.join()
+        self.thread = None
+        self.gm.CloseGame(self.gm, self.gameId)
+
+    async def JoinGame(self, user):
         if self.user1 is not None and self.user1.sock_user is not user:
             self.user2 = User(user)
         elif self.user1 is None:
@@ -147,21 +236,24 @@ class BattleshipMatch():
         self.thread = MatchmakingLoop(self)
         self.thread.start()
 
-    def startGame(self):
+    async def startGame(self):
+        self.currentTimer = -1
         self.Gamestatus = GameState.Playing
         self.channel_layer.group_send(
             self.channelName,
             {
                 'type' : 'MSG_StartGame',
             })
-        self.currentTimer = -1
 
-    def RCV_BoatsList(self, user, BoatList):
-        if (self.Gamestatus is not GameState.BoatPlacement):
+    async def RCV_BoatsList(self, user, BoatList):
+        if (self.Gamestatus is not GameState.BoatPlacement and self.Gamestatus is not GameState.RequestBoat):
             return
         user = self.getUser(user)
         if (user is None):
-            return 
+            return
+        for line in BoatList:
+            if line['ArrayX'] == -1:
+                return
         user.ParseBoats(BoatList)
         if (len(self.user1.BoatList) != 0 and len(self.user2.BoatList) != 0):
             self.startGame()
@@ -184,16 +276,6 @@ class BattleshipMatch():
                 })
         self.currentTimer = 30
 
-    def StopGame(self, user):
-        self.channel_layer.group_send(
-            self.channelName,
-            {
-                'type' : 'MSG_LeaveGame',
-                'player' : user.username
-            })
-        self.thread.stop()
-        self.thread.join()
-
     def getUser(self, user):
         if (user == self.user1.sock_user):
             return self.user1
@@ -201,18 +283,20 @@ class BattleshipMatch():
             return self.user2
         return None
 
-    def ChangeTurn(self):
+    async def ChangeTurn(self):
+        self.currentTimer = 30    
         self.TurnUser = self.user1 if self.TurnUser is self.user2 else self.user2
         self.channel_layer.group_send(
                 self.channelName,
                 {
                     'type' : 'MSG_GiveTurn',
                     'player' : self.TurnUser
-                })
-        self.currentTimer = 30
+                })      
 
     def RCV_HitCase(self, user, case):
         if (self.Gamestatus is not GameState.Playing):
+    def RCV_HitCase(self, user, case):
+        if (self.Gamestatus is not GameState.Playing and self.Gamestatus is not GameState.RequestHit):
             return
         user = self.getUser(user)
         if user is not self.TurnUser:
@@ -225,8 +309,12 @@ class BattleshipMatch():
                 'type' : 'MSG_HitResult',
                 'target' : Target,
                 'case' : case,
-                'result' : Result
+                'result' : True if Result > 0 else False,
+                'destroyedboat' : "None" if Result < 2 else Target.BoatList[Result - 2].Name
             }))
-        self.ChangeTurn()
+        if (Target.checkPlayerBoats() == True):
+            self.StopGame(True, True, "Game Ended! Winner is " + self.TurnUser.Name + ". He destroyed the " + str(Target.CountDestroyedBoats()) + " " + Target.Name + " boats while getting only " + str(self.TurnUser.CountDestroyedBoats()) + " of its own boat destroyed.")
+        else:
+            self.ChangeTurn()
 
         
