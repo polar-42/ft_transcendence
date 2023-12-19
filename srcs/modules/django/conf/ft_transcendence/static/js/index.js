@@ -112,4 +112,16 @@ document.addEventListener("DOMContentLoaded", () =>
 	router();
 });
 
-document.querySelector("button[name='logout']").addEventListener("click", logout);
+// document.querySelector("button[name='logout']").addEventListener("click", logout);
+
+const menuBtn = document.querySelector(".menu_btn");
+const dropDownMenu = document.querySelector(".dropdown_menu");
+console.log(menuBtn);
+console.log(dropDownMenu);
+
+menuBtn.addEventListener("click", () => {
+  dropDownMenu.classList.toggle('open');
+  const isOpen = dropDownMenu.classList.contains('open');
+
+ menuBtn.src = isOpen ? '../static/assets/logo/cross.png' : '../static/assets/logo/hamburger.png';
+});
