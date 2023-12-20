@@ -19,6 +19,7 @@ body {
   background: 
       linear-gradient(to bottom, var(--main-bg-color) 50%, var(--secondary-bg-color) 100%),
       var(--main-bg-color);
+  background-repeat: no-repeat;
   margin: 0px;
 }
 
@@ -97,7 +98,7 @@ header a:visited {
 footer {
   left: 0;
   background: transparent;
-  height: 100px;
+  height: auto;
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -142,7 +143,7 @@ footer a:hover::before {
 }
 
 .dropdown_menu.open {
-  height: 250px;
+  height: 200px;
 }
 .dropdown_menu li {
   padding: 0.7rem;

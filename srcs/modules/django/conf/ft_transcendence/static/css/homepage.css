@@ -5,16 +5,17 @@
 .hero {
   padding: 20px 80px;
   background:
-      linear-gradient(to bottom, var(--secondary-bg-color) 0%, var(--main-bg-color) 65%), 
-      var(--main-bg-color);
+  linear-gradient(to bottom, var(--secondary-bg-color) 0%, var(--main-bg-color) 65%), 
+  var(--main-bg-color);
   margin-bottom: 5vh;
 }
- 
+
 #catchphrase {
   margin-bottom: 20px;
   display: grid;
   grid-template-columns: 1fr 3fr;
   grid-gap: 20px;
+  align-items: center;
 }
 
 #catchphrase h2 {
@@ -26,12 +27,11 @@
 }
 
 #paddle {
-  width: 100%;
+  max-width: 100%;
 }
 
 
 #login-signin {
-  margin-top: 35px;
   display: flex;
   justify-content: space-evenly;
 }
@@ -63,8 +63,8 @@ button[name="SignIn"]:hover {
   background: var(--main-bg-color);
   border: 2px solid var(--fourth);
   box-shadow: 
-        2px 2px 10px var(--fourth),
-        -2px -2px 8px var(--fourth);
+  2px 2px 10px var(--fourth),
+  -2px -2px 8px var(--fourth);
   color: var(--fourth);
   font-weight: bolder;
 }
@@ -79,8 +79,8 @@ button[name="LogIn"]:hover {
   background: var(--fourth);
   border: 5px solid var(--fourth);
   box-shadow: 
-        2px 2px 10px var(--fourth),
-        -2px -2px 8px var(--fourth);
+  2px 2px 10px var(--fourth),
+  -2px -2px 8px var(--fourth);
   color: var(--main-bg-color);
   font-weight: bolder;
 }
@@ -100,35 +100,34 @@ button[name="LogIn"]:hover {
 } 
 
 .bio_wrapper {
-  list-style: none; 
+  display: flex;
+  flex-direction: column;
+  justify-items: space-evenly;
   font-size: 1.2em;
 }
 
 .bio_wrapper img {
-  width: 100%;
+  width: 75px;
   height: auto;
   border-radius: 50%;
-  /* box-shadow:  */
-  /*     1px 0 5px var(--main-bg-color), */
-  /*     -1px 0 5px var(--main-bg-color); */
 }
 
-.bio_wrapper ul li {
+.bio_wrapper .bio {
   height: 100%;
   align-items: center;
-  margin: 20px 0 30px 0;
+  margin: 20px 0 10% 0;
   display: grid;
   grid-gap: 20px;
   grid-template-columns: 1fr 3fr;
   text-align: right;
 }
 
-.bio_wrapper ul li:nth-child(2) {
+.bio_wrapper .bio:nth-child(2) {
   grid-template-columns: 3fr 1fr;
   text-align: left;
 }
 
-.bio_wrapper li ul {
+.bio_wrapper .bio ul {
   display: none;
 }
 
@@ -143,7 +142,11 @@ button[name="LogIn"]:hover {
 .presentation p {
   letter-spacing: .2em; 
   text-justify: auto;
-  margin: .5em;
+  margin: 7%;
+}
+
+.presentation p:first-child {
+  margin-top: 20px;
 }
 
 .presentation a {
@@ -153,4 +156,100 @@ button[name="LogIn"]:hover {
 .presentation a:hover {
   color: var(--secondary) !important;
   text-decoration: underline;
+}
+
+/* Responsive Design */
+
+@media (min-width: 1080px) {
+  .about,
+  .hero {
+    padding-right: calc((100vw - 1000px) / 2);
+    padding-left: calc((100vw - 1000px) / 2);
+  }
+
+  .hero {
+    font-size: 1.2em;
+  }
+
+  .presentation p {
+    padding-right: 80px;
+    margin-bottom: 50px;
+  }
+}
+
+@media (min-width: 1000px) {
+  .about {
+    font-size: 1.3em;
+  }
+  
+  .about img {
+    width: 100%;
+}
+
+@media (max-width: 800px) {
+  #catchphrase  h2 {
+    font-size: 2em;
+  }
+
+  #paddle {
+    width: 150px;
+    height: auto;
+  }
+
+
+  #paddle {
+    width: 230px;
+  }
+
+  #boat {
+    width: 190px;
+  }
+
+  .bio_wrapper ul li {
+    margin-bottom: 59px;
+  }
+}
+
+@media (max-width: 700px) {
+  .hero img {
+    display: none;
+  }
+
+  #catchphrase {
+    display: block;
+    text-align: center;
+  }
+
+  .bio_wrapper ul {
+    height: auto;
+  }
+
+  .bio_wrapper ul li {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    margin: 25%;
+  }
+
+  .bio_wrapper ul li:nth-child(2) {
+    grid-template-columns: 1fr;
+  }
+
+  .bio_wrapper ul p {
+    display: none;
+  }
+
+  .bio_wrapper ul img {
+    width: 100px;
+  }
+}
+
+@media (max-width: 530px) {
+  #login-signin div {
+    grid-gap: 5vh;
+  }
+
+  #login-signin button {
+    font-size: 1.2em;
+    padding: 5px;
+  }
 }
