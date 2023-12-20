@@ -50,6 +50,10 @@ function OnMessageTournament(e)
 			break;
 		case 'SendMatchList':
 			printMatchs(data);
+			break
+		case 'LaunchMatch':
+			LoadGame(data)
+			break
 		case 'match_id':
 			break
 		default:
@@ -57,9 +61,30 @@ function OnMessageTournament(e)
 	}
 }
 
-function printMatchs(data)
+function LoadGame(data) 
 {
 	console.log(data)
+	console.log(data.gameId)
+	navto("/battleship", data.gameId)
+}
+
+function printMatchs(data)
+{
+	const PL = document.getElementsByName("MatchList")[0]
+	if (PL == null)
+		return
+	const matchs = data.matchList
+	var pos = 0
+	matchs.forEach(element => {
+		const txt = document.createElement('li')
+		const player1 = document.createElement('p')
+		const player2 = document.createElement('p')
+		player1.textContent = element['User1']
+		player2.textContent = element['User2']
+		txt.appendChild(player1)
+		txt.appendChild(player2)
+		PL.appendChild(txt)
+	})
 }
 
 function printPlayersInTournaments(data)

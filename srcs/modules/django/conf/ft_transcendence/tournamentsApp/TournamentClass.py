@@ -5,11 +5,28 @@ import random
 from asgiref.sync import async_to_sync
 
 
+class GameState(IntEnum):
+	Initialisation = 0
+	Playing = 1
+	Ended = 2
+
 class TreeMatch():
-	def __init__(self, User1, User2):
+
+	def __init__(self, User1, User2, creationStep):
 		self.User1 = User1
 		self.User2 = User2
-		
+		self.step = creationStep
+		self.State = GameState.Initialisation
+		self.Winner = None
+	
+	def to_json(self):
+		return {
+			'User1' : self.User1.username,
+			'User2' : self.User2.username,
+			'step' : self.step,
+			'state' : self.State,
+			'Winner' : self.Winner.id if self.Winner is not None else None
+		}
 
 class TypeGame(IntEnum):
 	Undefined = 0
@@ -71,18 +88,39 @@ class Tournament():
 		pos = 0
 		self.curMatch = []
 		while (pos + 1 < len(self.AlivePlayer)):
-			self.curMatch.append({
-				'User1': self.AlivePlayer[pos].username,
-				'User2' : self.AlivePlayer[pos + 1].username
-				})
+			self.curMatch.append(TreeMatch(self.AlivePlayer[pos], self.AlivePlayer[pos + 1], 1))
+			# self.curMatch.append({
+				# 'User1': self.AlivePlayer[pos].username,
+				# 'User2' : self.AlivePlayer[pos + 1].username,
+				# 'step' : 
+				# })
+			print(type(self.curMatch[0].State))
 			pos += 2
+		match2 = self.curMatch.copy()
 		async_to_sync(self.channel_layer.group_send)(
 			self.channel_name,
 			{
 				'type': 'MSG_Match',
 				'step' : self.curStep,
-				'matchList' : self.curMatch
+				'matchList' : [match.to_json() for match in match2]
 			})
+		print("TOTO1")
+		print(GameState.Initialisation)
+		print(type(GameState.Initialisation))
+		for match in self.curMatch:
+			print((match.State))
+			if match.State is GameState.Initialisation:
+				print("TOTO2")
+				async_to_sync(self.channel_layer.group_send)(
+					self.channel_name,
+					{
+						'type': 'MSG_LaunchGame',
+						'gameType' : self._typeGame,
+						'gameId': "Tournament" + str(self._id) + "_" + str(match.User1.id) + "_" + str(match.User2.id),
+						'Player1': match.User1.id,
+						'Player2': match.User2.id,
+						'tournamentId' : self._id
+				})
 	# def start(self, playersSockets):
 	# 	self.playersSockets = playersSockets
 	# 	print(self._name, 'is starting')

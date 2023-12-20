@@ -25,6 +25,7 @@ class TournamentSocket(WebsocketConsumer):
 		print("User = " + self.channel_tournament)
 
 		self.username = self.scope['user'].username
+		self.user = self.scope['user']
 
 		async_to_sync(self.channel_layer.group_add)(
 			self.channel_tournament,
@@ -80,5 +81,18 @@ class TournamentSocket(WebsocketConsumer):
 			# 'size_tournaments': self.sizeTournaments,
 			'step': event['step'],
 			'matchList': event['matchList']
+		}))
+	
+	def MSG_LaunchGame(self, event):
+		print("LaunchGame")
+		if self.user.id is not event['Player1'] and self.user.id is not event["Player2"]:
+			return
+		(self.send)(text_data=json.dumps({
+			'type': 'LaunchMatch',
+			'gameType' : event['gameType'],
+			'gameId' : event['gameId'],
+			'tournamentId' : event['tournamentId']
+			# 'size_tournaments': self.sizeTournaments,
+
 		}))
 
