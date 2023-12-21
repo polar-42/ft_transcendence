@@ -7,7 +7,7 @@ export function initGamePong()
 {
 	if (arguments[0] == undefined)
 	{
-		navto('/pongGame/pongMatchmaking');
+		navto('/pongGame/Home');
 		return;
 	}
 	gameId = arguments[0];
@@ -28,8 +28,8 @@ export function unLoadGamePong()
 	if (pongGameSocket != null)
 	{
 		pongGameSocket.close()
-		pongGameSocket = null;
 	}
+	pongGameSocket = null;
 	document.removeEventListener('keydown', doKeyDown);
 }
 
@@ -139,6 +139,7 @@ function doKeyDown(e)
 function LaunchGame()
 {
 	canvas = document.getElementById('pongCanvas');
+	console.log(canvas)
 	context = canvas.getContext('2d');
 	canvas.widht = 720;
 	canvas.height = 450;

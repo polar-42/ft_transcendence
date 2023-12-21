@@ -1,6 +1,5 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
-from channels.layers import get_channel_layer
 from . import matchmakingThreads
 
 pongMatchmaking = matchmakingThreads.pongMatchmaking()

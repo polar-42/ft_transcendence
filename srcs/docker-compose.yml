@@ -34,6 +34,7 @@ services:
     #    condition: service_healthy
     ports:
       - "8080:8080"
+      - "8000:8000"
 
   postgresql:
     build: modules/postgresql

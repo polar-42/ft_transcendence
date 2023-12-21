@@ -1,12 +1,12 @@
 import { checkConnexion, initLoggin, initRegister, logout } from "./authApp.js";
 import { initMatchmaking } from "./battleshipApp.js";
-import { initMatchmakingPong } from "./pongGameApp.js";
+import { initMatchmakingPong, unLoadMatchmakingPong } from "./pongGameApp.js";
 import { initLocalGamePong } from "./pongGameLocal.js";
-import { initGamePongIA } from './pongGameIA.js';
+import { initGamePongIA, unloadGamePongIA } from './pongGameIA.js';
 import { initDashboard } from "./dashboard.js";
 import { initHomePage} from "./homepage.js";
 import { initGame } from "./game.js";
-import { initGamePong, unLoadGamePong } from "./pongGame.js";
+import { initGamePong, unLoadGamePong } from "./pongGameRemote.js";
 
 export function navto(urlpath)
 {
@@ -31,10 +31,10 @@ function getRoute(RoutePath)
 		{ path: "/dashboard", init: initDashboard, unload: null, title:"Home", LogStatus: 2},
 		{ path: "/battleship", init: initGame, unload: null, title:"Battleship", LogStatus: 1},
 		{ path: "/battleship/matchmake", init: initMatchmaking, unload: null, title:"Battleship", LogStatus: 1},
-		{ path: "/pongGame", init: initGamePong, unload: unLoadGamePong, title:"pongGame", LogStatus: 1},
-		{ path: "/pongGame/pongMatchmaking", init: initMatchmakingPong, unload: null, title:"pongGame", LogStatus: 1},
-		{ path: "/pongGame/localPongGame", init: initLocalGamePong, unload: null, title:"pongGame", LogStatus: 1},
-		{ path: "/pongGame/pongGameIA", init: initGamePongIA, unload: null, title:"pongGame", LogStatus: 1},
+		{ path: "/pongGame/Remote", init: initGamePong, unload: unLoadGamePong, title:"pongGame", LogStatus: 1},
+		{ path: "/pongGame/Home", init: initMatchmakingPong, unload: unLoadMatchmakingPong, title:"pongGame", LogStatus: 1},
+		{ path: "/pongGame/Local", init: initLocalGamePong, unload: null, title:"pongGame", LogStatus: 1},
+		{ path: "/pongGame/IA", init: initGamePongIA, unload: unloadGamePongIA, title:"pongGame", LogStatus: 1},
 		{ path: "/authApp/login",init: initLoggin, unload: null, title:"Login", LogStatus: 0},
 		{ path: "/authApp/register", init: initRegister, unload: null, title:"Register", LogStatus: 0},
 	];
@@ -96,6 +96,7 @@ const router = async (arg) =>
 	Prev_match = match;
 	// OnLogChange();
 };
+
 
 window.addEventListener("popstate", router);
 

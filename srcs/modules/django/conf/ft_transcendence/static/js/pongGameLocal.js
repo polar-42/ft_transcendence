@@ -13,8 +13,15 @@ let bGravity;
 
 export function initLocalGamePong()
 {
+	if (arguments[0] == undefined)
+	{
+		navto('/pongGame/Home');
+		return;
+	}
+
+	console.log(document.innerHTML)
 	canvas = document.getElementById("pongCanvasLocal");
-	context = canvas.getContext('2d');
+	context = canvas.getContext("2d");
 	document.addEventListener('keydown', doKeyDown);
 	scoreOne = 0;
 	scoreTwo = 0;

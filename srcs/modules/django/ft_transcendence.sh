@@ -8,6 +8,7 @@ export DB_USER="user_db"
 export DB_PASSWORD="password_db"
 export DB_PORT="5432"
 
+#CHECK IF POSTGRES IS LAUNCH AND TRANSCENDENCE_DB EXIST
 while true ; do
 
 	pg_isready --dbname=transcendence_db --host=container_postgresql --port=5432 --username=user_db > /dev/null 2>&1;
@@ -19,7 +20,6 @@ while true ; do
 	sleep 1
 done
 
-rm -rf /var/db/check
 ln -s /var/conf/ft_transcendence .
 cd $SITE_NAME
 
@@ -73,3 +73,5 @@ python manage.py migrate
 python manage.py createsuperuser
 python manage.py create_user
 python manage.py runserver $(hostname -i):8080;
+#python manage.py collectstatic
+#uwsgi --http $(hostname -i):8080 --module ft_transcendence.wsgi --enable-threads

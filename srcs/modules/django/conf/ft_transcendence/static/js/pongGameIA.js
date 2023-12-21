@@ -8,11 +8,9 @@ export function initGamePongIA()
 {
 	if (arguments[0] == undefined)
 	{
-		navto('/pongGame/pongMatchmaking');
+		navto('/pongGame/Home');
 		return;
 	}
-
-	console.log('initGamePongIA');
 
 	console.log("ws://" + window.location.host + '/pongGame/gameVsIA');
 	socketPongIA = new WebSocket("ws://" + window.location.host + '/pongGame/gameVsIA');
@@ -23,6 +21,21 @@ export function initGamePongIA()
 	socketPongIA.onclose = FinishGame
 	socketPongIA.onmessage = e => OnMessage(e)
 
+}
+
+export function unloadGamePongIA()
+{
+	console.log('unloadGamePongIA');
+	if (socketPongIA != null)
+	{
+		socketPongIA.close();
+	}
+	socketPongIA = null;
+	if (canvas != null)
+	{
+		canvas.style.display="none";
+	}
+	document.removeEventListener('keydown', doKeyDown);
 }
 
 class Element {
