@@ -1,93 +1,84 @@
 import json, asyncio
-from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.generic.websocket import WebsocketConsumer
 from channels.layers import get_channel_layer
 from . import pongThreads
 from ..models import PongGameModels
-from channels.db import database_sync_to_async
+from asgiref.sync import async_to_sync
 
 
-class PongGameSocket(AsyncWebsocketConsumer):
-	game = []
-	connected_users = []
-	pongGame = []
+class PongGameSocket(WebsocketConsumer):
+	connected_users = {}
+	pongGame = {}
 	channel_layer = get_channel_layer()
 
-	async def connect(self):
-		if len(self.connected_users) >= 2:
-			await self.close()
-			return
-		await self.accept()
-
+	def connect(self):   
 		self.pongGameId = self.scope['url_route']['kwargs']['gameId']
-		self.username = self.scope['user']
+  
+		if self.pongGameId in self.connected_users and len(self.connected_users[self.pongGameId]) >= 2:
+			self.close()
+			return
+		self.accept()
 
+		self.username = self.scope['user']
 		self.players_game = []
 
 		print("PongGameId =", self.pongGameId)
 
-		await self.channel_layer.group_add(
+		async_to_sync(self.channel_layer.group_add)(
 			self.pongGameId,
 			self.channel_name
 		)
 
-		if len(self.connected_users) < 2:
-			self.connected_users.append(self)
+		if self.pongGameId not in self.connected_users:
+			tab = []
+			tab.append(self)
+			self.connected_users[self.pongGameId] = tab
+   
+		elif self.pongGameId in self.connected_users and len(self.connected_users[self.pongGameId]) < 2:
+			self.connected_users[self.pongGameId].append(self)
 
-		if len(self.connected_users) == 2:
-			self.players_game.append(self.connected_users[0])
+		if len(self.connected_users[self.pongGameId]) == 2:
+			self.connected_users[self.pongGameId][0].add_players_list(self.connected_users[self.pongGameId][0], self)
+			self.players_game.append(self.connected_users[self.pongGameId][0])
 			self.players_game.append(self)
-			await self.connected_users[0].add_players_list(self.connected_users[0], self)
+   
+			self.pongGame[self.pongGameId] = pongThreads.pongGame()
 
-		if len(self.connected_users) == 2:
-			self.pongGame.append(pongThreads.pongGame())
+			cpy = self.connected_users[self.pongGameId].copy()
+			self.pongGame[self.pongGameId].launchGame(self.pongGameId, cpy)
 
-			cpy = self.connected_users.copy()
-			await self.pongGame[-1].launchGame(self.pongGameId, cpy)
+			del self.connected_users[self.pongGameId]
 
-			self.game.append(cpy)
-			self.connected_users.clear()
-
-	async def add_players_list(self, p1, p2):
+	def add_players_list(self, p1, p2):
 		self.players_game.append(p1)
 		self.players_game.append(p2)
 
-	async def disconnect(self, close_code):
+	def disconnect(self, close_code):
 
-		await self.channel_layer.group_discard(
+		async_to_sync(self.channel_layer.group_discard)(
 			self.pongGameId,
 			self.channel_name
 		)
 
-		i = 0
-		for x in self.game:
-			if self in x and x is not None and self.pongGame[i] is not None:
-				r = await self.pongGame[i].quitGame(self)
-				asyncio.wait(r)
-				self.pongGame[i] = None
-				x = None
-			else:
-				i = i + 1
+		if self.pongGameId in self.pongGame:
+			self.pongGame[self.pongGameId].quitGame(self)
+			del self.pongGame[self.pongGameId]
 
 		print(f"Pong game user disconnected: {self.scope['user']}")
 
-	async def receive(self, text_data):
+	def receive(self, text_data):
 		data = json.loads(text_data)
 
 		message = data['message']
 
-		i = 0
-		for x in self.game:
-			if self in x and self.pongGame[i] is not None:
-				if message == 'input':
-					await self.pongGame[i].inputGame(data['input'], self)
-			else:
-				i = i + 1
+		if message == 'input':
+			self.pongGame[self.pongGameId].inputGame(data['input'], self)
 
-	async def end_game(self, event):
+	def end_game(self, event):
 
 		print('end_game is', str(self.username))
 
-		await self.channel_layer.group_discard(
+		async_to_sync(self.channel_layer.group_discard)(
 			self.pongGameId,
 			self.channel_name
 		)
@@ -99,7 +90,7 @@ class PongGameSocket(AsyncWebsocketConsumer):
 			player1 = self
 			player2 = self.players_game[0]
 
-		await self.send(text_data=json.dumps({
+		self.send(text_data=json.dumps({
     			'type': 'game_ending',
 				'winner': self.username.username,
 				'reason': 'disconnexion',
@@ -109,30 +100,24 @@ class PongGameSocket(AsyncWebsocketConsumer):
 				'playertwo_username': player2.username.username,
     	}))
 
-		await addToDb(player1.username.username, player2.username.username, 3, 0, self.username.username, 3, 0, 'disconnexion')
+		addToDb(player1.username.username, player2.username.username, 3, 0, self.username.username, 3, 0, 'disconnexion')
 
-		await self.close()
+		self.close()
 
-	async def end_game_by_score(self, event):
+	def end_game_by_score(self, event):
 
 		winner = event['winner']
 
 		print('Game is win by', winner.username)
 
-		await self.channel_layer.group_discard(
+		async_to_sync(self.channel_layer.group_discard)(
 			self.pongGameId,
 			self.channel_name
 		)
 
-		i = 0
-		for x in self.game:
-			if self in x and x is not None and self.pongGame[i] is not None:
-				r = await self.pongGame[i].finishGame()
-				asyncio.wait(r)
-				self.pongGame[i] = None
-				x = None
-			else:
-				i = i + 1
+		if self.pongGameId in self.pongGame:
+			self.pongGame[self.pongGameId].finishGame()
+			del self.pongGame[self.pongGameId]
 
 		playerone_score = event['playerone_score']
 		playertwo_score = event['playertwo_score']
@@ -140,7 +125,7 @@ class PongGameSocket(AsyncWebsocketConsumer):
 		n_ball_touch_player1 = event['number_ball_touch_player1']
 		n_ball_touch_player2 = event['number_ball_touch_player2']
 
-		await self.send(text_data=json.dumps({
+		self.send(text_data=json.dumps({
     			'type': 'game_ending',
 				'winner': winner.username,
 				'reason': 'score',
@@ -151,12 +136,10 @@ class PongGameSocket(AsyncWebsocketConsumer):
     	}))
 
 		if winner.username == str(self.username):
+			addToDb(self.players_game[0].username, self.players_game[1].username, playerone_score, playertwo_score, winner.username, n_ball_touch_player1, n_ball_touch_player2, 'score')
 
-			await addToDb(self.players_game[0].username, self.players_game[1].username, playerone_score, playertwo_score, winner.username, n_ball_touch_player1, n_ball_touch_player2, 'score')
+		self.close()
 
-		await self.close()
-
-@database_sync_to_async
 def addToDb(playerone_username, playertwo_username, playerone_score, playertwo_score, winner, n_ball_touch_player1, n_ball_touch_player2, reason_end):
 
 	obj = PongGameModels.objects.create(

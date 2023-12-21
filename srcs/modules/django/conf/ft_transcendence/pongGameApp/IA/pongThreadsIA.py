@@ -1,7 +1,8 @@
-import threading, json, random, math, asyncio
+import threading, json, random, math, asyncio, time
 from channels.layers import get_channel_layer
 from .. import pongGameClasses
 from .PongIA import pongGameIA
+from asgiref.sync import async_to_sync, sync_to_async
 
 class pongGameLoop(threading.Thread):
 
@@ -16,24 +17,24 @@ class pongGameLoop(threading.Thread):
         self.threadIA = None
         self.isThreadRunning = False
 
-    async def run_async(self):
-        await send_data_ia_async(self.pongThreadIA, self.game, self.isThreadRunning)
+    def run_async(self):
+        send_data_ia_async(self.pongThreadIA, self.game, self.isThreadRunning)
         x = 30
         y = 0
         sec = 3
         while not self.stop_flag.is_set():
             if self.startGameBool == False:
 
-                await send_timer_async(self.pong, self.game, sec)
+                send_timer_async(self.pong, self.game, sec)
 
-                await asyncio.sleep(0.03)
+                time.sleep(0.03)
 
                 y += 1
 
                 if y > 30:
                     sec -= 1
                     y = 0
-                    await send_data_ia_async(self.pongThreadIA, self.game, self.isThreadRunning)
+                    send_data_ia_async(self.pongThreadIA, self.game, self.isThreadRunning)
 
                 if sec <= 0:
                     sec = 3
@@ -153,17 +154,17 @@ class pongGameLoop(threading.Thread):
                 self.game.update_ball_gravity_speed(ball_gravity, ball_speed)
                 self.game.update_ball_pos(ball_pos_x, ball_pos_y)
 
-                await send_data_async(self.pong, self.game)
+                send_data_async(self.pong, self.game)
 
-                await asyncio.sleep(0.03)
+                time.sleep(0.03)
 
                 if x >= 30:
-                    await send_data_ia_async(self.pongThreadIA, self.game, self.isThreadRunning)
+                    send_data_ia_async(self.pongThreadIA, self.game, self.isThreadRunning)
                     x = 0
                 x = x + 1
 
     def run(self):
-        asyncio.run(self.run_async())
+        self.run_async()
 
     def start_game(self, pongThreadIA):
         self.isGameRunning = True
@@ -187,14 +188,14 @@ class pongGameLoop(threading.Thread):
     def stop(self):
         self.stop_flag.set()
 
-async def send_data_async(ping_game_instance, game):
-    await ping_game_instance.sendDataFromGame(game)
+def send_data_async(ping_game_instance, game):
+    ping_game_instance.sendDataFromGame(game)
 
-async def send_data_ia_async(threadIA, game, isRunning):
-    await threadIA.receiveDataFromGameIA(game, isRunning)
+def send_data_ia_async(threadIA, game, isRunning):
+    threadIA.receiveDataFromGameIA(game, isRunning)
 
-async def send_timer_async(ping_game_instance, game, sec):
-    await ping_game_instance.sendTimerFromGame(game, sec)
+def send_timer_async(ping_game_instance, game, sec):
+    ping_game_instance.sendTimerFromGame(game, sec)
 
 
 class pongGame():
@@ -204,7 +205,7 @@ class pongGame():
     def __init__(self):
         self.channel_layer = get_channel_layer()
 
-    async def launchGame(self, channelName, socket):
+    def launchGame(self, channelName, socket):
         self.socket = socket
         if channelName != '':
             self.mythread = pongGameLoop(self, socket)
@@ -219,13 +220,13 @@ class pongGame():
             self.pongThreadIA.start_game()
             self.pongThreadIA.start()
 
-    async def finishGame(self):
+    def finishGame(self):
         self.mythread.stop()
         self.mythread.join()
         self.pongThreadIA.stop()
         self.pongThreadIA.join()
 
-    async def sendTimerFromGame(self, pongGame, secondLeft):
+    def sendTimerFromGame(self, pongGame, secondLeft):
         game = pongGame.get_ball()
         ball_pos_x, ball_pos_y = game.get_pos()
 
@@ -236,7 +237,7 @@ class pongGame():
         player1_score = player1.get_score()
         player2_score = player2.get_score()
 
-        await self.socket.send(text_data=json.dumps({
+        self.socket.send(text_data=json.dumps({
             'type': 'game_timer',
     		'ball_pos_x': ball_pos_x,
             'ball_pos_y': ball_pos_y,
@@ -247,7 +248,7 @@ class pongGame():
             'second_left': secondLeft,
         }))
 
-    async def sendDataFromGame(self, pongGame):
+    def sendDataFromGame(self, pongGame):
         game = pongGame.get_ball()
         ball_pos_x, ball_pos_y = game.get_pos()
 
@@ -260,7 +261,7 @@ class pongGame():
         number_ball_touch_player1 = player1.get_ball_touch()
         number_ball_touch_player2 = player2.get_ball_touch()
 
-        await self.socket.send(text_data=json.dumps({
+        self.socket.send(text_data=json.dumps({
    			'type': 'game_data',
    			'ball_pos_x': ball_pos_x,
                'ball_pos_y': ball_pos_y,
@@ -275,7 +276,8 @@ class pongGame():
                 winner = player1.get_id().username
             else:
                 winner = 'IA'
-            await self.channel_layer.group_send(
+            
+            async_to_sync(self.channel_layer.group_send)(
                 self.channelName,
                 {
                     'type': 'end_game_by_score',
@@ -287,10 +289,10 @@ class pongGame():
                 }
             )
 
-    async def inputGame(self, input, player):
+    def inputGame(self, input, player):
         self.mythread.inputGame(input, 0)
 
-    async def quitGame(self, player):
+    def quitGame(self, player):
         print('player', player.username, 'leave the game')
 
         self.mythread.stop()

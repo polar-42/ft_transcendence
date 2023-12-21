@@ -1,4 +1,4 @@
-import threading, asyncio
+import threading, asyncio, time
 
 class pongGameIA(threading.Thread):
 
@@ -8,7 +8,7 @@ class pongGameIA(threading.Thread):
 		self.isRunning = False
 		self.gameThread = gameThread
 
-	async def run_ia_async(self):
+	def run_ia_async(self):
 		while not self.stop_flag.is_set():
 
 			if self.isRunning is True:
@@ -38,10 +38,10 @@ class pongGameIA(threading.Thread):
 					self.ia_pos_y -= 4
 
 
-			await asyncio.sleep(0.03)
+			time.sleep(0.03)
 
 	def run(self):
-		asyncio.run(self.run_ia_async())
+		self.run_ia_async()
 
 	def stop(self):
 		self.stop_flag.set()
@@ -53,7 +53,7 @@ class pongGameIA(threading.Thread):
 		self.ia_pos_y = (450 / 2) - (60 / 2)
 		self.player_pos_y = (450 / 2) - (60 / 2)
 
-	async def receiveDataFromGameIA(self, game, isRunning):
+	def receiveDataFromGameIA(self, game, isRunning):
 		self.isRunning = isRunning
 		gameState = game.get_ball()
 

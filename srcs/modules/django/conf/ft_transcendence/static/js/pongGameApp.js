@@ -27,7 +27,7 @@ function LaunchPongIA()
 	document.getElementsByClassName("launchPongLocal_BTN")[0].removeEventListener("click", LaunchPongLocal);
 	document.getElementsByClassName("launchPongIA_BTN")[0].removeEventListener("click", LaunchPongIA);
 	LeaveMatchmaking();
-	navto("/pongGame/pongGameIA", 'True');
+	navto("/pongGame/IA", 'True');
 }
 
 function LaunchPongLocal()
@@ -36,7 +36,7 @@ function LaunchPongLocal()
 	document.getElementsByClassName("launchPongLocal_BTN")[0].removeEventListener("click", LaunchPongLocal);
 	document.getElementsByClassName("launchPongIA_BTN")[0].removeEventListener("click", LaunchPongIA);
 	LeaveMatchmaking();
-	navto("/pongGame/pongGameLocal", 'True');
+	navto("/pongGame/Local", 'True');
 }
 
 function JoinMatchmaking()
@@ -82,6 +82,6 @@ function OnMessage(e)
 	document.getElementsByClassName("launchPongLocal_BTN")[0].removeEventListener("click", LaunchPongLocal);
 	document.getElementsByClassName("launchPongIA_BTN")[0].removeEventListener("click", LaunchPongIA);
 	LeaveMatchmaking();
-	navto("/pongGame/pongGameRemote", data.gameId);
+	navto("/pongGame/Remote", data.gameId);
 }
 

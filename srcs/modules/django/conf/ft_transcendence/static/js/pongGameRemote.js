@@ -7,7 +7,7 @@ export function initGamePong()
 {
 	if (arguments[0] == undefined)
 	{
-		navto('/pongGame/pongMatchmaking');
+		navto('/pongGame/Home');
 		return;
 	}
 	gameId = arguments[0];

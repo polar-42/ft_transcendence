@@ -15,7 +15,7 @@ export function initLocalGamePong()
 {
 	if (arguments[0] == undefined)
 	{
-		navto('/pongGame/pongMatchmaking');
+		navto('/pongGame/Home');
 		return;
 	}
 
