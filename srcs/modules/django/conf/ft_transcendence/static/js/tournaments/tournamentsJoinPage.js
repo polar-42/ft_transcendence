@@ -67,6 +67,7 @@ function joinTournaments(tournamentsId)
 			console.log('Error:', data.error);
 			if (data.canJoin == true)
 			{
+				console.log("Join tournament " + tournamentsId)
 				navto("tournament", tournamentsId);
 				return;
 			}
@@ -76,6 +77,7 @@ function joinTournaments(tournamentsId)
 				return;
 			}
 		}
+		console.log("Join tournament " + tournamentsId)
 		navto("tournament", tournamentsId)
 		return;
 

@@ -33,6 +33,12 @@ class TournamentsManager():
 		for tournament in self._Tournaments:
 			print(str(tournament))
 		return True, nTournament._id
+	
+	def sendMatchData(self, TournamentID, MatchId, Winner):
+		for tournament in self._Tournaments:
+			if tournament._id == int(TournamentID):
+				tournament.UpdateData(MatchId, Winner)
+		
 
 	def GetTournament(self, id):
 		for tournament in self._Tournaments:

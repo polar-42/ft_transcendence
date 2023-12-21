@@ -57,11 +57,18 @@ class TournamentSocket(WebsocketConsumer):
 
 	def receive(self, text_data):
 		data = json.loads(text_data)
+		match (data['function']):
+			case 'Retrieve_Data':
+				self.RCV_SendData()
+		# print(self.scope['user'].username + " receive")
+		# print(data)
 
-		print(self.scope['user'].username + " receive")
-		print(data)
+	def RCV_SendData(self):
+		self.tournament.sendData(self.user)
 
 	def MSG_NewUser(self, event):
+		if (event['User'] != -1 and self.user.id != event['User']):
+			return
 		print('new_connexion_on_tournament')
 
 		#if self.scope['user'].id == new_user.id:
@@ -76,15 +83,16 @@ class TournamentSocket(WebsocketConsumer):
 		}))
 	
 	def MSG_Match(self, event):
+		if (event['User'] != -1 and self.user.id != event['User']):
+			return
 		(self.send)(text_data=json.dumps({
 			'type': 'SendMatchList',
 			# 'size_tournaments': self.sizeTournaments,
-			'step': event['step'],
+			# 'step': event['step'],
 			'matchList': event['matchList']
 		}))
 	
 	def MSG_LaunchGame(self, event):
-		print("LaunchGame")
 		if self.user.id is not event['Player1'] and self.user.id is not event["Player2"]:
 			return
 		(self.send)(text_data=json.dumps({

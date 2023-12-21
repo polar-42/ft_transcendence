@@ -73,7 +73,7 @@ function OnMessage(e)
 			canvas.removeEventListener('click', SP_mouseClick);
 			break
 		case 'GameStop':
-			RP_GameStop(data.message)
+			RP_GameStop(data.message, data.tournamentId)
 			break
 		case 'RetrieveBoat':
 			FP_SendBoats();
@@ -99,12 +99,21 @@ function OnMessage(e)
 }
 //#region ResultPart
 
-function RP_GameStop(message)
+function RP_GameStop(message, id)
 {
-	canvas.style.display = 'none'
-	var txtNode = document.createTextNode(message)
-	canvas.parentElement.appendChild(txtNode)
-	battleshipSocket = null
+	if (id == -1)
+	{
+		canvas.style.display = 'none'
+		var txtNode = document.createTextNode(message)
+		canvas.parentElement.appendChild(txtNode)
+		battleshipSocket = null
+	}
+	else
+	{
+		battleshipSocket = null
+		console.log(id)
+		navto("tournaments/tournament", id)
+	}
 }
 
 function RP_EnemyGiveUp(player, gameStatus)
@@ -165,7 +174,7 @@ function FP_Init()
 		// { name : 'BattleShip', x : 0, y : 0, startX : 700, startY : 250, ArrayX : -1, ArrayY : -1, size : 4, horizontal : true, isDragging : false },
 		// { name : 'Destroyer', x : 0, y : 0, startX : 700, startY : 350, ArrayX : -1, ArrayY : -1, size : 3, horizontal : true, isDragging : false },
 		// { name : 'Submarine', x : 0, y : 0, startX : 700, startY : 450, ArrayX : -1, ArrayY : -1, size : 3, horizontal : true, isDragging : false },
-		{ name : 'PatrolBoat', x : 0, y : 0, startX : 700, startY : 550, ArrayX : -1, ArrayY : -1, size : 2, horizontal : true, isDragging : false },
+		{ name : 'PatrolBoat', x : 0, y : 0, startX : 700, startY : 550, ArrayX : 9, ArrayY : 0, size : 2, horizontal : false, isDragging : false },
 	];
 	for (let y = 0; y < gridSizeY; y++)
 	{
