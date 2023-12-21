@@ -17,8 +17,8 @@ html {
 
 body {
   background: 
-      linear-gradient(to bottom, var(--main-bg-color) 50%, var(--secondary-bg-color) 100%),
-      var(--main-bg-color);
+      linear-gradient(to bottom, var(--secondary-bg-color) 13%, var(--main-bg-color) 30%, var(--main-bg-color) 83%, var(--secondary-bg-color) 100%),
+      var(--secondary-bg-color);
   background-repeat: no-repeat;
   margin: 0px;
 }

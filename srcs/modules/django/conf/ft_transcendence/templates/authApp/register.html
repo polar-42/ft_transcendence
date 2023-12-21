@@ -1,22 +1,33 @@
 <!-- authApp/login.html -->
 {% load static %}
+<link rel="stylesheet" href="{% static '/css/register.css' %}">
 <script type="module" src="{% static '/js/loading.js' %}"></script>
 {% block content %}
-	<h1 id="register">Hello this is the register Page: not beautiful today</h1>
+  <section class="container">
+    <h1>Create your transcendental account</h1>
     <form>
-		{% csrf_token %}
-		<label for="Input_usr">Username:</label><br/>
-        <input type="text" id="Input_usr" required="required"><br/>
-
-        <label for="Input_mail">mail:</label><br/>
-        <input type="email" id="Input_mail"><br/>
-
-        <label for="Input_pwd">Password:</label><br/>
-        <input type="password" id="Input_pwd"><br/>
-
-		<label for="Input_confirm_pwd">confirm Password:</label><br/>
-        <input type="password" id="Input_confirm_pwd"><br/>
-        <button class="submit_BTN">Submit</button>
+      {% csrf_token %}
+      <div class="input-box">
+        <label for="Input_usr">Username</label><br/>
+        <input type="text" required placeholder="Enter your username" pattern="\S.*"><br/>
+      </div>
+      <div class="input-box">
+        <label for="Input_mail">Mail</label><br/>
+        <input type="email" required placeholder="Enter your email adress" pattern="\S.*"><br/>
+      </div>
+      <div class="input-box">
+        <label for="Input_pwd">Password</label><br/>
+        <input type="password" required placeholder="Enter your password" pattern="\S.*"><br/>
+      </div>
+      <div class="input-box">
+        <label for="Input_confirm_pwd">Confirm Password</label><br/>
+        <input type="password" required placeholder="Confirm your password" pattern="\S.*"><br/>
+      </div>
     </form>
-    {% endblock content %}
-<a href="/authApp/login" data-link>If you need to login an account.</a>
+    <div class="submit">
+      <button class="submit_BTN">Submit</button>
+      <p>Already have an account ? <a href="/authApp/login" data-link>Log In !</a></p>
+    </div>
+
+  </section>
+  {% endblock content %}
