@@ -1,0 +1,7 @@
+{% for item in games %}
+    <li> </br> Name: {{ item.name }}</br>
+        Type: {{ item.typeGame }} </br>
+        Creator: {{ item.creator}} </br>
+        Description: {{ item.description }} </br>
+        <button class="joinGame_BTN" id="{{ item.index }}">Join</button> </br> </li>
+{% endfor %}

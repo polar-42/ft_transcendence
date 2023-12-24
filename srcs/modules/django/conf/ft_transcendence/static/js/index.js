@@ -5,12 +5,14 @@ import { initLocalGamePong } from "./pongGameLocal.js";
 import { initGamePongIA, unloadGamePongIA } from './pongGameIA.js';
 import { initDashboard } from "./dashboard.js";
 import { initHomePage} from "./homepage.js";
-import { initGame } from "./game.js";
+import { CP_Unload, initGame } from "./game.js";
 import { initGamePong, unLoadGamePong } from "./pongGameRemote.js";
+import { initTournamentsCreation } from "./tournaments/tournamentsCreation.js";
+import { initTournamentsJoinPage } from "./tournaments/tournamentsJoinPage.js";
+import { initTournaments } from "./tournaments/tournament.js";
 
 export function navto(urlpath)
 {
-	console.log(urlpath)
 	history.pushState(null, null, urlpath);
 	router([].slice.call(arguments, 1));
 }
@@ -29,13 +31,17 @@ function getRoute(RoutePath)
 		{ path: "/needlog", init: null, unload: null, title:"Login required", LogStatus: 0},
 		{ path: "/", init: initHomePage, unload: null, title:"Home", LogStatus: 2},
 		{ path: "/dashboard", init: initDashboard, unload: null, title:"Home", LogStatus: 2},
-		{ path: "/battleship", init: initGame, unload: null, title:"Battleship", LogStatus: 1},
+		{ path: "/battleship", init: initGame, unload: CP_Unload, title:"Battleship", LogStatus: 1},
 		{ path: "/battleship/matchmake", init: initMatchmaking, unload: null, title:"Battleship", LogStatus: 1},
 		{ path: "/pongGame/Remote", init: initGamePong, unload: unLoadGamePong, title:"pongGame", LogStatus: 1},
 		{ path: "/pongGame/Home", init: initMatchmakingPong, unload: unLoadMatchmakingPong, title:"pongGame", LogStatus: 1},
 		{ path: "/pongGame/Local", init: initLocalGamePong, unload: null, title:"pongGame", LogStatus: 1},
 		{ path: "/pongGame/IA", init: initGamePongIA, unload: unloadGamePongIA, title:"pongGame", LogStatus: 1},
-		{ path: "/authApp/login",init: initLoggin, unload: null, title:"Login", LogStatus: 0},
+		{ path: "/tournaments/tournamentsHome", init: null, unload: null, title:"initTournaments", LogStatus: 1},
+		{ path: "/tournaments/tournamentsCreation", init: initTournamentsCreation, unload: null, title:"initTournaments", LogStatus: 1},
+		{ path: "/tournaments/tournamentsJoin", init: initTournamentsJoinPage, unload: null, title:"Join Tournaments", LogStatus: 1},
+		{ path: "/tournaments/tournament", init: initTournaments, unload: null, title:"Tournament", LogStatus: 1},
+		{ path: "/authApp/login", init: initLoggin, unload: null, title:"Login", LogStatus: 0},
 		{ path: "/authApp/register", init: initRegister, unload: null, title:"Register", LogStatus: 0},
 	];
 
@@ -78,23 +84,28 @@ const router = async (arg) =>
 	}
 	else if (match.route.LogStatus == 0 && await checkConnexion() == true)
 		match = getRoute(document.location.origin + "/");
-	var response;
+	var actualRoute
 	if (match.route.path == "/")
-	{
-		response = await fetch(match.route.path + "homepage/?valid=True");
-	}
+		actualRoute = match.route.path + "dashboard/?valid=True";
 	else
-	{
-		response = await fetch(match.route.path + "/?valid=True");
-	}
+		actualRoute = match.route.path + "/?valid=True";
 	if (Prev_match != undefined && Prev_match.route.unload != null)
 		Prev_match.route.unload()
-	document.title = match.route.title
-	document.querySelector("#app").innerHTML = await response.text();
-	if (match.route.init != null)
-		match.route.init(arg)
-	Prev_match = match;
-	// OnLogChange();
+	fetch(actualRoute)
+	.then(Response => {
+		document.title = match.route.title
+		return Response.text();
+	})
+	.then(html => {
+		document.querySelector("#app").innerHTML = html
+	})
+	.then(value => 
+	{
+		if (match.route.init != null)
+			match.route.init(arg)
+		Prev_match = match;
+		OnLogChange();
+	})
 };
 
 

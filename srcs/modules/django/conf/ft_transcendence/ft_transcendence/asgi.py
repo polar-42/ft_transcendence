@@ -17,10 +17,10 @@ from socketApp import routing
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ft_transcendence.settings')
 
-application = get_asgi_application()
+application2 = get_asgi_application()
 
 application = ProtocolTypeRouter({
-    'http': get_asgi_application(),
+    'http': application2,
     'websocket': AuthMiddlewareStack(
         URLRouter(
             routing.websocket_urlpatterns

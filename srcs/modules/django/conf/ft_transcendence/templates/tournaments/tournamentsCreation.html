@@ -1,0 +1,29 @@
+<!-- tournaments/tournamentsCreation.html -->
+{% load static %}
+<script type="module" src="{% static '/js/loading.js' %}"></script>
+
+<p>
+    Welcome To The Tournaments Creation Page
+</p>
+
+<p><br/>
+    <form>
+		{% csrf_token %}
+
+        <label for="TournamentsName">Tournaments Name:</label>
+        <input type="text" class="TournamentsName"><br/>
+
+        <label for="NumberOfPlayer">Number of players:</label>
+        <input type="number" min="4" class="NumberOfPlayer"><br/><br/>
+
+        <label>Game type:</label><br/>
+        <label for="typePong">Pong</label>
+        <input type="radio" name="TypeGame" value="Pong" class="typePong"><br/>
+        <label for="typeBattleship">Battleship</label>
+        <input type="radio" name="TypeGame" value="Battleship" class="typeBattleship"><br/>
+
+    </form>
+    <button class="submitButtonCreateTournaments">Submit</button>
+
+    <p id="messageCreationTournaments"></p>
+</p>

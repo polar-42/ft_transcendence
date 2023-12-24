@@ -1,7 +1,6 @@
 import threading, json, random, math, asyncio, time
 from channels.layers import get_channel_layer
-from .. import pongGameClasses
-from asgiref.sync import async_to_sync
+from pongGameApp import pongGameClasses
 
 class pongGameLoop(threading.Thread):
 
@@ -149,11 +148,11 @@ class pongGameLoop(threading.Thread):
 
                 time.sleep(0.03)
 
-                print('in game loop, x =', x)
+                #print('in game loop, x =', x)
                 x = x + 1
 
     def run(self):
-        self.run_async()
+        asyncio.run(self.run_async())
 
     def start_game(self):
         self.isGameRunning = True
@@ -262,7 +261,7 @@ class pongGame():
                 winner = player1.get_id()
             else:
                 winner = player2.get_id()
-            async_to_sync(self.channel_layer.group_send)(
+            self.channel_layer.group_send(
                 self.channelName,
                 {
                     'type': 'end_game_by_score',
@@ -287,7 +286,7 @@ class pongGame():
         self.mythread.stop()
         self.mythread.join()
 
-        async_to_sync(self.channel_layer.group_send)(
+        self.channel_layer.group_send(
             self.channelName,
             {
                 'type': 'end_game',

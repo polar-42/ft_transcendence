@@ -1,0 +1,15 @@
+<!-- tournaments/tournamentsCreation.html -->
+{% load static %}
+<script type="module" src="{% static '/js/loading.js' %}"></script>
+
+<p>
+    {% csrf_token %}
+    Welcome To The Tournaments List Page
+
+</p>
+
+<p>
+    <ul id="listOfTournaments">
+
+    </ul>
+</p>

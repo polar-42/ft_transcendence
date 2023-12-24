@@ -50,3 +50,14 @@ class Command(BaseCommand):
             print('User created successfully')
         else:
             print('User already exists')
+
+        username = 'IA'
+        email = 'IA@test.com'
+        password = '123456789'
+
+        # Check if the user already exists
+        if not User.objects.filter(username=username).exists():
+            User.objects.create_user(username, email, password)
+            print('User created successfully')
+        else:
+            print('User already exists')
