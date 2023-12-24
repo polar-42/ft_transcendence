@@ -86,7 +86,7 @@ const router = async (arg) =>
 		match = getRoute(document.location.origin + "/");
 	var actualRoute
 	if (match.route.path == "/")
-		actualRoute = match.route.path + "dashboard/?valid=True";
+		actualRoute = match.route.path + "homepage/?valid=True";
 	else
 		actualRoute = match.route.path + "/?valid=True";
 	if (Prev_match != undefined && Prev_match.route.unload != null)
