@@ -2,6 +2,8 @@ import json
 from channels.generic.websocket import WebsocketConsumer
 from .views import get_tournaments_manager
 from asgiref.sync import async_to_sync
+import asyncio
+
 
 class TournamentSocket(WebsocketConsumer):
 	#IL FAUT FAIRE DES DICT CAR C'EST COMMUN A TOUS LES SOCKETS MICKA JE TE LAISSE FAIRE JE VAIS EN VACANSE <3
@@ -37,7 +39,6 @@ class TournamentSocket(WebsocketConsumer):
 		print(self.scope['user'].username + " is connected to tournament", self.tournamentId)
 
 		if self.tournament.addPlayer(self.scope['user']) is False:
-			print('aaaaaaaaaa')
 			self.close()
 			return
 
@@ -47,10 +48,11 @@ class TournamentSocket(WebsocketConsumer):
 		#	self.tournament.start(self.players)
 
 	def disconnect(self, code):
-		#self.players.remove(self)
-
-		self.close()
-
+		print("USER " + self.user.username + "Disconnect")
+		self.channel_layer.group_discard(
+			self.channel_tournament,
+			self.channel_name
+		)
 		print(self.scope['user'].username + " is disconnected")
 
 		#self.new_connexion_on_tournament()
@@ -82,6 +84,12 @@ class TournamentSocket(WebsocketConsumer):
 			'players': PL
 		}))
 	
+	def MSG_EndTournament(self, event):
+		(self.send)(text_data=json.dumps({
+			'type': 'SendWinner',
+			'Winner' : event['Winner']
+		}))
+
 	def MSG_Match(self, event):
 		if (event['User'] != -1 and self.user.id != event['User']):
 			return

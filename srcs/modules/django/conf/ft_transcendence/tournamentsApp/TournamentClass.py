@@ -52,6 +52,7 @@ class Tournament():
 		self.channel_name = "Tournaments" + str(self._id)
 		self.curStep = 0
 		self.Tree = self.initArray()
+		self.Winner = None
 
 	def initArray(self):
 		count = self._playerAmount
@@ -81,7 +82,6 @@ class Tournament():
 		self.SendMatchsData(-1)
 
 	def UpdateData(self, MatchId, Winner):
-		print("updateData")
 		pos = 0
 		while pos < len(self.Tree):
 			pos2 = 0
@@ -89,7 +89,13 @@ class Tournament():
 				if self.Tree[pos][pos2].id == MatchId:
 					self.Tree[pos][pos2].State = GameState.Ended
 					self.Tree[pos][pos2].Winner = Winner
-					if (pos == len(self.Tree)):
+					if (pos == len(self.Tree) - 1):
+						async_to_sync(self.channel_layer.group_send)(
+							self.channel_name,
+							{
+								'type': 'MSG_EndTournament',
+								'Winner' : self.Tree[pos][pos2].Winner.username
+							})
 						return
 					curMatch = None
 					curPlayer = -1
@@ -153,7 +159,6 @@ class Tournament():
 			self.channel_name,
 			{
 				'type': 'MSG_Match',
-				# 'step' : self.curStep,
 				'matchList' : [match.to_json() for match in tree],
 				'User' : users
 			})

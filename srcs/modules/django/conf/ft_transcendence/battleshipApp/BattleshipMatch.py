@@ -38,6 +38,7 @@ class Boat():
 			else:
 				self.BoatArray.append(Case(posX + size - 1, posY))
 			size -= 1
+
 	def Hit(self, posX, posY):
 		for case in self.BoatArray:
 			if case.PosX == posX and case.PosY == posY:
@@ -105,7 +106,7 @@ class MatchmakingLoop(threading.Thread):
 				self.match.currentTimer -= 1
 				time.sleep(1)
 			if  self.match.currentTimer == 0:
-				asyncio.run(self.match.ForceStep())
+				self.match.ForceStep()
 
 	def stop(self):
 		self.stopFlag.set()
@@ -210,9 +211,6 @@ class BattleshipMatch():
 			user = user1.sock_user.id
 		elif user2 == True:
 			user = user2.sock_user.id
-		if self.gameId.startswith('Tournament') == True:
-			print('TOTO526485')
-			tournamentsApp.views.TournamentManager.sendMatchData(self.GetTournamentId(), self.gameId, self.TurnUser.sock_user)
 		async_to_sync(self.channel_layer.group_send)(
 			self.channelName,
 			{
@@ -220,12 +218,15 @@ class BattleshipMatch():
 				'user' : user,
 				'message' : message
 			})
+
 	def closeThread(self):
 		if (self.thread == None):
 			return
 		self.thread.stop()
 		self.thread.join()
 		self.thread = None
+		if self.gameId.startswith('Tournament') == True:
+			tournamentsApp.views.TournamentManager.sendMatchData(self.GetTournamentId(), self.gameId, self.TurnUser.sock_user)
 		self.gm.CloseGame(self.gm, self.gameId)
 
 	def JoinGame(self, user):

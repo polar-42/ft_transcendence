@@ -38,6 +38,7 @@ class TournamentsManager():
 		for tournament in self._Tournaments:
 			if tournament._id == int(TournamentID):
 				tournament.UpdateData(MatchId, Winner)
+				return
 		
 
 	def GetTournament(self, id):

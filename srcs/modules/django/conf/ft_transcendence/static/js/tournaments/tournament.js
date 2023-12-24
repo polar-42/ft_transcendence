@@ -39,11 +39,11 @@ function quitTournamentSocket()
 
 function leaveTournament()
 {
-	if (tournamentSocket == null)
+	if (tournamentSocket == undefined)
 		return;
 	tournamentSocket.close();
 
-	tournamentSocket = null;
+	tournamentSocket = undefined;
 	console.log('Socket disconnected');
 	navto('/tournaments/tournamentsHome');
 	return;
@@ -64,9 +64,22 @@ function OnMessageTournament(e)
 			break
 		case 'match_id':
 			break
+		case 'SendWinner':
+			EndTournament(data.Winner)
+			break
 		default:
 			break;
 	}
+}
+
+function EndTournament(WinnerName)
+{
+	console.log(WinnerName)
+	// if (tournamentSocket != undefined)
+	// {
+		// tournamentSocket.close()
+		// tournamentSocket = undefined
+	// }
 }
 
 function LoadGame(data) 
@@ -94,24 +107,19 @@ function printMatchs(data)
 		const player2 = document.createElement('p')
 		player1.textContent = element['User1']
 		player2.textContent = element['User2']
-		// if (element['Winner'] != "")
-		// {
-			// console.log("Hello1")
-			// if (element['Winner'] == element['User2Id'])
-			// {
-				// console.log("Hello2")
-				// player2.style.color = "green"
-				// player1.style.color = "red"
-			// }
-			// else
-			// {
-				// console.log("Hello3")
-				// player1.style.color = "green"
-				// player2.style.color = "red"
-			// }
-		// }
-		// else
-			// console.log("Hello4")
+		if (element['Winner'] != -1)
+		{
+			if (element['Winner'] == element['User2Id'])
+			{
+				player2.style.color = "green"
+				player1.style.color = "red"
+			}
+			else
+			{
+				player1.style.color = "green"
+				player2.style.color = "red"
+			}
+		}
 		txt.appendChild(player1)
 		txt.appendChild(player2)
 		PL.appendChild(txt)
