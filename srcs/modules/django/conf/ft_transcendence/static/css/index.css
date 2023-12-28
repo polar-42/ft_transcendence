@@ -96,13 +96,14 @@ header a:visited {
 }
 
 footer {
-  left: 0;
   background: transparent;
+  top: 100%;
   height: auto;
   width: 100%;
+  margin-top: 5%;
   display: flex;
   justify-content: space-between;
-  padding: 30px 30%;
+  padding: 0 30%;
   color: white;
 }
 

@@ -126,3 +126,12 @@ menuBtn.addEventListener("click", () => {
 
  menuBtn.src = isOpen ? '../static/assets/logo/cross.png' : '../static/assets/logo/hamburger.png';
 });
+
+const menuLink = document.querySelectorAll(".menu_link");
+for (let link of menuLink) {
+  link.addEventListener("click", () => {
+    dropDownMenu.classList.remove('open');
+    menuBtn.src = '../static/assets/logo/hamburger.png';
+  });
+}
+

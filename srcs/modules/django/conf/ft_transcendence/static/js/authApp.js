@@ -105,10 +105,10 @@ function connect(event)
 function register(event)
 {
 	event.preventDefault();
-	var username = document.getElementById('Input_usr').value;
-	var mail = document.getElementById('Input_mail').value;
-	var password = document.getElementById('Input_pwd').value;
-	var password2 = document.getElementById('Input_pwd').value;
+	// var username = document.getElementById('Input_usr').value;
+	// var mail = document.getElementById('Input_mail').value;
+	// var password = document.getElementById('Input_pwd').value;
+	// var password2 = document.getElementById('Input_pwd').value;
 	const data = 
 	{ 
 		username: document.getElementById('Input_usr').value,

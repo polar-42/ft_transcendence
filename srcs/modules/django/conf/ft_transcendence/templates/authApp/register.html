@@ -1,7 +1,7 @@
 <!-- authApp/login.html -->
 {% load static %}
-<link rel="stylesheet" href="{% static '/css/register.css' %}">
-<script type="module" src="{% static '/js/loading.js' %}"></script>
+  <link rel="stylesheet" href="{% static '/css/register.css' %}">
+  <script type="module" src="{% static '/js/loading.js' %}"></script>
 {% block content %}
   <section class="container">
     <h1>Create your transcendental account</h1>
@@ -9,25 +9,24 @@
       {% csrf_token %}
       <div class="input-box">
         <label for="Input_usr">Username</label><br/>
-        <input type="text" required placeholder="Enter your username" pattern="\S.*"><br/>
+        <input type="text" id="Input_usr" required placeholder="Enter your username" pattern="\S.*"><br/>
       </div>
       <div class="input-box">
         <label for="Input_mail">Mail</label><br/>
-        <input type="email" required placeholder="Enter your email adress" pattern="\S.*"><br/>
+        <input type="email" id="Input_mail" required placeholder="Enter your email adress" pattern="\S.*"><br/>
       </div>
       <div class="input-box">
         <label for="Input_pwd">Password</label><br/>
-        <input type="password" required placeholder="Enter your password" pattern="\S.*"><br/>
+        <input type="password" id="Input_pwd" required placeholder="Enter your password" pattern="\S.*"><br/>
       </div>
       <div class="input-box">
         <label for="Input_confirm_pwd">Confirm Password</label><br/>
-        <input type="password" required placeholder="Confirm your password" pattern="\S.*"><br/>
+        <input type="password" id="Input_confirm_pwd" required placeholder="Confirm your password" pattern="\S.*"><br/>
       </div>
     </form>
     <div class="submit">
       <button class="submit_BTN">Submit</button>
       <p>Already have an account ? <a href="/authApp/login" data-link>Log In !</a></p>
     </div>
-
   </section>
-  {% endblock content %}
+{% endblock content %}
