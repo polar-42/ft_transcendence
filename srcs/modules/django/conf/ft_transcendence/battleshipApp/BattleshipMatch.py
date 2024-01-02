@@ -124,7 +124,6 @@ class BattleShipGameManager():
 	def LeaveGame(self, gameId, user):
 		if gameId not in self._MatchList.keys():
 			return 
-		self._MatchList[gameId].StopGame(user)
 		self._MatchList[gameId].StopGame(True, True, "User " + user.username + " leave the game")
 
 	def CloseGame(self, gameId):
@@ -150,6 +149,7 @@ class BattleshipMatch():
 		self.channel_layer = get_channel_layer()
 
 	def ForceStep(self):
+		print ("ForceStep = " + str(self.Gamestatus))
 		match (self.Gamestatus):
 			case GameState.Initialisation:
 				pass
@@ -182,6 +182,7 @@ class BattleshipMatch():
 					Target = self.user2.Name
 				self.StopGame(True, True, "Game cancel! User " + Target + " not send is boats to the server!")
 			case GameState.Playing:
+				print("Playing Request user = " + self.TurnUser.sock_user.username)
 				async_to_sync(self.channel_layer.group_send)(
 					self.channelName,
 					{
@@ -205,6 +206,7 @@ class BattleshipMatch():
 		return id
 
 	def StopGame(self, user1, user2, message):
+		self.Gamestatus = GameState.Ending
 		if user1 == True and user2 == True:
 			user = -1
 		elif user1 == True:
@@ -261,6 +263,8 @@ class BattleshipMatch():
 	def RCV_BoatsList(self, user, BoatList):
 		if (self.Gamestatus is not GameState.BoatPlacement and self.Gamestatus is not GameState.RequestBoat):
 			return
+		if (self.Gamestatus is GameState.RequestBoat):
+			self.Gamestatus = GameState.BoatPlacement
 		user = self.getUser(user)
 		if (user is None):
 			return
@@ -297,7 +301,7 @@ class BattleshipMatch():
 		return None
 
 	def ChangeTurn(self):
-		self.currentTimer = 30    
+		self.currentTimer = 30
 		self.TurnUser = self.user1 if self.TurnUser is self.user2 else self.user2
 		async_to_sync(self.channel_layer.group_send)(
 				self.channelName,
@@ -312,6 +316,8 @@ class BattleshipMatch():
 		user = self.getUser(user)
 		if user is not self.TurnUser:
 			return
+		if (self.Gamestatus is GameState.RequestHit):
+			self.Gamestatus = GameState.Playing
 		Target = self.user1 if user is self.user2 else self.user2
 		Result = Target.Hit(case)
 		async_to_sync(self.channel_layer.group_send)(

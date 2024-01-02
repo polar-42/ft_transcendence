@@ -104,7 +104,7 @@ const router = async (arg) =>
 		if (match.route.init != null)
 			match.route.init(arg)
 		Prev_match = match;
-		OnLogChange();
+		// OnLogChange();
 	})
 };
 

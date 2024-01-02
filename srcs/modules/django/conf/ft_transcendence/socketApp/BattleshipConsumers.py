@@ -116,7 +116,7 @@ class socket(WebsocketConsumer):
 	def MSG_RequestHit(self, event):
 		if self.user.id != event['user']:
 			return
-		print("Test")
+		print("Test = " + self.user.username)
 		(self.send)(text_data=json.dumps({
 			'function' : "RetrieveHit",
 			'timer' : - 1

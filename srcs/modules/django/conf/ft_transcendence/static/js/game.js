@@ -76,9 +76,11 @@ function OnMessage(e)
 			RP_GameStop(data.message, data.tournamentId)
 			break
 		case 'RetrieveBoat':
+			console.log("RetrieveBoat")
 			FP_SendBoats();
 			break
 		case 'RetrieveHit':
+			console.log("RetrieveHit")
 			SP_SendSelected();
 			break
 		case 'GotHit':
