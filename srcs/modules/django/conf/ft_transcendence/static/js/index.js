@@ -117,8 +117,6 @@ document.addEventListener("DOMContentLoaded", () =>
 
 const menuBtn = document.querySelector(".menu_btn");
 const dropDownMenu = document.querySelector(".dropdown_menu");
-console.log(menuBtn);
-console.log(dropDownMenu);
 
 menuBtn.addEventListener("click", () => {
   dropDownMenu.classList.toggle('open');
@@ -134,4 +132,12 @@ for (let link of menuLink) {
     menuBtn.src = '../static/assets/logo/hamburger.png';
   });
 }
+
+const profileButton = document.querySelector("#nav_login");
+
+profileButton.addEventListener("hover", () => {
+  let profileImage = document.querySelector("#nav_login img");
+  profileImage.src = '../static/assets/logo/blue_user.png';
+})
+
 
