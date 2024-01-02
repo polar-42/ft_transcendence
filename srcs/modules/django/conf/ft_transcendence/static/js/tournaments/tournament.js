@@ -6,7 +6,7 @@ export function initTournaments()
 {
 	if (arguments[0] == undefined)
 	{
-		navto('/tournaments/tournamentsHome');
+		navto('/tournaments/Home');
 		return;
 	}
 	const tournamentId = arguments[0];
@@ -45,7 +45,7 @@ function leaveTournament()
 
 	tournamentSocket = undefined;
 	console.log('Socket disconnected');
-	navto('/tournaments/tournamentsHome');
+	navto('/tournaments/Home');
 	return;
 }
 

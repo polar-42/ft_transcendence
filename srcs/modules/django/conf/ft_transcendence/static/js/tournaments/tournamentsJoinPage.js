@@ -68,17 +68,17 @@ function joinTournaments(tournamentsId)
 			if (data.canJoin == true)
 			{
 				console.log("Join tournament " + tournamentsId)
-				navto("tournament", tournamentsId);
+				navto("Play", tournamentsId);
 				return;
 			}
 			else
 			{
-				navto("tournaments");
+				navto("");
 				return;
 			}
 		}
 		console.log("Join tournament " + tournamentsId)
-		navto("tournament", tournamentsId)
+		navto("Play", tournamentsId)
 		return;
 
 	})

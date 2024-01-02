@@ -114,7 +114,7 @@ function RP_GameStop(message, id)
 	{
 		battleshipSocket = null
 		console.log(id)
-		navto("tournaments/tournament", id)
+		navto("tournaments/Play", id)
 	}
 }
 
