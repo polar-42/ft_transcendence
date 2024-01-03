@@ -140,7 +140,6 @@ header a:visited {
 
 #nav_login:hover a {
   color: var(--fourth) !important;
-  font-weight: 900;
 }
 
 #nav_login a::before {
@@ -198,7 +197,7 @@ footer a:hover::before {
 }
 
 .dropdown_menu.open {
-  height: 260px;
+  height: 310px;
 }
 
 .dropdown_menu li {
@@ -216,7 +215,6 @@ footer a:hover::before {
 .dropdown_menu li:hover a {
   color: var(--main-color) !important;
   text-decoration: underline;
-  font-weight: 700;
 }
 
 .dropdown_menu #nav_login a {
