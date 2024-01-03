@@ -172,9 +172,9 @@ function FP_Init()
 		// { name : 'Submarine', x : 0, y : 0, startX : 700, startY : 450, ArrayX : -1, ArrayY : -1, size : 3, horizontal : true, isDragging : false },
 		{ name : 'PatrolBoat', x : 0, y : 0, startX : 700, startY : 550, ArrayX : 9, ArrayY : 0, size : 2, horizontal : false, isDragging : false },
 	]
-	for (let y = 0 y < gridSizeY y++)
+	for (let y = 0; y < gridSizeY; y++)
 	{
-		for(let x = 0 x < gridSizeX x++)
+		for(let x = 0; x < gridSizeX; x++)
 		{
 			BoardCases.push(CreateABox(x, y))
 		}
@@ -187,10 +187,10 @@ function FP_Init()
 	canvas.addEventListener('mousedown', FP_mouseDown)
 	canvas.addEventListener('mousemove', FP_mouseMove)
 	canvas.addEventListener('mouseup', FP_mouseUp)
-	for ( let y = 0 y < gridSizeY y++)
+	for ( let y = 0; y < gridSizeY; y++)
 	{
 		BoardArray[y] = []
-		for ( let x = 0 x < gridSizeX x++)
+		for ( let x = 0; x < gridSizeX; x++)
 			BoardArray[y][x] = 0
 	}
 	BoatList.forEach(element => {
@@ -249,7 +249,7 @@ function FP_mouseDown(e)
 			{
 				if (element.horizontal == true) 
 				{
-					for (let i = 0 i < element.size i++) 
+					for (let i = 0; i < element.size; i++) 
 					{
 						if (BoardArray[element.ArrayY][element.ArrayX + i] == 1)
 							BoardArray[element.ArrayY][element.ArrayX + i] = 0
@@ -257,7 +257,7 @@ function FP_mouseDown(e)
 				}
 				else 
 				{
-					for (let i = 0 i < element.size i++) 
+					for (let i = 0; i < element.size; i++) 
 					{
 						if (BoardArray[element.ArrayY + i][element.ArrayX] == 1)
 							BoardArray[element.ArrayY + i][element.ArrayX] = 0
@@ -311,13 +311,13 @@ function FP_mouseUp(e) {
 					element.x = element.ArrayX * boxSize + offsetX
 					element.y = element.ArrayY * boxSize + offsetY
 					if (element.horizontal == true) {
-						for (let i = 0 i < element.size i++) {
+						for (let i = 0; i < element.size; i++) {
 							if (BoardArray[element.ArrayY][element.ArrayX + i] == 0)
 								BoardArray[element.ArrayY][element.ArrayX + i] = 1
 						}
 					}
 					else {
-						for (let i = 0 i < element.size i++) {
+						for (let i = 0; i < element.size; i++) {
 							if (BoardArray[element.ArrayY + i][element.ArrayX] == 0)
 								BoardArray[element.ArrayY + i][element.ArrayX] = 1
 						}
@@ -474,7 +474,7 @@ function FP_isValidPos(element)
 	{
 		if (X + element.size - 1  >= gridSizeX)
 			return false
-		for (let i = 0 i < element.size i++)
+		for (let i = 0; i < element.size; i++)
 		{
 			if (BoardArray[Y][X + i] == 1)
 				return false
@@ -484,7 +484,7 @@ function FP_isValidPos(element)
 	{
 		if (Y + element.size - 1  >= gridSizeY)
 			return false
-		for (let i = 0 i < element.size i++)
+		for (let i = 0; i < element.size; i++)
 		{
 			if (BoardArray[Y + i][X] == 1)
 				return false
