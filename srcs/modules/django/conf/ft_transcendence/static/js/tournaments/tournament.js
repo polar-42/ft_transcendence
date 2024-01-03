@@ -10,8 +10,6 @@ export function initTournaments()
 		return;
 	}
 	const tournamentId = arguments[0];
-	console.log(tournamentSocket)
-	console.log("tournamentSocket")
 	if (tournamentSocket == undefined)
 		tournamentSocket = new WebSocket("ws://" + window.location.host + '/socketApp/tournamentsApp/' + tournamentId);
 	else
@@ -44,7 +42,6 @@ function leaveTournament()
 	tournamentSocket.close();
 
 	tournamentSocket = undefined;
-	console.log('Socket disconnected');
 	navto('/tournaments/Home');
 	return;
 }
@@ -75,23 +72,15 @@ function OnMessageTournament(e)
 function EndTournament(WinnerName)
 {
 	console.log(WinnerName)
-	// if (tournamentSocket != undefined)
-	// {
-		// tournamentSocket.close()
-		// tournamentSocket = undefined
-	// }
 }
 
 function LoadGame(data) 
 {
-	console.log(data)
-	console.log(data.gameId)
 	navto("/battleship", data.gameId)
 }
 
 function printMatchs(data)
 {
-	console.log(data)
 	const PL = document.getElementsByName("MatchList")[0]
 	if (PL == null)
 		return

@@ -43,7 +43,7 @@ export function initGame()
 		return
 	}
 	gameId = arguments[0]
-	battleshipSocket = new WebSocket("ws://" + window.location.host + '/socketApp/battleship/' + gameId)
+	battleshipSocket = new WebSocket("ws://" + window.location.host + '/battleshipApp/Game/' + gameId)
 	battleshipSocket.onmessage = e => OnMessage(e)
 }
 
@@ -76,11 +76,9 @@ function OnMessage(e)
 			RP_GameStop(data.message, data.tournamentId)
 			break
 		case 'RetrieveBoat':
-			console.log("RetrieveBoat")
 			FP_SendBoats();
 			break
 		case 'RetrieveHit':
-			console.log("RetrieveHit")
 			SP_SendSelected();
 			break
 		case 'GotHit':
@@ -116,7 +114,6 @@ function RP_GameStop(message, id)
 	else
 	{
 		battleshipSocket = null
-		console.log(id)
 		navto("tournaments/Play", id)
 	}
 }
@@ -514,7 +511,6 @@ function SP_HitCase(Tcase, result, boat)
 	});
 	if (boat != "None")
 	{
-		console.log(boat)
 		BoatList.forEach(element => {
 			if (element.name == boat)
 				element.status = false
@@ -552,10 +548,8 @@ function SP_mouseMove(event)
 
 function SP_SendSelected()
 {
-	console.log(SP_selected)
 	if (SP_selected == undefined)
 		return false
-	console.log("toto")
 	battleshipSocket.send(JSON.stringify({
 		'function': 'HitCase',
 		'input': SP_selected

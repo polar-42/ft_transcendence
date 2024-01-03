@@ -45,19 +45,6 @@ export async function checkConnexion()
 		return false
 }
 
-var newSocket = null
-
-function testSocket()
-{
-	if(newSocket != null || newSocket.readyState === WebSocket.OPEN) 
-		return 
-	newSocket = new WebSocket("ws://" + window.location.host + "/socketApp/TchatSocket/")
-	newSocket.onopen = function()
-	{
-		console.log(newSocket)
-	}
-}
-
 function connect(event)
 {
 	event.preventDefault();
@@ -105,10 +92,6 @@ function connect(event)
 function register(event)
 {
 	event.preventDefault();
-	var username = document.getElementById('Input_usr').value;
-	var mail = document.getElementById('Input_mail').value;
-	var password = document.getElementById('Input_pwd').value;
-	var password2 = document.getElementById('Input_pwd').value;
 	const data = 
 	{ 
 		username: document.getElementById('Input_usr').value,
@@ -131,7 +114,6 @@ function register(event)
 	})
 	.then(Response =>
 	{
-		console.log(Response)
 		if (!Response.ok)
 		{
 			throw new Error('Network response was not okay');

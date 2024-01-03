@@ -2,18 +2,14 @@ import { navto } from "../index.js";
 
 export function initTournamentsCreation()
 {
-	console.log('initTournamentsCreation');
 	document.getElementsByClassName("submitButtonCreateTournaments")[0].addEventListener("click", createTournaments)
-	//submitButtonCreateTournaments
 }
 
 function createTournaments()
 {
-	console.log('createTournaments');
 	let tournamentsName = document.getElementsByClassName('TournamentsName')[0].value;
 	let numberOfPlayers = document.getElementsByClassName('NumberOfPlayer')[0].value;
 	let typeGame = document.querySelector('input[name="TypeGame"]:checked').value;
-	console.log('Lets create ' + tournamentsName + ' with ' + numberOfPlayers);
 
 	var tournamentsData = {
 		tournamentsName: tournamentsName,
@@ -39,7 +35,6 @@ function createTournaments()
 		return response.json();
 	})
 	.then(data => {
-		console.log	(data)
 		if (data.isCreated == true)
 		{
 			creationTournamentsValidate(data.message)

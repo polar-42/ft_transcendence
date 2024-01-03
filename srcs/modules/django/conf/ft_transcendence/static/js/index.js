@@ -5,7 +5,7 @@ import { initLocalGamePong } from "./pongGameLocal.js";
 import { initGamePongIA, unloadGamePongIA } from './pongGameIA.js';
 import { initDashboard } from "./dashboard.js";
 import { initHomePage} from "./homepage.js";
-import { CP_Unload, initGame } from "./game.js";
+import { CP_Unload, initGame } from "./BattleshipGame.js";
 import { initGamePong, unLoadGamePong } from "./pongGameRemote.js";
 import { initTournamentsCreation } from "./tournaments/tournamentsCreation.js";
 import { initTournamentsJoinPage } from "./tournaments/tournamentsJoinPage.js";

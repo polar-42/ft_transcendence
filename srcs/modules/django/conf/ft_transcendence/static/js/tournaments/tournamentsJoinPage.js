@@ -19,7 +19,6 @@ export async function initTournamentsJoinPage()
 	.then(data =>
 	{
 		document.getElementById("listOfTournaments").innerHTML = data;
-		console.log(data);
 	})
 	.catch(error =>
 	{
@@ -34,7 +33,6 @@ export async function initTournamentsJoinPage()
 
 function joinTournaments(tournamentsId)
 {
-	console.log('Ca lance avec', tournamentsId);
 
 	const crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value;
 
@@ -67,7 +65,6 @@ function joinTournaments(tournamentsId)
 			console.log('Error:', data.error);
 			if (data.canJoin == true)
 			{
-				console.log("Join tournament " + tournamentsId)
 				navto("Play", tournamentsId);
 				return;
 			}
@@ -77,7 +74,6 @@ function joinTournaments(tournamentsId)
 				return;
 			}
 		}
-		console.log("Join tournament " + tournamentsId)
 		navto("Play", tournamentsId)
 		return;
 
@@ -86,9 +82,4 @@ function joinTournaments(tournamentsId)
 	{
 		console.error('Error:', error);
 	})
-}
-
-function printNoTournaments()
-{
-	console.log('Sorry no tournaments');
 }
