@@ -133,11 +133,15 @@ for (let link of menuLink) {
   });
 }
 
-const profileButton = document.querySelector("#nav_login");
+const profileButton = document.querySelectorAll("#nav_login");
 
-profileButton.addEventListener("hover", () => {
-  let profileImage = document.querySelector("#nav_login img");
-  profileImage.src = '../static/assets/logo/blue_user.png';
-})
-
-
+for (let button of profileButton) {
+  button.addEventListener("click", async () => {
+    let logStatus = await checkConnexion();
+    if (logStatus == true) {
+      navto("/dashboard");
+    } else {
+      navto("/authApp/register");
+    }
+  })
+}
