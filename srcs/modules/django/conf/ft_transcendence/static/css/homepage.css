@@ -14,8 +14,10 @@
   margin-bottom: 20px;
   display: grid;
   grid-template-columns: 1fr 3fr;
-  grid-gap: 20px;
+  grid-gap: 10px;
   align-items: center;
+  text-align: center;
+  text-justify: justify;
 }
 
 #catchphrase h2 {
@@ -23,8 +25,10 @@
   font-size: 2.5em;
   text-shadow: 1px 0 10px var(--fourth);
   text-transform: uppercase;
+  text-justify: none;
   color: var(--main-color);
 }
+
 
 #paddle {
   max-width: 100%;
@@ -91,11 +95,27 @@ button[name="LogIn"]:hover {
   margin-left: 30px;
 }
 
+.games {
+  background: var(--fourth);
+  padding-top: 40px; 
+  padding-bottom: 20px; 
+}
+
+.games h1 {
+  font-size: 2em;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.games div {
+  margin-bottom: 20px;
+}
+
 .about {
   display: grid;
   grid-template-columns: 1.3fr 2fr;
   grid-gap: 50px;
-  background: var(--fourth);
+  background: var(--main-bg-color);
   padding: 20px 10% 20px 10%;
   font-size: 1.3em;
 } 
@@ -163,7 +183,8 @@ button[name="LogIn"]:hover {
 
 @media (min-width: 1080px) {
   .about,
-  .hero {
+  .hero,
+  .games {
     padding-right: calc((100vw - 1000px) / 2);
     padding-left: calc((100vw - 1000px) / 2);
   }
