@@ -1,19 +1,15 @@
-import { navto } from "../index.js";
+import { navto } from "../index.js"
 
 export function initTournamentsCreation()
 {
-	console.log('initTournamentsCreation');
 	document.getElementsByClassName("submitButtonCreateTournaments")[0].addEventListener("click", createTournaments)
-	//submitButtonCreateTournaments
 }
 
 function createTournaments()
 {
-	console.log('createTournaments');
-	let tournamentsName = document.getElementsByClassName('TournamentsName')[0].value;
-	let numberOfPlayers = document.getElementsByClassName('NumberOfPlayer')[0].value;
-	let typeGame = document.querySelector('input[name="TypeGame"]:checked').value;
-	console.log('Lets create ' + tournamentsName + ' with ' + numberOfPlayers);
+	let tournamentsName = document.getElementsByClassName('TournamentsName')[0].value
+	let numberOfPlayers = document.getElementsByClassName('NumberOfPlayer')[0].value
+	let typeGame = document.querySelector('input[name="TypeGame"]:checked').value
 
 	var tournamentsData = {
 		tournamentsName: tournamentsName,
@@ -21,11 +17,11 @@ function createTournaments()
 		typeGame: typeGame
 	}
 
-	const crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+	const crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
 
-	var headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-	headers.append('X-CSRFToken', crsf_token);
+	var headers = new Headers()
+    headers.append('Content-Type', 'application/json')
+	headers.append('X-CSRFToken', crsf_token)
 
 	fetch(document.location.origin + '/tournaments/create_tournaments/', {
 		method: 'POST',
@@ -34,30 +30,29 @@ function createTournaments()
 	})
 	.then(response => {
 		if (!response.ok) {
-			throw new Error('Network response was not okay');
+			throw new Error('Network response was not okay')
 		}
-		return response.json();
+		return response.json()
 	})
 	.then(data => {
-		console.log	(data)
 		if (data.isCreated == true)
 		{
 			creationTournamentsValidate(data.message)
-			navto('/tournaments/tournament', data.id)
+			navto('/tournaments/Play', data.id)
 		}
 		else
 		{
-			throw new Error(data.message);
+			throw new Error(data.message)
 		}
 	})
 	.catch(error => {
 		document.getElementById('messageCreationTournaments').innerHTML = error
-		console.log('Error:', error);
+		console.log('Error:', error)
 	})
 }
 
 function creationTournamentsValidate(message)
 {
-	document.getElementById('messageCreationTournaments').innerHTML = message;
+	document.getElementById('messageCreationTournaments').innerHTML = message
 
 }

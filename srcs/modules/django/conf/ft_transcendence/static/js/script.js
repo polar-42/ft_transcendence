@@ -10,7 +10,6 @@ function checkConnexion() {
         fetch('/transcendence/check_connexion/')
                 .then(response => response.json())
                 .then(data => {
-                        console.log(data.message);
                         document.getElementById('checkConnexionText').innerHTML = data.message;
                 })
                 .catch(error => {
@@ -28,7 +27,6 @@ function checkDisconnexion() {
         fetch('/transcendence/check_disconnexion/')
                 .then(response => response.json())
                 .then(data => {
-                        console.log(data.message);
                         document.getElementById('checkDisconnexionText').innerHTML = data.message;
                         document.reload();
                 })

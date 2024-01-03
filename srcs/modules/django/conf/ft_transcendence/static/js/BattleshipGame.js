@@ -1,7 +1,7 @@
-import { navto } from "./index.js";
+import { navto } from "./index.js"
 
-let canvas = null;
-let ctx = null;
+let canvas = null
+let ctx = null
 
 const gridSizeX = 10
 const gridSizeY = 10
@@ -22,13 +22,13 @@ const FP_BTN_Validate =
 	hoverColor : 'red'
 }
 
-let BoardCases = [];
+let BoardCases = []
 
-let BoatList = [];
+let BoatList = []
 
-let BoardArray = [];
+let BoardArray = []
 
-let validated = false;
+let validated = false
 
 var battleshipSocket = null
 var gameId = null
@@ -43,7 +43,7 @@ export function initGame()
 		return
 	}
 	gameId = arguments[0]
-	battleshipSocket = new WebSocket("ws://" + window.location.host + '/socketApp/battleship/' + gameId)
+	battleshipSocket = new WebSocket("ws://" + window.location.host + '/battleshipApp/Game/' + gameId)
 	battleshipSocket.onmessage = e => OnMessage(e)
 }
 
@@ -53,33 +53,33 @@ function OnMessage(e)
 	switch (data.function) {
 		case 'initGame':
 			FP_Init()
-			break;
+			break
 		case 'StartGame':
 			FP_UnLoad()
-			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			ctx.clearRect(0, 0, canvas.width, canvas.height)
 			SP_Load()
-			break;
+			break
 		case 'StartTurn':
 			SP_drawTitle("Your Turn")
-			canvas.addEventListener('mousemove', SP_mouseMove);
-			canvas.addEventListener('click', SP_mouseClick);
+			canvas.addEventListener('mousemove', SP_mouseMove)
+			canvas.addEventListener('click', SP_mouseClick)
 			break
 		case 'StartEnemyTurn':
 			SP_drawTitle(data.playerName + " Turn")
 			SP_selected = undefined
 			SP_hovered = undefined
 			SP_Draw()
-			canvas.removeEventListener('mousemove', SP_mouseMove);
-			canvas.removeEventListener('click', SP_mouseClick);
+			canvas.removeEventListener('mousemove', SP_mouseMove)
+			canvas.removeEventListener('click', SP_mouseClick)
 			break
 		case 'GameStop':
 			RP_GameStop(data.message, data.tournamentId)
 			break
 		case 'RetrieveBoat':
-			FP_SendBoats();
+			FP_SendBoats()
 			break
 		case 'RetrieveHit':
-			SP_SendSelected();
+			SP_SendSelected()
 			break
 		case 'GotHit':
 			break
@@ -93,7 +93,7 @@ function OnMessage(e)
 			RP_Win(data.other, data.wAliveBoat, data.lAliveBoat)
 			break
 		default:
-			break;
+			break
 	}
 	currentTimer = data.timer
 }
@@ -101,6 +101,9 @@ function OnMessage(e)
 
 function RP_GameStop(message, id)
 {
+	if (curInterval != undefined)
+		clearInterval(curInterval)
+	curInterval = undefined
 	if (id == -1)
 	{
 		canvas.style.display = 'none'
@@ -111,25 +114,15 @@ function RP_GameStop(message, id)
 	else
 	{
 		battleshipSocket = null
-		console.log(id)
-		navto("tournaments/tournament", id)
+		navto("tournaments/Play", id)
 	}
-}
-
-function RP_EnemyGiveUp(player, gameStatus)
-{
-	canvas.style.display = 'none'
-	var txtNode = undefined
-	if (gameStatus < 2)
-		txtNode = document.createTextNode("Game canceled! " + player + " disconnected during boat placement.")
-	else
-		txtNode = document.createTextNode("You win by forfeit! " + player + " disconnected during game.")
-	canvas.parentElement.appendChild(txtNode)
-	battleshipSocket = null
 }
 
 function RP_Loose(other, otherBoat)
 {
+	if (curInterval != undefined)
+		clearInterval(curInterval)
+	curInterval = undefined
 	canvas.style.display = 'none'
 	const txtNode = document.createTextNode("You loose! you destroyed only " + otherBoat + " " + other + " boats.")
 	canvas.parentElement.appendChild(txtNode)
@@ -138,6 +131,9 @@ function RP_Loose(other, otherBoat)
 
 function RP_Win(other, userBoat, otherBoat)
 {
+	if (curInterval != undefined)
+		clearInterval(curInterval)
+	curInterval = undefined
 	canvas.style.display = 'none'
 	const txtNode = document.createTextNode("You win! you destroyed the " + otherBoat + " " + other + " boats when he detroyed only " + userBoat + " of yours")
 	canvas.parentElement.appendChild(txtNode)
@@ -150,11 +146,11 @@ function RP_Win(other, userBoat, otherBoat)
 
 function FP_UnLoad()
 {
-	canvas.removeEventListener('click', FP_mouseClick);
-	canvas.removeEventListener('contextmenu', FP_mouseRightClick);
-	canvas.removeEventListener('mousedown', FP_mouseDown);
-	canvas.removeEventListener('mousemove', FP_mouseMove);
-	canvas.removeEventListener('mouseup', FP_mouseUp);
+	canvas.removeEventListener('click', FP_mouseClick)
+	canvas.removeEventListener('contextmenu', FP_mouseRightClick)
+	canvas.removeEventListener('mousedown', FP_mouseDown)
+	canvas.removeEventListener('mousemove', FP_mouseMove)
+	canvas.removeEventListener('mouseup', FP_mouseUp)
 	if (curInterval != undefined)
 		clearInterval(curInterval)
 	curInterval = undefined
@@ -175,50 +171,50 @@ function FP_Init()
 		// { name : 'Destroyer', x : 0, y : 0, startX : 700, startY : 350, ArrayX : -1, ArrayY : -1, size : 3, horizontal : true, isDragging : false },
 		// { name : 'Submarine', x : 0, y : 0, startX : 700, startY : 450, ArrayX : -1, ArrayY : -1, size : 3, horizontal : true, isDragging : false },
 		{ name : 'PatrolBoat', x : 0, y : 0, startX : 700, startY : 550, ArrayX : 9, ArrayY : 0, size : 2, horizontal : false, isDragging : false },
-	];
+	]
 	for (let y = 0; y < gridSizeY; y++)
 	{
 		for(let x = 0; x < gridSizeX; x++)
 		{
-			BoardCases.push(CreateABox(x, y));
+			BoardCases.push(CreateABox(x, y))
 		}
 	}
-	validated = false;
-	canvas = document.getElementById("myCanvas");
-	ctx = canvas.getContext("2d");
-	canvas.addEventListener('click', FP_mouseClick);
-	canvas.addEventListener('contextmenu', FP_mouseRightClick);
-	canvas.addEventListener('mousedown', FP_mouseDown);
-	canvas.addEventListener('mousemove', FP_mouseMove);
-	canvas.addEventListener('mouseup', FP_mouseUp);
+	validated = false
+	canvas = document.getElementById("myCanvas")
+	ctx = canvas.getContext("2d")
+	canvas.addEventListener('click', FP_mouseClick)
+	canvas.addEventListener('contextmenu', FP_mouseRightClick)
+	canvas.addEventListener('mousedown', FP_mouseDown)
+	canvas.addEventListener('mousemove', FP_mouseMove)
+	canvas.addEventListener('mouseup', FP_mouseUp)
 	for ( let y = 0; y < gridSizeY; y++)
 	{
-		BoardArray[y] = [];
+		BoardArray[y] = []
 		for ( let x = 0; x < gridSizeX; x++)
-			BoardArray[y][x] = 0;
+			BoardArray[y][x] = 0
 	}
 	BoatList.forEach(element => {
-		element.x = element.startX;
-		element.y = element.startY;
-	});
+		element.x = element.startX
+		element.y = element.startY
+	})
 	curInterval = setInterval(FP_Timer, 1000)
-	FP_draw();
+	FP_draw()
 }
 
 function FP_drawTitle()
 {
-	ctx.font = "40px Arial";
+	ctx.font = "40px Arial"
 	ctx.textAlign = "center"
-	ctx.fillStyle = "#0095DD";
-	let placedBoat = 0;
+	ctx.fillStyle = "#0095DD"
+	let placedBoat = 0
 	BoatList.forEach(element => {
 		if (element.ArrayX != -1)
-			placedBoat++;
-	});
+			placedBoat++
+	})
 	if (validated == false)
-		ctx.fillText(`Please, Place your navire (` + placedBoat + `/5)`, canvas.width / 2 , 65);
+		ctx.fillText(`Please, Place your navire (` + placedBoat + `/5)`, canvas.width / 2 , 65)
 	else
-		ctx.fillText(`Please, wait for your opponent`, canvas.width / 2 , 65);
+		ctx.fillText(`Please, wait for your opponent`, canvas.width / 2 , 65)
 }
 
 function FP_isHover(element, mouseX, mouseY)
@@ -226,29 +222,29 @@ function FP_isHover(element, mouseX, mouseY)
 	if (element.horizontal == true)
 	{
 		if (mouseX > element.x && mouseX < element.x + element.size * boxSize && mouseY > element.y && mouseY < element.y + boxSize)
-			return true;
-		return false;
+			return true
+		return false
 	}
 	if (mouseX > element.x && mouseX < element.x + boxSize && mouseY > element.y && mouseY < element.y + element.size * boxSize)
-		return true;
-	return false;
+		return true
+	return false
 }
 
-let FP_tmpBoat = {x : 0, y : 0, horizontal : true};
+let FP_tmpBoat = {x : 0, y : 0, horizontal : true}
 
 function FP_mouseDown(e)
 {
 	if (e.button != 0 || validated == true)
-		return ;
-	const mouseX = e.clientX - canvas.getBoundingClientRect().left;
-	const mouseY = e.clientY - canvas.getBoundingClientRect().top;
+		return 
+	const mouseX = e.clientX - canvas.getBoundingClientRect().left
+	const mouseY = e.clientY - canvas.getBoundingClientRect().top
 
 	BoatList.forEach(element => {
 		if (FP_isHover(element, mouseX, mouseY) == true)
 		{
-			FP_tmpBoat.x = element.x;
-			FP_tmpBoat.y = element.y;
-			FP_tmpBoat.horizontal = element.horizontal;
+			FP_tmpBoat.x = element.x
+			FP_tmpBoat.y = element.y
+			FP_tmpBoat.horizontal = element.horizontal
 			if (element.ArrayX != -1)
 			{
 				if (element.horizontal == true) 
@@ -256,7 +252,7 @@ function FP_mouseDown(e)
 					for (let i = 0; i < element.size; i++) 
 					{
 						if (BoardArray[element.ArrayY][element.ArrayX + i] == 1)
-							BoardArray[element.ArrayY][element.ArrayX + i] = 0;
+							BoardArray[element.ArrayY][element.ArrayX + i] = 0
 					}
 				}
 				else 
@@ -264,95 +260,95 @@ function FP_mouseDown(e)
 					for (let i = 0; i < element.size; i++) 
 					{
 						if (BoardArray[element.ArrayY + i][element.ArrayX] == 1)
-							BoardArray[element.ArrayY + i][element.ArrayX] = 0;
+							BoardArray[element.ArrayY + i][element.ArrayX] = 0
 					}
 				}
 			}
 			// Start dragging
-			element.isDragging = true;
+			element.isDragging = true
 
 			// Save the offset to adjust the position while dragging
-			element.offsetX = mouseX - element.x;
-			element.offsetY = mouseY - element.y;
+			element.offsetX = mouseX - element.x
+			element.offsetY = mouseY - element.y
 
 			// Change cursor style while dragging
-			canvas.style.cursor = 'grabbing';
+			canvas.style.cursor = 'grabbing'
 		}
-	});
+	})
 }
 
 function FP_mouseMove(e) {
 	BoatList.forEach(element => {
 		if (element.isDragging) {
-			const mouseX = e.clientX - canvas.getBoundingClientRect().left;
-			const mouseY = e.clientY - canvas.getBoundingClientRect().top;
+			const mouseX = e.clientX - canvas.getBoundingClientRect().left
+			const mouseY = e.clientY - canvas.getBoundingClientRect().top
 
 			// Update the position of the draggable item
-			element.x = mouseX - element.offsetX;
-			element.y = mouseY - element.offsetY;
+			element.x = mouseX - element.offsetX
+			element.y = mouseY - element.offsetY
 
 			// Clear the canvas and redraw the draggable item
-			ctx.clearRect(0, 0, canvas.width, canvas.height);
-			FP_draw();
+			ctx.clearRect(0, 0, canvas.width, canvas.height)
+			FP_draw()
 
 			// Change cursor style while dragging
-			canvas.style.cursor = 'grabbing';
+			canvas.style.cursor = 'grabbing'
 		}
-	});
+	})
 }
 
 function FP_mouseUp(e) {
 	if (e.button != 0)
-		return;
+		return
 	BoatList.forEach(element => {
 		if (element.isDragging == true) {
-			element.isDragging = false;
+			element.isDragging = false
 			if (element.x > offsetX - boxSize / 2 && element.x < (offsetX + gridSizeX * boxSize) - boxSize / 2 && element.y > offsetY - boxSize / 2 && element.y < (offsetY + gridSizeY * boxSize) - boxSize / 2) {
 				if (FP_isValidPos(element) == true) {
 
-					element.ArrayX = Math.round((element.x - offsetX) / boxSize);
-					element.ArrayY = Math.round((element.y - offsetY) / boxSize);
-					element.x = element.ArrayX * boxSize + offsetX;
-					element.y = element.ArrayY * boxSize + offsetY;
+					element.ArrayX = Math.round((element.x - offsetX) / boxSize)
+					element.ArrayY = Math.round((element.y - offsetY) / boxSize)
+					element.x = element.ArrayX * boxSize + offsetX
+					element.y = element.ArrayY * boxSize + offsetY
 					if (element.horizontal == true) {
 						for (let i = 0; i < element.size; i++) {
 							if (BoardArray[element.ArrayY][element.ArrayX + i] == 0)
-								BoardArray[element.ArrayY][element.ArrayX + i] = 1;
+								BoardArray[element.ArrayY][element.ArrayX + i] = 1
 						}
 					}
 					else {
 						for (let i = 0; i < element.size; i++) {
 							if (BoardArray[element.ArrayY + i][element.ArrayX] == 0)
-								BoardArray[element.ArrayY + i][element.ArrayX] = 1;
+								BoardArray[element.ArrayY + i][element.ArrayX] = 1
 						}
 					}
 				}
 				else {
-					element.x = FP_tmpBoat.x;
-					element.y = FP_tmpBoat.y;
-					element.horizontal = FP_tmpBoat.horizontal;
+					element.x = FP_tmpBoat.x
+					element.y = FP_tmpBoat.y
+					element.horizontal = FP_tmpBoat.horizontal
 				}
 			}
 			else {
-				element.horizontal = true;
-				element.x = element.startX;
-				element.y = element.startY;
-				element.ArrayX = -1;
-				element.ArrayY = -1;
+				element.horizontal = true
+				element.x = element.startX
+				element.y = element.startY
+				element.ArrayX = -1
+				element.ArrayY = -1
 			}
-			FP_draw();
+			FP_draw()
 		}
 		// Change cursor style back to default
-		canvas.style.cursor = 'grab';
-	});
+		canvas.style.cursor = 'grab'
+	})
 }
 
 function FP_SendBoats()
 {
-	var count = 0;
+	var count = 0
 	BoatList.forEach(element => {
 		if (element.ArrayPosX != -1)
-			count++;
+			count++
 	})
 
 	if (count != BoatList.length)
@@ -368,36 +364,36 @@ function FP_SendBoats()
 function FP_mouseClick(e)
 {
 	if (e.button != 0)
-		return;
-	const mouseX = e.clientX - canvas.getBoundingClientRect().left;
-	const mouseY = e.clientY - canvas.getBoundingClientRect().top;
+		return
+	const mouseX = e.clientX - canvas.getBoundingClientRect().left
+	const mouseY = e.clientY - canvas.getBoundingClientRect().top
 	if (mouseX > FP_BTN_Validate.x && mouseX < FP_BTN_Validate.x + FP_BTN_Validate.w && mouseY > FP_BTN_Validate.y && mouseY < FP_BTN_Validate.y + FP_BTN_Validate.h)
 	{
 		if (FP_SendBoats() == false)
 			return
-		validated = !validated;
-		FP_draw();
+		validated = !validated
+		FP_draw()
 	}
 }
 
 function FP_mouseRightClick(e)
 {
 	// Prevent the default context menu behavior
-    e.preventDefault();
-	const mouseX = e.clientX - canvas.getBoundingClientRect().left;
-    const mouseY = e.clientY - canvas.getBoundingClientRect().top;
+    e.preventDefault()
+	const mouseX = e.clientX - canvas.getBoundingClientRect().left
+    const mouseY = e.clientY - canvas.getBoundingClientRect().top
 	BoatList.forEach(element => 
 	{
 		if (element.isDragging)
 		{
-			element.x =  mouseX;
-			element.y =  mouseY;
-			element.offsetX = mouseX - element.x;
-			element.offsetY = mouseY - element.y;
-			element.horizontal = !element.horizontal;
-			FP_draw();
+			element.x =  mouseX
+			element.y =  mouseY
+			element.offsetX = mouseX - element.x
+			element.offsetY = mouseY - element.y
+			element.horizontal = !element.horizontal
+			FP_draw()
 		}
-	});
+	})
 }
 
 function FP_drawBoats( dragging )
@@ -406,16 +402,16 @@ function FP_drawBoats( dragging )
 	{
 		if (element.isDragging == false || dragging == true)
 		{
-			ctx.beginPath();
+			ctx.beginPath()
 			if (element.horizontal == true)
-				ctx.rect(element.x, element.y, element.size * boxSize, boxSize);	
+				ctx.rect(element.x, element.y, element.size * boxSize, boxSize)	
 			else
-				ctx.rect(element.x, element.y, boxSize, element.size * boxSize);
-			ctx.fillStyle = "blue";
-			ctx.fill();
-			ctx.closePath();
+				ctx.rect(element.x, element.y, boxSize, element.size * boxSize)
+			ctx.fillStyle = "blue"
+			ctx.fill()
+			ctx.closePath()
 		}
-	});
+	})
 }
 
 function FP_drawDragged()
@@ -424,77 +420,77 @@ function FP_drawDragged()
 		{
 			if (element.isDragging == true)
 			{
-				ctx.beginPath();
+				ctx.beginPath()
 				if (element.horizontal == true)
-					ctx.rect(element.x, element.y, element.size * boxSize, boxSize);	
+					ctx.rect(element.x, element.y, element.size * boxSize, boxSize)	
 				else
-					ctx.rect(element.x, element.y, boxSize, element.size * boxSize);
-				ctx.fillStyle = "red";
-				ctx.fill();
-				ctx.closePath();
+					ctx.rect(element.x, element.y, boxSize, element.size * boxSize)
+				ctx.fillStyle = "red"
+				ctx.fill()
+				ctx.closePath()
 			}
-		});
+		})
 }
 
 function FP_drawValidateButton()
 {
-	let boatCount = 0;
+	let boatCount = 0
 	BoatList.forEach(element =>
 		{
 			if (element.ArrayX != -1)
-				boatCount++;
-		});
+				boatCount++
+		})
 	if (boatCount == BoatList.length)
 	{
-		ctx.fillStyle = FP_BTN_Validate.color; // Button color
-		ctx.fillRect(FP_BTN_Validate.x, FP_BTN_Validate.y, FP_BTN_Validate.w, FP_BTN_Validate.h);
+		ctx.fillStyle = FP_BTN_Validate.color // Button color
+		ctx.fillRect(FP_BTN_Validate.x, FP_BTN_Validate.y, FP_BTN_Validate.w, FP_BTN_Validate.h)
 
-		ctx.fillStyle = '#fff'; // Text color
-		ctx.font = '16px Arial';
-		ctx.textAlign = 'center';
-		ctx.textBaseline = 'middle';
-		ctx.fillText(FP_BTN_Validate.label, FP_BTN_Validate.x + FP_BTN_Validate.w / 2, FP_BTN_Validate.y + FP_BTN_Validate.h / 2);
+		ctx.fillStyle = '#fff' // Text color
+		ctx.font = '16px Arial'
+		ctx.textAlign = 'center'
+		ctx.textBaseline = 'middle'
+		ctx.fillText(FP_BTN_Validate.label, FP_BTN_Validate.x + FP_BTN_Validate.w / 2, FP_BTN_Validate.y + FP_BTN_Validate.h / 2)
 	}
 }
 
 function FP_draw()
 {
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.clearRect(0, 0, canvas.width, canvas.height)
 	drawTimer()
-	drawGrid(2);
-	FP_drawBoats(false);
-	drawGrid(1);
-	FP_drawTitle();
-	FP_drawDragged();
-	FP_drawValidateButton();
+	drawGrid(2)
+	FP_drawBoats(false)
+	drawGrid(1)
+	FP_drawTitle()
+	FP_drawDragged()
+	FP_drawValidateButton()
 }
 
 function FP_isValidPos(element)
 {
-	let X = Math.round((element.x - offsetX) / boxSize);
-	let Y = Math.round((element.y - offsetY) / boxSize);
+	let X = Math.round((element.x - offsetX) / boxSize)
+	let Y = Math.round((element.y - offsetY) / boxSize)
 
 	if (element.horizontal == true)
 	{
 		if (X + element.size - 1  >= gridSizeX)
-			return false;
+			return false
 		for (let i = 0; i < element.size; i++)
 		{
 			if (BoardArray[Y][X + i] == 1)
-				return false;
+				return false
 		}
 	}
 	else
 	{
 		if (Y + element.size - 1  >= gridSizeY)
-			return false;
+			return false
 		for (let i = 0; i < element.size; i++)
 		{
 			if (BoardArray[Y + i][X] == 1)
-				return false;
+				return false
 		}
 	}
-	return true;
+	return true
 }
 
 //#endregion
@@ -512,10 +508,9 @@ function SP_HitCase(Tcase, result, boat)
 			element.status = result == false ? -1 : 1
 
 		}
-	});
+	})
 	if (boat != "None")
 	{
-		console.log(boat)
 		BoatList.forEach(element => {
 			if (element.name == boat)
 				element.status = false
@@ -526,15 +521,15 @@ function SP_HitCase(Tcase, result, boat)
 
 function SP_mouseMove(event)
 {
-	const mouseX = event.clientX - canvas.getBoundingClientRect().left;
-	const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+	const mouseX = event.clientX - canvas.getBoundingClientRect().left
+	const mouseY = event.clientY - canvas.getBoundingClientRect().top
 	const ArrayPos = CP_getArrayPos(mouseX, mouseY)
 	if (ArrayPos.x == - 1)
 	{
 		if (SP_hovered != undefined)
 		{
 			SP_hovered = undefined
-			SP_Draw();
+			SP_Draw()
 		}
 	}
 	else
@@ -544,19 +539,17 @@ function SP_mouseMove(event)
 				if (SP_hovered != element)
 				{
 					SP_hovered = element
-					SP_Draw();
+					SP_Draw()
 				}
-				return;
+				return
 			})
 	}
 }
 
 function SP_SendSelected()
 {
-	console.log(SP_selected)
 	if (SP_selected == undefined)
 		return false
-	console.log("toto")
 	battleshipSocket.send(JSON.stringify({
 		'function': 'HitCase',
 		'input': SP_selected
@@ -566,8 +559,8 @@ function SP_SendSelected()
 
 function SP_mouseClick(event)
 {
-	const mouseX = event.clientX - canvas.getBoundingClientRect().left;
-	const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+	const mouseX = event.clientX - canvas.getBoundingClientRect().left
+	const mouseY = event.clientY - canvas.getBoundingClientRect().top
 	
 	const ArrayPos = CP_getArrayPos(mouseX, mouseY)
 	
@@ -594,17 +587,17 @@ function SP_mouseClick(event)
 				if (SP_selected != element)
 				{
 					SP_selected = element
-					SP_Draw();
+					SP_Draw()
 				}
 			}
-			return;
+			return
 		})
 	}
 }
 
 function SP_Load()
 {
-	setInterval(SP_Timer, 1000)
+	curInterval = setInterval(SP_Timer, 1000)
 	BoatList = [
 		// { name : 'Carrier', x : 700, y : 100, size : 5, status : true},
 		// { name : 'BattleShip', x : 700, y : 200, size : 4, status : true},
@@ -638,7 +631,7 @@ function SP_drawEnemyBoats()
 	ctx.clearRect(650, 150, 200, 500)
 	BoatList.forEach(element => {
 			ctx.beginPath()
-			ctx.rect(element.x, element.y, element.size * boxSize, boxSize);
+			ctx.rect(element.x, element.y, element.size * boxSize, boxSize)
 			if (element.status == false)
 				ctx.fillStyle = "red"
 			else
@@ -653,10 +646,10 @@ function SP_drawTitle(message)
 {
 	ctx.clearRect(canvas.width / 2 - 200, 25, 400, 70)
 	ctx.beginPath()
-	ctx.font = "40px Arial";
+	ctx.font = "40px Arial"
 	ctx.textAlign = "center"
-	ctx.fillStyle = "#0095DD";
-	ctx.fillText(message, canvas.width / 2 , 65);
+	ctx.fillStyle = "#0095DD"
+	ctx.fillText(message, canvas.width / 2 , 65)
 	ctx.closePath()
 }
 
@@ -666,14 +659,14 @@ function SP_drawSendBTN()
 	if (SP_selected == undefined)
 		return
 	ctx.beginPath()
-	ctx.fillStyle = FP_BTN_Validate.color; // Button color
-	ctx.fillRect(FP_BTN_Validate.x, FP_BTN_Validate.y, FP_BTN_Validate.w, FP_BTN_Validate.h);
+	ctx.fillStyle = FP_BTN_Validate.color // Button color
+	ctx.fillRect(FP_BTN_Validate.x, FP_BTN_Validate.y, FP_BTN_Validate.w, FP_BTN_Validate.h)
 
-	ctx.fillStyle = '#fff'; // Text color
-	ctx.font = '16px Arial';
-	ctx.textAlign = 'center';
-	ctx.textBaseline = 'middle';
-	ctx.fillText("Send", FP_BTN_Validate.x + FP_BTN_Validate.w / 2, FP_BTN_Validate.y + FP_BTN_Validate.h / 2);
+	ctx.fillStyle = '#fff' // Text color
+	ctx.font = '16px Arial'
+	ctx.textAlign = 'center'
+	ctx.textBaseline = 'middle'
+	ctx.fillText("Send", FP_BTN_Validate.x + FP_BTN_Validate.w / 2, FP_BTN_Validate.y + FP_BTN_Validate.h / 2)
 	ctx.closePath()
 }
 
@@ -689,13 +682,13 @@ function drawTimer()
 	if (currentTimer == -1)
 		return
 	ctx.clearRect(canvas.width / 2 + canvas.width / 4 + canvas.width / 8 - 25, 50 - 25, 50, 50)
-	ctx.beginPath();
-	ctx.fillStyle = '#fff'; // Text color
-	ctx.font = '16px Arial';
-	ctx.textAlign = 'center';
-	ctx.textBaseline = 'middle';
-	ctx.fillText(currentTimer.toString(), canvas.width / 2 + canvas.width / 4 + canvas.width / 8, 50);
-	ctx.closePath();
+	ctx.beginPath()
+	ctx.fillStyle = '#fff' // Text color
+	ctx.font = '16px Arial'
+	ctx.textAlign = 'center'
+	ctx.textBaseline = 'middle'
+	ctx.fillText(currentTimer.toString(), canvas.width / 2 + canvas.width / 4 + canvas.width / 8, 50)
+	ctx.closePath()
 }
 
 function CreateABox(x, y)
@@ -713,36 +706,36 @@ function drawGrid(drawPart)
 	BoardCases.forEach(element => {
 		if(drawPart == 1 || drawPart == 0)
 		{
-			ctx.beginPath();
-			ctx.rect(offsetX + element.ArrayPosX * boxSize, offsetY + element.ArrayPosY * boxSize, 2, boxSize);
-			ctx.rect(offsetX + element.ArrayPosX * boxSize, offsetY + element.ArrayPosY * boxSize, boxSize, 2);
-			ctx.rect(offsetX + element.ArrayPosX * boxSize + boxSize, offsetY + element.ArrayPosY * boxSize, 2, boxSize);
-			ctx.rect(offsetX + element.ArrayPosX * boxSize, offsetY + element.ArrayPosY * boxSize + boxSize, boxSize, 2);
-			ctx.fillStyle = "green";
-			ctx.fill();
-			ctx.closePath();
+			ctx.beginPath()
+			ctx.rect(offsetX + element.ArrayPosX * boxSize, offsetY + element.ArrayPosY * boxSize, 2, boxSize)
+			ctx.rect(offsetX + element.ArrayPosX * boxSize, offsetY + element.ArrayPosY * boxSize, boxSize, 2)
+			ctx.rect(offsetX + element.ArrayPosX * boxSize + boxSize, offsetY + element.ArrayPosY * boxSize, 2, boxSize)
+			ctx.rect(offsetX + element.ArrayPosX * boxSize, offsetY + element.ArrayPosY * boxSize + boxSize, boxSize, 2)
+			ctx.fillStyle = "green"
+			ctx.fill()
+			ctx.closePath()
 		}
 		if(drawPart == 0 || drawPart == 2)
 		{
-			ctx.beginPath();
+			ctx.beginPath()
 			ctx.rect(offsetX + (element.ArrayPosX * boxSize) + 2, offsetY + (element.ArrayPosY * boxSize) + 2, boxSize - 2, boxSize - 2)
 			if (element.status != 0)
 			{
 				if (element.status == 1)
-					ctx.fillStyle = "blue";
+					ctx.fillStyle = "blue"
 				else if (element.status == -1)
-					ctx.fillStyle = "rgb(155, 155, 3)";
+					ctx.fillStyle = "rgb(155, 155, 3)"
 			}
 			else if (SP_selected != undefined && SP_selected == element)
-				ctx.fillStyle = "grey";
+				ctx.fillStyle = "grey"
 			else if (SP_hovered != undefined && SP_hovered == element)
-				ctx.fillStyle = "red";
+				ctx.fillStyle = "red"
 			else
-				ctx.fillStyle = "rgb(186, 252, 3)";
-			ctx.fill();
-			ctx.closePath();
+				ctx.fillStyle = "rgb(186, 252, 3)"
+			ctx.fill()
+			ctx.closePath()
 		}
-	});
+	})
 }
 
 function CP_getArrayPos(mouseX, mouseY)

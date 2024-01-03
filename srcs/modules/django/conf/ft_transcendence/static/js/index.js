@@ -1,26 +1,26 @@
-import { checkConnexion, initLoggin, initRegister, logout } from "./authApp.js";
-import { initMatchmaking } from "./battleshipApp.js";
-import { initMatchmakingPong, unLoadMatchmakingPong } from "./pongGameApp.js";
-import { initLocalGamePong } from "./pongGameLocal.js";
-import { initGamePongIA, unloadGamePongIA } from './pongGameIA.js';
-import { initDashboard } from "./dashboard.js";
-import { initHomePage} from "./homepage.js";
-import { CP_Unload, initGame } from "./game.js";
-import { initGamePong, unLoadGamePong } from "./pongGameRemote.js";
-import { initTournamentsCreation } from "./tournaments/tournamentsCreation.js";
-import { initTournamentsJoinPage } from "./tournaments/tournamentsJoinPage.js";
-import { initTournaments } from "./tournaments/tournament.js";
+import { checkConnexion, initLoggin, initRegister, logout } from "./authApp.js"
+import { initMatchmaking } from "./battleshipApp.js"
+import { initMatchmakingPong, unLoadMatchmakingPong } from "./pongGameApp.js"
+import { initLocalGamePong } from "./pongGameLocal.js"
+import { initGamePongIA, unloadGamePongIA } from './pongGameIA.js'
+import { initDashboard } from "./dashboard.js"
+import { initHomePage} from "./homepage.js"
+import { CP_Unload, initGame } from "./BattleshipGame.js"
+import { initGamePong, unLoadGamePong } from "./pongGameRemote.js"
+import { initTournamentsCreation } from "./tournaments/tournamentsCreation.js"
+import { initTournamentsJoinPage } from "./tournaments/tournamentsJoinPage.js"
+import { initTournaments } from "./tournaments/tournament.js"
 
 export function navto(urlpath)
 {
-	history.pushState(null, null, urlpath);
-	router([].slice.call(arguments, 1));
+	history.pushState(null, null, urlpath)
+	router([].slice.call(arguments, 1))
 }
 
 const navigateTo = url =>
 {
-	history.pushState(null, null, url);
-	router(null);
+	history.pushState(null, null, url)
+	router(null)
 }
 
 
@@ -43,58 +43,58 @@ function getRoute(RoutePath)
 		{ path: "/tournaments/Play", init: initTournaments, unload: null, title:"Tournament", LogStatus: 1},
 		{ path: "/authApp/login", init: initLoggin, unload: null, title:"Login", LogStatus: 0},
 		{ path: "/authApp/register", init: initRegister, unload: null, title:"Register", LogStatus: 0},
-	];
+	]
 
 	const Potentialroutes = routes.map(route =>
 		{
 			return {
 				route: route,
 				isMatch: RoutePath === (document.location.origin + route.path)
-			};
-		});
-	let match = Potentialroutes.find(route => route.isMatch);
-	return match;
+			}
+		})
+	let match = Potentialroutes.find(route => route.isMatch)
+	return match
 }
 
 // async function OnLogChange()
 // {
 // 	var logStatus = await checkConnexion()
 // 	document.querySelectorAll('.nav__link').forEach(function(button) {
-// 		let match = getRoute(button.href);
+// 		let match = getRoute(button.href)
 // 		if (match == null || (match.route.LogStatus == 1 && logStatus == false) || match.route.LogStatus == 0 && logStatus == true)
-// 			button.style.display = "none";
+// 			button.style.display = "none"
 // 		else
-// 			button.style.display = "block";
-// 	});
+// 			button.style.display = "block"
+// 	})
 // }
 //
 let Prev_match = undefined
 
 const router = async (arg) =>
 {
-	let match = getRoute(document.location.origin + location.pathname);
+	let match = getRoute(document.location.origin + location.pathname)
 	/* define 404 error page */
 	if (!match)
 	{
-		match = getRoute(document.location.origin + "/404");
+		match = getRoute(document.location.origin + "/404")
 	}
 	else if (match.route.LogStatus == 1 && await checkConnexion() == false)
 	{
-		match = getRoute(document.location.origin + "/needlog");
+		match = getRoute(document.location.origin + "/needlog")
 	}
 	else if (match.route.LogStatus == 0 && await checkConnexion() == true)
-		match = getRoute(document.location.origin + "/");
+		match = getRoute(document.location.origin + "/")
 	var actualRoute
 	if (match.route.path == "/")
-		actualRoute = match.route.path + "homepage/?valid=True";
+		actualRoute = match.route.path + "homepage/?valid=True"
 	else
-		actualRoute = match.route.path + "/?valid=True";
+		actualRoute = match.route.path + "/?valid=True"
 	if (Prev_match != undefined && Prev_match.route.unload != null)
 		Prev_match.route.unload()
 	fetch(actualRoute)
 	.then(Response => {
 		document.title = match.route.title
-		return Response.text();
+		return Response.text()
 	})
 	.then(html => {
 		document.querySelector("#app").innerHTML = html
@@ -103,13 +103,13 @@ const router = async (arg) =>
 	{
 		if (match.route.init != null)
 			match.route.init(arg)
-		Prev_match = match;
-		OnLogChange();
+		Prev_match = match
+		// OnLogChange()
 	})
-};
+}
 
 
-window.addEventListener("popstate", router);
+window.addEventListener("popstate", router)
 
 document.addEventListener("DOMContentLoaded", () =>
 {
@@ -117,21 +117,23 @@ document.addEventListener("DOMContentLoaded", () =>
 	{
 		if (e.target.matches("[data-link]"))
 		{
-			e.preventDefault();
-			navigateTo(e.target.href);
+			e.preventDefault()
+			navigateTo(e.target.href)
 		}
-	});
-	router();
-});
+	})
+	router()
+})
 
-// document.querySelector("button[name='logout']").addEventListener("click", logout);
+// document.querySelector("button[name='logout']").addEventListener("click", logout)
 
-const menuBtn = document.querySelector(".menu_btn");
-const dropDownMenu = document.querySelector(".dropdown_menu");
+const menuBtn = document.querySelector(".menu_btn")
+const dropDownMenu = document.querySelector(".dropdown_menu")
+console.log(menuBtn)
+console.log(dropDownMenu)
 
 menuBtn.addEventListener("click", () => {
-  dropDownMenu.classList.toggle('open');
-  const isOpen = dropDownMenu.classList.contains('open');
+  dropDownMenu.classList.toggle('open')
+  const isOpen = dropDownMenu.classList.contains('open')
 
  menuBtn.src = isOpen ? '../static/assets/logo/cross.png' : '../static/assets/logo/hamburger.png';
 });
