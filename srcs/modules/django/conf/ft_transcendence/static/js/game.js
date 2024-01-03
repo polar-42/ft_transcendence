@@ -103,6 +103,9 @@ function OnMessage(e)
 
 function RP_GameStop(message, id)
 {
+	if (curInterval != undefined)
+		clearInterval(curInterval)
+	curInterval = undefined
 	if (id == -1)
 	{
 		canvas.style.display = 'none'
@@ -118,20 +121,11 @@ function RP_GameStop(message, id)
 	}
 }
 
-function RP_EnemyGiveUp(player, gameStatus)
-{
-	canvas.style.display = 'none'
-	var txtNode = undefined
-	if (gameStatus < 2)
-		txtNode = document.createTextNode("Game canceled! " + player + " disconnected during boat placement.")
-	else
-		txtNode = document.createTextNode("You win by forfeit! " + player + " disconnected during game.")
-	canvas.parentElement.appendChild(txtNode)
-	battleshipSocket = null
-}
-
 function RP_Loose(other, otherBoat)
 {
+	if (curInterval != undefined)
+		clearInterval(curInterval)
+	curInterval = undefined
 	canvas.style.display = 'none'
 	const txtNode = document.createTextNode("You loose! you destroyed only " + otherBoat + " " + other + " boats.")
 	canvas.parentElement.appendChild(txtNode)
@@ -140,6 +134,9 @@ function RP_Loose(other, otherBoat)
 
 function RP_Win(other, userBoat, otherBoat)
 {
+	if (curInterval != undefined)
+		clearInterval(curInterval)
+	curInterval = undefined
 	canvas.style.display = 'none'
 	const txtNode = document.createTextNode("You win! you destroyed the " + otherBoat + " " + other + " boats when he detroyed only " + userBoat + " of yours")
 	canvas.parentElement.appendChild(txtNode)
@@ -606,7 +603,7 @@ function SP_mouseClick(event)
 
 function SP_Load()
 {
-	setInterval(SP_Timer, 1000)
+	curInterval = setInterval(SP_Timer, 1000)
 	BoatList = [
 		// { name : 'Carrier', x : 700, y : 100, size : 5, status : true},
 		// { name : 'BattleShip', x : 700, y : 200, size : 4, status : true},
