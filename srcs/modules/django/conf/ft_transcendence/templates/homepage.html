@@ -22,56 +22,36 @@
   </div>
 </section>
 <section class="games">
-    <h1>Play traditional games brought up to date</h1>
-    <div class="pong_pres">
+  <h1>Play traditional games brought up to date</h1>
+  <div class="pong_pres game_wrapper">
+    <div>
       <h2>Pong</h2>
       <p>
-        Live the experience of one of the deans of the video games with our Pong 
+      Live the experience of one of the deans of the video games with our Pong 
       </p>
-      <img />
     </div>
-    <div class="battleship_pres">
+    <img src="../static/assets/pictures/pong_pic.png" alt="Pong game illustration" />
+  </div>
+  <div class="battleship_pres game_wrapper">
+    <img src="../static/assets/pictures/battle_pic.png" alt="Battleship game illustration"  />
+    <div>
       <h2>Battleship</h2>
       <p>
-         Rediscover this traditional board game online
+      Rediscover this traditional board game online
       </p>
-      <img />
-    </div>
-    <div class="tournament_pres">
-      <h2>Tournaments</h2>
-      <p>
-        Take part in thrilling competition with your friend
-      </p>
-      <img />
-    </div>
-</section>
-<section class="about">
-  <div class="bio_wrapper">
-    <div class="bio">
-        <img src="../static/assets/studs/fle-tolg.jpg" alt="Felix Le Tolguenec picture">
-        <p>Felix Le Tolguenec</p>
-        <ul>
-          <li><a><img src="../static/assets/logo/github.png" alt="Link to Github page"></a></li>
-          <li><a><img src="../static/assets/logo/linkedin.png" alt="Link to Linkedin page"></a></li>
-        </ul>
-    </div>
-    <div class="bio">
-        <p>Gillian Pasquette</p>
-        <img src="../static/assets/studs/gpasquet.jpg" alt="Gillian Pasquette picture">
-        <ul>
-          <li><a href="https://github.com/GreenPG"><img src="../static/assets/logo/github.png" alt="Link to Github page"></a></li>
-          <li><a href="https://www.linkedin.com/in/gillian-pasquette/"><img src="../static/assets/logo/linkedin.png" alt="Link to Linkedin page"></a></li>
-        </ul>
-    </div>
-    <div class="bio">
-        <img src="../static/assets/studs/mjuin.jpg" alt="Mickaël Juin picture" />
-        <p>Mickaël Juin</p>
-        <ul>
-          <li><a><img src="../static/assets/logo/github.png" alt="Link to Github page" /></a></li>
-          <li><a><img src="../static/assets/logo/linkedin.png" alt="Link to Linkedin page" /></a></li>
-        </ul>
     </div>
   </div>
+  <div class="tournament_pres game_wrapper">
+    <div>
+      <h2>Tournaments</h2>
+      <p>
+      Take part in thrilling competition with your friend
+      </p>
+    </div>
+    <img />
+  </div>
+</section>
+<section class="about">
   <div class="presentation">
     <p>
     This project was made as part of the <a href="https://42angouleme.fr/">Angouleme 42 School</a>.</p>
@@ -82,6 +62,32 @@
     It was developped using <strong>HTML</strong>, <strong>CSS</strong> and vanilla <strong>JS</strong> for the front
     end, and <strong>Django</strong> and <strong>PostgreSQL</strong> for the backend.
     </p>
+  </div>
+  <div class="bio_wrapper">
+    <div class="bio">
+      <img src="../static/assets/pictures/studs/fle-tolg.jpg" alt="Felix Le Tolguenec picture">
+      <p>Felix Le Tolguenec</p>
+      <ul>
+        <li><a href="https://github.com/polar-42"><img src="../static/assets/logo/github.png" alt="Link to Github page"></a></li>
+        <li><a><img src="../static/assets/logo/linkedin.png" alt="Link to Linkedin page"></a></li>
+      </ul>
+    </div>
+    <div class="bio">
+      <img src="../static/assets/pictures/studs/gpasquet.jpg" alt="Gillian Pasquette picture">
+      <p>Gillian Pasquette</p>
+      <ul>
+        <li><a href="https://github.com/GreenPG"><img src="../static/assets/logo/github.png" alt="Link to Github page"></a></li>
+        <li><a href="https://www.linkedin.com/in/gillian-pasquette/"><img src="../static/assets/logo/linkedin.png" alt="Link to Linkedin page"></a></li>
+      </ul>
+    </div>
+    <div class="bio">
+      <img src="../static/assets/pictures/studs/mjuin.jpg" alt="Mickaël Juin picture" />
+      <p>Mickaël Juin</p>
+      <ul>
+        <li><a href="https://github.com/m-juin"><img src="../static/assets/logo/github.png" alt="Link to Github page" /></a></li>
+        <li><a><img src="../static/assets/logo/linkedin.png" alt="Link to Linkedin page" /></a></li>
+      </ul>
+    </div>
   </div>
 </section>
 {% endblock %} 
