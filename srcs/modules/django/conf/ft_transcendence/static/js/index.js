@@ -152,7 +152,7 @@ for (let button of profileButton) {
     if (logStatus == true) {
       navto("/dashboard");
     } else {
-      navto("/authApp/register");
+      navto("/authApp/login");
     }
   })
 }
