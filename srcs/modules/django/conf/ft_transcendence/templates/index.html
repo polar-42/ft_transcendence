@@ -14,10 +14,18 @@
       <a href="/dashboard" class="nav__link" data-link>Dashboard</a>
       <a href="/battleship/matchmake" class="nav__link" data-link>Battleship</a>
       <a href="/pongGame/Home" class="nav__link" data-link>Pong Game</a>
-      <div id="nav_login">
-        <img src="../static/assets/logo/user.png">
-        <img src="../static/assets/logo/blue_user.png">
-        <a href="/authApp/login" class="nav__link" data-link>Log in</a>
+      <div class="profile_dropdown">
+        <div class="profile_button">
+          <img src="../static/assets/logo/user.png">
+          <img src="../static/assets/logo/blue_user.png">
+          <a href="/authApp/login" class="nav__link" data-link>Log in</a>
+          <img src="../static/assets/logo/angle_down.png">
+          <img src="../static/assets/logo/blue_angle_down.png">
+        </div>
+        <div class="profile_menu">
+          <li><a href="" class="nav__link" data-link>Settings</a></li>
+          <li><button name="logout">Log out</button><li>
+        </div>
       </div>
     </nav>
     <img src="../static/assets/logo/hamburger.png" alt="Navigation Menu" class="menu_btn">
@@ -26,10 +34,10 @@
       <li><a href="/battleship/matchmake" class="menu_link nav__link" data-link>Battleship</a></li>
       <li><a href="/pongGame/Home" class="menu_link nav__link" data-link>Pong Game</a></li>
       <li><div id="nav_login">
-        <img src="../static/assets/logo/user.png">
-        <img src="../static/assets/logo/blue_user.png">
-        <a href="/authApp/login" class="nav__link menu_link" data-link>Log in</a>
-      </div></li>
+          <img src="../static/assets/logo/user.png">
+          <img src="../static/assets/logo/blue_user.png">
+          <a href="/authApp/login" class="nav__link menu_link" data-link>Log in</a>
+        </div></li>
     </div>
   </header>
   <body>
