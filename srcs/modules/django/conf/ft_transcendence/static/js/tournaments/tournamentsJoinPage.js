@@ -12,33 +12,33 @@ export async function initTournamentsJoinPage()
 	{
 		if (!Response.ok)
 		{
-			throw new Error('Network response was not okay');
+			throw new Error('Network response was not okay')
 		}
-		return Response.text();
+		return Response.text()
 	})
 	.then(data =>
 	{
-		document.getElementById("listOfTournaments").innerHTML = data;
+		document.getElementById("listOfTournaments").innerHTML = data
 	})
 	.catch(error =>
 	{
-		console.error('Error:', error);
+		console.error('Error:', error)
 	})
 
-	var buttons = document.querySelectorAll('.joinGame_BTN');
+	var buttons = document.querySelectorAll('.joinGame_BTN')
 	buttons.forEach(element => {
-		element.addEventListener('click', function() {joinTournaments(element.id);})
-	});
+		element.addEventListener('click', function() {joinTournaments(element.id)})
+	})
 }
 
 function joinTournaments(tournamentsId)
 {
 
-	const crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+	const crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
 
-	var headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-	headers.append('X-CSRFToken', crsf_token);
+	var headers = new Headers()
+    headers.append('Content-Type', 'application/json')
+	headers.append('X-CSRFToken', crsf_token)
 
 	var data = {
 		'tournamentsId': tournamentsId,
@@ -54,32 +54,32 @@ function joinTournaments(tournamentsId)
 	{
 		if (!Response.ok)
 		{
-			throw new Error('Network response was not okay');
+			throw new Error('Network response was not okay')
 		}
-		return Response.json();
+		return Response.json()
 	})
 	.then(data =>
 	{
 		if (data.error != undefined)
 		{
-			console.log('Error:', data.error);
+			console.log('Error:', data.error)
 			if (data.canJoin == true)
 			{
-				navto("Play", tournamentsId);
-				return;
+				navto("Play", tournamentsId)
+				return
 			}
 			else
 			{
-				navto("");
-				return;
+				navto("")
+				return
 			}
 		}
 		navto("Play", tournamentsId)
-		return;
+		return
 
 	})
 	.catch(error =>
 	{
-		console.error('Error:', error);
+		console.error('Error:', error)
 	})
 }

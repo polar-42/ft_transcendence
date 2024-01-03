@@ -1,4 +1,4 @@
-import { navto } from "./index.js";
+import { navto } from "./index.js"
 
 export function initMatchmaking()
 {
@@ -26,7 +26,7 @@ function UpdateButtonJoin()
 
 function UpdateButtonLeave()
 {
-	const btn = document.getElementsByClassName("matchmake_BTN")[0];
+	const btn = document.getElementsByClassName("matchmake_BTN")[0]
 	if (btn != null)
 	{
 		btn.innerHTML = 'Join matchmaking'
