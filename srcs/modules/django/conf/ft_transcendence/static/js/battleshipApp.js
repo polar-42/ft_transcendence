@@ -1,4 +1,4 @@
-import { navto } from "./index.js";
+import { navto } from "./index.js"
 
 export function initMatchmaking()
 {
@@ -11,7 +11,7 @@ function JoinMatchmaking()
 {
 	if(matchmakingSocket != null)
 		return
-	matchmakingSocket = new WebSocket("ws://" + window.location.host + "/socketApp/matchmaking/")
+	matchmakingSocket = new WebSocket("ws://" + window.location.host + "/battleshipApp/Matchmaking/")
 	matchmakingSocket.onopen = UpdateButtonJoin
 	matchmakingSocket.onclose = UpdateButtonLeave
 	matchmakingSocket.onmessage = e => OnMessage(e)
@@ -26,7 +26,7 @@ function UpdateButtonJoin()
 
 function UpdateButtonLeave()
 {
-	const btn = document.getElementsByClassName("matchmake_BTN")[0];
+	const btn = document.getElementsByClassName("matchmake_BTN")[0]
 	if (btn != null)
 	{
 		btn.innerHTML = 'Join matchmaking'

@@ -9,5 +9,5 @@ urlpatterns = [
 	path('Join/', views.view_JoinPage),
 	path('get_tournaments_html/', views.get_tournaments_html),
 	path('join_tournaments/', views.join_tournaments),
-	path('tournament/', views.Tournament_view),
+	path('Play/', views.Tournament_view),
 ]

@@ -1,7 +1,5 @@
-import asyncio
 import json
 from channels.generic.websocket import WebsocketConsumer
-from channels.layers import get_channel_layer
 from . import BattleshipMatchmaking
 from asgiref.sync import async_to_sync
 
@@ -22,7 +20,6 @@ class socket(WebsocketConsumer):
 			Matchmake.channelName,
 			self.channel_name
 		)
-		# print(f"Utilisateur connecté: {self.scope['user']}")
 
 
 	def disconnect(self, close_code):
@@ -34,7 +31,6 @@ class socket(WebsocketConsumer):
 
 	def CreateGameMessage(self, event):
 		if (self.user.id == event['user1'] or self.user.id == event['user2']):
-			print ("Send message to " + self.user.username)
 			(self.send)(text_data=json.dumps({
 				'gameId': event['gameId']
 			}))
