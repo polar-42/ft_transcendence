@@ -1,5 +1,6 @@
 .container {
-  max-width: 750px;
+  max-width: 700px;
+  height: 300px;
   margin:
       80px    
       calc((100vw - 500px) / 2)
@@ -26,7 +27,7 @@ form {
 }
 
 form .input-box {
-  margin: 20px 0 12px 0;
+  margin: 20px 0 20px 0;
   width: calc(100% / 2 - 20px);
 }
 
@@ -43,7 +44,7 @@ form .input-box input {
   border: 1px solid #ccc;
   border-bottom-width: 2px;
   padding-left: 15px;
-  font-size: 18px;
+  font-size: 20px;
   transition: all .2s;
 }
 
@@ -54,7 +55,7 @@ form .input-box input:focus {
 .submit {
  display: flex;
  flex-flow: column;
- justify-content: space-around;
+ justify-content: space-between;
  align-items: center;
 }
 
@@ -68,7 +69,8 @@ form .input-box input:focus {
   font-size: 1.3em;
   font-weight: 900;
   padding: 5px 10px 5px 10px;
-  border: 1px solid  var(--main-bg-color);
+  margin-bottom: 20px;
+  border: 1px solid var(--main-bg-color);
   border-radius: 5px;
   transition: all .3s;
 }
@@ -78,12 +80,10 @@ form .input-box input:focus {
       linear-gradient(135deg, rgba(0, 155, 217, 0.1), rgba(0, 155, 217, 0.4)),
       white;
   color: var(--main-bg-color);
-  /* border: 1px solid var(--main-bg-color); */
   cursor: pointer;
 }
 
 .submit p {
-  margin-top: 10px;
   display: block;
   height: 100%;
   text-align: center;

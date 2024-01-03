@@ -13,15 +13,23 @@
     <nav>
       <a href="/dashboard" class="nav__link" data-link>Dashboard</a>
       <a href="/battleship/matchmake" class="nav__link" data-link>Battleship</a>
-      <a href="/pongGame/Home" class="nav__link" data-link>Pong Game</a>
-      <a href="/authApp/login" class="nav__link" data-link>Log in</a>
+      <a href="/pongGame/pongMatchmaking" class="nav__link" data-link>Pong Game</a>
+      <div id="nav_login">
+        <img src="../static/assets/logo/user.png">
+        <img src="../static/assets/logo/blue_user.png">
+        <a href="/authApp/login" class="nav__link" data-link>Log in</a>
+      </div>
     </nav>
     <img src="../static/assets/logo/hamburger.png" alt="Navigation Menu" class="menu_btn">
     <div class="dropdown_menu">
-      <li><a href="/dashboard" class="nav__link" data-link>Dashboard</a></li>
-      <li><a href="/battleship/matchmake" class="nav__link" data-link>Battleship</a></li>
-      <li><a href="/pongGame/Home" class="nav__link" data-link>Pong Game</a></li>
-      <li><a href="/authApp/login" class="nav__link" data-link>Log in</a></li>
+      <li><a href="/dashboard" class="menu_link nav__link" data-link>Dashboard</a></li>
+      <li><a href="/battleship/matchmake" class="menu_link nav__link" data-link>Battleship</a></li>
+      <li><a href="/pongGame/pongMatchmaking" class="menu_link nav__link" data-link>Pong Game</a></li>
+      <li><div id="nav_login">
+        <img src="../static/assets/logo/user.png">
+        <img src="../static/assets/logo/blue_user.png">
+        <a href="/authApp/login" class="nav__link menu_link" data-link>Log in</a>
+      </div></li>
     </div>
   </header>
   <body>
@@ -29,7 +37,7 @@
     <script type="module" src="{% static '/js/index.js' %}"></script>
   </body>
   <footer>
-    <a href"/homepage/#about" class="foot_link">About</a> 
-    <a href"" class="foot_link" data-link>Contact</a> 
+    <a href="/#about" class="foot_link">About</a> 
+    <a href="" class="foot_link" data-link>Contact</a> 
   </footer>
 </html>

@@ -1,18 +1,25 @@
 <!-- authApp/login.html -->
 {% load static %}
+<link rel="stylesheet" href="{% static '/css/login.css' %}">
 <script type="module" src="{% static '/js/loading.js' %}"></script>
 <script type="module" src="{% static '/js/authApp.js' %}"></script>
 {% block content %}
-	<h1 id="messageConnexion">test</h1>
+  <section class="container">
+    <h1 id="messageConnexion">Log In</h1>
     <form>
-		{% csrf_token %}
-		<label for="Input_usr">Username:</label><br/>
-        <input type="text" id="Input_usr" required="required"><br/>
-
+      {% csrf_token %}
+      <div class="input-box">
+        <label for="Input_usr">Username:</label><br/>
+        <input type="text" required placeholder="Username" pattern="\S.*"><br/>
+      </div>
+      <div class="input-box">
         <label for="Input_pwd">Password:</label><br/>
-        <input type="password" id="Input_pwd"><br/>
-        <button class="submit_BTN">Submit</button>
+        <input type="password" required placeholder="Password" pattern="\S.*"><br/>
+      </div>
     </form>
-    {% endblock content %}
-
-<br/><br/><a href="/authApp/register" data-link>If you need to create an account.</a>
+    <div class="submit">
+      <button class="submit_BTN">Submit</button>
+      <p>Don't have an account ? <a href="/authApp/register" data-link>Join us !</a></p>
+    </div>
+  </section>
+{% endblock content %}

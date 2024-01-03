@@ -155,7 +155,7 @@ button[name="LogIn"]:hover {
 }
 
 .presentation a:hover {
-  color: var(--secondary) !important;
+  color: var(--secondary-bg-color) !important;
   text-decoration: underline;
 }
 

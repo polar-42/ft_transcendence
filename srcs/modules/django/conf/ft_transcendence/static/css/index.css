@@ -17,8 +17,8 @@ html {
 
 body {
   background: 
-      linear-gradient(to bottom, var(--main-bg-color) 50%, var(--secondary-bg-color) 100%),
-      var(--main-bg-color);
+      linear-gradient(to bottom, var(--secondary-bg-color) 13%, var(--main-bg-color) 30%, var(--main-bg-color) 83%, var(--secondary-bg-color) 100%),
+      var(--secondary-bg-color);
   background-repeat: no-repeat;
   margin: 0px;
 }
@@ -49,11 +49,6 @@ header {
       var(--secondary-bg-color);
 }
 
-.bars {
-  display: none;
-}
-
-
 .home_btn {
   font-family: rajdhanibold;
   font-size: 32px;
@@ -65,14 +60,21 @@ header {
   cursor: pointer;
 }
 
+nav {
+  width: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-gap: 20px;
+  align-items: center;
+  justify-items: center;
+}
+
 nav a {
   position: relative;
-  display: inline-block;
   margin-left: 40px;
   font-size: 22px;
   font-weight: 700;
-  height: 100%;
-  color: white;
+  height: auto;
 }
 
 header nav a::before {
@@ -95,14 +97,65 @@ header a:visited {
   color: white;
 }
 
+#nav_login {
+  background: var(--main-color);
+  border-radius: 20px;
+  border: 2px solid var(--main-color);
+  width: auto;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+#nav_login img {
+  width: auto;
+  height: 1em;
+  margin: 5px;
+  transition: 0.3s ease;
+}
+
+#nav_login img:nth-child(2){
+  display: none;
+} 
+
+#nav_login a {
+  margin: 5px;
+}
+
+#nav_login:hover {
+  background: var(--main-bg-color);
+  border: 2px solid var(--fourth);
+  box-shadow: 
+    2px 2px 10px var(--fourth)
+    -2px -2px 10px var(--fourth);
+}
+
+#nav_login:hover img:first-child {
+  display: none;
+}
+
+#nav_login:hover img:nth-child(2) {
+  display: block;
+}
+
+#nav_login:hover a {
+  color: var(--fourth) !important;
+}
+
+#nav_login a::before {
+  display: none;
+}
+
 footer {
-  left: 0;
   background: transparent;
+  top: 100%;
   height: auto;
   width: 100%;
+  margin-top: 3%;
+  margin-bottom: 3%;
   display: flex;
   justify-content: space-between;
-  padding: 30px 30%;
+  padding: 0 30%;
   color: white;
 }
 
@@ -128,7 +181,7 @@ footer a:hover::before {
   width: 100%;
 }
 
-.dropdown_menu{
+.dropdown_menu {
   display: none;
   flex-direction: column;
   position: absolute;
@@ -136,16 +189,19 @@ footer a:hover::before {
   top: 80px;
   width: 300px;
   height: 0;
-  background: var(--fourth);
-  border-radius: 10px;
+  background: rgba(41, 41, 41, 0.4);
+  backdrop-filter: blur(5px);
+  border-radius: 2px;
   overflow: hidden;
   transition: height .2s cubic-bezier(0.77, 0, 0.175, 1);  
 }
 
 .dropdown_menu.open {
-  height: 200px;
+  height: 310px;
 }
+
 .dropdown_menu li {
+  margin: 10px;
   padding: 0.7rem;
   display: flex;
   align-items: center;
@@ -157,14 +213,16 @@ footer a:hover::before {
 }
 
 .dropdown_menu li:hover a {
-  color: var(--secondary) !important;
+  color: var(--main-color) !important;
   text-decoration: underline;
-  font-weight: 700;
 }
 
+.dropdown_menu #nav_login a {
+  text-decoration: none;
+}
 
 @media(max-width: 1000px) {
-  nav a {
+  nav {
     display: none;
   }
   

@@ -128,8 +128,6 @@ document.addEventListener("DOMContentLoaded", () =>
 
 const menuBtn = document.querySelector(".menu_btn");
 const dropDownMenu = document.querySelector(".dropdown_menu");
-console.log(menuBtn);
-console.log(dropDownMenu);
 
 menuBtn.addEventListener("click", () => {
   dropDownMenu.classList.toggle('open');
@@ -137,3 +135,24 @@ menuBtn.addEventListener("click", () => {
 
  menuBtn.src = isOpen ? '../static/assets/logo/cross.png' : '../static/assets/logo/hamburger.png';
 });
+
+const menuLink = document.querySelectorAll(".menu_link");
+for (let link of menuLink) {
+  link.addEventListener("click", () => {
+    dropDownMenu.classList.remove('open');
+    menuBtn.src = '../static/assets/logo/hamburger.png';
+  });
+}
+
+const profileButton = document.querySelectorAll("#nav_login");
+
+for (let button of profileButton) {
+  button.addEventListener("click", async () => {
+    let logStatus = await checkConnexion();
+    if (logStatus == true) {
+      navto("/dashboard");
+    } else {
+      navto("/authApp/register");
+    }
+  })
+}
