@@ -3,6 +3,8 @@ import random
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 import asyncio
+from . import BattleshipMatch
+
 
 class MatchmakingLoop(threading.Thread):
 
@@ -22,7 +24,7 @@ class MatchmakingLoop(threading.Thread):
 
 
 class Matchmaking():
-    _MatchList = []
+    _MatchList = {}
     userList = []
     is_running = False
     channelName = "Matchmaking"
@@ -32,7 +34,6 @@ class Matchmaking():
         mythread.start()
         self.is_running = True
         self.channel_layer = get_channel_layer()
-
 
     def AddUser(self, user):
         if self.userList.__contains__(user) == False:
@@ -57,16 +58,16 @@ class Matchmaking():
                 self.matchmake.removeUser(user2)
             return
         game_id = "Game_" + str(user1.id) + "_" + str(user2.id)
-        print("Game id = " + game_id)
-        async_to_sync(self.channel_layer.group_send)(
-            self.channelName,
-            {
-                'type' : 'CreateGameMessage',
-                'user1': user1.id,
-                'user2': user2.id,
-                'gameId': game_id
-            }
-        )
+        self._MatchList[game_id] = BattleshipMatch.BattleshipMatch(game_id, user1.id, user2.id)
+        # async_to_sync(self.channel_layer.group_send)(
+            # self.channelName,
+            # {
+                # 'type' : 'CreateGameMessage',
+                # 'user1': user1.id,
+                # 'user2': user2.id,
+                # 'gameId': game_id
+            # }
+        # )
         self.RemoveUser(user1)
         self.RemoveUser(user2)
 

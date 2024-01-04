@@ -115,6 +115,7 @@ class MatchmakingLoop(threading.Thread):
 class BattleShipGameManager():
 	_MatchList = {}
 
+
 	def JoinGame(self, gameId, ChannelName, user):
 		if (gameId not in self._MatchList.keys()):
 			self._MatchList[gameId] = BattleshipMatch(gameId, ChannelName, self)
