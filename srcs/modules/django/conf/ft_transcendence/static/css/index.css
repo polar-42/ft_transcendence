@@ -114,8 +114,7 @@ header a:visited {
   transition: 0.3s ease;
 }
 
-.profile_button img:nth-child(2),
-.profile_button img:nth-child(5) {
+.profile_button img:nth-child(2) {
   display: none;
 } 
 
@@ -132,13 +131,11 @@ header a:visited {
   cursor: pointer;
 }
 
-.profile_button:hover img:nth-child(1), 
-.profile_button:hover img:nth-child(4) {
+.profile_button:hover img:nth-child(1) {
   display: none;
 }
 
-.profile_button:hover img:nth-child(2),
-.profile_button:hover img:nth-child(5) {
+.profile_button:hover img:nth-child(2) {
   display: block;
 }
 
@@ -152,7 +149,6 @@ header a:visited {
 
 .profile_menu {
   position: absolute;
-  top: 75px;
   width: 150px;
   list-style: none;
   background: var(--main-color);
@@ -160,6 +156,17 @@ header a:visited {
   box-shadow: 2px 2px 8px 2x var(--main-color);
   max-height: 0;
   overflow: hidden;
+  transition: max-height .2s cubic-bezier(0.77, 0, 0.175, 1);  
+}
+
+nav .profile_menu {
+  top: 75px;
+}
+
+.dropdown_menu .profile_menu {
+  top: 285px;
+  left: 60px;
+  width: 180px;
 }
 
 .profile_menu.active {
@@ -177,11 +184,13 @@ header a:visited {
   text-transform: capitalize;
 }
 
-.profile_menu li a:hover {
+.profile_menu li a:hover,
+.dropdown_menu .profile_menu li a:hover {
   color: var(--main-bg-color) !important;
 }
 
-.profile_menu li a::before {
+.profile_menu li a::before,
+.dropdown_menu .profile_menu li a::before {
   background: var(--main-bg-color);
 }
 
@@ -256,6 +265,7 @@ footer a:hover::before {
 
 .dropdown_menu.open {
   height: 310px;
+  overflow: visible;
 }
 
 .dropdown_menu li {
@@ -291,6 +301,11 @@ footer a:hover::before {
 
   .dropdown_menu {
     display: block;
+  }
+
+  .profile_button {
+    margin-left: 20%;
+    margin-right: 20%;
   }
 } 
 

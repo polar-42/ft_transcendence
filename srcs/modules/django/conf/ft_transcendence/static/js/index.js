@@ -145,18 +145,18 @@ for (let link of menuLink) {
 }
 
 const profileButton = document.querySelectorAll(".profile_button");
-const profileDropDown  = document.querySelector(".profile_menu");
+const profileDropDown  = document.querySelectorAll(".profile_menu");
 
 for (let button of profileButton) {
-
-  button.addEventListener("click", async () => {
-    let logStatus = await checkConnexion();
-    if (logStatus == true) {
-      console.log("here");
-      // navto("/dashboard");
-      profileDropDown.classList.toggle("active");
-    } else {
-      navto("/authApp/login");
-    }
-  })
+  for (let dropDownMenu of profileDropDown) {
+    button.addEventListener("click", async () => {
+      let logStatus = await checkConnexion();
+      if (logStatus == true) {
+        console.log("here");
+        dropDownMenu.classList.toggle("active");
+      } else {
+        navto("/authApp/login");
+      }
+    })
+  }
 }

@@ -19,8 +19,8 @@
           <img src="../static/assets/logo/user.png">
           <img src="../static/assets/logo/blue_user.png">
           <a href="/authApp/login" class="nav__link" data-link>Log in</a>
-          <img src="../static/assets/logo/angle_down.png">
-          <img src="../static/assets/logo/blue_angle_down.png">
+          <!-- <img class="angle" src="../static/assets/logo/angle_down.png"> -->
+          <!-- <img class="angle" src="../static/assets/logo/blue_angle_down.png"> -->
         </div>
         <div class="profile_menu">
           <li><a href="" class="nav__link" data-link>Settings</a></li>
@@ -33,11 +33,19 @@
       <li><a href="/dashboard" class="menu_link nav__link" data-link>Dashboard</a></li>
       <li><a href="/battleship/matchmake" class="menu_link nav__link" data-link>Battleship</a></li>
       <li><a href="/pongGame/Home" class="menu_link nav__link" data-link>Pong Game</a></li>
-      <li><div id="nav_login">
+      <div class="profile_dropdown">
+        <div class="profile_button">
           <img src="../static/assets/logo/user.png">
           <img src="../static/assets/logo/blue_user.png">
-          <a href="/authApp/login" class="nav__link menu_link" data-link>Log in</a>
-        </div></li>
+          <a href="/authApp/login" class="nav__link" data-link>Log in</a>
+          <!-- <img class="angle" src="../static/assets/logo/angle_down.png"> -->
+          <!-- <img class="angle" src="../static/assets/logo/blue_angle_down.png"> -->
+        </div>
+        <div class="profile_menu">
+          <li><a href="" class="nav__link" data-link>Settings</a></li>
+          <li><button name="logout">Log out</button></li>
+        </div>
+      </div>
     </div>
   </header>
   <body>
