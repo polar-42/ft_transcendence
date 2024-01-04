@@ -124,7 +124,16 @@ document.addEventListener("DOMContentLoaded", () =>
 	router()
 })
 
-document.querySelector("button[name='logout']").addEventListener("click", logout)
+function clickLogout(e) {
+  let profileDropDowns = document.querySelectorAll(".profile_menu");
+  profileDropDowns.forEach((menu) => menu.classList.remove("open"));
+  logout(e);
+  navto("/");
+}
+
+document.querySelectorAll("button[name='logout']").forEach((logout) =>
+  logout.addEventListener("click", clickLogout)
+)
 
 const menuBtn = document.querySelector(".menu_btn")
 const dropDownMenu = document.querySelector(".dropdown_menu")
@@ -153,10 +162,22 @@ for (let button of profileButton) {
       let logStatus = await checkConnexion();
       if (logStatus == true) {
         console.log("here");
-        dropDownMenu.classList.toggle("active");
+        dropDownMenu.classList.toggle("open");
       } else {
         navto("/authApp/login");
       }
     })
   }
 }
+
+document.addEventListener("click", (event) => {
+  if (!dropDownMenu.contains(event.target) && !menuBtn.contains(event.target)) {
+    dropDownMenu.classList.remove('open');
+    menuBtn.src="../static/assets/logo/hamburger.png";
+  };
+  for (let menu of profileDropDown) {
+    if (!menu.contains(event.target)) {
+      menu.classList.remove("open");
+    }
+  }
+})

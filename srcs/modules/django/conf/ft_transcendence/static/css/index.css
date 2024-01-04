@@ -169,7 +169,7 @@ nav .profile_menu {
   width: 180px;
 }
 
-.profile_menu.active {
+.profile_menu.open {
   max-height: 500px; 
 }
 
