@@ -162,7 +162,7 @@ button[name="LogIn"]:hover {
 }
 
 .presentation a:hover {
-  color: var(--secondary-bg-color) !important;
+  color: var(--main-color) !important;
   text-decoration: underline;
 }
 
@@ -198,7 +198,6 @@ button[name="LogIn"]:hover {
 .bio li img {
   width: 50px;
   border-radius: 0;
-}
 
 /* Responsive Design */
 
