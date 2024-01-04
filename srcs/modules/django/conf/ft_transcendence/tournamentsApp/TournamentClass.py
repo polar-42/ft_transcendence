@@ -39,6 +39,7 @@ class TypeGame(IntEnum):
 
 class Tournament():
 	def __init__(self, id, creator, typeGame : TypeGame, numberOfPlayer : int, privateGame : bool, description : str, name: str):
+		self.status = GameState.Creation
 		self._id = id
 		self._creator = creator
 		self._typeGame = typeGame
@@ -90,6 +91,7 @@ class Tournament():
 					self.Tree[pos][pos2].State = GameState.Ended
 					self.Tree[pos][pos2].Winner = Winner
 					if (pos == len(self.Tree) - 1):
+						self.status = GameState.Ended
 						async_to_sync(self.channel_layer.group_send)(
 							self.channel_name,
 							{
@@ -190,6 +192,7 @@ class Tournament():
 			TreePos += 1
 			PlayerPos += 2
 		self.SendMatchsData(-1)
+		self.status = GameState.Playing
 		for match in self.Tree[0]:
 			self.StartMatch(match)
 

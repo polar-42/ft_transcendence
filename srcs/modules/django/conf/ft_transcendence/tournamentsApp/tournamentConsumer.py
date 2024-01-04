@@ -89,6 +89,7 @@ class TournamentSocket(WebsocketConsumer):
 			'type': 'SendWinner',
 			'Winner' : event['Winner']
 		}))
+		self.close()
 
 	def MSG_Match(self, event):
 		if (event['User'] != -1 and self.user.id != event['User']):

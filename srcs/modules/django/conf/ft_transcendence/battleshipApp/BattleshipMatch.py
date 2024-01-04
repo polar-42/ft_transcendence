@@ -6,7 +6,7 @@ import random
 from asgiref.sync import async_to_sync
 import socketApp
 import tournamentsApp.views
-
+from . import ColorPrint
 
 
 class GameState(IntEnum):
@@ -56,6 +56,7 @@ class User():
 		self.BoatList = []
 		self.sock_user = user
 		self.Name = self.sock_user.username
+		self.connected = True
 		pass
 
 	def ParseBoats(self, boatsList):
@@ -123,8 +124,9 @@ class BattleShipGameManager():
 		return self._MatchList[gameId]
 	def LeaveGame(self, gameId, user):
 		if gameId not in self._MatchList.keys():
-			return 
-		self._MatchList[gameId].StopGame(True, True, "User " + user.username + " leave the game")
+			return
+		self._MatchList[gameId].disconnectUser(user, "User " + user.username + " leave the game")
+		# self._MatchList[gameId].StopGame(True, True, "User " + user.username + " leave the game")
 
 	def CloseGame(self, gameId):
 		if gameId not in self._MatchList.keys():
@@ -147,6 +149,18 @@ class BattleshipMatch():
 		self.channelName = ChannelName 
 		self.gameId = gameId
 		self.channel_layer = get_channel_layer()
+
+	def disconnectUser(self, user, reason : str):
+		usr = self.getUser(user)
+		if (usr is None):
+			ColorPrint.prRed("Error ! User '" + usr.Name + "' Try to disconnect from Match '" + self.gameId + "' while not in.")
+			return
+		if (usr.connected == False):
+			ColorPrint.prRed("Error ! User '" + usr.Name + "' Try to disconnect from Match '" + self.gameId + "' while already disconnected.")
+			return
+		usr.connected = False
+		if (self.Gamestatus is not GameState.Ending):
+			self.StopGame(True, True, reason)
 
 	def ForceStep(self):
 		print ("ForceStep = " + str(self.Gamestatus))
@@ -206,13 +220,19 @@ class BattleshipMatch():
 		return id
 
 	def StopGame(self, user1, user2, message):
+		if (self.Gamestatus == GameState.Ending):
+			ColorPrint.prRed("Trying to stop an already enden game with reason : \"" + message + "\"")
+			return
 		self.Gamestatus = GameState.Ending
-		if user1 == True and user2 == True:
+		if (user1 == True and self.user1.connected is True) and (user2 == True and self.user2.connected is True):
 			user = -1
-		elif user1 == True:
+		elif (user1 == True and self.user1.connected is True):
 			user = user1.sock_user.id
-		elif user2 == True:
+		elif (user2 == True and self.user2.connected is True):
 			user = user2.sock_user.id
+		else:
+			return
+		ColorPrint.prGreen("Game Stopped with reason : \"" + message + "\"")
 		async_to_sync(self.channel_layer.group_send)(
 			self.channelName,
 			{

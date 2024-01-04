@@ -66,17 +66,18 @@ class socket(WebsocketConsumer):
 	def MSG_GameStop(self, event):
 		if event['user'] != -1 and event['user'] != self.user.id:
 			return
+		self.Game.disconnectUser(self.user)
+		self.channel_layer.group_discard(
+			"BattleshipGame" + self.GameId,
+			self.channel_name
+		)
 		(self.send)(text_data=json.dumps({
 			'function': "GameStop",
 			'message' : event['message'],
 			'tournamentId' : -1 if self.isTournament is False else self.GetTournamentId(),
 			'timer': -1
 		}))
-		self.channel_layer.group_discard(
-			"BattleshipGame" + self.GameId,
-			self.channel_name
-		)
-		self.Game.closeThread()
+		print("Stop for = " + self.user.username)
 		async_to_sync(self.close())
 
 	def MSG_HitResult(self, event):
