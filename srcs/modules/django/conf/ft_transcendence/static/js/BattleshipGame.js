@@ -607,9 +607,9 @@ function SP_Load()
 	]
 	SP_drawEnemyBoats()
 	SP_Draw()
-	battleshipSocket.send(JSON.stringify({
-		'function': 'LoadEnded',
-	}))
+	// battleshipSocket.send(JSON.stringify({
+	// 	'function': 'LoadEnded',
+	// }))
 }
 
 function SP_Timer()

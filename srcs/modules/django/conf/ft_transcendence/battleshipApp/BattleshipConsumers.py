@@ -3,12 +3,11 @@ from channels.generic.websocket import WebsocketConsumer
 from battleshipApp import BattleshipMatch
 from asgiref.sync import async_to_sync
 
-GameManager = BattleshipMatch.BattleShipGameManager
+from . import BattleshipMatchmaking
 
 class socket(WebsocketConsumer):
 	Game = None
 	def connect(self):
-		global GameManager
 		self.accept()
 		self.GameId = self.scope['url_route']['kwargs']['gameId']
 		self.isTournament = self.GameId.startswith("Tournament")
@@ -16,12 +15,11 @@ class socket(WebsocketConsumer):
 			"BattleshipGame" + self.GameId,
 			self.channel_name
 		)
-		print("Tournament = " + self.GetTournamentId())
 		self.user = self.scope['user']
-		self.Game =  GameManager.JoinGame(GameManager, self.GameId, "BattleshipGame" + self.GameId, self.scope['user'])
+		self.Game =  BattleshipMatchmaking.GameManager.JoinGame(BattleshipMatchmaking.GameManager, self.GameId, self.scope['user'], self)
 
 	def disconnect(self, close_code):
-		GameManager.LeaveGame(GameManager, self.GameId, self.user)
+		BattleshipMatchmaking.GameManager.LeaveGame(BattleshipMatchmaking.GameManager, self.GameId, self.user)
 		self.channel_layer.group_discard(
 			"BattleshipGame" + self.GameId,
 			self.channel_name
@@ -38,24 +36,24 @@ class socket(WebsocketConsumer):
 			case 'HitCase':
 				self.Game.RCV_HitCase(self.user, data['input'])
 
-	def MSG_initGame(self, event):
-		(self.send)(text_data=json.dumps({
-			'function': "initGame",
-			'timer': 60
-		}))
+	# def MSG_initGame(self, event):
+	# 	(self.send)(text_data=json.dumps({
+	# 		'function': "initGame",
+	# 		'timer': 60
+	# 	}))
 	
-	def MSG_StartGame(self, event):
-		(self.send)(text_data=json.dumps({
-			'function': "StartGame",
-			'timer': -1
-		}))
+	# def MSG_StartGame(self, event):
+	# 	(self.send)(text_data=json.dumps({
+	# 		'function': "StartGame",
+	# 		'timer': -1
+	# 	}))
 
-	def MSG_GiveTurn(self, event):
-		(self.send)(text_data=json.dumps({
-			'function': "StartTurn" if event['player'].sock_user.id is self.user.id else "StartEnemyTurn",
-			'playerName' : event['player'].Name,
-			'timer': 30
-		}))
+	# def MSG_GiveTurn(self, event):
+	# 	(self.send)(text_data=json.dumps({
+	# 		'function': "StartTurn" if event['player'].sock_user.id is self.user.id else "StartEnemyTurn",
+	# 		'playerName' : event['player'].Name,
+	# 		'timer': 30
+	# 	}))
 
 	def GetTournamentId(self):
 		startPos = len("Tournament")

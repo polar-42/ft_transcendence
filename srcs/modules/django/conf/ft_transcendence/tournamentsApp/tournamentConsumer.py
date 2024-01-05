@@ -106,10 +106,10 @@ class TournamentSocket(WebsocketConsumer):
 			return
 		(self.send)(text_data=json.dumps({
 			'type': 'LaunchMatch',
-			'gameType' : event['gameType'],
-			'gameId' : event['gameId'],
-			'tournamentId' : event['tournamentId']
+			# 'gameType' : event['gameType'],
+			'gameId' : event['gameId']
+			# 'tournamentId' : event['tournamentId']
 			# 'size_tournaments': self.sizeTournaments,
-
+# 
 		}))
 

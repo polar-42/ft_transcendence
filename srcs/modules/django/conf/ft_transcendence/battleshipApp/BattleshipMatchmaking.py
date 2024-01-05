@@ -5,6 +5,7 @@ from asgiref.sync import async_to_sync
 import asyncio
 from . import BattleshipMatch
 
+GameManager = BattleshipMatch.BattleShipGameManager
 
 class MatchmakingLoop(threading.Thread):
 
@@ -21,10 +22,7 @@ class MatchmakingLoop(threading.Thread):
             self.queueProcess = False
             time.sleep(5)
 
-
-
 class Matchmaking():
-    _MatchList = {}
     userList = []
     is_running = False
     channelName = "Matchmaking"
@@ -51,6 +49,7 @@ class Matchmaking():
         return self.userList
 
     def createGame(self, user1, user2):
+        global GameManager
         if (user1.is_authenticated == False or user2.is_authenticated == False):
             if user1.is_authenticated == False:
                 self.matchmake.removeUser(user1)
@@ -58,16 +57,16 @@ class Matchmaking():
                 self.matchmake.removeUser(user2)
             return
         game_id = "Game_" + str(user1.id) + "_" + str(user2.id)
-        self._MatchList[game_id] = BattleshipMatch.BattleshipMatch(game_id, user1.id, user2.id)
-        # async_to_sync(self.channel_layer.group_send)(
-            # self.channelName,
-            # {
-                # 'type' : 'CreateGameMessage',
-                # 'user1': user1.id,
-                # 'user2': user2.id,
-                # 'gameId': game_id
-            # }
-        # )
+        GameManager.CreateGame(GameManager, user1, user2, game_id, BattleshipMatch.GameType.Normal, None)
+        async_to_sync(self.channel_layer.group_send)(
+            self.channelName,
+            {
+                'type' : 'JoinGame',
+                'user1': user1.id,
+                'user2': user2.id,
+                'gameId': game_id
+            }
+        )
         self.RemoveUser(user1)
         self.RemoveUser(user2)
 

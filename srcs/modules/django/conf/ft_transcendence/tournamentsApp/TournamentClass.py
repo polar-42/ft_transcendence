@@ -4,6 +4,7 @@ from channels.layers import get_channel_layer
 import random
 from asgiref.sync import async_to_sync
 import math
+from battleshipApp import BattleshipMatchmaking, BattleshipMatch
 
 class GameState(IntEnum):
 	Creation = -1
@@ -168,16 +169,17 @@ class Tournament():
 	def StartMatch(self, Match):
 		if (Match.State is not GameState.Initialisation):
 			return
+		BattleshipMatchmaking.GameManager.CreateGame(BattleshipMatchmaking.GameManager, Match.User1, Match.User2, Match.id, BattleshipMatch.GameType.Tournament, self._id)
 		print("Tournament Match Users are " + Match.User1.username + ", " + Match.User2.username)
 		async_to_sync(self.channel_layer.group_send)(
 			self.channel_name,
 			{
 				'type': 'MSG_LaunchGame',
-				'gameType' : self._typeGame,
+				# 'gameType' : self._typeGame,
 				'gameId': Match.id,
 				'Player1': Match.User1.id,
 				'Player2': Match.User2.id,
-				'tournamentId' : self._id
+				# 'tournamentId' : self._id
 		})
 		Match.State = GameState.Playing
 
