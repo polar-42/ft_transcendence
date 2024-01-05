@@ -2,141 +2,177 @@ import { navto } from "./index.js"
 
 export function initLoggin()
 {
-	document.getElementsByClassName("submit_BTN")[0].addEventListener("click", connect)
+  const submitBtn =	document.getElementsByClassName("submit_BTN")[0];
+  submitBtn.addEventListener("click", connect)
+  let inputArray = document.querySelectorAll("input");
+  inputArray.forEach((input) => {
+    input.addEventListener("keypress", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        submitBtn.click();
+      }
+    })
+  })
 }
 
 export function initRegister()
 {
-	document.getElementsByClassName("submit_BTN")[0].addEventListener("click", register)
+  let submitBtn = document.getElementsByClassName("submit_BTN")[0];
+  submitBtn.addEventListener("click", register)
+  let inputArray = document.querySelectorAll("input");
+  inputArray.forEach((input) => {
+    input.addEventListener("keypress", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        submitBtn.click();
+      }
+    })
+  })
+
+}
+
+function sleep(ms) {
+  let sleepSetTimeout
+
+  clearInterval(sleepSetTimeout)
+  return new Promise(resolve => sleepSetTimeout = setTimeout(resolve, ms))
 }
 
 export async function logout(event)
 {
-	event.preventDefault()
-	const Response = await fetch(document.location.origin + '/authApp/logout/',
-	{
-		method: 'GET'
-	})
-	if (Response.ok)
-	{
-		var vari = await Response.json()
-		if(vari.success == false)
-			return false
-		return true
-	}
-	else
-		return false
+  event.preventDefault()
+  const Response = await fetch(document.location.origin + '/authApp/logout/',
+    {
+      method: 'GET'
+    })
+  if (Response.ok)
+  {
+    var vari = await Response.json()
+    if(vari.success == false)
+      return false
+    return true
+  }
+  else
+    return false
 }
 
 export async function checkConnexion()
 {
-	const Response = await fetch(document.location.origin + '/authApp/check_connexion/',
-	{
-		method: 'GET'
-	})
-	if (Response.ok)
-	{
-		var vari = await Response.json()
-		if(vari.connexionStatus == false)
-			return false
-		return true
-	}
-	else
-		return false
+  const Response = await fetch(document.location.origin + '/authApp/check_connexion/',
+    {
+      method: 'GET'
+    })
+  if (Response.ok)
+  {
+    var vari = await Response.json()
+    if(vari.connexionStatus == false)
+      return false
+    return true
+  }
+  else
+    return false
 }
 
 function connect(event)
 {
-	event.preventDefault()
-	var username = document.getElementById('Input_usr').value
-	var password = document.getElementById('Input_pwd').value
-	const data = { username: username, password: password }
+  event.preventDefault()
+  var username = document.getElementById('Input_usr').value
+  var password = document.getElementById('Input_pwd').value
+  const data = { username: username, password: password }
+  let feedback = document.querySelector('.feedback')
 
-	const crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
+  const crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
 
-	var headers = new Headers()
-    headers.append('Content-Type', 'application/json')
-	headers.append('X-CSRFToken', crsf_token)
-	fetch(document.location.origin + "/authApp/login/",
-	{
-		method: 'POST',
-		headers: headers,
-		body: JSON.stringify(data),
-	})
-	.then(Response =>
-	{
-		if (!Response.ok)
-		{
-			throw new Error('Network response was not okay')
-		}
-		return Response.json()
-	})
-	.then(data =>
-	{
-		if (data.message)
-		{
-			document.getElementById('messageConnexion').innerHTML = data.message
-		}
-		else
-		{
-			document.getElementById('messageConnexion').innerHTML = data.error
-		}
-	})
-	.catch(error =>
-	{
-		console.error('Error:', error)
-		document.getElementById('messageConnexion').innerHTML = data.message
-	})
+  var headers = new Headers()
+  headers.append('Content-Type', 'application/json')
+  headers.append('X-CSRFToken', crsf_token)
+  fetch(document.location.origin + "/authApp/login/",
+    {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(data),
+    })
+    .then(Response =>
+      {
+        if (!Response.ok)
+        {
+          throw new Error('Network response was not okay')
+        }
+        return Response.json()
+      })
+      .then(data =>
+        {
+          if (data.message)
+          {
+            feedback.style.color = 'green'
+            feedback.innerHTML = data.message
+            sleep(3000)
+            navto("/")
+          }
+          else
+          {
+            feedback.style.color = 'red'
+            feedback.innerHTML = data.error
+          }
+        })
+      .catch(error =>
+        {
+          console.error('Error:', error)
+          feedback.innerHTML = data.message
+        })
 }
 
 function register(event)
 {
-	event.preventDefault()
-	const data = 
-	{ 
-		username: document.getElementById('Input_usr').value,
-		email: document.getElementById('Input_mail').value,
-		password: document.getElementById('Input_pwd').value,
-		passwordConfirmation: document.getElementById('Input_confirm_pwd').value
-	}
+  event.preventDefault()
+  const data = 
+    { 
+      username: document.getElementById('Input_usr').value,
+      email: document.getElementById('Input_mail').value,
+      password: document.getElementById('Input_pwd').value,
+      passwordConfirmation: document.getElementById('Input_confirm_pwd').value
+    }
   console.log(data);
 
-	var crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
+  var crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
+  let feedback = document.querySelector('.feedback')
+  var headers = new Headers()
+  headers.append('Content-Type', 'application/json')
+  headers.append('X-CSRFToken', crsf_token)
 
-    var headers = new Headers()
-    headers.append('Content-Type', 'application/json')
-    headers.append('X-CSRFToken', crsf_token)
-
-	fetch(document.location.origin + "/authApp/register/",
-	{
-		method: 'POST',
-		headers: headers,
-		body: JSON.stringify(data),
-	})
-	.then(Response =>
-	{
-		if (!Response.ok)
-		{
-			throw new Error('Network response was not okay')
-		}
-		return Response.json()
-	})
-	.then(data =>
-	{
-		navto("/")
-		if (data.message)
-		{
-			document.getElementById('register').innerHTML = data.message
-		}
-		else
-		{
-			document.getElementById('register').innerHTML = data.error
-		}
-	})
-	.catch(error =>
-	{
-		console.error('Error:', error)
-		document.getElementById('register').innerHTML = data.message
-		return
-	})
+  fetch(document.location.origin + "/authApp/register/",
+    {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(data),
+    })
+    .then(Response =>
+      {
+        if (!Response.ok)
+        {
+          throw new Error('Network response was not okay')
+        }
+        return Response.json()
+      })
+      .then(data =>
+        {
+          if (data.message)
+          {
+            feedback.style.color = "green"
+            feedback.innerHTML = data.message
+            sleep(3000)
+            navto("/")
+          }
+          else
+          {
+            feedback.style.color = "red"
+            feedback.innerHTML = data.error
+          }
+        })
+      .catch(error =>
+        {
+          console.error('Error:', error)
+          feedback.innerHTML = data.message
+          return
+        })
 }

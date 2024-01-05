@@ -101,7 +101,7 @@ header a:visited {
   background: var(--main-color);
   border-radius: 20px;
   border: 2px solid var(--main-color);
-  width: auto;
+  width: 150px;
   display: flex;
   justify-content: space-around;
   align-items: center;
