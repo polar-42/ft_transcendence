@@ -99,6 +99,7 @@ function register(event)
 		password: document.getElementById('Input_pwd').value,
 		passwordConfirmation: document.getElementById('Input_confirm_pwd').value
 	}
+  console.log(data);
 
 	var crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
 

@@ -124,12 +124,10 @@ document.addEventListener("DOMContentLoaded", () =>
 	router()
 })
 
-// document.querySelector("button[name='logout']").addEventListener("click", logout)
+document.querySelector("button[name='logout']").addEventListener("click", logout)
 
 const menuBtn = document.querySelector(".menu_btn")
 const dropDownMenu = document.querySelector(".dropdown_menu")
-console.log(menuBtn)
-console.log(dropDownMenu)
 
 menuBtn.addEventListener("click", () => {
   dropDownMenu.classList.toggle('open')
@@ -146,15 +144,19 @@ for (let link of menuLink) {
   });
 }
 
-const profileButton = document.querySelectorAll("#nav_login");
+const profileButton = document.querySelectorAll(".profile_button");
+const profileDropDown  = document.querySelector(".profile_menu");
 
 for (let button of profileButton) {
+
   button.addEventListener("click", async () => {
     let logStatus = await checkConnexion();
     if (logStatus == true) {
-      navto("/dashboard");
+      console.log("here");
+      // navto("/dashboard");
+      profileDropDown.classList.toggle("active");
     } else {
-      navto("/authApp/register");
+      navto("/authApp/login");
     }
   })
 }

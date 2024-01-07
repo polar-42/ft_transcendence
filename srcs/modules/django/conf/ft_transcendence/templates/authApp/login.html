@@ -10,11 +10,11 @@
       {% csrf_token %}
       <div class="input-box">
         <label for="Input_usr">Username:</label><br/>
-        <input type="text" required placeholder="Username" pattern="\S.*"><br/>
+        <input type="text" id="Input_usr" required placeholder="Username" pattern="\S.*"><br/>
       </div>
       <div class="input-box">
         <label for="Input_pwd">Password:</label><br/>
-        <input type="password" required placeholder="Password" pattern="\S.*"><br/>
+        <input type="password" id="Input_pwd" required placeholder="Password" pattern="\S.*"><br/>
       </div>
     </form>
     <div class="submit">

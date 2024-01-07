@@ -3,19 +3,20 @@
 }
 
 .hero {
-  padding: 20px 80px;
+  padding-top: 20px;
+  padding-bottom: 50px;
   background:
-  linear-gradient(to bottom, var(--secondary-bg-color) 0%, var(--main-bg-color) 65%), 
-  var(--main-bg-color);
-  margin-bottom: 5vh;
+    linear-gradient(to bottom, var(--secondary-bg-color) 0%, var(--main-bg-color) 65%), 
+    var(--main-bg-color);
 }
 
 #catchphrase {
   margin-bottom: 20px;
   display: grid;
   grid-template-columns: 1fr 3fr;
-  grid-gap: 20px;
+  grid-gap: 10px;
   align-items: center;
+  text-align: center;
 }
 
 #catchphrase h2 {
@@ -23,8 +24,10 @@
   font-size: 2.5em;
   text-shadow: 1px 0 10px var(--fourth);
   text-transform: uppercase;
+  text-justify: none;
   color: var(--main-color);
 }
+
 
 #paddle {
   max-width: 100%;
@@ -91,49 +94,52 @@ button[name="LogIn"]:hover {
   margin-left: 30px;
 }
 
-.about {
-  display: grid;
-  grid-template-columns: 1.3fr 2fr;
-  grid-gap: 50px;
+.games {
   background: var(--fourth);
-  padding: 20px 10% 20px 10%;
-  font-size: 1.3em;
-} 
-
-.bio_wrapper {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-  font-size: 1.2em;
+  padding-top: 50px; 
+  padding-bottom: 20px; 
 }
 
-.bio_wrapper img {
-  width: 75px;
-  height: auto;
-  border-radius: 50%;
+.games h1 {
+  font-size: 2em;
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 40px;
 }
 
-.bio {
-  height: 100%;
-  align-items: center;
-  margin: 20px 0 10% 0;
+.game_wrapper {
+  margin-bottom: 20px;
   display: grid;
-  grid-gap: 20px;
-  grid-template-columns: 1fr 3fr;
-  text-align: right;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 80px;
 }
 
-.bio:nth-child(2) {
-  grid-template-columns: 3fr 1fr;
-  text-align: left;
+.game_wrapper div {
+  display: block;
+  padding-bottom: 10%;
+  padding-top: 10%;
+  align-content: center;
+  text-align: center;
 }
 
-.bio_wrapper .bio ul {
-  display: none;
+.game_wrapper p {
+  margin-top: 10%;
 }
 
-.bio_wrapper li ul img {
-  border-radius: 0;
+.game_wrapper img {
+  display: block;
+  object-fit: contain;
+  height: 250px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+.about {
+  background: 
+    var(--main-bg-color);
+  padding: 20px 10% 40px 10%;
+  font-size: 1.3em;
 }
 
 .presentation {
@@ -143,6 +149,7 @@ button[name="LogIn"]:hover {
 .presentation p {
   letter-spacing: .2em; 
   text-justify: auto;
+  text-align: center;
   margin: 7%;
 }
 
@@ -159,28 +166,52 @@ button[name="LogIn"]:hover {
   text-decoration: underline;
 }
 
+.bio_wrapper {
+  display: flex;
+  justify-content: space-evenly;
+  font-size: 1.2em;
+  text-align: center;
+}
+
+.bio_wrapper img {
+  width: 100px;
+  height: auto;
+  border-radius: 50%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 10px;
+}
+
+.bio {
+  height: 100%;
+  align-items: center;
+}
+
+.bio_wrapper .bio ul li {
+  display: inline-block;
+  list-style: none;
+  margin-right: 20px;
+  margin-left: 20px;
+}
+
+.bio li img {
+  width: 50px;
+  border-radius: 0;
+}
+
 /* Responsive Design */
 
 @media (min-width: 1080px) {
   .about,
-  .hero {
+  .hero,
+  .games {
     padding-right: calc((100vw - 1000px) / 2);
     padding-left: calc((100vw - 1000px) / 2);
   }
 
   .hero {
     font-size: 1.2em;
-  }
-
-  .presentation p {
-    padding-right: 80px;
-    margin-bottom: 50px;
-  }
-}
-
-@media (min-width: 1000px) {
-  .about img {
-    width: 100%;
   }
 }
 
