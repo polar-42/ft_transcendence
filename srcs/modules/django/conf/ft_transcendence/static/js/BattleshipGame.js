@@ -83,7 +83,7 @@ function OnMessage(e)
 			break
 		case 'GotHit':
 			break
-		case 'HitEnemy':
+		case 'HitResult':
 			SP_HitCase(data.case, data.result, data.destroyedboat)
 			break
 		case 'Loose':

@@ -31,8 +31,8 @@ class socket(WebsocketConsumer):
 		match (data['function']):
 			case 'sendBoats':
 				self.Game.RCV_BoatsList(self.user, data['input'])
-			case 'LoadEnded':
-				self.Game.RCV_OnLoad()
+			# case 'LoadEnded':
+			# 	self.Game.RCV_OnLoad()
 			case 'HitCase':
 				self.Game.RCV_HitCase(self.user, data['input'])
 
@@ -78,27 +78,27 @@ class socket(WebsocketConsumer):
 		print("Stop for = " + self.user.username)
 		async_to_sync(self.close())
 
-	def MSG_HitResult(self, event):
-		(self.send)(text_data=json.dumps({
-			'function': "GotHit" if event['target'].sock_user.id is self.user.id else "HitEnemy",
-			'case': event['case'],
-			'result' : event['result'],
-			'destroyedboat' : event['destroyedboat'],
-			'timer': -1
-		}))
+	# def MSG_HitResult(self, event):
+	# 	(self.send)(text_data=json.dumps({
+	# 		'function': "GotHit" if event['target'].sock_user.id is self.user.id else "HitEnemy",
+	# 		'case': event['case'],
+	# 		'result' : event['result'],
+	# 		'destroyedboat' : event['destroyedboat'],
+	# 		'timer': -1
+	# 	}))
 	
-	def MSG_RequestBoat(self, event):
-		if self.user.id != event['user']:
-			return
-		(self.send)(text_data=json.dumps({
-			'function' : "RetrieveBoat",
-			'timer' : - 1
-		}))
+	# def MSG_RequestBoat(self, event):
+	# 	if self.user.id != event['user']:
+	# 		return
+	# 	(self.send)(text_data=json.dumps({
+	# 		'function' : "RetrieveBoat",
+	# 		'timer' : - 1
+	# 	}))
 
-	def MSG_RequestHit(self, event):
-		if self.user.id != event['user']:
-			return
-		(self.send)(text_data=json.dumps({
-			'function' : "RetrieveHit",
-			'timer' : - 1
-		}))
+	# def MSG_RequestHit(self, event):
+	# 	if self.user.id != event['user']:
+	# 		return
+	# 	(self.send)(text_data=json.dumps({
+	# 		'function' : "RetrieveHit",
+	# 		'timer' : - 1
+	# 	}))

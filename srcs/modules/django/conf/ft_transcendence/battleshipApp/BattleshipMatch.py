@@ -84,29 +84,26 @@ class User():
 			for boat in boatsList:
 				ori = 'H' if boat['horizontal'] is True else 'V'
 				self.BoatList.append(Boat(boat['name'], boat['size'], ori, boat['ArrayX'], boat['ArrayY']))
-		return 		
-	# for boat in self.BoatList:
-	# 				for cases in boat.BoatArray:
-	# 					print(self.Name + " " + boat.Name + " " + str(cases))
+		return
 	
-	# def Hit(self, case):
-	# 	result = 0
-	# 	pos = 0
-	# 	for boat in self.BoatList:
-	# 		result = boat.Hit(case['ArrayPosX'], case['ArrayPosY'])
-	# 		if (result > 0):
-	# 			return result if result == 1 else result + pos
-	# 		pos += 1
-	# 	return False
+	def Hit(self, case):
+		result = 0
+		pos = 0
+		for boat in self.BoatList:
+			result = boat.Hit(case['ArrayPosX'], case['ArrayPosY'])
+			if (result > 0):
+				return result if result == 1 else result + pos
+			pos += 1
+		return False
 	
-	# def CountDestroyedBoats(self):
-	# 	count = 0
-	# 	for boat in self.BoatList:
-	# 		if (len(boat.BoatArray) == len(boat.HittedArray)):
-	# 			count += 1
-	# 	return count
-
-	# def checkPlayerBoats(self):
+	def CountDestroyedBoats(self):
+		count = 0
+		for boat in self.BoatList:
+			if (len(boat.BoatArray) == len(boat.HittedArray)):
+				count += 1
+		return count
+	
+	def checkPlayerBoats(self):
 		count = 0
 		for boat in self.BoatList:
 			if (len(boat.BoatArray) == len(boat.HittedArray)):
@@ -215,9 +212,7 @@ class BattleshipMatch():
 		self.thread.start()
 
 	def RCV_BoatsList(self, user, BoatList):
-		if (self.Gamestatus is GameState.RequestBoat):
-			self.Gamestatus = GameState.BoatPlacement
-		if (self.Gamestatus is not GameState.BoatPlacement):
+		if (self.Gamestatus is not GameState.RequestBoat and self.Gamestatus is not GameState.BoatPlacement):
 			return
 		usr = self.getUser(user)
 		if (usr is None):
@@ -279,7 +274,71 @@ class BattleshipMatch():
 					self.Users[0].SendMessage(msg)
 				if (len(self.Users[1].BoatList) == 0):
 					self.Users[1].SendMessage(msg)
-				self.currentTimer = 1
+				self.currentTimer = 2
+				self.Gamestatus = GameState.RequestBoat
+
+			case GameState.RequestBoat:
+				if (len(self.Users[0].BoatList) == 0 and len(self.Users[0].BoatList) == 0):
+					ColorPrint.prRed("Error! Game {gameid} : Users never selected their boat.".format(self.gameId))
+				else:
+					usr = self.Users[0] if len(self.Users[0].BoatList) == 0 else self.Users[1]
+					ColorPrint.prRed("Error! Game {gameid} : User {username} never selected his boat.".format(self.gameId, usr.Name))
+				#EndGame here
+			
+			case GameState.Playing:
+				msg = json.dumps({
+					'function': "RetrieveHit",
+					'timer': -1
+					})
+				self.TurnUser.SendMessage(msg)
+				self.Gamestatus = GameState.RequestHit
+				self.currentTimer = 2
+
+			case GameState.RequestHit:
+				other = self.Users[0] if self.TurnUser is self.Users[1] else self.Users[1]
+				ColorPrint.prRed("Error! Game {gameid} : User {username} don't select a case. User {username2} win by forfeit.".format(self.gameId, self.TurnUser.Name, other.Name))
+				#EndGame here
+	
+	def RCV_HitCase(self, user, case):
+		if (self.Gamestatus is not GameState.Playing and self.Gamestatus is not GameState.RequestHit):
+			return
+		usr = self.getUser(user)
+		if usr is not self.TurnUser:
+			ColorPrint.prYellow("Warning! Game {gameid} : non game user {username} just sended an hit request.".format(self.gameId, usr.Name))
+			return
+		Target = self.Users[0] if usr is self.Users[1] else self.Users[1]
+		Result = Target.Hit(case)
+
+		msg = json.dumps({
+			'function': "HitResult",
+			'case' : case,
+			'result' : True if Result > 0 else False,
+			'destroyedboat' : "None" if Result < 2 else Target.BoatList[Result - 2].Name
+			})
+		usr.SendMessage(msg)
+
+		msg = json.dumps({
+			'function': "GotHit",
+			'case' : case,
+			'result' : True if Result > 0 else False,
+			'destroyedboat' : "None" if Result < 2 else Target.BoatList[Result - 2].Name
+			})
+		Target.SendMessage(msg)
+
+		if self.CheckEnd() is not None:
+			# EndGame here
+			pass
+		else:
+		# 	self.StopGame(True, True, "Game Ended! Winner is " + self.TurnUser.Name + ". He destroyed the " + str(Target.CountDestroyedBoats()) + " " + Target.Name + " boats while getting only " + str(self.TurnUser.CountDestroyedBoats()) + " of its own boat destroyed.")
+			self.ChangeTurn()
+
+
+	def CheckEnd(self):
+		if (self.Users[0].CountDestroyedBoats == len (self.Users[0].BoatList)):
+			return self.Users[0]
+		if (self.Users[1].CountDestroyedBoats == len (self.Users[1].BoatList)):
+			return self.Users[1]
+		return None
 # def disconnectUser(self, user, reason : str):
 	# 	usr = self.getUser(user)
 	# 	if (usr is None):
@@ -291,57 +350,6 @@ class BattleshipMatch():
 	# 	usr.connected = False
 	# 	if (self.Gamestatus is not GameState.Ending):
 	# 		self.StopGame(True, True, reason)
-
-# def ForceStep(self):
-	# 	print ("ForceStep = " + str(self.Gamestatus))
-	# 	match (self.Gamestatus):
-	# 		case GameState.Initialisation:
-	# 			pass
-	# 		case GameState.BoatPlacement:
-	# 			self.Gamestatus = GameState.RequestBoat
-	# 			if len(self.user1.BoatList) == 0:
-	# 				print ("Request " + self.user1.sock_user.username + " boats from server")
-	# 				async_to_sync(self.channel_layer.group_send)(
-	# 					self.channelName,
-	# 					{
-	# 						'type' : 'MSG_RequestBoat',
-	# 						'user' : self.user1.sock_user.id,
-	# 					})
-	# 			if len(self.user2.BoatList) == 0:
-	# 				print ("Request " + self.user2.Name + " boats from server")
-	# 				async_to_sync(self.channel_layer.group_send)(
-	# 					self.channelName,
-	# 					{
-	# 						'type' : 'MSG_RequestBoat',
-	# 						'user' : self.user2.sock_user.id,
-	# 					})
-	# 			self.currentTimer = 1
-	# 		case GameState.RequestBoat:
-	# 			if len(self.user1.BoatList) == 0 and len(self.user2.BoatList) == 0:
-	# 				self.StopGame(True, True, "Game cancel! None of the user send their boats to the server!")
-	# 				return
-	# 			elif len(self.user1.BoatList) == 0:
-	# 				Target = self.user1.Name
-	# 			else:
-	# 				Target = self.user2.Name
-	# 			self.StopGame(True, True, "Game cancel! User " + Target + " not send is boats to the server!")
-	# 		case GameState.Playing:
-	# 			print("Playing Request user = " + self.TurnUser.sock_user.username)
-	# 			async_to_sync(self.channel_layer.group_send)(
-	# 				self.channelName,
-	# 				{
-	# 					'type' : 'MSG_RequestHit',
-	# 					'user' : self.TurnUser.sock_user.id,
-	# 				})
-	# 			self.Gamestatus = GameState.RequestHit
-	# 			self.currentTimer = 1
-	# 		case GameState.RequestHit:
-	# 			Winner = self.user1.Name if self.TurnUser == self.user2 else self.user2.Name
-	# 			self.StopGame(True, True, "Game ended by forfeit! User " + Winner + " win since " + self.TurnUser.Name + " not send is selected case to the server!")
-			
-	# 		case GameState.Ending:
-	# 			pass
-	# 	pass
 
 # def GetTournamentId(self):
 	# 	startPos = len("Tournament")
@@ -379,30 +387,4 @@ class BattleshipMatch():
 	# 	self.thread = None
 	# 	if self.gameId.startswith('Tournament') == True:
 	# 		tournamentsApp.views.TournamentManager.sendMatchData(self.GetTournamentId(), self.gameId, self.TurnUser.sock_user)
-	# 	self.gm.CloseGame(self.gm, self.gameId)
-		
-	# def RCV_HitCase(self, user, case):
-		# if (self.Gamestatus is not GameState.Playing and self.Gamestatus is not GameState.RequestHit):
-		# 	return
-		# user = self.getUser(user)
-		# if user is not self.TurnUser:
-		# 	return
-		# if (self.Gamestatus is GameState.RequestHit):
-		# 	self.Gamestatus = GameState.Playing
-		# Target = self.user1 if user is self.user2 else self.user2
-		# Result = Target.Hit(case)
-		# async_to_sync(self.channel_layer.group_send)(
-		# 	self.channelName,
-		# 	{
-		# 		'type' : 'MSG_HitResult',
-		# 		'target' : Target,
-		# 		'case' : case,
-		# 		'result' : True if Result > 0 else False,
-		# 		'destroyedboat' : "None" if Result < 2 else Target.BoatList[Result - 2].Name
-		# 	})
-		# if (Target.checkPlayerBoats() == True):
-		# 	self.StopGame(True, True, "Game Ended! Winner is " + self.TurnUser.Name + ". He destroyed the " + str(Target.CountDestroyedBoats()) + " " + Target.Name + " boats while getting only " + str(self.TurnUser.CountDestroyedBoats()) + " of its own boat destroyed.")
-		# else:
-		# 	self.ChangeTurn()
-
-		
+	# 	self.gm.CloseGame(self.gm, self.gameId)	
