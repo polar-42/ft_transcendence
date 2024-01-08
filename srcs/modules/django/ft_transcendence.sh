@@ -72,6 +72,11 @@ python manage.py makemigrations
 python manage.py migrate
 python manage.py createsuperuser
 python manage.py create_user
+
+
+export BLOCKCHAIN_HOST=$(cat /var/blockchain/hostname)
+export CONTRACT_ADDRESS=$(cat /var/blockchain/contract_address.txt)
+
 python manage.py runserver $(hostname -i):8080;
 #python manage.py collectstatic
 #uwsgi --http $(hostname -i):8080 --module ft_transcendence.wsgi --enable-threads

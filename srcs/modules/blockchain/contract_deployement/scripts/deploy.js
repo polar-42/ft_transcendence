@@ -1,6 +1,5 @@
 // tests/TranscendenceTournamentHistory.scripts.js
 
-const { expect } = require('chai');
 const { ethers } = require('hardhat');
 const fs = require('fs');
 

@@ -10,3 +10,4 @@ class TournamentsModels(models.Model):
 	privateGame = models.BooleanField(default=False)
 	description = models.TextField(default="Description")
 	tournamentsType = models.CharField(max_length=16, default='PONG')
+	winner = models.CharField(default='gpasquet')

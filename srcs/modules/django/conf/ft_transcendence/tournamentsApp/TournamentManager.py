@@ -28,18 +28,17 @@ class TournamentsManager():
 
 		obj.save()
 
-		nTournament = Tournament(obj.id, user, TypeGame(typeGame), int(data.get('numberOfPlayers')), False, "Toto", data.get('tournamentsName'))
+		nTournament = Tournament(obj.id, user, TypeGame(typeGame), int(data.get('numberOfPlayers')), False, "DESCRIPTION TO DO", data.get('tournamentsName'))
 		self._Tournaments.append(nTournament)
 		for tournament in self._Tournaments:
 			print(str(tournament))
 		return True, nTournament._id
-	
+
 	def sendMatchData(self, TournamentID, MatchId, Winner):
 		for tournament in self._Tournaments:
 			if tournament._id == int(TournamentID):
 				tournament.UpdateData(MatchId, Winner)
 				return
-		
 
 	def GetTournament(self, id):
 		for tournament in self._Tournaments:
@@ -52,7 +51,7 @@ class TournamentsManager():
 
 	def canJoin(self, user, tournamentId):
 		for tournament in self._Tournaments:
-			if tournament.IsUserPresent(user.id) is True:
+			if tournament.IsUserPresent(user) is True:
 				return 'Already in the tournament', False, True
 
 
@@ -65,7 +64,7 @@ class TournamentsManager():
 
 	def AddUser(self, user, tournamentId):
 		for tournament in self._Tournaments:
-			if tournament.IsUserPresent(user.id) is True:
+			if tournament.IsUserPresent(user) is True:
 				return True
 
 		for tournament in self._Tournaments:
@@ -74,3 +73,11 @@ class TournamentsManager():
 				return True
 
 		return False
+
+	def RemoveUser(self, user, tournamentId):
+		for tournament in self._Tournaments:
+			if tournament.IsTournamentExist(tournamentId) is True:
+				if tournament.IsUserPresent(user) is True:
+					tournament.removePlayer(user)
+					if len(tournament._players) <= 0:
+						self._Tournaments.remove(tournament)

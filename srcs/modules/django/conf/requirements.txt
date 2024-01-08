@@ -3,3 +3,4 @@ requests
 psycopg2-binary
 Pillow
 channels==3.0.4
+web3

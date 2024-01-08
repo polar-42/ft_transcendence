@@ -71,11 +71,20 @@ function OnMessageTournament(e)
 function EndTournament(WinnerName)
 {
 	console.log(WinnerName)
+	tournamentSocket = undefined
+	navto('/tournaments/Home')
 }
 
-function LoadGame(data) 
+function LoadGame(data)
 {
-	navto("/battleship", data.gameId)
+	if (data.gameType == 1)
+	{
+		navto("/pongGame/Remote", data.gameId)
+	}
+	else
+	{
+		navto("/battleship", data.gameId)
+	}
 }
 
 function printMatchs(data)

@@ -4,6 +4,7 @@ from channels.layers import get_channel_layer
 from . import pongThreads
 from ..models import PongGameModels
 from asgiref.sync import async_to_sync
+from tournamentsApp import views, TournamentManager, TournamentClass
 
 
 class PongGameSocket(WebsocketConsumer):
@@ -11,9 +12,14 @@ class PongGameSocket(WebsocketConsumer):
 	pongGame = {}
 	channel_layer = get_channel_layer()
 
-	def connect(self):   
+	def connect(self):
 		self.pongGameId = self.scope['url_route']['kwargs']['gameId']
-  
+		self.isTournament = self.pongGameId.startswith('Tournament')
+		self.tournament = None
+		if self.isTournament is True:
+			tournamentManage = views.get_tournaments_manager()
+			self.tournament = tournamentManage.GetTournament(self.pongGameId[10:].split('_')[0])
+
 		if self.pongGameId in self.connected_users and len(self.connected_users[self.pongGameId]) >= 2:
 			self.close()
 			return
@@ -33,7 +39,7 @@ class PongGameSocket(WebsocketConsumer):
 			tab = []
 			tab.append(self)
 			self.connected_users[self.pongGameId] = tab
-   
+
 		elif self.pongGameId in self.connected_users and len(self.connected_users[self.pongGameId]) < 2:
 			self.connected_users[self.pongGameId].append(self)
 
@@ -41,11 +47,11 @@ class PongGameSocket(WebsocketConsumer):
 			self.connected_users[self.pongGameId][0].add_players_list(self.connected_users[self.pongGameId][0], self)
 			self.players_game.append(self.connected_users[self.pongGameId][0])
 			self.players_game.append(self)
-   
+
 			self.pongGame[self.pongGameId] = pongThreads.pongGame()
 
 			cpy = self.connected_users[self.pongGameId].copy()
-			self.pongGame[self.pongGameId].launchGame(self.pongGameId, cpy)
+			self.pongGame[self.pongGameId].launchGame(self.pongGameId, cpy, self.isTournament)
 
 			del self.connected_users[self.pongGameId]
 
@@ -90,17 +96,21 @@ class PongGameSocket(WebsocketConsumer):
 			player1 = self
 			player2 = self.players_game[0]
 
-		self.send(text_data=json.dumps({
-    			'type': 'game_ending',
-				'winner': self.username.username,
-				'reason': 'disconnexion',
-				'playerone_score': 3,
-				'playertwo_score': 0,
-				'playerone_username': player1.username.username,
-				'playertwo_username': player2.username.username,
-    	}))
+		if self.isTournament:
+			self.tournament.UpdateData(self.pongGameId, self.username)
 
-		addToDb(player1.username.username, player2.username.username, 3, 0, self.username.username, 3, 0, 'disconnexion')
+			addToDb(player1.username.username, player2.username.username, 3, 0, self.username.username, 3, 0, 'disconnexion', 'tournaments')
+		else:
+			self.send(text_data=json.dumps({
+    				'type': 'game_ending',
+					'winner': self.username.username,
+					'reason': 'disconnexion',
+					'playerone_score': 3,
+					'playertwo_score': 0,
+					'playerone_username': player1.username.username,
+					'playertwo_username': player2.username.username,
+    		}))
+			addToDb(player1.username.username, player2.username.username, 3, 0, self.username.username, 3, 0, 'disconnexion', 'matchMake')
 
 		self.close()
 
@@ -125,22 +135,29 @@ class PongGameSocket(WebsocketConsumer):
 		n_ball_touch_player1 = event['number_ball_touch_player1']
 		n_ball_touch_player2 = event['number_ball_touch_player2']
 
-		self.send(text_data=json.dumps({
-    			'type': 'game_ending',
-				'winner': winner.username,
-				'reason': 'score',
-				'playerone_score': str(playerone_score),
-				'playertwo_score': str(playertwo_score),
-				'playerone_username': self.players_game[0].username.username,
-				'playertwo_username': self.players_game[1].username.username,
-    	}))
 
-		if winner.username == str(self.username):
-			addToDb(self.players_game[0].username, self.players_game[1].username, playerone_score, playertwo_score, winner.username, n_ball_touch_player1, n_ball_touch_player2, 'score')
+		if self.isTournament and winner.username == self.username.username:
+			self.tournament.UpdateData(self.pongGameId, winner)
+
+			if winner.username == str(self.username):
+				addToDb(self.players_game[0].username, self.players_game[1].username, playerone_score, playertwo_score, winner.username, n_ball_touch_player1, n_ball_touch_player2, 'score', 'tournaments')
+		elif self.isTournament is False:
+			self.send(text_data=json.dumps({
+    				'type': 'game_ending',
+					'winner': winner.username,
+					'reason': 'score',
+					'playerone_score': str(playerone_score),
+					'playertwo_score': str(playertwo_score),
+					'playerone_username': self.players_game[0].username.username,
+					'playertwo_username': self.players_game[1].username.username,
+    		}))
+
+			if winner.username == str(self.username):
+				addToDb(self.players_game[0].username, self.players_game[1].username, playerone_score, playertwo_score, winner.username, n_ball_touch_player1, n_ball_touch_player2, 'score', 'matchMake')
 
 		self.close()
 
-def addToDb(playerone_username, playertwo_username, playerone_score, playertwo_score, winner, n_ball_touch_player1, n_ball_touch_player2, reason_end):
+def addToDb(playerone_username, playertwo_username, playerone_score, playertwo_score, winner, n_ball_touch_player1, n_ball_touch_player2, reason_end, typeGame):
 
 	obj = PongGameModels.objects.create(
 			player1=playerone_username,
@@ -150,7 +167,8 @@ def addToDb(playerone_username, playertwo_username, playerone_score, playertwo_s
 			number_ball_touch_player1=str(n_ball_touch_player1),
 			number_ball_touch_player2=str(n_ball_touch_player2),
 			winner=str(winner),
-			reason=reason_end
+			reason=reason_end,
+			typeGame=typeGame
 	)
 
 	obj.save
