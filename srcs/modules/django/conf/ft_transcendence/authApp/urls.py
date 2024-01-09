@@ -8,4 +8,5 @@ urlpatterns = [
     path('logout/', views.disconnect),
     path('check_connexion/', views.check_connexion),
     path('testSocket/', views.socket),
+    path('getUserName/', views.getUserName),
 ]

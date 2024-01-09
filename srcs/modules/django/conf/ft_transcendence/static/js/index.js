@@ -30,7 +30,7 @@ function getRoute(RoutePath)
     { path: "/404", init: null, unload: null, title:"404", LogStatus: 2},
     { path: "/needlog", init: null, unload: null, title:"Login required", LogStatus: 0},
     { path: "/", init: initHomePage, unload: null, title:"Home", LogStatus: 2},
-    { path: "/dashboard", init: initDashboard, unload: null, title:"Home", LogStatus: 2},
+    { path: "/dashboard", init: initDashboard, unload: null, title:"Home", LogStatus: 1},
     { path: "/battleship", init: initGame, unload: CP_Unload, title:"Battleship", LogStatus: 1},
     { path: "/battleship/matchmake", init: initMatchmaking, unload: null, title:"Battleship", LogStatus: 1},
     { path: "/pongGame/Remote", init: initGamePong, unload: unLoadGamePong, title:"pongGame", LogStatus: 1},
@@ -56,18 +56,18 @@ function getRoute(RoutePath)
   return match
 }
 
-// async function OnLogChange()
-// {
-// 	var logStatus = await checkConnexion()
-// 	document.querySelectorAll('.nav__link').forEach(function(button) {
-// 		let match = getRoute(button.href)
-// 		if (match == null || (match.route.LogStatus == 1 && logStatus == false) || match.route.LogStatus == 0 && logStatus == true)
-// 			button.style.display = "none"
-// 		else
-// 			button.style.display = "block"
-// 	})
-// }
-//
+async function OnLogChange()
+{
+	var logStatus = await checkConnexion()
+	document.querySelectorAll('.nav__link').forEach(function(button) {
+		let match = getRoute(button.href)
+		if (match == null || (match.route.LogStatus == 1 && logStatus == false) || match.route.LogStatus == 0 && logStatus == true)
+			button.style.display = "none"
+		else
+			button.style.display = "block"
+	})
+}
+
 let Prev_match = undefined
 
 const router = async (arg) =>
@@ -104,7 +104,7 @@ const router = async (arg) =>
         if (match.route.init != null)
           match.route.init(arg)
         Prev_match = match
-        // OnLogChange()
+        OnLogChange()
       })
 }
 
