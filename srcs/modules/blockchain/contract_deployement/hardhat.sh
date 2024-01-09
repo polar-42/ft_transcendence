@@ -3,7 +3,7 @@
 if [ -f "/var/blockchain/contract_address.txt" ]; then
     export CONTRACT_ADDRESS=$(cat /var/blockchain/contract_address.txt);
     echo Contract already deployed;
-    exit 0;
+    sleep 50000
 fi
 
 if [[ "$(npm list chai)" =~ "empty" ]]; then
