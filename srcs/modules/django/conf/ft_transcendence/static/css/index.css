@@ -63,10 +63,10 @@ header {
 nav {
   width: auto;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-areas: "a b c d";
   grid-gap: 20px;
   align-items: center;
-  justify-items: center;
+  justify-items: end;
 }
 
 nav a {
@@ -98,6 +98,7 @@ header a:visited {
 }
 
 .profile_button {
+  grid-area: d;
   background: var(--main-color);
   border-radius: 20px;
   border: 2px solid var(--main-color);
@@ -147,9 +148,34 @@ header a:visited {
   display: none;
 }
 
+.profile_button.connected {
+  width: 200px;
+}
+
+.profile_button.connected a {
+  text-transform: none;
+}
+
+#angle,
+#blue_angle {
+  display: none;
+}
+
+.profile_button.connected #angle {
+  display: block;
+}
+
+.profile_button.connected:hover #angle {
+  display: none;
+}
+
+.profile_button.connected:hover #blue_angle {
+  display: block;
+}
+
 .profile_menu {
   position: absolute;
-  width: 150px;
+  width: 200px;
   list-style: none;
   background: var(--main-color);
   border-radius: 20px;

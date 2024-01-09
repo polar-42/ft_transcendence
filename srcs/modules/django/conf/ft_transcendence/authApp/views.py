@@ -86,7 +86,11 @@ def disconnect(request):
 
 
 def check_connexion(request):
-	if (request.user.is_authenticated):
-		return JsonResponse({'connexionStatus': True})
-	else:
-		return JsonResponse({'connexionStatus': False})
+    if (request.user.is_authenticated):
+        return JsonResponse({'connexionStatus': True})
+    else:
+        return JsonResponse({'connexionStatus': False})
+
+def getUserName(request):
+    print(request.user.username)
+    return JsonResponse({'userName': request.user.username})
