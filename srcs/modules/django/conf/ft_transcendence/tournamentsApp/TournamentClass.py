@@ -1,248 +1,316 @@
 import random, copy, json
-from enum import IntEnum
 from channels.layers import get_channel_layer
 import random
 from asgiref.sync import async_to_sync
 
-class GameState(IntEnum):
-	Creation = -1
-	Initialisation = 0
-	Playing = 1
-	Ended = 2
+from battleshipApp import ColorPrint
 
-class ConnexionState(IntEnum):
-	OnTournament = 0
-	Away = 1
+from .TournamentUser import TournamentUser
+from .EnumClass import GameType, TournamentState, TournamentVisibility
 
-class TournamentUser():
-	def __init__(self, socketUser, socket):
-		self.sock_user = socketUser
-		self.socket = socket
-		self.ConnexionStatus = ConnexionState.OnTournament
+# class GameState(IntEnum):
+# 	Creation = -1
+# 	Initialisation = 0
+# 	Playing = 1
+# 	Ended = 2
 
-	def ChangeConnexionStatus(self):
-		self.ConnexionStatus = ConnexionState.OnTournament if self.ConnexionStatus is ConnexionState.Away else ConnexionState.Away
+# class ConnexionState(IntEnum):
+# 	OnTournament = 0
+# 	Away = 1
 
-class TreeMatch():
+# class TournamentUser():
+# 	def __init__(self, socketUser, socket):
+# 		self.sock_user = socketUser
+# 		self.socket = socket
+# 		self.ConnexionStatus = ConnexionState.OnTournament
 
-	def __init__(self, creationStep, id):
-		self.User1 = None
-		self.User2 = None
-		self.step = creationStep
-		self.State = GameState.Creation
-		self.Winner = None
-		self.id = id
+# 	def ChangeConnexionStatus(self):
+# 		self.ConnexionStatus = ConnexionState.OnTournament if self.ConnexionStatus is ConnexionState.Away else ConnexionState.Away
 
-	def to_json(self):
-		return {
-			'User1' : self.User1.sock_user.username if self.User1 is not None else "undefined",
-			'User1Id' : self.User1.sock_user.id if self.User1 is not None else -1,
-			'User2' : self.User2.sock_user.username if self.User2 is not None else "undefined",
-			'User2Id' : self.User2.sock_user.id if self.User2 is not None else -1,
-			'step' : self.step,
-			'state' : self.State,
-			'Winner' : self.Winner.sock_user.id if self.Winner is not None else -1
-		}
+# class TreeMatch():
 
-class TypeGame(IntEnum):
-	Undefined = 0
-	Pong = 1
-	Battleship = 2
+# 	def __init__(self, creationStep, id):
+# 		self.User1 = None
+# 		self.User2 = None
+# 		self.step = creationStep
+# 		self.State = GameState.Creation
+# 		self.Winner = None
+# 		self.id = id
+
+# 	def to_json(self):
+# 		return {
+# 			'User1' : self.User1.sock_user.username if self.User1 is not None else "undefined",
+# 			'User1Id' : self.User1.sock_user.id if self.User1 is not None else -1,
+# 			'User2' : self.User2.sock_user.username if self.User2 is not None else "undefined",
+# 			'User2Id' : self.User2.sock_user.id if self.User2 is not None else -1,
+# 			'step' : self.step,
+# 			'state' : self.State,
+# 			'Winner' : self.Winner.sock_user.id if self.Winner is not None else -1
+# 		}
+
+# class TypeGame(IntEnum):
+# 	Undefined = 0
+# 	Pong = 1
+# 	Battleship = 2
 
 class Tournament():
-	def __init__(self, id, creator, typeGame : TypeGame, numberOfPlayer : int, privateGame : bool, description : str, name: str):
-		self.status = GameState.Creation
-		self._id = id
-		self._creator = TournamentUser(creator, None)
-		self._typeGame = typeGame
-		self._playerAmount = numberOfPlayer
-		self._private = privateGame
-		self._desc = description
-		self._name = name
-		self._players = []
-		self.curMatch = []
-		self.channel_layer = get_channel_layer()
-		self.channel_name = "Tournaments" + str(self._id)
-		self.curStep = 0
-		self.Tree = self.initArray()
-		self.Winner = None
 
-	def initArray(self):
-		count = self._playerAmount
-		PlayerPos = 1
-		Tree = []
-		while (count > 1):
-			PlayerPosArray = []
-			PlayerPos2 = 0
-			while (PlayerPos2 < count / 2):
-				PlayerPosArray.append(TreeMatch(PlayerPos, "Tournament" + str(self._id) + "_" + str(PlayerPos) + "_" + str(PlayerPos2)))
-				PlayerPos2 += 1
-			PlayerPos += 1
-			Tree.append(PlayerPosArray)
-			count /= 2
-		return Tree
+	def __init__(self, tournamentId : str, creator : int, tournamentName : str, playerAmount : int, description : str, gameType : GameType, visibility : TournamentVisibility):
+		self.TournamentName = tournamentName
+		self.TournamentId = tournamentId
+		self.PlayerAmount = playerAmount
+		self.Description = description
+		self.Type = gameType
+		self.Administrator = creator
+		self.Visibility = visibility
+		self.Status = TournamentState.Created
+		self.PlayersList = []
 
-	def __str__(self) -> str:
-		return "id is " + str(self._id) + " name = " + str(self._typeGame) + " private = " + str(self._private) + " game : " + self._name + " created by " + self._creator.sock_user.username + " with " + str(self._playerAmount) + " players. desc = " + self._desc
+#region Getter
 
-	def sendData(self, user):
-		async_to_sync(self.channel_layer.group_send)(
-			self.channel_name,
-			{
-				'type': 'MSG_NewUser',
-				'User' : -1 if user is None else user.id
-			})
-		self.SendMatchsData(-1)
-
-	def UpdateData(self, MatchId, Winner):
-		pos = 0
-		while pos < len(self.Tree):
-			pos2 = 0
-			while pos2 < len(self.Tree[pos]):
-				if self.Tree[pos][pos2].id == MatchId:
-					self.Tree[pos][pos2].State = GameState.Ended
-					self.Tree[pos][pos2].Winner = self.GetUserById(Winner.id)
-					if (pos == len(self.Tree) - 1):
-						self.Winner = self.Tree[pos][pos2].Winner
-						self.SendMatchsData(-1)
-						async_to_sync(self.channel_layer.group_send)(
-							self.channel_name,
-							{
-								'type': 'MSG_EndTournament',
-								'Winner' : self.Tree[pos][pos2].Winner.sock_user.username
-							})
-						return
-					curMatch = None
-					curPlayer = -1
-					if (pos2 % 2 != 0):
-						curMatch = self.Tree[pos + 1][int((pos2 / 2) - 0.5)]
-						curPlayer = 2
-					else:
-						curMatch = self.Tree[pos + 1][int(pos2 / 2)]
-						curPlayer = 1
-					if (curMatch is None):
-						return
-					elif curMatch.State == GameState.Creation:
-						curMatch.State = GameState.Initialisation
-					if (curPlayer == 1):
-						curMatch.User1 = self.Tree[pos][pos2].Winner
-					else:
-						curMatch.User2 = self.Tree[pos][pos2].Winner
-					self.SendMatchsData(-1)
-					if (curMatch.User1 is not None and curMatch.User2 is not None):
-						self.StartMatch(curMatch)
-					return
-				pos2 += 1
-			pos += 1
-
-	def GetUserById(self, id):
-		for usr in self._players:
-			if (usr.sock_user.id == id):
+	def GetUserById(self, userId : int):
+		ColorPrint.prGreen("1")
+		for usr in self.PlayersList:
+			if (usr.UserId == userId):
 				return usr
 		return None
 
-	def getTournament(self):
-		return self
+	def GetUserByName(self, userName : str):
+		ColorPrint.prGreen("2")
+		for usr in self.PlayersList:
+			if (usr.Username == userName):
+				return usr
+		return None
 
-	def IsUserPresent(self, user):
-		for users in self._players:
-			if users.sock_user.id == user.id:
-				return True
-		if user == self._creator.sock_user.id:
-			return True
-		return False
+#endregion
 
-	def IsTournamentExist(self, tournamentId):
-		if int(self._id) is int(tournamentId):
-			return True
-		return False
+#region Connexion
 
-	def addPlayer(self, player, socket):
-		usr = self.getPlayerObject(player)
-		if (usr == None):
-			if (self._creator.sock_user.id == player.id):
-				self._players.append(self._creator)
-				self._creator.socket = socket
-			else:
-				self._players.append(TournamentUser(player, socket))
-			print("Tournaments" + str(self._id))
-			async_to_sync(self.channel_layer.group_send)(
-				self.channel_name,
-				{
-					'type': 'MSG_NewUser',
-					'User' : -1
-				})
-			if len(self._players) == self._playerAmount:
-				self.init()
-			return True
-		elif (usr.ConnexionStatus is ConnexionState.Away):
-			usr.ConnexionStatus = ConnexionState.OnTournament
+	def ReconnectUser(self, user):
+		ColorPrint.prGreen("Tournament {tournamentId} : User {username} reconnected.".format(tournamentId=self.TournamentId, username=user.Username))
+
+	def CreateUser(self, user, socket):
+		if (len(self.PlayersList) == self.PlayerAmount):
+			return False
+		usr = TournamentUser(socket, user.username, user.id)
+		if (usr.UserId == self.Administrator):
+			self.Administrator = usr
+		self.PlayersList.append(usr)
+		ColorPrint.prGreen("Tournament {tournamentId} : User {username} Created.".format(tournamentId=self.TournamentId, username=user.username))
 		return True
 
-	def getPlayerObject(self, Player):
-		if (self.IsUserPresent(Player) == False):
-			return None
+	def DisconnectUser(self, user):
+		if self.Status is TournamentState.Created:
+			self.PlayersList.remove(user)
+			ColorPrint.prGreen("Tournament {tournamentId} : User {username} deleted.".format(tournamentId=self.TournamentId, username=user.Username))
+		elif self.Status is TournamentState.Ongoing:
+			# GivingUp
+			ColorPrint.prGreen("Tournament {tournamentId} : User {username} giveUp.".format(tournamentId=self.TournamentId, username=user.Username))
+			pass
 		else:
-			for usr in self._players:
-				if (usr.sock_user.id == Player.id):
-					return usr
+			pass
 
-	def removePlayer(self, player):
-		usr = self.getPlayerObject(player)
-		if usr is not None:
-			self._players.remove(usr)
-			if (self.Winner is not None):
-				return
-			async_to_sync(self.channel_layer.group_send)(
-				self.channel_name,
-				{
-					'type': 'MSG_NewUser',
-					'User' : -1
-				})
 
-	def SendMatchsData(self, users):
-		tree = []
-		for subTree in self.Tree:
-			for match in subTree:
-				tree.append(match)
-		async_to_sync(self.channel_layer.group_send)(
-			self.channel_name,
-			{
-				'type': 'MSG_Match',
-				'matchList' : [match.to_json() for match in tree],
-				'User' : users
-			})
+#endregion 
 
-	def StartMatch(self, Match):
-		if (Match.State is not GameState.Initialisation):
-			return
-		from battleshipApp import BattleshipGameManager, BattleshipMatch
-		BattleshipGameManager.GameManager.CreateGame(BattleshipGameManager.GameManager, Match.User1, Match.User2, Match.id, BattleshipMatch.GameType.Tournament, self._id)
-		print("Tournament Match Users are " + Match.User1.sock_user.username + ", " + Match.User2.sock_user.username)
-		async_to_sync(self.channel_layer.group_send)(
-			self.channel_name,
-			{
-				'type': 'MSG_LaunchGame',
-				'gameType' : self._typeGame,
-				'gameId': Match.id,
-				'Player1': Match.User1.sock_user.id,
-				'Player2': Match.User2.sock_user.id,
-				'tournamentId' : self._id
-		})
-		Match.State = GameState.Playing
+# 	def __init__(self, id, creator, typeGame : TypeGame, numberOfPlayer : int, privateGame : bool, description : str, name: str):
+# 		self.status = GameState.Creation
+# 		self._id = id
+# 		self._creator = TournamentUser(creator, None)
+# 		self._typeGame = typeGame
+# 		self._playerAmount = numberOfPlayer
+# 		self._private = privateGame
+# 		self._desc = description
+# 		self._name = name
+# 		self._players = []
+# 		self.curMatch = []
+# 		self.channel_layer = get_channel_layer()
+# 		self.channel_name = "Tournaments" + str(self._id)
+# 		self.curStep = 0
+# 		self.Tree = self.initArray()
+# 		self.Winner = None
 
-	def init(self):
-		random.shuffle(self._players)
-		PlayerPos = 0
-		TreePos = 0
-		while (TreePos < len(self.Tree[0])):
-			self.Tree[0][TreePos].State = GameState.Initialisation
-			self.Tree[0][TreePos].User1 = self._players[PlayerPos]
-			self.Tree[0][TreePos].User2 = self._players[PlayerPos + 1]
-			TreePos += 1
-			PlayerPos += 2
-		self.SendMatchsData(-1)
-		self.status = GameState.Playing
-		for match in self.Tree[0]:
-			self.StartMatch(match)
+# 	def initArray(self):
+# 		count = self._playerAmount
+# 		PlayerPos = 1
+# 		Tree = []
+# 		while (count > 1):
+# 			PlayerPosArray = []
+# 			PlayerPos2 = 0
+# 			while (PlayerPos2 < count / 2):
+# 				PlayerPosArray.append(TreeMatch(PlayerPos, "Tournament" + str(self._id) + "_" + str(PlayerPos) + "_" + str(PlayerPos2)))
+# 				PlayerPos2 += 1
+# 			PlayerPos += 1
+# 			Tree.append(PlayerPosArray)
+# 			count /= 2
+# 		return Tree
+
+# 	def __str__(self) -> str:
+# 		return "id is " + str(self._id) + " name = " + str(self._typeGame) + " private = " + str(self._private) + " game : " + self._name + " created by " + self._creator.sock_user.username + " with " + str(self._playerAmount) + " players. desc = " + self._desc
+
+# 	def sendData(self, user):
+# 		async_to_sync(self.channel_layer.group_send)(
+# 			self.channel_name,
+# 			{
+# 				'type': 'MSG_NewUser',
+# 				'User' : -1 if user is None else user.id
+# 			})
+# 		self.SendMatchsData(-1)
+
+# 	def UpdateData(self, MatchId, Winner):
+# 		pos = 0
+# 		while pos < len(self.Tree):
+# 			pos2 = 0
+# 			while pos2 < len(self.Tree[pos]):
+# 				if self.Tree[pos][pos2].id == MatchId:
+# 					self.Tree[pos][pos2].State = GameState.Ended
+# 					self.Tree[pos][pos2].Winner = self.GetUserById(Winner.id)
+# 					if (pos == len(self.Tree) - 1):
+# 						self.status = GameState.Ended
+# 						self.WinnerMatch = self.Tree[pos][pos2]
+# 						self.Winner = self.Tree[pos][pos2].Winner
+# 						self.SendMatchsData(-1)
+# 						return
+# 					curMatch = None
+# 					curPlayer = -1
+# 					if (pos2 % 2 != 0):
+# 						curMatch = self.Tree[pos + 1][int((pos2 / 2) - 0.5)]
+# 						curPlayer = 2
+# 					else:
+# 						curMatch = self.Tree[pos + 1][int(pos2 / 2)]
+# 						curPlayer = 1
+# 					if (curMatch is None):
+# 						return
+# 					elif curMatch.State == GameState.Creation:
+# 						curMatch.State = GameState.Initialisation
+# 					if (curPlayer == 1):
+# 						curMatch.User1 = self.Tree[pos][pos2].Winner
+# 					else:
+# 						curMatch.User2 = self.Tree[pos][pos2].Winner
+# 					self.SendMatchsData(-1)
+# 					if (curMatch.User1 is not None and curMatch.User2 is not None):
+# 						self.StartMatch(curMatch)
+# 					return
+# 				pos2 += 1
+# 			pos += 1
+
+# 	def GetUserById(self, id):
+# 		for usr in self._players:
+# 			if (usr.sock_user.id == id):
+# 				return usr
+# 		return None
+
+# 	def getTournament(self):
+# 		return self
+
+# 	def IsUserPresent(self, user):
+# 		for users in self._players:
+# 			if users.sock_user.id == user.id:
+# 				return True
+# 		if user == self._creator.sock_user.id:
+# 			return True
+# 		return False
+
+# 	def IsTournamentExist(self, tournamentId):
+# 		if int(self._id) is int(tournamentId):
+# 			return True
+# 		return False
+
+# 	def addPlayer(self, player, socket):
+# 		usr = self.getPlayerObject(player)
+# 		if (usr == None):
+# 			if (self._creator.sock_user.id == player.id):
+# 				self._players.append(self._creator)
+# 				self._creator.socket = socket
+# 			else:
+# 				self._players.append(TournamentUser(player, socket))
+# 			print("Tournaments" + str(self._id))
+# 			async_to_sync(self.channel_layer.group_send)(
+# 				self.channel_name,
+# 				{
+# 					'type': 'MSG_NewUser',
+# 					'User' : -1
+# 				})
+# 			if len(self._players) == self._playerAmount:
+# 				self.init()
+# 			return True
+# 		elif (usr.ConnexionStatus is ConnexionState.Away):
+# 			usr.ConnexionStatus = ConnexionState.OnTournament
+# 		if self.status is GameState.Ended:
+# 			if (self.WinnerMatch.User1.ConnexionStatus is ConnexionState.OnTournament and self.WinnerMatch.User2.ConnexionStatus is ConnexionState.OnTournament):
+# 				async_to_sync(self.channel_layer.group_send)(
+# 					self.channel_name,
+# 					{
+# 						'type': 'MSG_EndTournament',
+# 						'Winner' : self.Winner.Name
+# 					})
+# 		return True
+
+# 	def getPlayerObject(self, Player):
+# 		if (self.IsUserPresent(Player) == False):
+# 			return None
+# 		else:
+# 			for usr in self._players:
+# 				if (usr.sock_user.id == Player.id):
+# 					return usr
+
+# 	def removePlayer(self, player):
+# 		usr = self.getPlayerObject(player)
+# 		if usr is not None:
+# 			self._players.remove(usr)
+# 			if (self.Winner is not None):
+# 				return
+# 			async_to_sync(self.channel_layer.group_send)(
+# 				self.channel_name,
+# 				{
+# 					'type': 'MSG_NewUser',
+# 					'User' : -1
+# 				})
+
+# 	def SendMatchsData(self, users):
+# 		tree = []
+# 		for subTree in self.Tree:
+# 			for match in subTree:
+# 				tree.append(match)
+# 		async_to_sync(self.channel_layer.group_send)(
+# 			self.channel_name,
+# 			{
+# 				'type': 'MSG_Match',
+# 				'matchList' : [match.to_json() for match in tree],
+# 				'User' : users
+# 			})
+
+# 	def StartMatch(self, Match):
+# 		if (Match.State is not GameState.Initialisation):
+# 			return
+# 		if (self._typeGame is TypeGame.Battleship):
+# 			from battleshipApp import BattleshipGameManager, BattleshipMatch
+# 			BattleshipGameManager.GameManager.CreateGame(BattleshipGameManager.GameManager, Match.User1.sock_user, Match.User2.sock_user, Match.id, BattleshipMatch.GameType.Tournament, self._id)
+# 		print("Tournament Match Users are " + Match.User1.sock_user.username + ", " + Match.User2.sock_user.username)
+# 		async_to_sync(self.channel_layer.group_send)(
+# 			self.channel_name,
+# 			{
+# 				'type': 'MSG_LaunchGame',
+# 				'gameType' : self._typeGame,
+# 				'gameId': Match.id,
+# 				'Player1': Match.User1.sock_user.id,
+# 				'Player2': Match.User2.sock_user.id,
+# 				'tournamentId' : self._id
+# 		})
+# 		Match.State = GameState.Playing
+
+# 	def init(self):
+# 		self.status = GameState.Playing
+# 		random.shuffle(self._players)
+# 		PlayerPos = 0
+# 		TreePos = 0
+# 		while (TreePos < len(self.Tree[0])):
+# 			self.Tree[0][TreePos].State = GameState.Initialisation
+# 			self.Tree[0][TreePos].User1 = self._players[PlayerPos]
+# 			self.Tree[0][TreePos].User2 = self._players[PlayerPos + 1]
+# 			TreePos += 1
+# 			PlayerPos += 2
+# 		self.SendMatchsData(-1)
+# 		for match in self.Tree[0]:
+# 			self.StartMatch(match)
 

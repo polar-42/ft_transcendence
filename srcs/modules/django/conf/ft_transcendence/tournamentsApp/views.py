@@ -4,6 +4,8 @@ from django.shortcuts import render
 from .models import TournamentsModels
 from . import TournamentManager
 
+from .EnumClass import TournamentState
+
 # Create your views here.
 def Home_view(request):
 	if (request.method == "GET" and request.GET["valid"] == "True"):
@@ -11,13 +13,13 @@ def Home_view(request):
 	else:
 		return render(request, 'index.html')
 
-def tournaments_creation(request):
+def CreationViews(request):
 	if (request.method == "GET" and request.GET["valid"] == "True"):
 		return render(request, 'tournaments/tournamentsCreation.html')
 	else:
 		return render(request, 'index.html')
 
-def create_tournaments(request):
+def create_tournament(request):
 	if request.method != "POST":
 		return JsonResponse({'error': 'Invalid request method'})
 	data = json.loads(request.body)
@@ -35,7 +37,7 @@ def create_tournaments(request):
 	numberOfPlayers = int(numberOfPlayers)
 	if numberOfPlayers != 4 and numberOfPlayers != 8 and numberOfPlayers != 16:
 		return JsonResponse({'message': 'Tournaments number of player must be a least 4, 8 or 16', 'isCreated': False})
-	Joined, id = TournamentManager.Manager.CreateTournaments(request.user, data)
+	Joined, id = TournamentManager.Manager.CreateTournament(request.user, data)
 	if (Joined is False):
 		return JsonResponse({'message': 'Failed creating game (creator already in lobby)', 'isCreated': False})
 
@@ -72,16 +74,17 @@ def get_tournaments_html(request):
 	tournamentL = TournamentManager.Manager.GetTournaments()
 	dictionnary = []
 	x = 0
-	for tour in tournamentL:
-		dictionnary.append({
-			'index': tour._id,
-			'name': tour._name,
-			'typeGame': tour._typeGame,
-			'numberPlayers': len(tour._players),
-			'creator': tour._creator.sock_user.username,
-			'private': tour._private,
-			'description': tour._desc
-		})
+	for tour in tournamentL.values():
+		if tour.Status is TournamentState.Created:
+			dictionnary.append({
+				'index': tour.TournamentId,
+				'name': tour.TournamentName,
+				'typeGame': tour.Type,
+				'numberPlayers': len(tour.PlayersList),
+				'creator': tour.Administrator.Username,
+				'private': tour.Visibility,
+				'description': tour.Description
+			})
 		x += 1
 
 	return render(request, 'tournaments/templateTournaments.html', {'games': dictionnary})
@@ -114,10 +117,10 @@ def join_tournaments(request):
 
 	print(request.user, 'is trying yo join tournament number', tournamentsId)
 
-	messageAddUser, isJoin, canJoin = TournamentManager.Manager.canJoin(request.user, tournamentsId)
-	if isJoin is False:
-		return JsonResponse({'error': messageAddUser, 'canJoin': canJoin})
-	return JsonResponse({'message': messageAddUser, 'canJoin': canJoin})
+	# messageAddUser, isJoin, canJoin = TournamentManager.Manager.canJoin(request.user, tournamentsId)
+	# if isJoin is False:
+		# return JsonResponse({'error': messageAddUser, 'canJoin': True})
+	return JsonResponse({'message': "", 'canJoin': True})
 
 def view_JoinPage(request):
 	if (request.method == "GET" and request.GET["valid"] == "True"):

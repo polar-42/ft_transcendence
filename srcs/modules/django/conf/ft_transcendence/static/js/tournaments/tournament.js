@@ -15,7 +15,7 @@ export function initTournaments()
 	else
 	{
 		tournamentSocket.send(JSON.stringify({
-			'function': 'Retrieve_Data',
+			'function': 'Reconnect',
 		}))
 	}
 	document.getElementById('BTN_Leave').addEventListener('click', leaveTournament)
