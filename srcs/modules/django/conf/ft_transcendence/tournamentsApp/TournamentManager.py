@@ -74,3 +74,6 @@ class TournamentsManager():
 				return True
 
 		return False
+
+
+Manager = TournamentsManager()

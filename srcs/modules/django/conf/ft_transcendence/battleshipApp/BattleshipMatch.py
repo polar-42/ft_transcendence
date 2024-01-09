@@ -3,9 +3,6 @@ from channels.layers import get_channel_layer
 from enum import IntEnum
 import threading, time
 import random
-from asgiref.sync import async_to_sync
-import socketApp
-import tournamentsApp.views
 from . import ColorPrint
 import json
 
@@ -25,6 +22,11 @@ class ConnexionState(IntEnum):
 class GameType(IntEnum):
 	Normal = 0
 	Tournament = 1
+
+class GameEndReason(IntEnum):
+	Disconnected = 0
+	GiveUp = 1
+	Win = 2
 
 class Case():
 
@@ -83,8 +85,10 @@ class User():
 		else:
 			for boat in boatsList:
 				ori = 'H' if boat['horizontal'] is True else 'V'
+				if (boat['ArrayX'] < 0 or boat['ArrayY'] < 0):
+					return False
 				self.BoatList.append(Boat(boat['name'], boat['size'], ori, boat['ArrayX'], boat['ArrayY']))
-		return
+		return True
 	
 	def Hit(self, case):
 		result = 0
@@ -121,42 +125,19 @@ class GameLoop(threading.Thread):
 			if self.match.currentTimer != -1:
 				self.match.currentTimer -= 1
 				ColorPrint.prGreen("Debug! GAME {gID}: Timer : {curTime}.".format(gID=self.match.gameId, curTime=self.match.currentTimer))
+				if self.match.Gamestatus is GameState.Ending:
+					self.match.CloseGame()
+					return
 				time.sleep(1)
+			
 			if  self.match.currentTimer == 0:
 				self.match.ForceStep()
+				if self.match.Gamestatus is GameState.Ending:
+					self.match.CloseGame()
+					return
 
 	def stop(self):
 		self.stopFlag.set()
-
-class BattleShipGameManager():
-	_MatchList = {}
-
-	def JoinGame(self, gameId, user, socket):
-		if (gameId not in self._MatchList.keys()):
-			ColorPrint.prRed("Error ! User {name} try to join non existing game : {game}.".format(name=user.username, game=gameId))
-			return None
-		else:
-			ColorPrint.prRed("Error ! User {name} Socket : {Msocket}.".format(name=user.username, Msocket=socket))
-			self._MatchList[gameId].ConnectUser(user, socket)
-		return self._MatchList[gameId]
-	
-	def LeaveGame(self, gameId, user):
-		if gameId not in self._MatchList.keys():
-			return
-		self._MatchList[gameId].disconnectUser(user, "User " + user.username + " leave the game")
-		# self._MatchList[gameId].StopGame(True, True, "User " + user.username + " leave the game")
-
-	def CloseGame(self, gameId):
-		if gameId not in self._MatchList.keys():
-			return
-		self._MatchList.pop(gameId)
-
-	def CreateGame(self, user1, user2, gameid : str, GType : GameType, _id):
-		if (id not in self._MatchList.keys()):
-			self._MatchList[gameid] = BattleshipMatch(gameid, user1, user2, self, GType, _id)
-			ColorPrint.prGreen("DEBUG : Game {gameId} created.".format(gameId=gameid))
-		else:
-			ColorPrint.prRed("Error! Trying to create a game with duplicate id : " + gameid + ".")
 
 class BattleshipMatch():
 
@@ -173,7 +154,7 @@ class BattleshipMatch():
 		self.channel_layer = get_channel_layer()
 		self.Users = [User(user1), User(user2)]
 		self.GameType = GameType
-		self._id = _id
+		self.tournamentId = _id
 
 	def getUser(self, user):
 		if (user.id == self.Users[0].sock_user.id):
@@ -181,6 +162,13 @@ class BattleshipMatch():
 		elif user.id == self.Users[1].sock_user.id:
 			return self.Users[1]
 		return None
+
+	def DisconnectUser(self, user):
+		usr = self.getUser(user)
+		if (usr is None):
+			return
+		usr.ConnexionStatus = ConnexionState.Disconnected
+		self.GameEnd(self.GetUserId(usr), GameEndReason.Disconnected)
 
 	def ConnectUser(self, user, socket):
 		FindedUser = self.getUser(user)
@@ -218,7 +206,9 @@ class BattleshipMatch():
 		if (usr is None):
 			ColorPrint.prRed("Error! Game {gId} : User {uName} is not player.".format(gId=self.gameId, uName=user.username))
 			return
-		usr.ParseBoats(BoatList)
+		if (usr.ParseBoats(BoatList) == False):
+			usr.BoatList.clear()
+			return
 		usr1 = len(self.Users[0].BoatList)
 		usr2 = len(self.Users[1].BoatList)
 		if (len(usr.BoatList) > 0):
@@ -243,6 +233,8 @@ class BattleshipMatch():
 		self.ChangeTurn()
 
 	def ChangeTurn(self):
+		if (self.Gamestatus is not GameState.Playing):
+			self.Gamestatus = GameState.Playing
 		self.currentTimer = 30
 		newUsr = 0 if self.TurnUser == self.Users[1] else 1
 		oldUsr = 0 if self.TurnUser == self.Users[0] else 1
@@ -279,32 +271,31 @@ class BattleshipMatch():
 
 			case GameState.RequestBoat:
 				if (len(self.Users[0].BoatList) == 0 and len(self.Users[0].BoatList) == 0):
-					ColorPrint.prRed("Error! Game {gameid} : Users never selected their boat.".format(self.gameId))
+					usr = 2
 				else:
-					usr = self.Users[0] if len(self.Users[0].BoatList) == 0 else self.Users[1]
-					ColorPrint.prRed("Error! Game {gameid} : User {username} never selected his boat.".format(self.gameId, usr.Name))
-				#EndGame here
+					usr = 0 if len(self.Users[0].BoatList) == 0 else 1
+				self.GameEnd(usr, GameEndReason.GiveUp)
 			
 			case GameState.Playing:
 				msg = json.dumps({
 					'function': "RetrieveHit",
 					'timer': -1
 					})
+				ColorPrint.prYellow("Warning! Game {gameid} : User {username} don't send a case. Requesting.".format(gameid=self.gameId, username=self.TurnUser.Name))
 				self.TurnUser.SendMessage(msg)
 				self.Gamestatus = GameState.RequestHit
 				self.currentTimer = 2
 
 			case GameState.RequestHit:
-				other = self.Users[0] if self.TurnUser is self.Users[1] else self.Users[1]
-				ColorPrint.prRed("Error! Game {gameid} : User {username} don't select a case. User {username2} win by forfeit.".format(self.gameId, self.TurnUser.Name, other.Name))
-				#EndGame here
+				other = 0 if self.TurnUser is self.Users[1] else 1
+				self.GameEnd(0 if other == 1 else 1, GameEndReason.GiveUp)
 	
 	def RCV_HitCase(self, user, case):
 		if (self.Gamestatus is not GameState.Playing and self.Gamestatus is not GameState.RequestHit):
 			return
 		usr = self.getUser(user)
 		if usr is not self.TurnUser:
-			ColorPrint.prYellow("Warning! Game {gameid} : non game user {username} just sended an hit request.".format(self.gameId, usr.Name))
+			ColorPrint.prYellow("Warning! Game {gameid} : non game user {username} just sended an hit request.".format(gameid=self.gameId, username=usr.Name))
 			return
 		Target = self.Users[0] if usr is self.Users[1] else self.Users[1]
 		Result = Target.Hit(case)
@@ -324,67 +315,72 @@ class BattleshipMatch():
 			'destroyedboat' : "None" if Result < 2 else Target.BoatList[Result - 2].Name
 			})
 		Target.SendMessage(msg)
-
+		ColorPrint.prGreen("Debug! Game {gameid} : User {username} hit case[{x},{y}] of {username2} and {result}.".format(gameid=self.gameId, username=self.TurnUser.Name, x=case['ArrayPosX'], y=case['ArrayPosY'], username2=Target.Name, result = "touch a boat" if Result > 0 else "miss"))
 		if self.CheckEnd() is not None:
-			# EndGame here
-			pass
+			ColorPrint.prGreen("Debug! Game {gameid} : User {username} end the game.".format(gameid=self.gameId, username=self.TurnUser.Name))
+			self.GameEnd(self.GetUserId(self.TurnUser), GameEndReason.Win)
 		else:
 		# 	self.StopGame(True, True, "Game Ended! Winner is " + self.TurnUser.Name + ". He destroyed the " + str(Target.CountDestroyedBoats()) + " " + Target.Name + " boats while getting only " + str(self.TurnUser.CountDestroyedBoats()) + " of its own boat destroyed.")
 			self.ChangeTurn()
 
+	def GetUserId(self, user):
+		return 0 if user is self.Users[0] else 1
 
 	def CheckEnd(self):
-		if (self.Users[0].CountDestroyedBoats == len (self.Users[0].BoatList)):
+		if (self.Users[0].CountDestroyedBoats() == len (self.Users[0].BoatList)):
 			return self.Users[0]
-		if (self.Users[1].CountDestroyedBoats == len (self.Users[1].BoatList)):
+		if (self.Users[1].CountDestroyedBoats() == len (self.Users[1].BoatList)):
 			return self.Users[1]
 		return None
-# def disconnectUser(self, user, reason : str):
-	# 	usr = self.getUser(user)
-	# 	if (usr is None):
-	# 		ColorPrint.prRed("Error ! User '" + usr.Name + "' Try to disconnect from Match '" + self.gameId + "' while not in.")
-	# 		return
-	# 	if (usr.connected == False):
-	# 		ColorPrint.prRed("Error ! User '" + usr.Name + "' Try to disconnect from Match '" + self.gameId + "' while already disconnected.")
-	# 		return
-	# 	usr.connected = False
-	# 	if (self.Gamestatus is not GameState.Ending):
-	# 		self.StopGame(True, True, reason)
+	
+	def GameEnd(self, usrID, Reason):
+		if (usrID == 2):
+			user = None
+		else:
+			user = self.Users[usrID]
+		if Reason is GameEndReason.Disconnected or Reason is GameEndReason.GiveUp:
+			if (user is None):
+				ColorPrint.prGreen("Debug! Game : {gameId}. Both users have disconnected or giveUp. Game is cancelled.".format(gameId=self.gameId))
+				self.Winner = None
+			else:
+				if ((self.Gamestatus is GameState.BoatPlacement or self.Gamestatus is GameState.RequestBoat) and self.GameType is not GameType.Tournament):
+					ColorPrint.prGreen("Debug! Game : {gameId}. User {username} have disconnected or give up during boat placement phase. Game is cancelled.".format(gameId=self.gameId, username=user.Name))
+					self.Winner = None
+				else:
+					ColorPrint.prGreen("Debug! Game : {gameId}. User {username} have disconnected or give up during. Game is win by {othername}.".format(gameId=self.gameId, username=user.Name, othername=self.Users[0].Name if user is self.Users[1] else self.Users[1].Name))
+					self.Winner = self.Users[0] if user is self.Users[1] else self.Users[1]
+		else:
+			ColorPrint.prGreen("Debug! Game : {gameId}. Game is win by {username}.".format(gameId=self.gameId, username=user.Name))
+			self.Winner = user
+		self.Gamestatus = GameState.Ending
 
-# def GetTournamentId(self):
-	# 	startPos = len("Tournament")
-	# 	EndPos = self.gameId.find('_')
-	# 	id = self.gameId[startPos:EndPos]
-	# 	return id
 
-# def StopGame(self, user1, user2, message):
-	# 	if (self.Gamestatus == GameState.Ending):
-	# 		ColorPrint.prRed("Trying to stop an already enden game with reason : \"" + message + "\"")
-	# 		return
-	# 	self.Gamestatus = GameState.Ending
-	# 	if (user1 == True and self.user1.connected is True) and (user2 == True and self.user2.connected is True):
-	# 		user = -1
-	# 	elif (user1 == True and self.user1.connected is True):
-	# 		user = user1.sock_user.id
-	# 	elif (user2 == True and self.user2.connected is True):
-	# 		user = user2.sock_user.id
-	# 	else:
-	# 		return
-	# 	ColorPrint.prGreen("Game Stopped with reason : \"" + message + "\"")
-	# 	async_to_sync(self.channel_layer.group_send)(
-	# 		self.channelName,
-	# 		{
-	# 			'type' : 'MSG_GameStop',
-	# 			'user' : user,
-	# 			'message' : message
-	# 		})
+	def CloseGame(self):
+		if (self.GameType is not GameType.Tournament):
+			#  Save Result in DB
+			msg = json.dumps({
+				'function': "ReturnToMatchmaking",
+				'Winner': 'None' if self.Winner is None else self.Winner.Name,
+				'timer': 3
+				})
+		else:
+			from tournamentsApp import TournamentManager
+			TournamentManager.Manager.sendMatchData(self.tournamentId, self.gameId, self.Winner.sock_user)
+			msg = json.dumps({
+				'function': "ReturnToTournament",
+				'ID': self.tournamentId,
+				'timer': 3
+				})
+		self.Users[0].SendMessage(msg)
+		self.Users[1].SendMessage(msg)
+		self.Users[0].socket.close()
+		self.Users[1].socket.close()
+		from . import BattleshipGameManager
+		BattleshipGameManager.GameManager.CloseGame(BattleshipGameManager.GameManager, self.gameId)
 
-# def closeThread(self):
-	# 	if (self.thread == None):
-	# 		return
-	# 	self.thread.stop()
-	# 	self.thread.join()
-	# 	self.thread = None
-	# 	if self.gameId.startswith('Tournament') == True:
-	# 		tournamentsApp.views.TournamentManager.sendMatchData(self.GetTournamentId(), self.gameId, self.TurnUser.sock_user)
-	# 	self.gm.CloseGame(self.gm, self.gameId)	
+	def closeThread(self):
+		if (self.thread == None):
+			return
+		self.thread.stop()
+		self.thread.join()
+		self.thread = None

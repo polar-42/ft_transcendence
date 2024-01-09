@@ -3,8 +3,6 @@ from enum import IntEnum
 from channels.layers import get_channel_layer
 import random
 from asgiref.sync import async_to_sync
-import math
-from battleshipApp import BattleshipMatchmaking, BattleshipMatch
 
 class GameState(IntEnum):
 	Creation = -1
@@ -93,12 +91,13 @@ class Tournament():
 					self.Tree[pos][pos2].Winner = Winner
 					if (pos == len(self.Tree) - 1):
 						self.status = GameState.Ended
-						async_to_sync(self.channel_layer.group_send)(
-							self.channel_name,
-							{
-								'type': 'MSG_EndTournament',
-								'Winner' : self.Tree[pos][pos2].Winner.username
-							})
+						self.SendMatchsData(-1)
+						# async_to_sync(self.channel_layer.group_send)(
+							# self.channel_name,
+							# {
+								# 'type': 'MSG_EndTournament',
+								# 'Winner' : self.Tree[pos][pos2].Winner.username
+							# })
 						return
 					curMatch = None
 					curPlayer = -1
@@ -169,7 +168,8 @@ class Tournament():
 	def StartMatch(self, Match):
 		if (Match.State is not GameState.Initialisation):
 			return
-		BattleshipMatchmaking.GameManager.CreateGame(BattleshipMatchmaking.GameManager, Match.User1, Match.User2, Match.id, BattleshipMatch.GameType.Tournament, self._id)
+		from battleshipApp import BattleshipGameManager, BattleshipMatch
+		BattleshipGameManager.GameManager.CreateGame(BattleshipGameManager.GameManager, Match.User1, Match.User2, Match.id, BattleshipMatch.GameType.Tournament, self._id)
 		print("Tournament Match Users are " + Match.User1.username + ", " + Match.User2.username)
 		async_to_sync(self.channel_layer.group_send)(
 			self.channel_name,

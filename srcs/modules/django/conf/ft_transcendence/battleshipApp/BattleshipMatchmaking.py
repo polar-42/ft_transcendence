@@ -3,9 +3,6 @@ import random
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 import asyncio
-from . import BattleshipMatch
-
-GameManager = BattleshipMatch.BattleShipGameManager
 
 class MatchmakingLoop(threading.Thread):
 
@@ -49,15 +46,15 @@ class Matchmaking():
         return self.userList
 
     def createGame(self, user1, user2):
-        global GameManager
         if (user1.is_authenticated == False or user2.is_authenticated == False):
             if user1.is_authenticated == False:
                 self.matchmake.removeUser(user1)
             if user2.is_authenticated == False:
                 self.matchmake.removeUser(user2)
             return
+        from . import BattleshipGameManager, BattleshipMatch
         game_id = "Game_" + str(user1.id) + "_" + str(user2.id)
-        GameManager.CreateGame(GameManager, user1, user2, game_id, BattleshipMatch.GameType.Normal, None)
+        BattleshipGameManager.GameManager.CreateGame(BattleshipGameManager.GameManager, user1, user2, game_id, BattleshipMatch.GameType.Normal, None)
         async_to_sync(self.channel_layer.group_send)(
             self.channelName,
             {
