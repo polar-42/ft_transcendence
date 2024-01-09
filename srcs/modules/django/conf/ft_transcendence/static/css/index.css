@@ -63,7 +63,7 @@ header {
 nav {
   width: auto;
   display: grid;
-  grid-template-areas: "a b c d";
+  grid-template-areas: "a b c d e";
   grid-gap: 20px;
   align-items: center;
   justify-items: end;
@@ -98,7 +98,7 @@ header a:visited {
 }
 
 .profile_button {
-  grid-area: d;
+  grid-area: e;
   background: var(--main-color);
   border-radius: 20px;
   border: 2px solid var(--main-color);
