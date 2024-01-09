@@ -74,7 +74,7 @@ class TournamentSocket(WebsocketConsumer):
 		data = json.loads(text_data)
 		match (data['function']):
 			case 'Reconnect':
-				if (TournamentManager.Manager.ConnectUser(self.scope['user'], self, self.scope['url_route']['kwargs']['tournamentId']) is False):
+				if (TournamentManager.Manager.ConnectUser(self.scope['user'], self, self.TournamentId) is False):
 					self.close()
 					return
 			# case 'Retrieve_Data':

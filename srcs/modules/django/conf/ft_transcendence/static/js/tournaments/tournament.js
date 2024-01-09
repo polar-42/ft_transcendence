@@ -10,12 +10,12 @@ export function initTournaments()
 		return
 	}
 	const tournamentId = arguments[0]
-	if (tournamentSocket == undefined)
+	if (tournamentSocket == undefined || tournamentSocket.url.endsWith(tournamentId) == false)
 		tournamentSocket = new WebSocket("ws://" + window.location.host + '/socketApp/tournamentsApp/' + tournamentId)
 	else
 	{
 		tournamentSocket.send(JSON.stringify({
-			'function': 'Reconnect',
+			'function': 'Reconnect'
 		}))
 	}
 	document.getElementById('BTN_Leave').addEventListener('click', leaveTournament)
