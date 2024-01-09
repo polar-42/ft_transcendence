@@ -149,7 +149,7 @@ class pongGameLoop(threading.Thread):
 
                 time.sleep(0.03)
 
-                print('in game loop, x =', x)
+                #print('in game loop, x =', x)
                 x = x + 1
 
     def run(self):
@@ -193,8 +193,9 @@ class pongGame():
         self.channel_layer = get_channel_layer()
         #self.pongGame = pongGameClasses.GameState()
 
-    def launchGame(self, channelName, users):
+    def launchGame(self, channelName, users, isTournament):
         self.users = users
+        self.isTournament = isTournament
         if channelName != '':
             self.mythread = pongGameLoop(self, users)
 

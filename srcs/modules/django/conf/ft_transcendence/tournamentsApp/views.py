@@ -78,7 +78,7 @@ def get_tournaments_html(request):
 			'name': tour._name,
 			'typeGame': tour._typeGame,
 			'numberPlayers': len(tour._players),
-			'creator': tour._creator.username,
+			'creator': tour._creator.sock_user.username,
 			'private': tour._private,
 			'description': tour._desc
 		})
@@ -96,7 +96,7 @@ def get_tournaments(request):
 			'name': tour._name,
 			'typeGame': tour._typeGame,
 			'numberPlayers': len(tour._players),
-			'creator': tour._creator.username,
+			'creator': tour._creator.sock_user.username,
 			'private': tour._private,
 			'description': tour._desc
 		})

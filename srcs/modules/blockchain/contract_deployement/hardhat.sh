@@ -3,7 +3,7 @@
 if [ -f "/var/blockchain/contract_address.txt" ]; then
     export CONTRACT_ADDRESS=$(cat /var/blockchain/contract_address.txt);
     echo Contract already deployed;
-    exit 0;
+    sleep 50000
 fi
 
 if [[ "$(npm list chai)" =~ "empty" ]]; then
@@ -26,13 +26,6 @@ if [[ "$(npm list @nomiclabs/hardhat-waffle)" =~ "empty" ]]; then
 else
     echo "nomiclabs/hardhat-waffle is already installed"
 fi
-
-#if [[ "$(npm list @nomiclabs/hardhat-ethers)" =~ "empty" ]]; then
-#    echo "Installing nomiclabs/hardhat-ethers"
-#    npm install @nomiclabs/hardhat-ethers > /dev/null 2>&1;
-#else
-#    echo "nomiclabs/hardhat-ethers is already installed"
-#fi
 
 if [ ! -f "/var/blockchain/contract_address.txt" ]; then
     echo "running npx hardhat compile";
@@ -58,16 +51,11 @@ while [ "$x" -lt 30 ]; do
 done
 
 
-#echo "running npx hardhat test --network localhost";
-#npx hardhat test --network localhost;
-
 if [ ! -f "/var/blockchain/contract_address.txt" ]; then
     echo "running npx hardhat run --network ganache scripts/deploy.js";
     npx hardhat run --network ganache scripts/deploy.js;
     cp contract_address.txt /var/blockchain/;
     echo Contract address file is create;
     export CONTRACT_ADDRESS=$(cat /var/blockchain/contract_address.txt);
-    #npx hardhat run --network ganache scripts/test.js;
-    #echo Contract address already file is create;
 fi
 
