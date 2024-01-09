@@ -108,6 +108,8 @@ const router = async (arg) =>
       })
 }
 
+const menuBtn = document.querySelector(".menu_btn")
+const dropDownMenu = document.querySelector(".dropdown_menu")
 
 window.addEventListener("popstate", router)
 
@@ -127,6 +129,8 @@ document.addEventListener("DOMContentLoaded", () =>
 function clickLogout(e) {
   let profileDropDowns = document.querySelectorAll(".profile_menu");
   profileDropDowns.forEach((menu) => menu.classList.remove("open"));
+  dropDownMenu.classList.remove('open')
+  menuBtn.src = '../static/assets/logo/hamburger.png'
   logout(e);
   navto("/");
 }
@@ -135,8 +139,6 @@ document.querySelectorAll("button[name='logout']").forEach((logout) =>
   logout.addEventListener("click", clickLogout)
 )
 
-const menuBtn = document.querySelector(".menu_btn")
-const dropDownMenu = document.querySelector(".dropdown_menu")
 
 menuBtn.addEventListener("click", () => {
   dropDownMenu.classList.toggle('open')
@@ -171,6 +173,8 @@ for (let i = 0; i < 2; i++)
     }
     else
     {
+      dropDownMenu.classList.toggle('open')
+      menuBtn.src = '../static/assets/logo/hamburger.png'
       navto("/authApp/login");
     }
   })
