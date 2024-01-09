@@ -1,4 +1,4 @@
-import { checkConnexion, initLoggin, initRegister, logout } from "./authApp.js"
+import { checkConnexion, initLogin, initRegister, logout } from "./authApp.js"
 import { initMatchmaking } from "./battleshipApp.js"
 import { initMatchmakingPong, unLoadMatchmakingPong } from "./pongGameApp.js"
 import { initLocalGamePong } from "./pongGameLocal.js"
@@ -23,7 +23,6 @@ const navigateTo = url =>
   router(null)
 }
 
-
 function getRoute(RoutePath)
 {
   const routes = [
@@ -41,7 +40,7 @@ function getRoute(RoutePath)
     { path: "/tournaments/Create", init: initTournamentsCreation, unload: null, title:"initTournaments", LogStatus: 1},
     { path: "/tournaments/Join", init: initTournamentsJoinPage, unload: null, title:"Join Tournaments", LogStatus: 1},
     { path: "/tournaments/Play", init: initTournaments, unload: null, title:"Tournament", LogStatus: 1},
-    { path: "/authApp/login", init: initLoggin, unload: null, title:"Login", LogStatus: 0},
+    { path: "/authApp/login", init: initLogin, unload: null, title:"Login", LogStatus: 0},
     { path: "/authApp/register", init: initRegister, unload: null, title:"Register", LogStatus: 0},
   ]
 

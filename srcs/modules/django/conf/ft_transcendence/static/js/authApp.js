@@ -1,6 +1,6 @@
 import { navto } from "./index.js"
 
-export function initLoggin()
+export function initLogin()
 {
   const submitBtn =	document.getElementsByClassName("submit_BTN")[0];
   submitBtn.addEventListener("click", connect)
@@ -13,6 +13,7 @@ export function initLoggin()
       }
     })
   })
+  inputArray[1].focus()
 }
 
 export function initRegister()
@@ -28,7 +29,7 @@ export function initRegister()
       }
     })
   })
-
+  inputArray[1].focus()
 }
 
 function sleep(ms) {
