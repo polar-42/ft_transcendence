@@ -4,15 +4,15 @@ from .EnumClass import GameType, UserState, TournamentVisibility
 from .TournamentClass import Tournament
 
 from battleshipApp import ColorPrint
-
+from .ThreadClass import TimerLoop
 class TournamentsManager():
+
 	_Tournaments = {}
 
-# 
-	# def __init__(self):
-		# pass
-# 
-	
+
+	def __init__(self):
+		self.thread = None
+
 	def CreateTournament(self, creator, data):
 
 		for tournament in self._Tournaments.values():
@@ -34,9 +34,12 @@ class TournamentsManager():
 		)
 
 		obj.save()
-# 
+
 		nTournament = Tournament(tournamentId=obj.id, creator=creator.id, playerAmount=int(data.get('numberOfPlayers')), description="DESCRIPTION TO DO", tournamentName=data.get('tournamentsName'), gameType=tournamentType, visibility=TournamentVisibility.Public)
 		self._Tournaments[int(obj.id)] = nTournament
+		if (self.thread is None):
+			self.thread = TimerLoop(self)
+			self.thread.start()	
 		return True, nTournament.TournamentId
 
 	def ConnectUser(self, user, socket, tournamentId : int):
@@ -74,51 +77,18 @@ class TournamentsManager():
 		else:
 			self._Tournaments[tournamentId].DisconnectUser(User)
 			return True
-	# def sendMatchData(self, TournamentID, MatchId, Winner):
-		# for tournament in self._Tournaments:
-			# if tournament._id == int(TournamentID):
-				# tournament.UpdateData(MatchId, Winner)
-				# return
-# 
+
+#region Getter
+
 	def GetTournament(self, tournamentId):
+		tournamentId = int(tournamentId)
 		if tournamentId not in self._Tournaments.keys():
 			return None
 		return self._Tournaments[tournamentId]
-# 
+
 	def GetTournaments(self):
 		return self._Tournaments
-# 
-	# def canJoin(self, user, tournamentId):
-		# for tournament in self._Tournaments:
-			# if tournament.IsUserPresent(user) is True:
-				# return 'Already in the tournament', False, True
-# 
-# 
-		# for tournament in self._Tournaments:
-			# if tournament.IsTournamentExist(tournamentId) is True:
-				# return 'Player is add to the tournaments', True, True
-# 
-		# return 'Error while joining the tournament', False, False
-# 
-# 
-	# def AddUser(self, user, tournamentId):
-		# for tournament in self._Tournaments:
-			# if tournament.IsUserPresent(user) is True:
-				# return True
-# 
-		# for tournament in self._Tournaments:
-			# if tournament.IsTournamentExist(tournamentId) is True:
-				# tournament.addPlayer(user)
-				# return True
-# 
-		# return False
-# 
-	# def RemoveUser(self, user, tournamentId):
-		# for tournament in self._Tournaments:
-			# if tournament.IsTournamentExist(tournamentId) is True:
-				# if tournament.IsUserPresent(user) is True:
-					# tournament.removePlayer(user)
-					# if len(tournament._players) <= 0:
-						# self._Tournaments.remove(tournament)
-# 
+
+#endregion
+
 Manager = TournamentsManager()

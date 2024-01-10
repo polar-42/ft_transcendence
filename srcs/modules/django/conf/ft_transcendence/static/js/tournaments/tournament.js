@@ -23,6 +23,26 @@ export function initTournaments()
 	tournamentSocket.onopen = launchTournamentSocket
 	tournamentSocket.onclose = quitTournamentSocket
 	tournamentSocket.onmessage = e => OnMessageTournament(e)
+	document.getElementById('BTN_Ready').addEventListener('click', ReadyBehavior)
+}
+
+export function GoingAway()
+{
+	if (tournamentSocket == undefined)
+		return
+	console.log("GoingAway")
+	tournamentSocket.send(JSON.stringify({
+		'function': 'GoingAway'
+	}))
+}
+
+function ReadyBehavior()
+{
+	if (tournamentSocket == undefined)
+		return
+	tournamentSocket.send(JSON.stringify({
+		'function': 'ReadyPressed'
+	}))
 }
 
 function launchTournamentSocket()
@@ -49,81 +69,13 @@ function OnMessageTournament(e)
 {
 	const data = JSON.parse(e.data)
 	switch (data.type) {
-		case 'SendPlayersList':
-			printPlayersInTournaments(data)
-			break
-		case 'SendMatchList':
-			printMatchs(data)
-			break
-		case 'LaunchMatch':
-			LoadGame(data)
-			break
-		case 'match_id':
-			break
-		case 'SendWinner':
-			EndTournament(data.Winner)
-			break
-		default:
+		case 'MSG_UpdateUserList':
+			PrintPlayers(data)
 			break
 	}
 }
 
-function EndTournament(WinnerName)
-{
-	console.log(WinnerName)
-	tournamentSocket = undefined
-	navto('/tournaments/Home')
-}
-
-function LoadGame(data)
-{
-	if (data.gameType == 1)
-	{
-		navto("/pongGame/Remote", data.gameId)
-	}
-	else
-	{
-		navto("/battleship", data.gameId)
-	}
-}
-
-function printMatchs(data)
-{
-	const PL = document.getElementsByName("MatchList")[0]
-	if (PL == null)
-		return
-	let child = PL.lastElementChild
-	while (child) {
-		PL.removeChild(child)
-		child = PL.lastElementChild
-	}
-	const matchs = data.matchList
-	matchs.forEach(element => {
-		const txt = document.createElement('li')
-		const player1 = document.createElement('p')
-		const player2 = document.createElement('p')
-		player1.textContent = element['User1']
-		player2.textContent = element['User2']
-		if (element['Winner'] != -1)
-		{
-			if (element['Winner'] == element['User2Id'])
-			{
-				player2.style.color = "green"
-				player1.style.color = "red"
-			}
-			else
-			{
-				player1.style.color = "green"
-				player2.style.color = "red"
-			}
-		}
-		txt.appendChild(player1)
-		txt.appendChild(player2)
-		PL.appendChild(txt)
-	})
-}
-
-function printPlayersInTournaments(data)
+function PrintPlayers(data)
 {
 	const PL = document.getElementsByName("PlayerList")[0]
 	if (PL == null)
@@ -133,7 +85,7 @@ function printPlayersInTournaments(data)
         PL.removeChild(child)
         child = PL.lastElementChild
     }
-	const Players = data.players
+	const Players = data.usrList
 	Players.forEach(element => {
 		const txt = document.createElement('li')
 		txt.textContent = element

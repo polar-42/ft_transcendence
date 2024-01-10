@@ -19,11 +19,11 @@ class TournamentSocket(WebsocketConsumer):
 	def connect(self):
 		# self.tournament = TournamentManager.Manager.GetTournament(self.scope['url_route']['kwargs']['tournamentId'])
 		ColorPrint.prYellow("HELLO!!!!")
-		self.TournamentId = self.scope['url_route']['kwargs']['tournamentId']
+		self.TournamentId = int(self.scope['url_route']['kwargs']['tournamentId'])
 		if (TournamentManager.Manager.ConnectUser(self.scope['user'], self, self.TournamentId) is False):
 			self.close()
 			return
-		self.accept()
+		# self.accept()
 		# #if len(self.players) > self.sizeTournaments:
 		# #	print('tournaments', self.scope['url_route']['kwargs']['tournamentId'], 'is full')
 		# #	self.close()
@@ -76,7 +76,22 @@ class TournamentSocket(WebsocketConsumer):
 			case 'Reconnect':
 				if (TournamentManager.Manager.ConnectUser(self.scope['user'], self, self.TournamentId) is False):
 					self.close()
-					return
+				return
+			case 'GoingAway':
+				tournament = TournamentManager.Manager.GetTournament(self.TournamentId)
+				if (tournament is None):
+					ColorPrint.prRed("Error! Tournament is None")
+					self.close()
+				elif (tournament.GoingAway(self.scope['user']) == False):
+					self.close()
+				return
+			case 'ReadyPressed':
+				tournament = TournamentManager.Manager.GetTournament(self.TournamentId)
+				if (tournament is None):
+					ColorPrint.prRed("Error! Tournament is None")
+					self.close()
+				tournament.ChangeReadyState(self.scope['user']) 
+				return
 			# case 'Retrieve_Data':
 				# self.RCV_SendData()
 		# print(self.scope['user'].username + " receive")
