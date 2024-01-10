@@ -1,0 +1,29 @@
+<!-- games html -->
+{% load static %}
+<link rel="stylesheet" href="{% static '/css/games.css' %}">
+<link rel="stylesheet" href="{% static '/css/index.css' %}">
+<script type="module" src="{% static '/js/loading.js' %}"></script>
+{% block content %}
+<section class="pong">
+  <ul>
+    <li><input  type="checkbox" name="local"><p>Local game</p></li>
+    <li><input  type="checkbox" name="IA"><p>vs IA</p></li>
+    <li><input  type="checkbox" name="online"><p>Online game</p></li>
+  </ul>
+</section>
+<section class="battleship">
+  <ul>
+    <li><input type=:"checkbox" name="normal"><p>Online game</p></li>
+  </ul>
+</section>
+<section>
+  <h2>Create a tournament</h2>
+  <ul>
+    <li><input  type="checkbox" name="pong_tournament"><p>Pong</p></li>
+    <li><input  type="checkbox" name="battleship_tournament"><p>Battleship</p></li>
+  </ul>
+</section>
+<div class="button_wrap">
+  <button class="confirm_btn">Confirm</button>
+</div>
+{% endblock content %}

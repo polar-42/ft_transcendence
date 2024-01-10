@@ -1,5 +1,6 @@
 import { checkConnexion, initLogin, initRegister, logout } from "./authApp.js"
 import { initMatchmaking } from "./battleshipApp.js"
+import { initGames } from "./games.js"
 import { initMatchmakingPong, unLoadMatchmakingPong } from "./pongGameApp.js"
 import { initLocalGamePong } from "./pongGameLocal.js"
 import { initGamePongIA, unloadGamePongIA } from './pongGameIA.js'
@@ -30,6 +31,7 @@ function getRoute(RoutePath)
     { path: "/needlog", init: null, unload: null, title:"Login required", LogStatus: 0},
     { path: "/", init: initHomePage, unload: null, title:"Home", LogStatus: 2},
     { path: "/dashboard", init: initDashboard, unload: null, title:"Home", LogStatus: 1},
+    { path: "/games", init: initGames, unload: null, title:"Games", LogStatus: 1},
     { path: "/battleship", init: initGame, unload: CP_Unload, title:"Battleship", LogStatus: 1},
     { path: "/battleship/matchmake", init: initMatchmaking, unload: null, title:"Battleship", LogStatus: 1},
     { path: "/pongGame/Remote", init: initGamePong, unload: unLoadGamePong, title:"pongGame", LogStatus: 1},
@@ -72,6 +74,7 @@ let Prev_match = undefined
 const router = async (arg) =>
 {
   let match = getRoute(document.location.origin + location.pathname)
+  console.log(match)
   /* define 404 error page */
   if (!match)
   {
@@ -90,6 +93,7 @@ const router = async (arg) =>
     actualRoute = match.route.path + "/?valid=True"
   if (Prev_match != undefined && Prev_match.route.unload != null)
     Prev_match.route.unload()
+  console.log(actualRoute)
   fetch(actualRoute)
     .then(Response => {
       document.title = match.route.title
