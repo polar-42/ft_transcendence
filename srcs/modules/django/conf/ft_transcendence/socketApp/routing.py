@@ -6,6 +6,7 @@ from pongGameApp.Remote import PongGameConsumers
 from pongGameApp.Matchmaking import PongMatchmakingConsumers
 from battleshipApp import MatchmakingConsumers, BattleshipConsumers
 from tournamentsApp import tournamentConsumer, tournamentGameConsumer
+from chatApp import chatConsumer
 
 websocket_urlpatterns = [
     path('battleshipApp/Matchmaking/', MatchmakingConsumers.socket.as_asgi()),
@@ -15,4 +16,5 @@ websocket_urlpatterns = [
     path('pongGame/RemoteGame/<str:gameId>', PongGameConsumers.PongGameSocket.as_asgi()),
     path('socketApp/tournamentsApp/<str:tournamentId>', tournamentConsumer.TournamentSocket.as_asgi()),
 	path('socketApp/tournamentsGame/<str:gameId>', tournamentGameConsumer.TournamentGameSocket.as_asgi()),
+	path('chat/', chatConsumer.chatSocket.as_asgi()),
 ]

@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'battleshipApp',
 	'pongGameApp',
 	'tournamentsApp',
+	'chatApp',
 ]
 
 MIDDLEWARE = [

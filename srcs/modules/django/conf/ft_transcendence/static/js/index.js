@@ -10,6 +10,7 @@ import { initGamePong, unLoadGamePong } from "./pongGameRemote.js"
 import { initTournamentsCreation } from "./tournaments/tournamentsCreation.js"
 import { initTournamentsJoinPage } from "./tournaments/tournamentsJoinPage.js"
 import { initTournaments } from "./tournaments/tournament.js"
+import { initChat } from "./chatApp.js"
 
 export function navto(urlpath)
 {
@@ -26,6 +27,9 @@ const navigateTo = url =>
 
 function getRoute(RoutePath)
 {
+	//Chat function
+	initChat();
+
 	const routes = [
 		{ path: "/404", init: null, unload: null, title:"404", LogStatus: 2},
 		{ path: "/needlog", init: null, unload: null, title:"Login required", LogStatus: 0},
@@ -99,7 +103,7 @@ const router = async (arg) =>
 	.then(html => {
 		document.querySelector("#app").innerHTML = html
 	})
-	.then(value => 
+	.then(value =>
 	{
 		if (match.route.init != null)
 			match.route.init(arg)

@@ -9,7 +9,17 @@
     <title>ft_transcendence</title>
   </head>
   <header>
-    <a href="/" class="nav__link home_btn" data-link>ft_transcendence</a>
+    <!--<a href="/" class="nav__link home_btn" data-link>ft_transcendence</a>-->
+
+    <!-- TEST CHAT -->
+    <input type="text" name="message/" id="message_chat">
+    <input type="text" name="target_user/" id="target_user">
+    <button id="chat_submit" type="submit">Send</button>
+    <button id="channel_submit" type="submit">Channel</button>
+    <button id="channel_join" type="submit">Join</button>
+    <button id="channel_leave" type="submit">Leave</button>
+    <div id="message_receive"></div>
+
     <nav>
       <a href="/dashboard" class="nav__link" data-link>Dashboard</a>
       <a href="/battleship/matchmake" class="nav__link" data-link>Battleship</a>
@@ -45,7 +55,8 @@
     <script type="module" src="{% static '/js/index.js' %}"></script>
   </body>
   <footer>
-    <a href="/#about" class="foot_link">About</a> 
-    <a href="" class="foot_link" data-link>Contact</a> 
+    <a href="/#about" class="foot_link">About</a>
+    <a href="" class="foot_link" data-link>Contact</a>
+
   </footer>
 </html>
