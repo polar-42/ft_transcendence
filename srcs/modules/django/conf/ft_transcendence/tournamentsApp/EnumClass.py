@@ -28,4 +28,5 @@ class GameState(IntEnum):
     Waiting = 1
     OnGoing = 2
     Ended = 3
-    cancelled = 4
+    Cancelled = 4
+    Faked = 5

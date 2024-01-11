@@ -83,6 +83,7 @@ class TournamentSocket(WebsocketConsumer):
 					ColorPrint.prRed("Error! Tournament is None")
 					self.close()
 				elif (tournament.GoingAway(self.scope['user']) == False):
+					ColorPrint.prRed("CLOSE SOCKET")
 					self.close()
 				return
 			case 'ReadyPressed':

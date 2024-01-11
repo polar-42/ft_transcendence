@@ -4,7 +4,7 @@ from .TournamentUser import TournamentUser
 from .EnumClass import GameType, TournamentState, TournamentVisibility, UserPosition, GameState
 from .TournamentMatchClass import TournamentMatch
 
-import json
+import json, math
 # class TreeMatch():
 
 # 	def __init__(self, creationStep, id):
@@ -44,6 +44,7 @@ class Tournament():
 		self.Status = TournamentState.Created
 		self.PlayersList = []
 		self.Tree = None
+		self.PrelimenaryMatch = None
 
 	def StartTournament(self):
 		self.Tree = self.CreateMatchArray()
@@ -52,9 +53,15 @@ class Tournament():
 		UsersList = self.PlayersList.copy()
 
 		UserCounter = 0
+		if (self.PrelimenaryMatch is not None):
+			self.PrelimenaryMatch.AddUser(UsersList[self.PlayerAmount - 1], 1)
+			self.PrelimenaryMatch.AddUser(UsersList[self.PlayerAmount - 2], 0)
+		
 		for Match in self.Tree[0]:
 			Match.AddUser(UsersList[UserCounter], 0)
-			Match.AddUser(UsersList[UserCounter +1], 1)
+			ColorPrint.prGreen("Debug! Status = {status}.".format(status=Match.Status))
+			if (self.PrelimenaryMatch is not None and UsersList[UserCounter + 1] not in self.PrelimenaryMatch.Users):
+				Match.AddUser(UsersList[UserCounter + 1], 1)
 			UserCounter += 2
 			ColorPrint.prGreen("Debug! {match} ".format(match=str(Match)))
 
@@ -65,15 +72,40 @@ class Tournament():
 		while (Counter > 1):
 			Branch = []
 			Pos2 = 0
-			while (Pos2 < Counter / 2):
-				Branch.append(TournamentMatch(self.Type, "Tournament" + str(self.TournamentId) + "_" + str(Pos1) + "_" + str(Pos2), self.TournamentId))
+			ColorPrint.prYellow("Debug! Counter = {counter}.".format(counter=Counter))
+			while (Pos2 < math.floor(Counter / 2)):
+				Branch.append(TournamentMatch(self.Type, "Tournament" + str(self.TournamentId) + "_" + str(Pos1) + "_" + str(Pos2), self.TournamentId, self))
 				Pos2 += 1
 			Pos1 += 1
 			Root.append(Branch)
-			Counter /= 2
+			Counter = math.floor(Counter / 2)
+		if (self.PlayerAmount % 2 != 0):
+			self.PrelimenaryMatch = TournamentMatch(self.Type, "Tournament" + str(self.TournamentId) + "_" + str(Pos1) + "_" + str(Pos2), self.TournamentId, self)
 		return Root
 
-	def SendUsers(self):
+	def HandleMatchResult(self, MatchObj):
+		if (self.PrelimenaryMatch is not None and MatchObj is self.PrelimenaryMatch):
+			self.Tree[0][len(self.Tree[0]) - 1].AddUser(MatchObj.Winner, 1)
+			ColorPrint.prGreen("Debug ! {match}".format(match=str(self.Tree[0][len(self.Tree[0]) - 1])))
+			return
+		Pos1 = 0
+		StepCount = len(self.Tree)
+		for Match in self.Tree:
+			Pos2 = 0
+			for Match2 in Match:
+				if (Match2 is MatchObj):
+					if (Pos1 + 1 < StepCount):
+
+						# CanContinueTournament
+						return
+					else: 
+						# Can'tContinueTournament
+						return
+				Pos2 += 1
+			Pos1 += 1
+
+
+	def SendUsers(self, Usered):
 		pos = 0
 		SendList = []
 		for User in self.PlayersList:
@@ -83,6 +115,9 @@ class Tournament():
 			'type' : 'MSG_UpdateUserList',
 			'usrList' : SendList
 		})
+		if (Usered is not None):
+			Usered.SendMessage(msg)
+			return
 		for User in self.PlayersList:
 			User.SendMessage(msg)
 
@@ -95,6 +130,9 @@ class Tournament():
 			return False
 		if (self.Tree is None):
 			return
+		if (self.PrelimenaryMatch is not None and self.PrelimenaryMatch.Status is GameState.Waiting and usr in self.PrelimenaryMatch.Users):
+			self.PrelimenaryMatch.ChangeReadyState(usr)
+			return True
 		for Match in self.Tree:
 			for Match2 in Match:
 				if (usr in Match2.Users and Match2.Status is GameState.Waiting):
@@ -121,17 +159,18 @@ class Tournament():
 
 	def ReconnectUser(self, user):
 		user.Position = UserPosition.InTournament
+		self.SendUsers(user)
 		ColorPrint.prGreen("Tournament {tournamentId} : User {username} reconnected.".format(tournamentId=self.TournamentId, username=user.Username))
 
 	def CreateUser(self, user, socket):
 		if (len(self.PlayersList) == self.PlayerAmount):
 			return False
-		usr = TournamentUser(socket, user.username, user.id)
+		usr = TournamentUser(socket, user, user.username, user.id)
 		if (usr.UserId == self.Administrator):
 			self.Administrator = usr
 		self.PlayersList.append(usr)
 		ColorPrint.prGreen("Tournament {tournamentId} : User {username} Created.".format(tournamentId=self.TournamentId, username=user.username))
-		self.SendUsers()
+		self.SendUsers(None)
 		if (len(self.PlayersList) == self.PlayerAmount):
 			self.StartTournament()
 		return True
@@ -140,7 +179,7 @@ class Tournament():
 		if self.Status is TournamentState.Created:
 			self.PlayersList.remove(user)
 			ColorPrint.prGreen("Tournament {tournamentId} : User {username} deleted.".format(tournamentId=self.TournamentId, username=user.Username))
-			self.SendUsers()
+			self.SendUsers(None)
 		elif self.Status is TournamentState.Ongoing:
 			# GivingUp
 			ColorPrint.prGreen("Tournament {tournamentId} : User {username} giveUp.".format(tournamentId=self.TournamentId, username=user.Username))
@@ -154,7 +193,7 @@ class Tournament():
 			ColorPrint.prRed("Error! Tournament {tournamentId} : User {username} trying to goingAway when not on Tournament.".format(tournamentId=self.TournamentId, username=user.username))
 			return False
 		if (usr.Position is UserPosition.InMatch):
-			return False
+			return True
 		ColorPrint.prGreen("Debug! Tournament {tournamentId} : User {username} going away.".format(tournamentId=self.TournamentId, username=usr.Username))
 		usr.Position = UserPosition.Away
 		return True

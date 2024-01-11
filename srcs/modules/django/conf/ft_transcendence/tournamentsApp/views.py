@@ -35,7 +35,7 @@ def create_tournament(request):
 	if (typeGame != "Pong" and typeGame != "Battleship"):
 		return JsonResponse({'message': 'Tournaments Type must be a Pong or a Battleship', 'isCreated': False})
 	numberOfPlayers = int(numberOfPlayers)
-	if numberOfPlayers != 4 and numberOfPlayers != 8 and numberOfPlayers != 16:
+	if numberOfPlayers < 4:
 		return JsonResponse({'message': 'Tournaments number of player must be a least 4, 8 or 16', 'isCreated': False})
 	Joined, id = TournamentManager.Manager.CreateTournament(request.user, data)
 	if (Joined is False):

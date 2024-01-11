@@ -1,11 +1,14 @@
 from battleshipApp import ColorPrint
 
-from .EnumClass import GameType, GameState
+from .EnumClass import GameType, GameState, UserPosition
 from .TournamentUser import TournamentUser
+
+import json
 
 class TournamentMatch():
 
-    def __init__(self, gameType : GameType, gameId : int, tournamentId):
+    def __init__(self, gameType : GameType, gameId : int, tournamentId, tournamentObj):
+        self.Tournament = tournamentObj
         self.TournamentId = tournamentId
         self.GameId = gameId
         self.Users = [None, None]
@@ -40,6 +43,20 @@ class TournamentMatch():
 
     def Start(self):
         ColorPrint.prYellow("Debug! Tournament[{TId}].Match[{gameId}] : starting.".format(TId=self.TournamentId, gameId=self.GameId))
+        if (self.Type is GameType.Battleship):
+            from battleshipApp import BattleshipGameManager, BattleshipMatch
+            BattleshipGameManager.GameManager.CreateGame(BattleshipGameManager.GameManager, self.Users[0].SockUser, self.Users[1].SockUser, self.GameId, BattleshipMatch.GameType.Tournament, self)
+            msg = json.dumps({
+			'type': "MSG_LoadGame",
+			'gameType': 'ship',
+            'gameId' : self.GameId
+			})
+            self.Users[0].SendMessage(msg)
+            self.Users[1].SendMessage(msg)
+        else:
+            pass
+        self.Users[0].Position = UserPosition.InMatch
+        self.Users[1].Position = UserPosition.InMatch
         self.Status = GameState.OnGoing
 
     def UpdateTimer(self):
@@ -48,7 +65,7 @@ class TournamentMatch():
         self.Timer -= 1
         if (self.Timer == 0):
             if (self.UserReadyState[0] == False and self.UserReadyState[1] == False):
-                self.Status = GameState.cancelled
+                self.Status = GameState.Cancelled
                 ColorPrint.prGreen("Debug! Tournament[{TId}].Match[{gameId}] : Cancelled.".format(TId=self.TournamentId, gameId=self.GameId))
             else:
                 self.Status = GameState.Ended
@@ -59,4 +76,17 @@ class TournamentMatch():
                 ColorPrint.prGreen("Debug! Tournament[{TId}].Match[{gameId}] : Ended with {username} as winner.".format(TId=self.TournamentId, gameId=self.GameId, username=self.Winner.Username))
 
     def __str__(self):
-        return "Tournament[{tID}].Match[{matchId}] = Users[0] = {User1}, Users[1] = {User2}".format(tID=self.TournamentId, matchId=self.GameId, User1=self.Users[0].Username, User2=self.Users[1].Username)
+        return "Tournament[{tID}].Match[{matchId}] = Users[0] = {User1}, Users[1] = {User2}".format(tID=self.TournamentId, matchId=self.GameId, User1=self.Users[0].Username if self.Users[0] is not None else None, User2=self.Users[1].Username if self.Users[1] is not None else None)
+    
+    def HandleResult(self, Winner):
+        if (Winner is None):
+            self.Status = GameState.Cancelled
+            self.Winner = None
+        else:
+            self.Status = GameState.Ended
+            self.Winner = self.Users[0] if Winner.sock_user.id is self.Users[0].UserId else self.Users[1]
+        self.Users[0].Position = UserPosition.Away
+        self.Users[1].Position = UserPosition.Away
+        self.Tournament.HandleMatchResult(self)
+        
+        

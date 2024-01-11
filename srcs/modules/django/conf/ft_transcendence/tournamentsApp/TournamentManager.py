@@ -48,7 +48,9 @@ class TournamentsManager():
 			ColorPrint.prYellow("Warning! User {username} : Try to join a non existing tournament.".format(username=user.username))
 			return False
 		User = self._Tournaments[tournamentId].GetUserById(user.id)
+		ColorPrint.prRed("DEBUG ! User CONNARD here")
 		if User is not None:
+			ColorPrint.prGreen("DEBUG ! User {username} here.".format(username=User.Username))
 			self._Tournaments[tournamentId].ReconnectUser(User)
 			return True
 		for tournament in self._Tournaments.values():

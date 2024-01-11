@@ -14,6 +14,7 @@ export function initTournaments()
 		tournamentSocket = new WebSocket("ws://" + window.location.host + '/socketApp/tournamentsApp/' + tournamentId)
 	else
 	{
+		console.log("ReconnectToTournament")
 		tournamentSocket.send(JSON.stringify({
 			'function': 'Reconnect'
 		}))
@@ -72,6 +73,21 @@ function OnMessageTournament(e)
 		case 'MSG_UpdateUserList':
 			PrintPlayers(data)
 			break
+		case 'MSG_LoadGame':
+			LoadGame(data);
+			break
+	}
+}
+
+function LoadGame(data)
+{
+	if (data.gameType == 'ship')
+	{
+		navto("/battleship", data.gameId)
+	}
+	else
+	{
+
 	}
 }
 

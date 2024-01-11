@@ -3,8 +3,9 @@ from battleshipApp import ColorPrint
 
 class TournamentUser():
 
-    def __init__(self, socket, username, userId):
+    def __init__(self, socket, sockUser, username, userId):
         self.Socket = socket
+        self.SockUser = sockUser
         self.Username = username
         self.UserId = userId
         self.Status = UserState.Waiting

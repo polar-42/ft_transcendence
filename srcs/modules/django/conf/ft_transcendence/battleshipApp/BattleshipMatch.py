@@ -146,7 +146,7 @@ class BattleshipMatch():
 	thread = None
 	TurnUser = None
 
-	def __init__(self, gameId, user1, user2, GameManager, GameType, _id):
+	def __init__(self, gameId, user1, user2, GameManager, GameType, tournamentGame):
 		self.gm = GameManager
 		self.Gamestatus = GameState.Initialisation
 		self.channelName = "BattleshipGame" + gameId 
@@ -154,7 +154,7 @@ class BattleshipMatch():
 		self.channel_layer = get_channel_layer()
 		self.Users = [User(user1), User(user2)]
 		self.GameType = GameType
-		self.tournamentId = _id
+		self.TournamentGame = tournamentGame
 
 	def getUser(self, user):
 		if (user.id == self.Users[0].sock_user.id):
@@ -216,9 +216,9 @@ class BattleshipMatch():
 		else:
 			ColorPrint.prGreen("DEBUG! Game {gId} : User {uName} not ready.".format(gId=self.gameId, uName=usr.Name))
 		if (usr1 > 0 and usr1 == usr2):
-			self.startSecondPart()
+			self.StartSecondPart()
 
-	def startSecondPart(self):
+	def StartSecondPart(self):
 		ColorPrint.prGreen("DEBUG! Game {gId} : Game second part starting.".format(gId=self.gameId))
 		self.Gamestatus = GameState.Playing
 		self.currentTimer = -1
@@ -364,11 +364,10 @@ class BattleshipMatch():
 				'timer': 3
 				})
 		else:
-			from tournamentsApp import TournamentManager
-			TournamentManager.Manager.sendMatchData(self.tournamentId, self.gameId, self.Winner.sock_user)
+			self.TournamentGame.HandleResult(self.Winner)
 			msg = json.dumps({
 				'function': "ReturnToTournament",
-				'ID': self.tournamentId,
+				'ID': self.TournamentGame.TournamentId,
 				'timer': 3
 				})
 		self.Users[0].SendMessage(msg)
