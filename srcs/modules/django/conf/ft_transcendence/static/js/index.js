@@ -74,7 +74,6 @@ let Prev_match = undefined
 const router = async (arg) =>
 {
   let match = getRoute(document.location.origin + location.pathname)
-  console.log(match)
   /* define 404 error page */
   if (!match)
   {
@@ -93,7 +92,6 @@ const router = async (arg) =>
     actualRoute = match.route.path + "/?valid=True"
   if (Prev_match != undefined && Prev_match.route.unload != null)
     Prev_match.route.unload()
-  console.log(actualRoute)
   fetch(actualRoute)
     .then(Response => {
       document.title = match.route.title

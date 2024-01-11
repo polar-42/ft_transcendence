@@ -1,30 +1,58 @@
 <!-- games html -->
 {% load static %}
-<link rel="stylesheet" href="{% static '/css/games.css' %}">
-<link rel="stylesheet" href="{% static '/css/index.css' %}">
 <script type="module" src="{% static '/js/loading.js' %}"></script>
 {% block content %}
 <h1>Choose your game</h1>
-<section class="pong">
-  <ul>
-    <li><input  type="checkbox" name="local"><p>Local game</p></li>
-    <li><input  type="checkbox" name="IA"><p>vs IA</p></li>
-    <li><input  type="checkbox" name="online"><p>Online game</p></li>
-  </ul>
-</section>
-<section class="battleship">
-  <ul>
-    <li><input type=:"checkbox" name="normal"><p>Online game</p></li>
-  </ul>
-</section>
-<section>
-  <h2>Create a tournament</h2>
-  <ul>
-    <li><input  type="checkbox" name="pong_tournament"><p>Pong</p></li>
-    <li><input  type="checkbox" name="battleship_tournament"><p>Battleship</p></li>
-  </ul>
-</section>
-<div class="button_wrap">
-  <button class="confirm_btn">Confirm</button>
+<div class="wrapper">
+  <div class="games_selection">
+    <div class="headers">
+      <h2>Pong</h2>
+      <h2>Battleship</h2>
+    </div>
+    <div class="line1"></div>
+    <div class="selection_wrapper">
+      <section class="pong">
+        <p>Surpass your opponents and get ahead of the game in our racket game</p>
+        <div class="line2"></div>
+        <ul>
+          <li><input type="checkbox" name="local"><p>Local game</p></li>
+          <li><input type="checkbox" name="IA"><p>vs IA</p></li>
+          <li><input type="checkbox" name="online"><p>Online game</p></li>
+        </ul>
+      </section>
+      <section class="battleship">
+        <p>Show your strategy and surpass your enemy in our naval tactical game</p>
+        <div class="line3"></div>
+        <ul>
+          <li><input type="checkbox" name="normal"><p>Online game</p></li>
+        </ul>
+      </section>
+    </div>
+    <div class="button_wrap">
+      <button class="confirm_btn">Confirm</button>
+      <button class="cancel_btn">Confirm</button>
+    </div>    </div>
+    <div class="tournaments">
+      <div class="headers">
+        <h2>Tournaments</h2>
+      </div>
+      <div class="line1"></div>
+      <div class="selection_wrapper">
+        <section>
+          <p>Win your games, move to the next round, and show that your the best</p>
+          <div class="line4"></div>
+          <h3>Create a tournament</h3>
+          <ul>
+            <li class="tournament_list"><button name="create_pong_tournament">Pong</button></li>
+            <li class="tournament_list"><button name="create_battleship_tournament">Battleship</button></li>
+          </ul>
+          <h3>Join a tournament</h3>
+          <ul>
+            <li class="tournament_list"><button name="create_pong_tournament">Pong</button></li>
+            <li class="tournament_list"><button name="create_battleship_tournament">Battleship</button></li>
+          </ul>
+        </section>
+      </div>
+    </div>
 </div>
 {% endblock content %}

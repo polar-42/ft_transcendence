@@ -1,0 +1,129 @@
+h1 {
+  text-align: center;
+  text-transform: uppercase; 
+  margin-bottom: 40px;
+}
+
+.wrapper {
+  margin: 30px 20% 0 20%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.games_selection {
+  justify-content: center;
+  text-align: center;
+  margin-right: 50px;
+} 
+
+.tournaments {
+  max-width: 250px;
+}
+
+.headers {
+  text-align: center;
+}
+
+.games_selection .headers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 20px;
+  text-align: center;
+}
+
+.headers h2 {
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+.line1 {
+  height: 2px;
+  border-bottom: 1px solid white;
+  margin-bottom: 10px;
+}
+
+.games_selection .line1 {
+  width: 100%;
+}
+
+.tournaments .line1 {
+  width: 100%;
+}
+
+.selection_wrapper {
+  text-align: justify;
+  text-justify: inter-character;
+  margin-top: 30px;
+}
+
+.selection_wrapper section p:first-child {
+  margin-bottom: 30px;
+}
+
+.games_selection .selection_wrapper {
+  display: grid;
+  grid-template-areas: 
+  'a a a'
+  'b c d';
+  grid-template-columns: 1fr 1fr;
+  grid-column-gap: 50px;
+
+}
+
+
+.games_selection .selection_wrapper li {
+  display: grid;
+  grid-template-columns: 40px auto;
+  gap: 20px;
+  width: auto;
+  text-align: left;
+  margin-top: 20px;
+}
+
+.tournaments li {
+  display: flex;
+  justify-content: center;
+  margin: 15px 0 15px 0;
+}
+
+.selection_wrapper input[type="checkbox"] {
+  cursor: pointer;
+  transform: rotate(45deg);
+  width: 1.5em;
+  height: 1.5em;
+  border: 2px solid var(--main-color);
+  background: var(--secondary-bg-color);
+  appearance: none;
+}
+
+h3 {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.wrapper button {
+  border-radius: 2px;
+  margin: 0;
+  padding: 0.2em;
+  width: 10ch;
+  height: auto;
+  text-align: center;
+  overflow: visible;
+  border: 2px solid var(--main-color);
+  color: var(--main-color);
+  background: var(--secondary-bg-color);
+  transition: .3s ease;
+
+}
+
+.button_wrap {
+  margin-top: 70px;
+} 
+
+.tournaments button {
+  font-size: 1.2em;
+}
+
+.games_selection button {
+  font-size: 1.5em;
+}

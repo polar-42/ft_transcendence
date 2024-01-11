@@ -8,17 +8,21 @@
   padding: 0px;
   box-sizing: border-box;
   font-family: rajdhaniregular;
+
+  li {
+    list-style: none;
+  }
 }
 
 html {
   color: white;
   font-size: 20px;
- }
+}
 
 body {
   background: 
-      linear-gradient(to bottom, var(--secondary-bg-color) 13%, var(--main-bg-color) 30%, var(--main-bg-color) 83%, var(--secondary-bg-color) 100%),
-      var(--secondary-bg-color);
+  linear-gradient(to bottom, var(--secondary-bg-color) 16%, var(--main-bg-color) 30%, var(--main-bg-color) 83%, var(--secondary-bg-color) 100%),
+  var(--secondary-bg-color);
   background-repeat: no-repeat;
   margin: 0px;
 }
@@ -46,7 +50,7 @@ header {
   text-transform: uppercase;
   color: white;
   background:
-      var(--secondary-bg-color);
+  var(--secondary-bg-color);
 }
 
 .home_btn {
@@ -127,8 +131,8 @@ header a:visited {
   background: var(--main-bg-color);
   border: 2px solid var(--fourth);
   box-shadow: 
-    2px 2px 10px var(--fourth)
-    -2px -2px 10px var(--fourth);
+  2px 2px 10px var(--fourth)
+  -2px -2px 10px var(--fourth);
   cursor: pointer;
 }
 
@@ -241,8 +245,8 @@ nav .profile_menu {
 
 footer {
   background: 
-    var(--secondary-bg-color),
-    linear-gradient(to bottom, var(--main-bg-color) 0%, var(--secondary-bg-color) 50%);
+  var(--secondary-bg-color),
+  linear-gradient(to bottom, var(--main-bg-color) 0%, var(--secondary-bg-color) 50%);
   top: 100%;
   height: auto;
   width: 100%;
@@ -319,7 +323,7 @@ footer a:hover::before {
   nav {
     display: none;
   }
-  
+
   .menu_btn { 
     display: block;
     height: 50px;
