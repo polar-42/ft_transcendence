@@ -9,8 +9,13 @@ class ChannelModels(models.Model):
 	admin = models.CharField(default='0')
 	users = ArrayField(models.CharField(), blank=True, null=True)
 	privacyStatus = models.IntegerField(default=channelPrivacy.Public)
-	description = models.CharField(max_length=255, default="None")
+	description = models.CharField(max_length=255, default="PAS2DESCRIPTION")
 	timeCreation = models.DateTimeField(auto_now=True)
 
 class MessageModels(models.Model):
-	pass
+	message = models.CharField(default='NULL')
+	sender = models.CharField(default='NULL')
+	receiver = models.CharField(default='NULL')
+	timeCreation = models.DateTimeField(auto_now=True)
+
+

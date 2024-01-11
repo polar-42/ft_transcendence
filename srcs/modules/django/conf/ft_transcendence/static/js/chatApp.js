@@ -19,6 +19,10 @@ function startChatConnexion()
 	document.getElementById('channel_submit').addEventListener("click", channelMessage);
 	document.getElementById('channel_join').addEventListener("click", joinChannel);
 	document.getElementById('channel_leave').addEventListener("click", leaveChannel);
+	document.getElementById('user_block').addEventListener("click", blockUser);
+	document.getElementById('user_unblock').addEventListener("click", unblockUser);
+	document.getElementById('get_history_chat').addEventListener("click", getHistoryChat);
+	document.getElementById('get_history_channel').addEventListener("click", getHistoryChannel);
 
 	chatSocket.onclose = closeChatSocket;
 	chatSocket.onmessage = e => onMessageChat(e);
@@ -112,4 +116,72 @@ function leaveChannel()
         'target': channelName.value
     }))
 	channelName.value = "";
+}
+
+function blockUser()
+{
+    let target = document.getElementById('target_user');
+
+	if (target.value.length <= 3)
+	{
+		console.log('Error: channel name too small');
+		return;
+	}
+
+	chatSocket.send(JSON.stringify({
+		'type': 'block_user',
+        'target': target.value
+    }))
+	target.value = "";
+}
+
+function unblockUser()
+{
+    let target = document.getElementById('target_user');
+
+	if (target.value.length <= 3)
+	{
+		console.log('Error: channel name too small');
+		return;
+	}
+
+	chatSocket.send(JSON.stringify({
+		'type': 'unblock_user',
+        'target': target.value
+    }))
+	target.value = "";
+}
+
+function getHistoryChat()
+{
+    let target = document.getElementById('target_user');
+
+	if (target.value.length <= 3)
+	{
+		console.log('Error: channel name too small');
+		return;
+	}
+
+	chatSocket.send(JSON.stringify({
+		'type': 'get_history_chat',
+        'target': target.value
+    }))
+	target.value = "";
+}
+
+function getHistoryChannel()
+{
+    let target = document.getElementById('target_user');
+
+	if (target.value.length <= 3)
+	{
+		console.log('Error: channel name too small');
+		return;
+	}
+
+	chatSocket.send(JSON.stringify({
+		'type': 'get_history_channel',
+        'target': target.value
+    }))
+	target.value = "";
 }
