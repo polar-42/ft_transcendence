@@ -1,39 +1,40 @@
 import random
+import math
 
-BALL_HEIGHT = 10
-BALL_WIDTH = 10
-PLAYER_HEIGHT = 60
-PLAYER_WIDTH = 0.1
-PLAYGROUND_HEIGHT = 450
-PLAYGROUND_WIDHT = 720
+def normalise (dx, dy)
+    length = sqrt(dx ** 2 + dy ** 2)
+    return (dx / length, dy / length)
 
 class Ball:
     def __init__(self):
         self.x = 0.
         self.y = 0.
-        self.height = 0.15
-        self.width = 0.15
-        if random.randint(1, 2) == 1:
-            self.speed = 0.1
-        else:
-            self.speed = -0.1
-        if random.randint(1, 2) == 1:
-            self.gravity = 0.1
-        else:
-            self.gravity = -0.1
+        self.dx = randomDir()
+        self.dy = randomDir()
+        self.dx, self.dy = normalise(self.dx, self.dy)
+        self.speed = 0.1
+        self.radius = 0.15
 
-    def change_speed(self, speed):
+    def randomDir(self)
+        if random.randint(1, 2) == 1:
+            return 1
+        return -1
+
+    def change_speed(self, speed)
         self.speed = speed
 
-    def change_gravity(self, gravity):
-        self.gravity = gravity
+    def change_direction(self, dx, dy)
+        self.dx = dx
+        self.dy = dy
 
     def change_position(self, x, y):
         self.x = x
         self.y = y
 
-    def get_gravity_speed(self):
-        return self.gravity, self.speed
+    def get_speed(self)
+        return speed
+    def get_direction(self):
+        return self.dx, self.dy
 
     def get_pos(self):
         return self.x, self.y
@@ -46,23 +47,17 @@ class Player:
         self.ball_touch = 0
         self.x = x
         self.y = y
-        self.height = PLAYER_HEIGHT
-        self.width = PLAYER_WIDTH
-        self.gravity = 0.1
+        self.height = 2.
+        self.width = 0.2
+        self.speed = 0.1
 
     def move_down(self):
-        i = 0
-        while i < self.gravity:
-            if self.y - 0.1 > -3.:
-                self.y = self.y - 0.1
-            i = i + 1
+        if self.y - self.speed > -3.:
+            self.y = self.y - 0.1
 
     def move_up(self):
-        i = 0
-        while i < self.gravity:
-            if self.y + 0.1 < 3.:
-                self.y = self.y + 0.1
-            i = i + 1
+        if self.y + self.speed < 3.:
+            self.y = self.y + 0.1
 
     def add_point(self):
         self.score = self.score + 1
@@ -101,9 +96,11 @@ class GameState:
     def move_down_player2(self):
         self.playerTwo.move_down()
 
-    def update_ball_gravity_speed(self, gravity, speed):
-        self.ball.change_gravity(gravity)
-        self.ball.change_speed(speed)
+    def update_ball_direction(self, dx, dy):
+        self.dx, self.dy = normalise(dx, dy)
+
+    def update_ball_speed(self, speed)
+        self.ball.speed = speed
 
     def update_ball_pos(self, x, y):
         self.ball.change_position(x, y)

@@ -47,11 +47,12 @@ class pongGameIA(threading.Thread):
 		self.stop_flag.set()
 
 	def start_game(self):
-		self.ball_gravity = 0
-		self.ball_speed = 0
+		self.ball_dy = 0
+		self.ball_dx = 0
+		self.ball_pos_x = 0
 		self.ball_pos_y = 0
 		self.ia_pos_y = 0
-		self.player_pos_y = 0
+		self.ia_pos_x = 4.
 
 	def receiveDataFromGameIA(self, game, isRunning):
 		self.isRunning = isRunning
