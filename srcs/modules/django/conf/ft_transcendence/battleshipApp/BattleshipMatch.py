@@ -364,7 +364,7 @@ class BattleshipMatch():
 				'timer': 3
 				})
 		else:
-			self.TournamentGame.HandleResult(self.Winner)
+			self.TournamentGame.HandleResult(self.Winner.sock_user.id if self.Winner is not None else None)
 			msg = json.dumps({
 				'function': "ReturnToTournament",
 				'ID': self.TournamentGame.TournamentId,

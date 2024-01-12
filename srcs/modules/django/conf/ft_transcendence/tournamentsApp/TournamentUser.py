@@ -10,10 +10,13 @@ class TournamentUser():
         self.UserId = userId
         self.Status = UserState.Waiting
         self.Position = UserPosition.InTournament
-        self.Socket.accept()
+        if (userId != - 1):
+            self.Socket.accept()
 
     def SendMessage(self, message):
+        if (self.UserId == -1):
+            return
         if (self.Position is not UserPosition.InTournament):
-            ColorPrint.prYellow("Warning! User {username} : Can't send message \'{messageObj}\', user is away.".format(username=self.Username, messageObj=message))
+            # ColorPrint.prYellow("Warning! User {username} : Can't send message \'{messageObj}\', user is away.".format(username=self.Username, messageObj=message))
             return
         (self.Socket).send(message)

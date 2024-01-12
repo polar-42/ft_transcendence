@@ -26,6 +26,16 @@ class TournamentMatch():
             ColorPrint.prYellow("Warning! Tournament[{TId}].Match[{gameId}] : Can't add user {username}, already in match.".format(TId=self.TournamentId, gameId=self.GameId, username=user.Username))
             return False
         self.Users[position] = user
+        target = 0 if position == 1 else 0
+        if (self.Users[position] is self.Tournament.UndefinedUser and self.Users[target] is self.Tournament.UndefinedUser):
+            self.HandleResult(None, True)
+            return True
+        elif (self.Users[target] is self.Tournament.UndefinedUser):
+            self.HandleResult(self.Users[position].UserId, True)
+            return True
+        elif (self.Users[position] is self.Tournament.UndefinedUser):
+            self.HandleResult(self.Users[target].UserId, True)
+            return True
         if (self.Users[0] is not None and self.Users[1] is not None):
             self.Timer = 30
             self.Status = GameState.Waiting
@@ -78,15 +88,26 @@ class TournamentMatch():
     def __str__(self):
         return "Tournament[{tID}].Match[{matchId}] = Users[0] = {User1}, Users[1] = {User2}".format(tID=self.TournamentId, matchId=self.GameId, User1=self.Users[0].Username if self.Users[0] is not None else None, User2=self.Users[1].Username if self.Users[1] is not None else None)
     
-    def HandleResult(self, Winner):
+    def HandleResult(self, Winner, Forced = False):
         if (Winner is None):
             self.Status = GameState.Cancelled
-            self.Winner = None
+            self.Winner = self.Tournament.UndefinedUser
+            self.Tournament.HandleMatchResult(self)
+            return
         else:
             self.Status = GameState.Ended
-            self.Winner = self.Users[0] if Winner.sock_user.id is self.Users[0].UserId else self.Users[1]
-        self.Users[0].Position = UserPosition.Away
-        self.Users[1].Position = UserPosition.Away
+            self.Winner = self.Users[0] if Winner is self.Users[0].UserId else self.Users[1]
+        if self.Users[0].UserId is not -1 and Forced is not True:
+            self.Users[0].Position = UserPosition.Away
+        if self.Users[1].UserId is not -1 and Forced is not True:
+            self.Users[1].Position = UserPosition.Away
         self.Tournament.HandleMatchResult(self)
         
-        
+    def Objectify(self, x, y):
+        if (self.Status is GameState.Cancelled):
+            WinnerUsr = -2
+        elif (self.Status is GameState.Ended):
+            WinnerUsr = 0 if self.Winner is self.Users[0] else 1
+        else:
+            WinnerUsr = -1
+        return {'MatchId' : self.GameId, 'User1' : self.Users[0].Username if self.Users[0] is not None else 'Undefined', 'User2' : self.Users[1].Username if self.Users[1] is not None else 'Undefined', 'Winner' : WinnerUsr, 'X' : x, 'Y' : y}

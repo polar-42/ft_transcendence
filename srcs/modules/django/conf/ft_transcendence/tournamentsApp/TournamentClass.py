@@ -5,31 +5,6 @@ from .EnumClass import GameType, TournamentState, TournamentVisibility, UserPosi
 from .TournamentMatchClass import TournamentMatch
 
 import json, math
-# class TreeMatch():
-
-# 	def __init__(self, creationStep, id):
-# 		self.User1 = None
-# 		self.User2 = None
-# 		self.step = creationStep
-# 		self.State = GameState.Creation
-# 		self.Winner = None
-# 		self.id = id
-
-# 	def to_json(self):
-# 		return {
-# 			'User1' : self.User1.sock_user.username if self.User1 is not None else "undefined",
-# 			'User1Id' : self.User1.sock_user.id if self.User1 is not None else -1,
-# 			'User2' : self.User2.sock_user.username if self.User2 is not None else "undefined",
-# 			'User2Id' : self.User2.sock_user.id if self.User2 is not None else -1,
-# 			'step' : self.step,
-# 			'state' : self.State,
-# 			'Winner' : self.Winner.sock_user.id if self.Winner is not None else -1
-# 		}
-
-# class TypeGame(IntEnum):
-# 	Undefined = 0
-# 	Pong = 1
-# 	Battleship = 2
 
 class Tournament():
 
@@ -44,7 +19,7 @@ class Tournament():
 		self.Status = TournamentState.Created
 		self.PlayersList = []
 		self.Tree = None
-		self.PrelimenaryMatch = None
+		self.UndefinedUser = TournamentUser(None, None, 'Undefined', -1)
 
 	def StartTournament(self):
 		self.Tree = self.CreateMatchArray()
@@ -53,17 +28,14 @@ class Tournament():
 		UsersList = self.PlayersList.copy()
 
 		UserCounter = 0
-		if (self.PrelimenaryMatch is not None):
-			self.PrelimenaryMatch.AddUser(UsersList[self.PlayerAmount - 1], 1)
-			self.PrelimenaryMatch.AddUser(UsersList[self.PlayerAmount - 2], 0)
 		
 		for Match in self.Tree[0]:
 			Match.AddUser(UsersList[UserCounter], 0)
 			ColorPrint.prGreen("Debug! Status = {status}.".format(status=Match.Status))
-			if (self.PrelimenaryMatch is not None and UsersList[UserCounter + 1] not in self.PrelimenaryMatch.Users):
-				Match.AddUser(UsersList[UserCounter + 1], 1)
+			Match.AddUser(UsersList[UserCounter + 1], 1)
 			UserCounter += 2
 			ColorPrint.prGreen("Debug! {match} ".format(match=str(Match)))
+		self.SendMatch(None)
 
 	def CreateMatchArray(self):
 		Root = []
@@ -79,15 +51,9 @@ class Tournament():
 			Pos1 += 1
 			Root.append(Branch)
 			Counter = math.floor(Counter / 2)
-		if (self.PlayerAmount % 2 != 0):
-			self.PrelimenaryMatch = TournamentMatch(self.Type, "Tournament" + str(self.TournamentId) + "_" + str(Pos1) + "_" + str(Pos2), self.TournamentId, self)
 		return Root
 
 	def HandleMatchResult(self, MatchObj):
-		if (self.PrelimenaryMatch is not None and MatchObj is self.PrelimenaryMatch):
-			self.Tree[0][len(self.Tree[0]) - 1].AddUser(MatchObj.Winner, 1)
-			ColorPrint.prGreen("Debug ! {match}".format(match=str(self.Tree[0][len(self.Tree[0]) - 1])))
-			return
 		Pos1 = 0
 		StepCount = len(self.Tree)
 		for Match in self.Tree:
@@ -95,15 +61,43 @@ class Tournament():
 			for Match2 in Match:
 				if (Match2 is MatchObj):
 					if (Pos1 + 1 < StepCount):
-
-						# CanContinueTournament
+						PlayerPos = 0 if (Pos2 / 2) % 2 == 0 else 1
+						if (PlayerPos == 0):
+							self.Tree[Pos1 + 1][int(Pos2 / 2)].AddUser(Match2.Winner, PlayerPos)
+						else:
+							self.Tree[Pos1 + 1][int((Pos2 / 2) - 0.5)].AddUser(Match2.Winner, PlayerPos)
+						ColorPrint.prGreen("Debug ! Winner = ".format(Match2.Winner.Username))
+						self.SendMatch(None)
 						return
-					else: 
-						# Can'tContinueTournament
+					else:
+						self.Winner = self.Tree[len(self.Tree) - 1][0].Winner
+						ColorPrint.prGreen("Debug ! Tournament[{tID}] ended. User {username} win".format(tID=self.TournamentId, username=self.Winner.Username))
+						self.Status = TournamentState.Ended
+						# TODO Save in DB
+						self.SendMatch(None)
 						return
 				Pos2 += 1
 			Pos1 += 1
 
+	def	SendMatch(self, Usered):
+		SendList = []
+		PosX = 0
+		if (self.Tree is None):
+			return
+		for Match in self.Tree:
+			PosY = 0
+			for Match2 in Match:
+				Jsoned = Match2.Objectify(PosX + 1, PosY)
+				SendList.append(Jsoned)
+		msg = json.dumps({
+			'type' : 'MSG_UpdateMatchList',
+			'matchList' : SendList
+		})
+		if (Usered is not None):
+			Usered.SendMessage(msg)
+			return
+		for User in self.PlayersList:
+			User.SendMessage(msg)
 
 	def SendUsers(self, Usered):
 		pos = 0
@@ -130,9 +124,6 @@ class Tournament():
 			return False
 		if (self.Tree is None):
 			return
-		if (self.PrelimenaryMatch is not None and self.PrelimenaryMatch.Status is GameState.Waiting and usr in self.PrelimenaryMatch.Users):
-			self.PrelimenaryMatch.ChangeReadyState(usr)
-			return True
 		for Match in self.Tree:
 			for Match2 in Match:
 				if (usr in Match2.Users and Match2.Status is GameState.Waiting):
@@ -160,6 +151,7 @@ class Tournament():
 	def ReconnectUser(self, user):
 		user.Position = UserPosition.InTournament
 		self.SendUsers(user)
+		self.SendMatch(user)
 		ColorPrint.prGreen("Tournament {tournamentId} : User {username} reconnected.".format(tournamentId=self.TournamentId, username=user.Username))
 
 	def CreateUser(self, user, socket):
@@ -206,35 +198,6 @@ class Tournament():
 		for Match in self.Tree:
 			for Match2 in Match:
 				Match2.UpdateTimer()
-
-	# def __init__(self, id, creator, typeGame : TypeGame, numberOfPlayer : int, privateGame : bool, description : str, name: str):
-		# self.status = GameState.Creation
-		# self._id = id
-		# self._creator = TournamentUser(creator, None)
-		# self._typeGame = typeGame
-		# self._playerAmount = numberOfPlayer
-		# self._private = privateGame
-		# self._desc = description
-		# self._name = name
-		# self._players = []
-		# self.curMatch = []
-		# self.channel_layer = get_channel_layer()
-		# self.channel_name = "Tournaments" + str(self._id)
-		# self.curStep = 0
-		# self.Tree = self.initArray()
-		# self.Winner = None
-
-	# def __str__(self) -> str:
-		# return "id is " + str(self._id) + " name = " + str(self._typeGame) + " private = " + str(self._private) + " game : " + self._name + " created by " + self._creator.sock_user.username + " with " + str(self._playerAmount) + " players. desc = " + self._desc
-
-	# def sendData(self, user):
-		# async_to_sync(self.channel_layer.group_send)(
-			# self.channel_name,
-			# {
-				# 'type': 'MSG_NewUser',
-				# 'User' : -1 if user is None else user.id
-			# })
-		# self.SendMatchsData(-1)
 
 # 	def UpdateData(self, MatchId, Winner):
 # 		pos = 0
