@@ -1,4 +1,46 @@
 import { navto } from "./index.js";
+import * as THREE from "./three/build/three.module.min.js";
+
+const WIDTH = 720;
+const HEIGHT = 450;
+
+var scene = new THREE.Scene();
+var camera = new THREE.PerspectiveCamera(75, WIDTH / HEIGHT, 0.1, 1000);
+camera.position.z = 5;
+var renderer = new THREE.WebGLRenderer();
+renderer.setSize(WIDTH, HEIGHT);
+renderer.setClearColor( 0xffffff);
+
+var g_paddle = new THREE.BoxGeometry(1, 2, 2);
+var m_paddle1 = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+
+var paddle1 = new THREE.Mesh(g_paddle, m_paddle1);
+paddle1.position.x -= 4;
+scene.add(paddle1);
+
+
+var m_paddle2 = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+var paddle2 = new THREE.Mesh(g_paddle, m_paddle2);
+paddle2.position.x += 4;
+scene.add(paddle2);
+
+var g_ball = new THREE.SphereGeometry(0.15, 32, 16);
+var m_ball = new THREE.MeshBasicMaterial({ color: 0xff00ff });
+
+var g_ball = new THREE.Mesh(g_ball, m_ball);
+scene.add(g_ball);
+
+function animate() {
+    requestAnimationFrame(animate);
+	paddle1.rotation.x += 0.01;
+    paddle1.rotation.y += 0.01;
+	paddle2.rotation.x += 0.01;
+    paddle2.rotation.y += 0.01;
+    renderer.render(scene, camera);
+}
+animate();
+
+
 
 let canvas = null;
 let context = null;
@@ -54,8 +96,8 @@ const playerOne = new Element({
 	x: 10,
 	y: 195,
 	width: 8,
-	height: 60,
-	color: "#fff",
+	height: 600,
+	color: "#fa0",
 	gravity: 4,
 });
 
@@ -75,7 +117,7 @@ const ball = new Element({
 	width: 10,
 	height: 10,
 	color: "#fff",
-	speed: 0,
+	speed: 10,
 	gravity: 0,
 });
 
@@ -121,6 +163,7 @@ function doKeyDown(e)
 	if (socketPongIA && socketPongIA.readyState === WebSocket.OPEN) {
 			const key = e.key;
 			if (key == "ArrowUp") {
+					paddle1.position.y += 0.1;
 					e.preventDefault();
 					console.log('ArrowUp');
 					socketPongIA.send(JSON.stringify({
@@ -128,6 +171,7 @@ function doKeyDown(e)
 							'input': 'ArrowUp'
 					}))
 			} else if (key == 'ArrowDown') {
+					paddle1.position.y -= 0.1;
 					e.preventDefault();
 					console.log('ArrowDown');
 					socketPongIA.send(JSON.stringify({
@@ -140,11 +184,11 @@ function doKeyDown(e)
 
 function LaunchGame()
 {
-	canvas = document.getElementById('pongCanvasIA');
-	context = canvas.getContext('2d');
+	canvas = document.getElementById("app");
 	canvas.widht = 720;
 	canvas.height = 450;
-
+	renderer.domElement.style.border = '4px solid #ccc';
+	canvas.appendChild(renderer.domElement);
 	console.log('Pong Game vs ia is launch');
 }
 
