@@ -9,14 +9,15 @@ class ChannelChat():
 	def __init__(self, name, privacyStatus, creator):
 		if ChannelModels.objects.filter(channelName=name).exists():
 
-			self.model = ChannelModels.objects.get(channelName=name)
-			self.channelName = self.model.channelName
-			self.privacyStatus = self.model.privacyStatus
+			self.ChanModel = ChannelModels.objects.get(channelName=name)
+			self.channelName = self.ChanModel.channelName
+			self.channelId = self.ChanModel.id
+			self.privacyStatus = self.ChanModel.privacyStatus
 			self.usersSocket = []
 			self.channel_layer = get_channel_layer()
 
-			if self.model.admin != '0':
-				self.admin = self.model.admin
+			if self.ChanModel.admin != '0':
+				self.admin = self.ChanModel.admin
 				self.usersSocket.append(creator)
 			else:
 				self.admin = None
@@ -35,10 +36,11 @@ class ChannelChat():
 			obj = ChannelModels.objects.create(
 				channelName=self.channelName,
 				privacyStatus = self.privacyStatus,
-				users=[str(self.admin.username)],
+				users=[self.admin.userIdentification],
 			)
+			print(self.admin.userIdentification, 'create channel', self.channelName)
 
-		else:
+		else: #ONLY FOR GENERAL CHANNEL
 			obj = ChannelModels.objects.create(
 				channelName=self.channelName,
 				privacyStatus = channelPrivacy.Public,
@@ -46,7 +48,8 @@ class ChannelChat():
 
 		obj.save()
 
-		self.model = obj
+		self.ChanModel = obj
+		self.channelId = obj.id
 
 		self.joinChannel(creator)
 
@@ -60,17 +63,18 @@ class ChannelChat():
 		if user not in self.usersSocket:
 			self.usersSocket.append(user)
 
-		tab = self.model.users
+		tab = self.ChanModel.users
 		if tab is None:
 			tab = []
-			tab.append(str(user.username))
+			tab.append(user.userIdentification)
 
-		elif str(user.username) not in self.model.users:
-			tab.append(str(user.username))
+		elif user.userIdentification not in self.ChanModel.users:
+			tab.append(user.userIdentification)
 
-		self.model.users = tab
+		self.ChanModel.users = tab
+		self.ChanModel.save()
 
-		print(user.username, 'join channel', self.channelName, 'with', self.model.users)
+		print(user.userIdentification, 'join channel', self.channelName, 'with', self.ChanModel.users)
 
 	def leaveChannel(self, user):
 		if user is None:
@@ -79,27 +83,28 @@ class ChannelChat():
 		if user in self.usersSocket:
 			self.usersSocket.remove(user)
 
-		if self.model.users is not None:
-			tab = self.model.users
-			tab.remove(str(user.username))
-			self.model.users = tab
+		if self.ChanModel.users is not None:
+			tab = self.ChanModel.users
+			tab.remove(user.userIdentification)
+			self.ChanModel.users = tab
+			self.ChanModel.save()
 
-		print(user.username, 'leave channel', self.channelName, 'with', self.model.users)
+		print(user.userIdentification, 'leave channel', self.channelName, 'with', self.ChanModel.users) #TO DEL
 
 	def sendMessageChannel(self, sender, message):
 		msg = MessageModels.objects.create(
 			message=message,
-			sender=str(sender),
-			receiver=self.channelName
+			sender=sender.userId,
+			receiver=self.channelName #TO CHANGE ???
 		)
 		msg.save()
 
 		async_to_sync(self.channel_layer.group_send)(
-            'channel' + self.channelName,
+            'channel_' + self.channelName,
             {
-                'type': 'chatChannelMessage',
+               'type': 'chatChannelMessage',
 				'channel': self.channelName,
-				'sender': sender,
+				'sender': sender.userId,
 				'message': message,
 				'time': time.strftime("%Y-%m-%d %X")
             }

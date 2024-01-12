@@ -21,6 +21,7 @@ function startChatConnexion()
 	document.getElementById('channel_leave').addEventListener("click", leaveChannel);
 	document.getElementById('user_block').addEventListener("click", blockUser);
 	document.getElementById('user_unblock').addEventListener("click", unblockUser);
+	document.getElementById('get_all_users').addEventListener("click", getAllUsers);
 	document.getElementById('get_history_chat').addEventListener("click", getHistoryChat);
 	document.getElementById('get_history_channel').addEventListener("click", getHistoryChannel);
 
@@ -151,6 +152,14 @@ function unblockUser()
     }))
 	target.value = "";
 }
+
+function getAllUsers()
+{
+	chatSocket.send(JSON.stringify({
+		'type': 'get_all_users'
+    }))
+}
+
 
 function getHistoryChat()
 {

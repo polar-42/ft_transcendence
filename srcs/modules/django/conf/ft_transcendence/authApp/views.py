@@ -3,8 +3,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 from .models import User
 from django.contrib.auth.hashers import make_password
-import json
-import re
+from .management.commands.create_user import getRandString
+import json, re
 
 regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
 
@@ -63,7 +63,12 @@ def register(request):
 				return JsonResponse({'error': 'Username is already taken'})
 
 			passwordHash = make_password(password)
-			new_obj = User.objects.create(username=username, email=email, password=passwordHash)
+			new_obj = User.objects.create(
+				username=username,
+				email=email,
+				password=passwordHash,
+				identification=getRandString(username)
+			)
 
 			return JsonResponse({'message': 'You registered successfully'})
 		else:
