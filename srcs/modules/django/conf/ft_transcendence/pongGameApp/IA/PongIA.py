@@ -13,29 +13,29 @@ class pongGameIA(threading.Thread):
 
 			if self.isRunning is True:
 
-				if self.ball_pos_y < self.ia_pos_y - 4:
-					self.gameThread.inputGame('ArrowUp', 1)
-					self.ia_pos_y -= 4
-					if self.ia_pos_y < 0:
-						self.ia_pos_y = 0
-				elif self.ball_pos_y > self.ia_pos_y + 4:
+				if self.ball_pos_y < self.ia_pos_y:
 					self.gameThread.inputGame('ArrowDown', 1)
-					self.ia_pos_y += 4
-					if self.ia_pos_y > 450:
-						self.ia_pos_y = 450
+					self.ia_pos_y -= 0.1
+					if self.ia_pos_y < -3.:
+						self.ia_pos_y = -3.
+				elif self.ball_pos_y > self.ia_pos_y:
+					self.gameThread.inputGame('ArrowUp', 1)
+					self.ia_pos_y += 0.1
+					if self.ia_pos_y > 3.:
+						self.ia_pos_y = 3.
 
 				self.ball_pos_y += self.ball_gravity
 
-				if self.ball_pos_y < 0 or self.ball_pos_y >= 450:
+				if self.ball_pos_y < -4. or self.ball_pos_y >= 4:
 					self.ball_gravity *= -1
 
 			else:
-				if self.ia_pos_y + 4 < 225:
+				if self.ia_pos_y + 0.1 < -3.:
+					self.gameThread.inputGame('ArrowUP', 1)
+					self.ia_pos_y += 0.1
+				elif self.ia_pos_y - 0.1 > 3.:
 					self.gameThread.inputGame('ArrowDown', 1)
-					self.ia_pos_y += 4
-				elif self.ia_pos_y - 4 > 225:
-					self.gameThread.inputGame('ArrowUp', 1)
-					self.ia_pos_y -= 4
+					self.ia_pos_y -= 0.1
 
 
 			time.sleep(0.03)
@@ -49,9 +49,9 @@ class pongGameIA(threading.Thread):
 	def start_game(self):
 		self.ball_gravity = 0
 		self.ball_speed = 0
-		self.ball_pos_y = (450 / 2) - (10 / 2)
-		self.ia_pos_y = (450 / 2) - (60 / 2)
-		self.player_pos_y = (450 / 2) - (60 / 2)
+		self.ball_pos_y = 0
+		self.ia_pos_y = 0
+		self.player_pos_y = 0
 
 	def receiveDataFromGameIA(self, game, isRunning):
 		self.isRunning = isRunning
@@ -63,5 +63,5 @@ class pongGameIA(threading.Thread):
 		player, ia = game.get_players()
 		player_pos_x, self.player_pos_y = player.get_pos()
 		ia_pos_x, self.ia_pos_y = ia.get_pos()
-		self.ia_pos_y += 30
-		self.ball_pos_y += 5
+		self.ia_pos_y += 0.1
+		self.ball_pos_y += 0.1

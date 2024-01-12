@@ -3,24 +3,24 @@ import random
 BALL_HEIGHT = 10
 BALL_WIDTH = 10
 PLAYER_HEIGHT = 60
-PLAYER_WIDTH = 8
+PLAYER_WIDTH = 0.1
 PLAYGROUND_HEIGHT = 450
 PLAYGROUND_WIDHT = 720
 
 class Ball:
     def __init__(self):
-        self.x = PLAYGROUND_WIDHT / 2 - BALL_WIDTH / 2
-        self.y = PLAYGROUND_HEIGHT / 2 - BALL_HEIGHT / 2
-        self.height = BALL_HEIGHT
-        self.width = BALL_WIDTH
+        self.x = 0.
+        self.y = 0.
+        self.height = 0.15
+        self.width = 0.15
         if random.randint(1, 2) == 1:
-            self.speed = 4
+            self.speed = 0.1
         else:
-            self.speed = -4
+            self.speed = -0.1
         if random.randint(1, 2) == 1:
-            self.gravity = 4
+            self.gravity = 0.1
         else:
-            self.gravity = -4
+            self.gravity = -0.1
 
     def change_speed(self, speed):
         self.speed = speed
@@ -48,20 +48,20 @@ class Player:
         self.y = y
         self.height = PLAYER_HEIGHT
         self.width = PLAYER_WIDTH
-        self.gravity = 4
-
-    def move_up(self):
-        i = 0
-        while i < self.gravity:
-            if self.y - 1 > 0:
-                self.y = self.y - 1
-            i = i + 1
+        self.gravity = 0.1
 
     def move_down(self):
         i = 0
         while i < self.gravity:
-            if self.y + 1 + self.height < PLAYGROUND_HEIGHT:
-                self.y = self.y + 1
+            if self.y - 0.1 > -3.:
+                self.y = self.y - 0.1
+            i = i + 1
+
+    def move_up(self):
+        i = 0
+        while i < self.gravity:
+            if self.y + 0.1 < 3.:
+                self.y = self.y + 0.1
             i = i + 1
 
     def add_point(self):
@@ -86,8 +86,8 @@ class Player:
 class GameState:
     def __init__(self, players):
         self.ball = Ball()
-        self.playerOne = Player(10, (PLAYGROUND_HEIGHT / 2) - (PLAYER_HEIGHT / 2), players[0])
-        self.playerTwo = Player(PLAYGROUND_WIDHT - PLAYER_WIDTH - 10, (PLAYGROUND_HEIGHT / 2) - (PLAYER_HEIGHT / 2), players[1])
+        self.playerOne = Player(4., 0, players[0])
+        self.playerTwo = Player(-4., 0, players[1])
 
     def move_up_player1(self):
         self.playerOne.move_up()

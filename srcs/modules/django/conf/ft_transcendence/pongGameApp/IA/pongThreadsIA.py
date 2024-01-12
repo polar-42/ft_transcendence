@@ -56,97 +56,64 @@ class pongGameLoop(threading.Thread):
                 player2_score = player2.get_score()
 
          	    #BALL CCOLISIONS WITH WALLS
-                if ball_pos_y + ball_gravity <= 0 or ball_pos_y + ball_gravity + 10 >= 450:
+                if ball_pos_y + ball_gravity <= -3. or ball_pos_y + ball_gravity >= 3.:
                     ball_gravity = ball_gravity * -1
                     ball_pos_y += ball_gravity
                     ball_pos_x += ball_speed
 
                 #BALL COLLISION WITH PLAYER2 MAYBE TO CHANGE
-                elif ball_pos_y + ball_gravity <= player2_pos_y + 60 and ball_pos_y + ball_gravity >= player2_pos_y and ball_pos_x + 10 + ball_speed >= player2_pos_x:
-
-                    relative_intersect_y = (ball_pos_y + 10 * 2) - (player2_pos_y + 60 / 2)
-                    normalized_relative_intersect_y = relative_intersect_y / (60 / 2)
-                    bounce_angle = normalized_relative_intersect_y * (math.pi / 4)
-
-                    ball_speed = -4
-                    if ball_gravity > 0:
-                        ball_gravity = -4
-                    else:
-                        ball_gravity = 4
-
-                    ball_speed = ball_speed * math.cos(bounce_angle)
-                    ball_gravity = ball_gravity * -math.sin(bounce_angle)
-
-                    total_speed = abs(ball_speed) + abs(ball_gravity)
-                    ball_speed = (ball_speed / total_speed) * 8
-                    ball_gravity = (ball_gravity / total_speed) * 8
+                elif ball_pos_y + ball_gravity <= player2_pos_y + 1. and ball_pos_y + ball_gravity >= player2_pos_y - 1. and ball_pos_x + ball_speed <= player2_pos_x:
+                    ball_speed *= -1.
+                    ball_gravity *= -1.
 
                     self.game.update_ball_touch(2)
 
                 #BALL COLLISION WITH PLAYER1 MAYBE TO CHANGE
-                elif ball_pos_y + ball_gravity >= player1_pos_y and ball_pos_y + ball_gravity <= player1_pos_y + 60 and ball_pos_x + ball_speed <= player1_pos_x + 8:
-
-                    relative_intersect_y = (ball_pos_y + 10 * 2) - (player1_pos_y + 60 / 2)
-                    normalized_relative_intersect_y = relative_intersect_y / (60 / 2)
-                    bounce_angle = normalized_relative_intersect_y * (math.pi / 4)
-
-                    ball_speed = 4
-                    if ball_gravity > 0:
-                        ball_gravity = -4
-                    else:
-                        ball_gravity = 4
-
-                    ball_speed = ball_speed * math.cos(bounce_angle)
-                    ball_gravity = ball_gravity * -math.sin(bounce_angle)
-
-                    total_speed = abs(ball_speed) + abs(ball_gravity)
-                    ball_speed = (ball_speed / total_speed) * 8
-                    ball_gravity = (ball_gravity / total_speed) * 8
+                elif ball_pos_y + ball_gravity >= player1_pos_y - 1. and ball_pos_y + ball_gravity <= player1_pos_y + 1. and ball_pos_x + ball_speed >= player1_pos_x   :
+                    ball_speed *= -1.
+                    ball_gravity *= -1.
 
                     self.game.update_ball_touch(1)
                 #UPDATE SCORE PLAYER1
-                elif ball_pos_x + ball_speed <= 0:
+                elif ball_pos_x + ball_speed <= -4.5:
                     player1_score = player1_score + 1
-                    ball_pos_x = 355
-                    ball_pos_y = 195
+                    ball_pos_x = 0
+                    ball_pos_y = 0
                     self.game.update_score(2)
                     self.startGameBool = False
                     self.isThreadRunning = False
 
                     #RAND TO GET BACK TO GAME
                     if random.randint(1, 2) == 1:
-                        ball_speed = 4
+                        ball_speed = 0.1
                     else:
-                        ball_speed = -4
+                        ball_speed = -0.1
                     if random.randint(1, 2) == 1:
-                        ball_gravity = 4
+                        ball_gravity = 0.1
                     else:
-                        ball_gravity = -4
+                        ball_gravity = -0.1
 
                 #UPDATE SCORE PLAYER2
-                elif ball_pos_x + ball_speed + 10 >= 720:
+                elif ball_pos_x + ball_speed >= 4.5:
                     player2_score = player2_score + 1
-                    ball_pos_x = 355
-                    ball_pos_y = 195
+                    ball_pos_x = 0
+                    ball_pos_y = 0
                     self.game.update_score(1)
                     self.startGameBool = False
                     self.isThreadRunning = False
 
                     #RAND TO GET BACK TO GAME
                     if random.randint(1, 2) == 1:
-                        ball_speed = 4
+                        ball_speed = 0.1
                     else:
-                        ball_speed = -4
+                        ball_speed = -0.1
                     if random.randint(1, 2) == 1:
-                        ball_gravity = 4
+                        ball_gravity = 0.1
                     else:
-                        ball_gravity = -4
+                        ball_gravity = -0.1
 
                 #BALL COLLISION WITH WALL BEHIND PLAYER
-                elif ball_pos_x + ball_speed <= 0 or ball_pos_x + ball_speed + 10 >= 720:
-                    ball_speed = ball_speed * -1
-                    ball_pos_y += ball_gravity
-                    ball_pos_x += ball_speed
+                
                 #BALL MOVEMENT
                 else:
                     ball_pos_y += ball_gravity
