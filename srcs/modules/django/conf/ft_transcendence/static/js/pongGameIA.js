@@ -1,6 +1,6 @@
 import { navto } from "./index.js";
-import * as THREE from "./three/build/three.module.min.js";
-
+import { TrailRenderer } from "../threejs_addons/TrailRenderer.js";
+import * as THREE from 'https://threejs.org/build/three.module.js';
 const WIDTH = 720;
 const HEIGHT = 450;
 
@@ -34,7 +34,7 @@ paddle2.position.x += 4;
 paddle2.castShadow = true;
 scene.add(paddle2);
 
-var g_ball = new THREE.SphereGeometry(0.15, 32, 16);
+var g_ball = new THREE.SphereGeometry(0.15, 32, 16)
 var m_ball = new THREE.MeshBasicMaterial({ color: 0xff00ff });
 
 var ball = new THREE.Mesh(g_ball, m_ball);
@@ -46,8 +46,33 @@ directionalLight.position.set(1, 2, 5);
 directionalLight.castShadow = true;
 scene.add(directionalLight);
 
+const trailHeadGeometry = [];
+trailHeadGeometry.push( 
+  new THREE.Vector3( -0.1, 0.0, 0.0 ), 
+  new THREE.Vector3( 0.0, 0.0, 0.0 ), 
+  new THREE.Vector3( 0.1, 0.0, 0.0 ) 
+);
+
+// create the trail renderer object
+const trail = new TrailRenderer( scene, false );
+
+// set how often a new trail node will be added and existing nodes will be updated
+trail.setAdvanceFrequency(30);
+
+// create material for the trail renderer
+const trailMaterial = TrailRenderer.createBaseMaterial();	
+
+// specify length of trail
+const trailLength = 10;
+
+// initialize the trail
+trail.initialize( trailMaterial, trailLength, false, 0, trailHeadGeometry, ball );
+// activate the trail
+trail.activate();
+
 function animate() {
     requestAnimationFrame(animate);
+	trail.update()
     renderer.render(scene, camera);
 }
 animate();
@@ -55,7 +80,6 @@ animate();
 
 
 let canvas = null;
-let context = null;
 let socketPongIA = null;
 
 export function initGamePongIA()
@@ -70,7 +94,7 @@ export function initGamePongIA()
 	socketPongIA = new WebSocket("ws://" + window.location.host + '/pongGame/gameVsIA');
 
 	document.addEventListener('keydown', doKeyDown);
-
+	document.addEventListener('keyup', doKeyUp);
 	socketPongIA.onopen = LaunchGame
 	socketPongIA.onclose = FinishGame
 	socketPongIA.onmessage = e => OnMessage(e)
@@ -87,9 +111,10 @@ export function unloadGamePongIA()
 	socketPongIA = null;
 	if (canvas != null)
 	{
-		canvas.style.display="none";
+		renderer.domElement.style.display="none";
 	}
 	document.removeEventListener('keydown', doKeyDown);
+	document.removeEventListener('keyup', doKeyUp);
 }
 
 function updateGameData(data)
@@ -104,8 +129,7 @@ function updateGameData(data)
 		let playerOne_score = data.playerone_score;
 		let playerTwo_score = data.playertwo_score;
 
-		// context.fillText(playerOne_score, canvas.width / 2 - 60, 30)
-		// context.fillText(playerTwo_score, canvas.width / 2 + 60, 30)
+		document.getElementById('score').innerHTML = playerOne_score + " - " + playerTwo_score;
 	}
 }
 
@@ -141,6 +165,27 @@ function doKeyDown(e)
 	}
 }
 
+function doKeyUp(e)
+{
+	if (socketPongIA && socketPongIA.readyState === WebSocket.OPEN) {
+			const key = e.key;
+			// differenciate which released to fluidify mvmt
+			if (key == "ArrowUp" || key == "w") {
+					e.preventDefault();
+					socketPongIA.send(JSON.stringify({
+						'message': 'input',
+						'input': 'StopMovementUp'
+					}))
+			} else if (key == 'ArrowDown'|| key == "s") {
+				e.preventDefault();
+				socketPongIA.send(JSON.stringify({
+					'message': 'input',
+					'input': 'StopMovementDown'
+				}))
+		}
+	}
+}
+
 function LaunchGame()
 {
 	canvas = document.getElementById("app");
@@ -159,7 +204,8 @@ function FinishGame()
 function FinishGameByScore(data)
 {
 	console.log(data)
-	canvas.style.display="none";
+	renderer.domElement.style.display="none";
+	document.getElementById('score').style.display="none";
 	let message = "Game is finished"; //+ data.winner + " is the winner by the score of " + data.playerone_score + " to " + data.playertwo_score;
 	document.getElementById('gameMessage').innerHTML = message;
 }

@@ -36,47 +36,6 @@ export function unLoadGamePong()
 let canvas = null;
 let context = null;
 
-class Element {
-	constructor(options) {
-		this.x = options.x;
-		this.y = options.y;
-		this.width = options.width;
-		this.height = options.height;
-		this.color = options.color;
-		this.speed = options.speed;
-		this.gravity = options.gravity;
-	}
-}
-
-const playerOne = new Element({
-	x: 10,
-	y: 195,
-	width: 8,
-	height: 60,
-	color: "#ff0",
-	gravity: 4,
-});
-
-const playerTwo = new Element({
-	x: 720 - 8 - 10,
-	y: 195,
-	width: 8,
-	height: 60,
-	color: "#fff",
-	gravity: 4,
-});
-
-
-const ball = new Element({
-	x: 720 / 2,
-	y: 450 / 2,
-	width: 10,
-	height: 10,
-	color: "#fff",
-	speed: 0,
-	gravity: 0,
-});
-
 
 function drawElement(element)
 {
@@ -94,11 +53,6 @@ function updateGameData(data)
 		ball.y = data.ball_pos_y;
 		let playerOne_score = data.playerone_score;
 		let playerTwo_score = data.playertwo_score;
-
-		context.clearRect(0, 0, canvas.width, canvas.height);
-		drawElement(playerOne);
-        drawElement(playerTwo);
-        drawElement(ball);
 		context.fillText(playerOne_score, canvas.width / 2 - 60, 30)
 		context.fillText(playerTwo_score, canvas.width / 2 + 60, 30)
 	}

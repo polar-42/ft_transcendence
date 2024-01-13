@@ -1,29 +1,30 @@
 import random
 import math
 
-def normalise (dx, dy)
-    length = sqrt(dx ** 2 + dy ** 2)
+def normalise (dx, dy):
+    length = math.sqrt(dx ** 2 + dy ** 2)
     return (dx / length, dy / length)
+
+def randomDir():
+    return random.random() - 0.5
+
 
 class Ball:
     def __init__(self):
         self.x = 0.
         self.y = 0.
-        self.dx = randomDir()
+        self.dx = randomDir() + 0.5
         self.dy = randomDir()
         self.dx, self.dy = normalise(self.dx, self.dy)
         self.speed = 0.1
         self.radius = 0.15
 
-    def randomDir(self)
-        if random.randint(1, 2) == 1:
-            return 1
-        return -1
 
-    def change_speed(self, speed)
+
+    def change_speed(self, speed):
         self.speed = speed
 
-    def change_direction(self, dx, dy)
+    def change_direction(self, dx, dy):
         self.dx = dx
         self.dy = dy
 
@@ -31,8 +32,8 @@ class Ball:
         self.x = x
         self.y = y
 
-    def get_speed(self)
-        return speed
+    def get_speed(self):
+        return self.speed
     def get_direction(self):
         return self.dx, self.dy
 
@@ -49,15 +50,17 @@ class Player:
         self.y = y
         self.height = 2.
         self.width = 0.2
-        self.speed = 0.1
+        self.dy = 0
 
-    def move_down(self):
-        if self.y - self.speed > -3.:
-            self.y = self.y - 0.1
+    def change_dy(self, dy):
+        self.dy = dy
+    
+    def get_dy(self):
+        return self.dy
 
-    def move_up(self):
-        if self.y + self.speed < 3.:
-            self.y = self.y + 0.1
+    def change_pos(self, dy):
+        if (-3. <= self.y + dy <= 3.):
+            self.y += dy
 
     def add_point(self):
         self.score = self.score + 1
@@ -81,25 +84,18 @@ class Player:
 class GameState:
     def __init__(self, players):
         self.ball = Ball()
-        self.playerOne = Player(4., 0, players[0])
-        self.playerTwo = Player(-4., 0, players[1])
+        self.playerOne = Player(-4., 0, players[0])
+        self.playerTwo = Player(4., 0, players[1])
 
-    def move_up_player1(self):
-        self.playerOne.move_up()
-
-    def move_down_player1(self):
-        self.playerOne.move_down()
-
-    def move_up_player2(self):
-        self.playerTwo.move_up()
-
-    def move_down_player2(self):
-        self.playerTwo.move_down()
+    def move_players(self):
+        self.playerOne.change_pos(self.playerOne.dy)
+        self.playerTwo.change_pos(self.playerTwo.dy)
 
     def update_ball_direction(self, dx, dy):
-        self.dx, self.dy = normalise(dx, dy)
+        dx, dy = normalise(dx, dy)
+        self.ball.change_direction(dx, dy)
 
-    def update_ball_speed(self, speed)
+    def update_ball_speed(self, speed):
         self.ball.speed = speed
 
     def update_ball_pos(self, x, y):
