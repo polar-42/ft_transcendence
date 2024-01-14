@@ -88,9 +88,9 @@ function LoadGame(data)
 	{
 		navto("/battleship", data.gameId)
 	}
-	else
+	else if (data.gameType == 'pong')
 	{
-
+		navto("/pongGame/Remote", data.gameId)
 	}
 }
 

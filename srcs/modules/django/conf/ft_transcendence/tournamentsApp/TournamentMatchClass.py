@@ -1,9 +1,8 @@
 from battleshipApp import ColorPrint
-
 from .EnumClass import GameType, GameState, UserPosition
 from .TournamentUser import TournamentUser
-
 import json
+from pongGameApp.Remote.pongGameManager import Manager
 
 class TournamentMatch():
 
@@ -64,6 +63,14 @@ class TournamentMatch():
             self.Users[0].SendMessage(msg)
             self.Users[1].SendMessage(msg)
         else:
+            Manager.createGame(self.Users[0].SockUser, self.Users[1].SockUser, self.GameId, 1, self)
+            msg = json.dumps({
+                'type': "MSG_LoadGame",
+                'gameType': 'pong',
+                'gameId' : self.GameId
+            })
+            self.Users[0].SendMessage(msg)
+            self.Users[1].SendMessage(msg)
             pass
         self.Users[0].Position = UserPosition.InMatch
         self.Users[1].Position = UserPosition.InMatch
@@ -87,7 +94,7 @@ class TournamentMatch():
 
     def __str__(self):
         return "Tournament[{tID}].Match[{matchId}] = Users[0] = {User1}, Users[1] = {User2}".format(tID=self.TournamentId, matchId=self.GameId, User1=self.Users[0].Username if self.Users[0] is not None else None, User2=self.Users[1].Username if self.Users[1] is not None else None)
-    
+
     def HandleResult(self, Winner, Forced = False):
         if (Winner is None):
             self.Status = GameState.Cancelled
@@ -97,12 +104,12 @@ class TournamentMatch():
         else:
             self.Status = GameState.Ended
             self.Winner = self.Users[0] if Winner is self.Users[0].UserId else self.Users[1]
-        if self.Users[0].UserId is not -1 and Forced is not True:
+        if self.Users[0].UserId != -1 and Forced is not True:
             self.Users[0].Position = UserPosition.Away
-        if self.Users[1].UserId is not -1 and Forced is not True:
+        if self.Users[1].UserId != -1 and Forced is not True:
             self.Users[1].Position = UserPosition.Away
         self.Tournament.HandleMatchResult(self)
-        
+
     def Objectify(self, x, y):
         if (self.Status is GameState.Cancelled):
             WinnerUsr = -2

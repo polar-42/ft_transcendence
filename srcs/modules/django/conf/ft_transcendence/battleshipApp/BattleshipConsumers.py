@@ -17,7 +17,7 @@ class socket(WebsocketConsumer):
 		)
 		self.user = self.scope['user']
 		from . import BattleshipGameManager
-		self.Game =  BattleshipGameManager.GameManager.JoinGame(BattleshipGameManager.GameManager, self.GameId, self.scope['user'], self)
+		self.Game = BattleshipGameManager.GameManager.JoinGame(BattleshipGameManager.GameManager, self.GameId, self.scope['user'], self)
 
 	def disconnect(self, close_code):
 		from . import BattleshipGameManager

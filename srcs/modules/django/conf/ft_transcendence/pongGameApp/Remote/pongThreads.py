@@ -2,6 +2,29 @@ import threading, json, random, math, asyncio, time
 from channels.layers import get_channel_layer
 from .. import pongGameClasses
 from asgiref.sync import async_to_sync
+from enum import IntEnum
+
+class GameState(IntEnum):
+	RequestBoat = -1
+	Initialisation = 0
+	BoatPlacement = 1
+	Playing = 2
+	RequestHit = 4
+	Ending = 3
+
+class ConnexionState(IntEnum):
+	NeverConnected = 0
+	Connected = 1
+	Disconnected = 2
+
+class GameType(IntEnum):
+	Normal = 0
+	Tournament = 1
+
+class GameEndReason(IntEnum):
+	Disconnected = 0
+	GiveUp = 1
+	Win = 2
 
 class pongGameLoop(threading.Thread):
 
@@ -184,27 +207,52 @@ def send_data_async(ping_game_instance, game):
 def send_timer_async(ping_game_instance, game, sec):
     ping_game_instance.sendTimerFromGame(game, sec)
 
+class UserPong():
+    def __init__(self, user):
+        self.sock_user = user
+        self.connexionStatus = ConnexionState.NeverConnected
+        self.id = user.id
+        self.socket = None
+        self.username = str(user)
 
 class pongGame():
     is_running = False
     channelName = ""
 
-    def __init__(self):
+    def __init__(self, user1, user2, gameId, tournament):
         self.channel_layer = get_channel_layer()
-        #self.pongGame = pongGameClasses.GameState()
+        self.gameStatus = GameState.Initialisation
+        self.users = [UserPong(user1), UserPong(user2)]
+        self.tournament = tournament
+        self.channelName = gameId
 
-    def launchGame(self, channelName, users, isTournament):
-        self.users = users
-        self.isTournament = isTournament
-        if channelName != '':
-            self.mythread = pongGameLoop(self, users)
+    def getUser(self, user):
+        if (user.id == self.users[0].sock_user.id):
+            return self.users[0]
+        elif user.id == self.users[1].sock_user.id:
+            return self.users[1]
+        return None
 
-            print('game (', channelName, ') is launch')
+    def connectUser(self, user, socket):
+        findedUser = self.getUser(user)
+        if findedUser is None or findedUser.connexionStatus != ConnexionState.NeverConnected:
+            return
+        findedUser.connexionStatus = ConnexionState.Connected
+        findedUser.socket = socket
+        if self.users[0].connexionStatus == ConnexionState.Connected and self.users[1].connexionStatus == ConnexionState.Connected:
+            if self.gameStatus == GameState.Initialisation:
+                self.startGame()
 
-            self.channelName = channelName
+    def disconnectUser(self, user):
+        findedUser = self.getUser(user)
+        if findedUser is None:
+            return
+        findedUser.connexionStatus = ConnexionState.Disconnected
 
-            self.mythread.start_game()
-            self.mythread.start()
+    def startGame(self):
+        self.mythread = pongGameLoop(self, self.users)
+        self.mythread.start_game()
+        self.mythread.start()
 
     def finishGame(self):
         self.mythread.stop()
@@ -222,7 +270,7 @@ class pongGame():
         player2_score = player2.get_score()
 
         for x in self.users:
-            x.send(text_data=json.dumps({
+            x.socket.send(text_data=json.dumps({
                 'type': 'game_timer',
     			'ball_pos_x': ball_pos_x,
                 'ball_pos_y': ball_pos_y,
@@ -248,7 +296,7 @@ class pongGame():
         number_ball_touch_player2 = player2.get_ball_touch()
 
         for x in self.users:
-            x.send(text_data=json.dumps({
+            x.socket.send(text_data=json.dumps({
     			'type': 'game_data',
     			'ball_pos_x': ball_pos_x,
                 'ball_pos_y': ball_pos_y,
@@ -258,32 +306,52 @@ class pongGame():
                 'playertwo_score': player2_score,
     		}))
 
+        #print('player1_score =', player1_score, 'player2_score =', player2_score)
+
         if player1_score >= 3 or player2_score >= 3:
             if player1_score >= 3:
-                winner = player1.get_id()
+                winner = self.users[0]
             else:
-                winner = player2.get_id()
-            async_to_sync(self.channel_layer.group_send)(
-                self.channelName,
-                {
-                    'type': 'end_game_by_score',
-                    'winner': winner.username,
-                    'playerone_score': player1_score,
-                    'playertwo_score': player2_score,
-                    'number_ball_touch_player1': number_ball_touch_player1,
-                    'number_ball_touch_player2': number_ball_touch_player2,
-                }
-            )
+                winner = self.users[1]
+
+            if self.tournament is None:
+                p1 = player1.get_player()
+                p2 = player2.get_player()
+                async_to_sync(self.channel_layer.group_send)(
+                    self.channelName,
+                    {
+                        'type': 'end_game_by_score',
+                        'winner': winner.username,
+                        'playerone_username': p1.username,
+                        'playertwo_username': p2.username,
+                        'playerone_score': player1_score,
+                        'playertwo_score': player2_score,
+                        'number_ball_touch_player1': number_ball_touch_player1,
+                        'number_ball_touch_player2': number_ball_touch_player2,
+                    }
+                )
+            else:
+                self.tournament.HandleResult(winner.sock_user)
+                for x in self.users:
+                    x.socket.send(text_data=json.dumps({
+                        'type': 'return_to_tournament',
+                        'id': self.tournament.TournamentId,
+                    }))
+                    x.socket.close()
+                    x.socket.close()
+
+                if winner == self.users[0]:
+                    self.finishGame()
 
     def inputGame(self, input, player):
         i = 0
         for x in self.users:
-            if x == player:
+            if x.socket == player:
                 self.mythread.inputGame(input, i)
             i = i + 1
 
     def quitGame(self, player):
-        print('player', player.username, 'leave the game')
+        print('player', player.user, 'leave the game')
 
         self.mythread.stop()
         self.mythread.join()
@@ -292,6 +360,8 @@ class pongGame():
             self.channelName,
             {
                 'type': 'end_game',
+                'playerone': self.users[0].username,
+                'playertwo': self.users[1].username,
             }
         )
 
