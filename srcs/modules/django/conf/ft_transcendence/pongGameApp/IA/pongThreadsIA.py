@@ -66,14 +66,14 @@ class pongGameLoop(threading.Thread):
                 elif (player2_pos_y + 1. >= ball_pos_y >= player2_pos_y - 1. and ball_pos_x >= player2_pos_x - 0.17) :
                     ball_dx *= -1
                     ball_dy = ball_pos_y - player2_pos_y
-                    ball_pos_x = player2_pos_x - + 0.17
+                    ball_pos_x = player2_pos_x - 0.17
                     ball_speed *= 1.04
 
                 #BALL COLLISION WITH PLAYER1
                 elif (player1_pos_y + 1. >= ball_pos_y >= player1_pos_y - 1. and ball_pos_x <= player1_pos_x + 0.17) :
                     ball_dx *= -1
                     ball_dy = ball_pos_y - player1_pos_y
-                    ball_pos_x = player1_pos_x + + 0.17
+                    ball_pos_x = player1_pos_x + 0.17
                     ball_speed *= 1.04 
 
                 #UPDATE SCORE PLAYER1
@@ -81,6 +81,7 @@ class pongGameLoop(threading.Thread):
                     player1_score = player1_score + 1
                     ball_pos_x = 0
                     ball_pos_y = 0
+
                     ball_dx = randomDir() + 0.5
                     ball_dy = randomDir()
                     self.game.update_score(2)
@@ -121,23 +122,23 @@ class pongGameLoop(threading.Thread):
     def inputGame(self, input, player):
         if input == 'ArrowUp':
             if player == 0:
-                self.game.playerOne.change_dy(0.1)
+                self.game.playerOne.change_dy(0.2)
             else:
-                self.game.playerTwo.change_dy(0.1)
+                self.game.playerTwo.change_dy(0.2)
         elif input == 'ArrowDown':
             if player == 0:
-                self.game.playerOne.change_dy(-0.1)
+                self.game.playerOne.change_dy(-0.2)
             else:
-                self.game.playerTwo.change_dy(-0.1)
+                self.game.playerTwo.change_dy(-0.2)
         elif (input == 'StopMovementUp'):
-            if player == 0 and self.game.playerOne.get_dy() == 0.1:
+            if player == 0 and self.game.playerOne.get_dy() == 0.2:
                 self.game.playerOne.change_dy(0)
-            elif self.game.playerTwo.get_dy() == 0.1:
+            elif self.game.playerTwo.get_dy() == 0.2:
                 self.game.playerTwo.change_dy(0)
         elif (input == 'StopMovementDown'):
-            if player == 0 and self.game.playerOne.get_dy() == -0.1:
+            if player == 0 and self.game.playerOne.get_dy() == -0.2:
                 self.game.playerOne.change_dy(0)
-            elif self.game.playerTwo.get_dy() == -0.1:
+            elif self.game.playerTwo.get_dy() == -0.2:
                 self.game.playerTwo.change_dy(0)
 
     def stop_game(self):

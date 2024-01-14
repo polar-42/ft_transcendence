@@ -13,8 +13,8 @@ class Ball:
     def __init__(self):
         self.x = 0.
         self.y = 0.
-        self.dx = randomDir() + 0.5
-        self.dy = randomDir()
+        self.dx = randomDir() 
+        self.dy = randomDir() / 4
         self.dx, self.dy = normalise(self.dx, self.dy)
         self.speed = 0.1
         self.radius = 0.15

@@ -13,9 +13,9 @@ class pongGameIA(threading.Thread):
 
 			if self.isRunning is True:
 
-				if self.ball_pos_y < self.ia_pos_y - 1.:
+				if self.ball_pos_y < self.ia_pos_y - 0.9:
 					self.gameThread.inputGame('ArrowDown', 1)
-				elif self.ball_pos_y > self.ia_pos_y + 1.:
+				elif self.ball_pos_y > self.ia_pos_y + 0.9:
 					self.gameThread.inputGame('ArrowUp', 1)
 				else:
 					self.gameThread.inputGame('StopMovementDown', 1)

@@ -4,6 +4,8 @@ import * as THREE from 'https://threejs.org/build/three.module.js';
 const WIDTH = 720;
 const HEIGHT = 450;
 
+var BcameraShake = false;
+
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(75, WIDTH / HEIGHT, 0.1, 1000);
 camera.position.z = 5;
@@ -28,6 +30,19 @@ paddle1.castShadow = true;
 scene.add(paddle1);
 
 
+var listener = new THREE.AudioListener();
+camera.add(listener);
+var paddle1_sound = new THREE.Audio(listener);
+var paddle2_sound = new THREE.Audio(listener);
+var audioLoader = new THREE.AudioLoader();
+audioLoader.load('../../static/js/sounds/bop_1.ogg', function(buffer) {
+	paddle1_sound.setBuffer(buffer);
+});
+audioLoader.load('../../static/js/sounds/bop_2.ogg', function(buffer) {
+	paddle2_sound.setBuffer(buffer);
+});
+
+
 var m_paddle2 = new THREE.MeshBasicMaterial({ color: 0x0000ff });
 var paddle2 = new THREE.Mesh(g_paddle, m_paddle2);
 paddle2.position.x += 4;
@@ -48,9 +63,9 @@ scene.add(directionalLight);
 
 const trailHeadGeometry = [];
 trailHeadGeometry.push( 
-  new THREE.Vector3( -0.1, 0.0, 0.0 ), 
+  new THREE.Vector3( -0.1, -0.1, -0.1 ), 
   new THREE.Vector3( 0.0, 0.0, 0.0 ), 
-  new THREE.Vector3( 0.1, 0.0, 0.0 ) 
+  new THREE.Vector3( 0.1, 0.1, 0.1 ) 
 );
 
 // create the trail renderer object
@@ -70,8 +85,39 @@ trail.initialize( trailMaterial, trailLength, false, 0, trailHeadGeometry, ball 
 // activate the trail
 trail.activate();
 
+function cameraShake() {
+	const intensity = 0.3; // Adjust the intensity of the shake
+
+	const originalPosition = camera.position.clone();
+
+	// Randomly shake the camera position
+	camera.position.x = originalPosition.x + Math.random() * intensity - intensity / 2;
+	camera.position.y = originalPosition.y + Math.random() * intensity - intensity / 2;
+	camera.position.z = originalPosition.z + Math.random() * intensity - intensity / 2;
+}
+
+var frames_to_shake = 0;
+
 function animate() {
     requestAnimationFrame(animate);
+	if (BcameraShake == true)
+	{
+		frames_to_shake = 10;
+		BcameraShake = false;
+	}
+	if (frames_to_shake > 0)
+	{
+		if (frames_to_shake % 2 == 0)
+			cameraShake();
+		else
+		{
+			camera.position.x = 0;
+			camera.position.y = 0;
+			camera.position.z = 5;
+		}
+		frames_to_shake -= 1;
+	}
+
 	trail.update()
     renderer.render(scene, camera);
 }
@@ -125,6 +171,16 @@ function updateGameData(data)
 		paddle2.position.y = data.playertwo_pos_y;
 		ball.position.x = data.ball_pos_x;
 		ball.position.y = data.ball_pos_y;
+		if ( paddle1.position.y + 1. >= ball.position.y && ball.position.y >= paddle1.position.y - 1. && ball.position.x <= -4. + 0.18 )
+		{
+			BcameraShake = true;
+			paddle1_sound.play();
+		}
+		if (paddle2.position.y + 1. >= ball.position.y && ball.position.y >= paddle2.position.y - 1. && ball.position.x >= 4. - 0.2)
+		{
+			BcameraShake = true;
+			paddle2_sound.play();
+		}
 		console.log(data.ball_pos_x, data.ball_pos_y);
 		let playerOne_score = data.playerone_score;
 		let playerTwo_score = data.playertwo_score;
