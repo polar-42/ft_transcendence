@@ -6,15 +6,18 @@ def normalise (dx, dy):
     return (dx / length, dy / length)
 
 def randomDir():
-    return random.random() - 0.5
+    dx = random.random() - 0.5
+    dy = dx * (random.random() - 0.5)
 
+
+    return dx, dy
 
 class Ball:
     def __init__(self):
         self.x = 0.
         self.y = 0.
-        self.dx = randomDir() 
-        self.dy = randomDir() / 4
+        self.dx, self.dy = randomDir()
+
         self.dx, self.dy = normalise(self.dx, self.dy)
         self.speed = 0.1
         self.radius = 0.15

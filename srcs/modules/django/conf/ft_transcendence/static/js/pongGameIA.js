@@ -49,12 +49,16 @@ var listener = new THREE.AudioListener();
 camera.add(listener);
 var paddle1_sound = new THREE.Audio(listener);
 var paddle2_sound = new THREE.Audio(listener);
+var wall_sound = new THREE.Audio(listener);
 var audioLoader = new THREE.AudioLoader();
 audioLoader.load('../../static/js/sounds/bop_1.ogg', function(buffer) {
 	paddle1_sound.setBuffer(buffer);
 });
 audioLoader.load('../../static/js/sounds/bop_2.ogg', function(buffer) {
 	paddle2_sound.setBuffer(buffer);
+});
+audioLoader.load('../../static/js/sounds/bop_3.ogg', function(buffer) {
+	wall_sound.setBuffer(buffer);
 });
 
 
@@ -195,6 +199,10 @@ function updateGameData(data)
 		{
 			BcameraShake = true;
 			paddle2_sound.play();
+		}
+		if (!( 3.6 >= ball.position.y && ball.position.y >= -3.6))
+		{
+			wall_sound.play();
 		}
 		console.log(data.ball_pos_x, data.ball_pos_y);
 		let playerOne_score = data.playerone_score;

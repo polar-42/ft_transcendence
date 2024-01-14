@@ -82,8 +82,7 @@ class pongGameLoop(threading.Thread):
                     ball_pos_x = 0
                     ball_pos_y = 0
 
-                    ball_dx = randomDir() + 0.5
-                    ball_dy = randomDir()
+                    ball_dx, ball_dy = randomDir()
                     self.game.update_score(2)
                     self.startGameBool = False
 
@@ -92,8 +91,7 @@ class pongGameLoop(threading.Thread):
                     player2_score = player2_score + 1
                     ball_pos_x = 0
                     ball_pos_y = 0
-                    ball_dx = randomDir() + 0.5
-                    ball_dy = randomDir()
+                    ball_dx, ball_dy = randomDir()
                     self.game.update_score(1)
                     self.startGameBool = False
                 #BALL MOVEMENT
