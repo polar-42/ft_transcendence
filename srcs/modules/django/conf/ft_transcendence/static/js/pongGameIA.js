@@ -9,17 +9,19 @@ var BcameraShake = false;
 
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(75, WIDTH / HEIGHT, 0.1, 1000);
-camera.position.z = 5;
+camera.position.z = 6;
 var renderer = new THREE.WebGLRenderer();
 renderer.shadowMap.enabled = true;
 renderer.setSize(WIDTH, HEIGHT);
 renderer.setClearColor( 0xffffff);
 
-var planeGeometry = new THREE.PlaneGeometry(100, 100); // Width and height of the plane
-var planeMaterial = new THREE.ShadowMaterial({ opacity: 0.5 });
+
+var texture = new THREE.TextureLoader().load( '../../static/js/sounds/sky.jpg' );
+var planeGeometry = new THREE.PlaneGeometry(10, 10); // Width and height of the plane
+var planeMaterial =  new THREE.ShadowMaterial({ color: 0xffffff, opacity: 0.5, });
 var plane = new THREE.Mesh(planeGeometry, planeMaterial);
-plane.position.z = -1;
 plane.receiveShadow = true;
+plane.position.z = -1;
 scene.add(plane);
 
 var wallGeometry = new THREE.PlaneGeometry(1000, 2);
@@ -38,38 +40,24 @@ scene.add(wallUp);
 scene.add(wallDown);
 
 var g_paddle = new THREE.BoxGeometry(0.2, 2., 2.);
-var m_paddle1 = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+var m_paddle1 = 	new THREE.MeshPhysicalMaterial({
+	reflectivity : 0,
+	transmission : 1.0,
+	roughness : 0.2,
+	metalness : 0,
+	clearcoat : 0.3,
+	clearcoatRoughness : 0.25,
+	color : new THREE.Color(0xff0000),
+	ior : 1.2,
+	thickness : 10.0,
+	transparent: true,
+  });
 
 var paddle1 = new THREE.Mesh(g_paddle, m_paddle1);
 paddle1.position.x -= 4;
 paddle1.castShadow = true;
+paddle1.receiveShadow = true;
 scene.add(paddle1);
-
-const loader = new OBJLoader();
-
-// load a resource
-loader.load(
-	// resource URL
-	'../../static/js/sounds/Ping_Pong_Paddle.obj',
-	// called when resource is loaded
-	function ( object ) {
-
-		scene.add( object );
-
-	},
-	// called when loading is in progresses
-	function ( xhr ) {
-
-		console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
-
-	},
-	// called when loading has errors
-	function ( error ) {
-
-		console.log( 'An error happened' );
-
-	}
-);
 
 
 var listener = new THREE.AudioListener();
@@ -89,20 +77,30 @@ audioLoader.load('../../static/js/sounds/bop_3.ogg', function(buffer) {
 });
 
 
-var m_paddle2 = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+var m_paddle2 = 	new THREE.MeshPhysicalMaterial({
+	reflectivity : 0,
+	transmission : 1.0,
+	roughness : 0.2,
+	metalness : 0,
+	clearcoat : 0.3,
+	clearcoatRoughness : 0.25,
+	color : new THREE.Color(0x0000ff),
+	ior : 1.2,
+	thickness : 10.0
+  });
 var paddle2 = new THREE.Mesh(g_paddle, m_paddle2);
 paddle2.position.x += 4;
 paddle2.castShadow = true;
+paddle2.receiveShadow = true;
 scene.add(paddle2);
 
 var g_ball = new THREE.SphereGeometry(0.15, 32, 16)
-var m_ball = new THREE.MeshBasicMaterial({ color: 0xff00ff });
-
+var m_ball = new THREE.MeshBasicMaterial({ color: 0xff00ff, emissive: 0xffffff});
 var ball = new THREE.Mesh(g_ball, m_ball);
 ball.castShadow = true;
 scene.add(ball);
 
-var directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+var directionalLight = new THREE.PointLight(0xff0000, 0.2, 100);
 directionalLight.position.set(1, 2, 5);
 directionalLight.castShadow = true;
 scene.add(directionalLight);
@@ -217,7 +215,7 @@ function updateGameData(data)
 		paddle2.position.y = data.playertwo_pos_y;
 		ball.position.x = data.ball_pos_x;
 		ball.position.y = data.ball_pos_y;
-		if ( paddle1.position.y + 1. >= ball.position.y && ball.position.y >= paddle1.position.y - 1. && ball.position.x <= -4. + 0.18 )
+		if ( paddle1.position.y + 1. >= ball.position.y && ball.position.y >= paddle1.position.y - 1. && ball.position.x <= -4. + 0.2 )
 		{
 			BcameraShake = true;
 			paddle1_sound.play();

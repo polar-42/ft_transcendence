@@ -15,8 +15,8 @@ class Ball:
         self.x = 0.
         self.y = 0.
         self.dx, self.dy = randomDir()
-
         self.dx, self.dy = normalise(self.dx, self.dy)
+        self.effect = 0
         self.speed = 0.1
         self.radius = 0.15
 
@@ -24,6 +24,8 @@ class Ball:
 
     def change_speed(self, speed):
         self.speed = speed
+    def change_effect(self, effect):
+        self.effect = effect
 
     def change_direction(self, dx, dy):
         self.dx = dx
@@ -37,7 +39,8 @@ class Ball:
         return self.speed
     def get_direction(self):
         return self.dx, self.dy
-
+    def get_effect(self):
+        return self.effect
     def get_pos(self):
         return self.x, self.y
 
@@ -113,6 +116,9 @@ class GameState:
             self.playerOne.add_ball_touch()
         elif player == 2:
             self.playerTwo.add_ball_touch()
+
+    def update_ball_effect(self, effect):
+        self.ball.change_effect(effect)
 
     def get_ball(self):
         return self.ball
