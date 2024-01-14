@@ -8,8 +8,6 @@ def normalise (dx, dy):
 def randomDir():
     dx = random.random() - 0.5
     dy = dx * (random.random() - 0.5)
-
-
     return dx, dy
 
 class Ball:

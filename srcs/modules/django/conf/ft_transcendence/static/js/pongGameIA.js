@@ -1,6 +1,7 @@
 import { navto } from "./index.js";
 import { TrailRenderer } from "../threejs_addons/TrailRenderer.js";
 import * as THREE from 'https://threejs.org/build/three.module.js';
+import { OBJLoader } from '../threejs_addons/OBJLoader.js';
 const WIDTH = 720;
 const HEIGHT = 450;
 
@@ -43,6 +44,32 @@ var paddle1 = new THREE.Mesh(g_paddle, m_paddle1);
 paddle1.position.x -= 4;
 paddle1.castShadow = true;
 scene.add(paddle1);
+
+const loader = new OBJLoader();
+
+// load a resource
+loader.load(
+	// resource URL
+	'../../static/js/sounds/Ping_Pong_Paddle.obj',
+	// called when resource is loaded
+	function ( object ) {
+
+		scene.add( object );
+
+	},
+	// called when loading is in progresses
+	function ( xhr ) {
+
+		console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+
+	},
+	// called when loading has errors
+	function ( error ) {
+
+		console.log( 'An error happened' );
+
+	}
+);
 
 
 var listener = new THREE.AudioListener();

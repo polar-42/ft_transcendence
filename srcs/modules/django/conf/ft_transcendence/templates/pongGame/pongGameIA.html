@@ -1,6 +1,14 @@
 <!-- game.html -->
 {% load static %}
 <script type="module" src="{% static '/js/loading.js' %}"></script>
+<script type="importmap">
+    {
+        "imports": {
+            "three": "../build/three.module.js",
+            "three/addons/": "./jsm/"
+        }
+    }
+</script>
 <p id="score"></p>
 <!--{% comment %} <script type="module" src="{% static '/js/pongGameLocal.js' %}"></script> {% endcomment %}-->
 <!-- <canvas id="pongCanvasIA" width="720" height="450"></canvas> -->

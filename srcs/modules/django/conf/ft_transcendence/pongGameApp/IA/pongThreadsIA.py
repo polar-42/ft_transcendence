@@ -5,7 +5,9 @@ from .PongIA import pongGameIA
 from asgiref.sync import async_to_sync, sync_to_async
 
 def randomDir():
-    return random.random() - 0.5
+    dx = random.random() - 0.5
+    dy = dx * (random.random() - 0.5)
+    return dx, dy
 
 class pongGameLoop(threading.Thread):
 
