@@ -17,9 +17,24 @@ renderer.setClearColor( 0xffffff);
 var planeGeometry = new THREE.PlaneGeometry(100, 100); // Width and height of the plane
 var planeMaterial = new THREE.ShadowMaterial({ opacity: 0.5 });
 var plane = new THREE.Mesh(planeGeometry, planeMaterial);
-plane.position.z = -2;
+plane.position.z = -1;
 plane.receiveShadow = true;
 scene.add(plane);
+
+var wallGeometry = new THREE.PlaneGeometry(1000, 2);
+var wallMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+var wallUp = new THREE.Mesh( wallGeometry, wallMaterial);
+wallUp.position.y = 3.8;
+wallUp.rotation.x = Math.PI / 180 * 80 ;
+
+
+var wallDown = new THREE.Mesh( wallGeometry, wallMaterial);
+wallDown.position.y = -3.8;
+wallDown.rotation.x = -Math.PI / 180 * 80 ;
+
+
+scene.add(wallUp);
+scene.add(wallDown);
 
 var g_paddle = new THREE.BoxGeometry(0.2, 2., 2.);
 var m_paddle1 = new THREE.MeshBasicMaterial({ color: 0xff0000 });
