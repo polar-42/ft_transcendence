@@ -78,6 +78,8 @@ h1 {
   width: auto;
   text-align: left;
   margin-top: 20px;
+  cursor: pointer;
+  user-select: none;
 }
 
 .selection_wrapper input[type="checkbox"] {
