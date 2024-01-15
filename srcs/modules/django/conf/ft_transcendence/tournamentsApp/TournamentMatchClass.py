@@ -63,7 +63,7 @@ class TournamentMatch():
             self.Users[0].SendMessage(msg)
             self.Users[1].SendMessage(msg)
         else:
-            Manager.createGame(self.Users[0].SockUser, self.Users[1].SockUser, self.GameId, 1, self)
+            Manager.createGame(self.Users[0].SockUser, self.Users[1].SockUser, self.GameId, self)
             msg = json.dumps({
                 'type': "MSG_LoadGame",
                 'gameType': 'pong',

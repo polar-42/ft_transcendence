@@ -53,7 +53,8 @@ class pongMatchmaking():
                 self.matchmake.removeUser(user2)
             return
         gameId = "PongGame_" + str(user1.id) + "_" + str(user2.id)
-        Manager.createGame(user1, user2, gameId, None, gameId)
+        print("user1 =", user1, "user2 =", user2, "gameId =", gameId)
+        Manager.createGame(user1, user2, gameId, None)
 
         async_to_sync(self.channel_layer.group_send)(
             self.channelName,

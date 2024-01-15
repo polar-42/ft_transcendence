@@ -1,14 +1,13 @@
 from battleshipApp import ColorPrint
-
+from .models import TournamentsModels
 from .TournamentUser import TournamentUser
 from .EnumClass import GameType, TournamentState, TournamentVisibility, UserPosition, GameState
 from .TournamentMatchClass import TournamentMatch
-
-import json, math
+import json, math, os
 
 class Tournament():
 
-	def __init__(self, tournamentId : str, creator : int, tournamentName : str, playerAmount : int, description : str, gameType : GameType, visibility : TournamentVisibility):
+	def __init__(self, tournamentId : str, creator : int, tournamentName : str, playerAmount : int, description : str, gameType : GameType, visibility : TournamentVisibility, obj):
 		self.TournamentName = tournamentName
 		self.TournamentId = tournamentId
 		self.PlayerAmount = playerAmount
@@ -20,6 +19,7 @@ class Tournament():
 		self.PlayersList = []
 		self.Tree = None
 		self.UndefinedUser = TournamentUser(None, None, 'Undefined', -1)
+		self.obj = obj
 
 	def StartTournament(self):
 		self.Tree = self.CreateMatchArray()
@@ -28,7 +28,7 @@ class Tournament():
 		UsersList = self.PlayersList.copy()
 
 		UserCounter = 0
-		
+
 		for Match in self.Tree[0]:
 			Match.AddUser(UsersList[UserCounter], 0)
 			ColorPrint.prGreen("Debug! Status = {status}.".format(status=Match.Status))
@@ -73,11 +73,42 @@ class Tournament():
 						self.Winner = self.Tree[len(self.Tree) - 1][0].Winner
 						ColorPrint.prGreen("Debug ! Tournament[{tID}] ended. User {username} win".format(tID=self.TournamentId, username=self.Winner.Username))
 						self.Status = TournamentState.Ended
-						# TODO Save in DB
+
+						self.sendTournamentDB() # TODO Save in DB
+
 						self.SendMatch(None)
 						return
 				Pos2 += 1
 			Pos1 += 1
+
+	def sendTournamentDB(self):
+		tabId = []
+		for usr in self.PlayersList:
+			tabId.append(usr.UserId)
+
+		self.obj.playersId = tabId
+		self.obj.winner = self.Winner.UserId
+		self.obj.save
+
+		print('Tournament', self.obj.tournamentsName, ', id =', self.obj.id, ', winnerid =', self.obj.winner, 'is add to DB')
+
+
+		#ADD TO BLOCKCHAIN
+		from eth_account import Account
+		from web3 import Web3
+
+		provider = Web3(Web3.HTTPProvider('http://172.29.0.3:8545')) #ADDRESS
+		file = open('PATHTOJSONABI')
+		jsonFile = json.load(file)
+		abi = jsonFile['abi']
+
+		account = Account.from_key(os.environ.get('PRIVATE_KEY'))
+		contract_address = os.environ.get('CONTRACT_ADDRESS')
+		contract = provider.eth.contract(address=contract_address, abi=abi)
+		contract.functions.addPlayer(str(self.obj.id)).transact()
+		#ADD TO BLOCKCHAIN
+
+		pass
 
 	def	SendMatch(self, Usered):
 		SendList = []
@@ -178,7 +209,7 @@ class Tournament():
 			pass
 		else:
 			pass
-	
+
 	def GoingAway(self, user):
 		usr = self.GetUserById(user.id)
 		if (usr is None):
@@ -189,12 +220,12 @@ class Tournament():
 		ColorPrint.prGreen("Debug! Tournament {tournamentId} : User {username} going away.".format(tournamentId=self.TournamentId, username=usr.Username))
 		usr.Position = UserPosition.Away
 		return True
-	
-#endregion 
+
+#endregion
 
 	def UpdateMatchsTimer(self):
 		if (self.Tree is None):
-			return 
+			return
 		for Match in self.Tree:
 			for Match2 in Match:
 				Match2.UpdateTimer()

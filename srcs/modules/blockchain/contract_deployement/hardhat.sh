@@ -55,7 +55,9 @@ if [ ! -f "/var/blockchain/contract_address.txt" ]; then
     echo "running npx hardhat run --network ganache scripts/deploy.js";
     npx hardhat run --network ganache scripts/deploy.js;
     cp contract_address.txt /var/blockchain/;
+    cp artifacts/contracts/TranscendenceTournamentHistory.sol/TranscendenceTournamentHistory.json /var/blockchain
     echo Contract address file is create;
     export CONTRACT_ADDRESS=$(cat /var/blockchain/contract_address.txt);
+    sleep 100000000
 fi
 

@@ -41,8 +41,12 @@ class Ball:
 
 class Player:
     def __init__(self, x, y, player):
-        self.player = player
-        self.player_id = player.id
+        if player is None:
+            self.player = None
+            self.player_id = None
+        else:
+            self.player = player
+            self.player_id = player.id
         self.score = 0
         self.ball_touch = 0
         self.x = x

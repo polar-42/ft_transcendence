@@ -24,10 +24,11 @@ class pongMatchmakingSocket(WebsocketConsumer):
 	def disconnect(self, close_code):
 		if pongMatchmaking.RemoveUser(self.user) == True:
 			print(f"Pong matchmaking user: {self.user} is disconnected")
-		async_to_sync(self.channel_layer.group_discard(
+
+		async_to_sync(self.channel_layer.group_discard)(
 			pongMatchmaking.channelName,
 			self.channel_name
-		))
+		)
 
 	def receive(self, text_data):
 		data = json.loads(text_data)

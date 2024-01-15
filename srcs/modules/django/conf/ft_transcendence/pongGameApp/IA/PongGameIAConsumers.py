@@ -9,34 +9,39 @@ from . import pongThreadsIA
 class PongGameIASocket(WebsocketConsumer):
 	def connect(self):
 
-		self.username = self.scope['user']
+		self.user = self.scope['user']
+		self.id = self.user.id
 
 		self.accept()
 
 		async_to_sync(self.channel_layer.group_add)(
-			"PongGameVsIA_" + str(self.username),
+			"PongGameVsIA_" + str(self.id),
 			self.channel_name
 		)
 
 		self.pongGameThread = pongThreadsIA.pongGame()
 
-		self.pongGameThread.launchGame("PongGameVsIA_" + self.username.username, self)
-
-		print(self.username, 'is connected and game against IA is launch')
+		self.pongGameThread.launchGame("PongGameVsIA_" + str(self.id), self)
 
 	def disconnect(self, close_code):
+		if self.pongGameThread is None:
+			return
+
 		async_to_sync(self.channel_layer.group_discard)(
-			"PongGameVsIA_" + str(self.username),
+			"PongGameVsIA_" + str(self.id),
 			self.channel_name
 		)
 
-		self.pongGameThread.quitGame(self.username)
+		self.pongGameThread.quitGame(self)
 
-		addToDb(self.username.username, 'IA', 0, 3, 'IA', 0, 3, 'disconnexion')
+		addToDb(self.id, 'IA', 0, 3, 'IA', 0, 3, 'disconnexion')
 
 		self.close()
 
 	def receive(self, text_data):
+		if self.pongGameThread is None:
+			return
+
 		data = json.loads(text_data)
 
 		message = data['message']
@@ -51,7 +56,7 @@ class PongGameIASocket(WebsocketConsumer):
 		print('Game is win by', winner)
 
 		self.channel_layer.group_discard(
-			"PongGameVsIA_" + str(self.username),
+			"PongGameVsIA_" + str(self.id),
 			self.channel_name
 		)
 
@@ -69,11 +74,12 @@ class PongGameIASocket(WebsocketConsumer):
 				'reason': 'score',
 				'playerone_score': str(playerone_score),
 				'playertwo_score': str(playertwo_score),
-				'playerone_username': self.username.username,
+				'playerone_username': self.user.username,
 				'playertwo_username': 'IA',
     	}))
 
-		addToDb(self.username.username, 'IA', playerone_score, playertwo_score, winner, n_ball_touch_player1, n_ball_touch_player2, 'score')
+		addToDb(self.id, 'IA', playerone_score, playertwo_score, winner, n_ball_touch_player1, n_ball_touch_player2, 'score')
+		self.pongGameThread = None
 
 		self.close()
 
@@ -91,5 +97,4 @@ def addToDb(playerone_username, playertwo_username, playerone_score, playertwo_s
 	)
 
 	obj.save
-
-	print('game is add to database')
+	print('pongGame between playerId =', str(playerone_username), 'and', str(playertwo_username), 'is win by', str(winner), 'and reason is', reason_end)

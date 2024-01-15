@@ -73,7 +73,7 @@ python manage.py migrate
 python manage.py createsuperuser
 python manage.py create_user
 
-
+#WAIT FOR CONTRACT DEPLOYEMENT TO BE DONE
 export BLOCKCHAIN_HOST=$(cat /var/blockchain/hostname)
 export CONTRACT_ADDRESS=$(cat /var/blockchain/contract_address.txt)
 

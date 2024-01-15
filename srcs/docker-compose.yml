@@ -58,35 +58,35 @@ services:
     #  timeout: 30s
     #  retries: 5
 
-  #ganache:
-  #  build: modules/blockchain/ganache
-  #  container_name: container_ganache
-  #  image: image_ganache
-  #  env_file:
-  #    - .env
-  #  networks:
-  #    - transcendence_network
-  #  volumes:
-  #    - blockchain:/var/blockchain
-  #  restart: on-failure
-  #  expose:
-  #    - "8545"
+  ganache:
+    build: modules/blockchain/ganache
+    container_name: container_ganache
+    image: image_ganache
+    env_file:
+      - .env
+    networks:
+      - transcendence_network
+    volumes:
+      - blockchain:/var/blockchain
+    restart: on-failure
+    expose:
+      - "8545"
 
-  #contract_deployement:
-  #  build: modules/blockchain/contract_deployement
-  #  container_name: container_contract_deployement
-  #  image: image_contract_deployement
-  #  env_file:
-  #    - .env
-  #  networks:
-  #    - transcendence_network
-  #  volumes:
-  #    - blockchain:/var/blockchain
-  #  restart: on-failure
-  #  depends_on:
-  #    - ganache
-  #  expose:
-  #    - "8545"
+  contract_deployement:
+    build: modules/blockchain/contract_deployement
+    container_name: container_contract_deployement
+    image: image_contract_deployement
+    env_file:
+      - .env
+    networks:
+      - transcendence_network
+    volumes:
+      - blockchain:/var/blockchain
+    restart: on-failure
+    depends_on:
+      - ganache
+    expose:
+      - "8545"
 
 volumes:
   blockchain:
