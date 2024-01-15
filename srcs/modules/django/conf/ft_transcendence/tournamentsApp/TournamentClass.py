@@ -94,7 +94,6 @@ class Tournament():
 
 
 		#ADD TO BLOCKCHAIN
-		from eth_account import Account
 		from web3 import Web3
 
 		provider = Web3(Web3.HTTPProvider('http://172.29.0.3:8545')) #ADDRESS
@@ -102,10 +101,12 @@ class Tournament():
 		jsonFile = json.load(file)
 		abi = jsonFile['abi']
 
-		account = Account.from_key(os.environ.get('PRIVATE_KEY'))
 		contract_address = os.environ.get('CONTRACT_ADDRESS')
 		contract = provider.eth.contract(address=contract_address, abi=abi)
-		contract.functions.addPlayer(str(self.obj.id)).transact()
+		tx = contract.functions.addPlayer(str(self.obj.id)).buildTransaction({
+			'from': os.environ.get('PUBLIC_KEY')
+		})
+		provider.eth.account.sign_transaction(tx, os.environ.get('PRIVATE_KEY'))
 		#ADD TO BLOCKCHAIN
 
 		pass
