@@ -83,13 +83,49 @@ h1 {
 .selection_wrapper input[type="checkbox"] {
   cursor: pointer;
   transform: 
-        rotate(45deg)
-        translateY(8px);
+  rotate(45deg)
+  translateY(4px);
   width: 1.5em;
   height: 1.5em;
   border: 2px solid var(--main-color);
   background: var(--secondary-bg-color);
   appearance: none;
+  transform: all .3s ease;
+}
+
+.selection_wrapper label span {
+  display: block;
+  width: 1px;
+  height: 1px;
+  position: absolute;
+}
+
+.selection_wrapper label span::after {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: 3px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: solid 1px white;
+  background: white;
+  box-shadow: 
+  2px 2px 5px white,
+  -2px -2px 5px white;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.selection_wrapper input[type="checkbox"]:hover {
+  border: 3px solid var(--main-color);
+  box-shadow:
+  1px 1px 4px var(--third),
+  -1px -1px 4px var(--third);
+}
+
+.selection_wrapper label span.checked::after {
+  opacity: 1;
 }
 
 h3 {
@@ -109,8 +145,37 @@ h3 {
   border: 2px solid var(--main-color);
   color: var(--main-color);
   background: var(--secondary-bg-color);
-  transition: .3s ease;
+  cursor: pointer;
+  transition: .5s ease;
+}
 
+.wrapper button:hover {
+  box-shadow: 
+  2px 2px 5px var(--main-color)
+  -2px -2px 5px var(--main-color);
+  background: var(--main-background);
+}
+
+.confirm_btn.inqueue {
+  content: 'Searching a match';
+  background: 
+  linear-gradient(to bottom left, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, .4) 80%),
+  linear-gradient(to bottom left, rgba(255, 255, 255, 0.4) 80%, rgba(255, 255, 255, 0) 100%),
+  var(--main-color);
+  border: none;
+  color: var(--main-bg-color);
+  font-weight: 900;
+}
+
+.confirm_btn.inqueue:hover {
+  background: 
+  linear-gradient(to bottom left, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, .4) 80%),
+  linear-gradient(to bottom left, rgba(255, 255, 255, 0.4) 80%, rgba(255, 255, 255, 0) 100%),
+  var(--main-color);
+  border: none;
+  color: var(--main-bg-color);
+  font-weight: 900;
+  cursor: auto;
 }
 
 .button_wrap {
@@ -138,9 +203,8 @@ h3 {
 
 
 .tournament_btn {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-gap: 30px;
+  padding: 0 25% 0 25%;
+  margin-bottom: 40px;
 }
 
 .tournament_btn button {

@@ -21,7 +21,7 @@ export function unLoadMatchmakingPong()
 
 var matchmakingPongGame = null
 
-function LaunchPongIA()
+export function LaunchPongIA()
 {
 	document.getElementsByClassName("matchmake_BTN")[0].removeEventListener("click", LeaveMatchmaking);
 	document.getElementsByClassName("launchPongLocal_BTN")[0].removeEventListener("click", LaunchPongLocal);
@@ -30,7 +30,7 @@ function LaunchPongIA()
 	navto("/pongGame/IA", 'True');
 }
 
-function LaunchPongLocal()
+export function LaunchPongLocal()
 {
 	document.getElementsByClassName("matchmake_BTN")[0].removeEventListener("click", LeaveMatchmaking);
 	document.getElementsByClassName("launchPongLocal_BTN")[0].removeEventListener("click", LaunchPongLocal);
@@ -39,33 +39,16 @@ function LaunchPongLocal()
 	navto("/pongGame/Local", 'True');
 }
 
-function JoinMatchmaking()
+export function JoinMatchmaking()
 {
 	if(matchmakingPongGame != null)
 		return
 	console.log("ws://" + window.location.host + "/pongGame/matchmaking/")
 	matchmakingPongGame = new WebSocket("ws://" + window.location.host + "/pongGame/matchmaking/")
-	matchmakingPongGame.onopen = UpdateButtonJoin
-	matchmakingPongGame.onclose = UpdateButtonLeave
 	matchmakingPongGame.onmessage = e => OnMessage(e)
 }
 
-function UpdateButtonJoin()
-{
-	console.log(matchmakingPongGame)
-	document.getElementsByClassName("matchmake_BTN")[0].innerHTML = 'Leave matchmaking'
-	document.getElementsByClassName("matchmake_BTN")[0].removeEventListener("click", JoinMatchmaking)
-	document.getElementsByClassName("matchmake_BTN")[0].addEventListener("click", LeaveMatchmaking)
-}
-
-function UpdateButtonLeave()
-{
-	document.getElementsByClassName("matchmake_BTN")[0].innerHTML = 'Join matchmaking'
-	document.getElementsByClassName("matchmake_BTN")[0].removeEventListener("click", LeaveMatchmaking)
-	document.getElementsByClassName("matchmake_BTN")[0].addEventListener("click", JoinMatchmaking)
-}
-
-function LeaveMatchmaking()
+export function LeaveMatchmaking()
 {
 	if (matchmakingPongGame == null)
 		return
@@ -78,9 +61,6 @@ function LeaveMatchmaking()
 function OnMessage(e)
 {
 	const data = JSON.parse(e.data);
-	document.getElementsByClassName("matchmake_BTN")[0].removeEventListener("click", LeaveMatchmaking);
-	document.getElementsByClassName("launchPongLocal_BTN")[0].removeEventListener("click", LaunchPongLocal);
-	document.getElementsByClassName("launchPongIA_BTN")[0].removeEventListener("click", LaunchPongIA);
 	LeaveMatchmaking();
 	navto("/pongGame/Remote", data.gameId);
 }
