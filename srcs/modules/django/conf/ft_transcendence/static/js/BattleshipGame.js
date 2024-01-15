@@ -83,7 +83,7 @@ function OnMessage(e)
 			break
 		case 'GotHit':
 			break
-		case 'HitEnemy':
+		case 'HitResult':
 			SP_HitCase(data.case, data.result, data.destroyedboat)
 			break
 		case 'Loose':
@@ -91,6 +91,15 @@ function OnMessage(e)
 			break
 		case 'Win':
 			RP_Win(data.other, data.wAliveBoat, data.lAliveBoat)
+			break
+		case 'ReturnToMatchmaking':
+			if (data.Winner != 'None')
+				RP_GameStop('Game end. User ' + data.Winner + ' win.', -1)
+			else
+				RP_GameStop('Game cancelled.', -1)
+			break
+		case 'ReturnToTournament':
+			RP_GameStop('', data.ID)
 			break
 		default:
 			break
@@ -101,6 +110,7 @@ function OnMessage(e)
 
 function RP_GameStop(message, id)
 {
+	console.log("Tournament Match = " + id)
 	if (curInterval != undefined)
 		clearInterval(curInterval)
 	curInterval = undefined
@@ -607,9 +617,9 @@ function SP_Load()
 	]
 	SP_drawEnemyBoats()
 	SP_Draw()
-	battleshipSocket.send(JSON.stringify({
-		'function': 'LoadEnded',
-	}))
+	// battleshipSocket.send(JSON.stringify({
+	// 	'function': 'LoadEnded',
+	// }))
 }
 
 function SP_Timer()
