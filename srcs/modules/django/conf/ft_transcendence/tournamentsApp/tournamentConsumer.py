@@ -1,9 +1,5 @@
 import json, os
 from channels.generic.websocket import WebsocketConsumer
-from .views import get_tournaments_manager
-from asgiref.sync import async_to_sync
-from web3 import Web3
-import asyncio
 
 from battleshipApp import ColorPrint
 
