@@ -74,6 +74,7 @@ class Tournament():
 						ColorPrint.prGreen("Debug ! Tournament[{tID}] ended. User {username} win".format(tID=self.TournamentId, username=self.Winner.Username))
 						self.Status = TournamentState.Ended
 						# TODO Save in DB
+						# TODO Close Socket
 						self.SendMatch(None)
 						return
 				Pos2 += 1
@@ -173,7 +174,7 @@ class Tournament():
 			ColorPrint.prGreen("Tournament {tournamentId} : User {username} deleted.".format(tournamentId=self.TournamentId, username=user.Username))
 			self.SendUsers(None)
 		elif self.Status is TournamentState.Ongoing:
-			# GivingUp
+			#TODO GivingUp
 			ColorPrint.prGreen("Tournament {tournamentId} : User {username} giveUp.".format(tournamentId=self.TournamentId, username=user.Username))
 			pass
 		else:
