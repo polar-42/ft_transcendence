@@ -1,6 +1,12 @@
-# myapp/management/commands/createuser.py
 from django.core.management.base import BaseCommand
 from authApp.models import User
+import random, string
+
+def getRandString(username):
+	s = string.ascii_letters + string.digits
+	str = ''.join(random.choice(s) for i in range(5))
+
+	return username + '_' + str
 
 class Command(BaseCommand):
     help = 'Create a new user'
@@ -13,7 +19,11 @@ class Command(BaseCommand):
 
         # Check if the user already exists
         if not User.objects.filter(username=username).exists():
-            User.objects.create_user(username, email, password)
+            User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                identification=getRandString(username))
             print('User created successfully')
         else:
             print('User already exists')
@@ -24,7 +34,11 @@ class Command(BaseCommand):
 
         # Check if the user already exists
         if not User.objects.filter(username=username).exists():
-            User.objects.create_user(username, email, password)
+            User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                identification=getRandString(username))
             print('User created successfully')
         else:
             print('User already exists')
@@ -35,7 +49,11 @@ class Command(BaseCommand):
 
         # Check if the user already exists
         if not User.objects.filter(username=username).exists():
-            User.objects.create_user(username, email, password)
+            User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                identification=getRandString(username))
             print('User created successfully')
         else:
             print('User already exists')
@@ -46,7 +64,11 @@ class Command(BaseCommand):
 
         # Check if the user already exists
         if not User.objects.filter(username=username).exists():
-            User.objects.create_user(username, email, password)
+            User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                identification=getRandString(username))
             print('User created successfully')
         else:
             print('User already exists')
@@ -57,7 +79,11 @@ class Command(BaseCommand):
 
         # Check if the user already exists
         if not User.objects.filter(username=username).exists():
-            User.objects.create_user(username, email, password)
+            User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                identification=getRandString(username))
             print('User created successfully')
         else:
             print('User already exists')

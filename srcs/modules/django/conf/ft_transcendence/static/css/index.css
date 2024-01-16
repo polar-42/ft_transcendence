@@ -16,7 +16,7 @@ html {
  }
 
 body {
-  background: 
+  background:
       linear-gradient(to bottom, var(--secondary-bg-color) 13%, var(--main-bg-color) 30%, var(--main-bg-color) 83%, var(--secondary-bg-color) 100%),
       var(--secondary-bg-color);
   background-repeat: no-repeat;
@@ -117,7 +117,7 @@ header a:visited {
 
 .profile_button img:nth-child(2) {
   display: none;
-} 
+}
 
 .profile_button a {
   margin: 5px;
@@ -126,7 +126,7 @@ header a:visited {
 .profile_button:hover {
   background: var(--main-bg-color);
   border: 2px solid var(--fourth);
-  box-shadow: 
+  box-shadow:
     2px 2px 10px var(--fourth)
     -2px -2px 10px var(--fourth);
   cursor: pointer;
@@ -182,7 +182,7 @@ header a:visited {
   box-shadow: 2px 2px 8px 2x var(--main-color);
   max-height: 0;
   overflow: hidden;
-  transition: max-height .2s cubic-bezier(0.77, 0, 0.175, 1);  
+  transition: max-height .2s cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 nav .profile_menu {
@@ -195,8 +195,8 @@ nav .profile_menu {
   width: 180px;
 }
 
-.profile_menu.open {
-  max-height: 500px; 
+.profile_menu.active {
+  max-height: 500px;
 }
 
 .profile_menu li {
@@ -240,13 +240,13 @@ nav .profile_menu {
 }
 
 footer {
-  background: 
+  background:
     var(--secondary-bg-color),
     linear-gradient(to bottom, var(--main-bg-color) 0%, var(--secondary-bg-color) 50%);
   top: 100%;
   height: auto;
   width: 100%;
-  padding: 3% 30% 3% 30%; 
+  padding: 3% 30% 3% 30%;
   display: flex;
   justify-content: space-between;
   color: white;
@@ -286,7 +286,7 @@ footer a:hover::before {
   backdrop-filter: blur(5px);
   border-radius: 2px;
   overflow: hidden;
-  transition: height .2s cubic-bezier(0.77, 0, 0.175, 1);  
+  transition: height .2s cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 .dropdown_menu.open {
@@ -319,8 +319,8 @@ footer a:hover::before {
   nav {
     display: none;
   }
-  
-  .menu_btn { 
+
+  .menu_btn {
     display: block;
     height: 50px;
   }
@@ -328,12 +328,7 @@ footer a:hover::before {
   .dropdown_menu {
     display: block;
   }
-
-  .profile_button {
-    margin-left: 20%;
-    margin-right: 20%;
-  }
-} 
+}
 
 @media (max-width: 576px) {
   .dropdown_menu {

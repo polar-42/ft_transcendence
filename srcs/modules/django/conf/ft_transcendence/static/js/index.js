@@ -10,6 +10,8 @@ import { initGamePong, unLoadGamePong } from "./pongGameRemote.js"
 import { initTournamentsCreation } from "./tournaments/tournamentsCreation.js"
 import { initTournamentsJoinPage } from "./tournaments/tournamentsJoinPage.js"
 import { GoingAway, initTournaments } from "./tournaments/tournament.js"
+import { initTournaments } from "./tournaments/tournament.js"
+import { initChat } from "./chatApp.js"
 
 export function navto(urlpath)
 {
@@ -25,6 +27,9 @@ const navigateTo = url =>
 
 function getRoute(RoutePath)
 {
+	//Chat function
+	initChat();
+
 	const routes = [
 		{ path: "/404", init: null, unload: null, title:"404", LogStatus: 2},
 		{ path: "/needlog", init: null, unload: null, title:"Login required", LogStatus: 0},
@@ -71,40 +76,40 @@ let Prev_match = undefined
 
 const router = async (arg) =>
 {
-  let match = getRoute(document.location.origin + location.pathname)
-  /* define 404 error page */
-  if (!match)
-  {
-    match = getRoute(document.location.origin + "/404")
-  }
-  else if (match.route.LogStatus == 1 && await checkConnexion() == false)
-  {
-    match = getRoute(document.location.origin + "/needlog")
-  }
-  else if (match.route.LogStatus == 0 && await checkConnexion() == true)
-    match = getRoute(document.location.origin + "/")
-  var actualRoute
-  if (match.route.path == "/")
-    actualRoute = match.route.path + "homepage/?valid=True"
-  else
-    actualRoute = match.route.path + "/?valid=True"
-  if (Prev_match != undefined && Prev_match.route.unload != null)
-    Prev_match.route.unload()
-  fetch(actualRoute)
-    .then(Response => {
-      document.title = match.route.title
-      return Response.text()
-    })
-    .then(html => {
-      document.querySelector("#app").innerHTML = html
-    })
-    .then(value => 
-      {
-        if (match.route.init != null)
-          match.route.init(arg)
-        Prev_match = match
-        OnLogChange()
-      })
+	let match = getRoute(document.location.origin + location.pathname)
+	/* define 404 error page */
+	if (!match)
+	{
+		match = getRoute(document.location.origin + "/404")
+	}
+	else if (match.route.LogStatus == 1 && await checkConnexion() == false)
+	{
+		match = getRoute(document.location.origin + "/needlog")
+	}
+	else if (match.route.LogStatus == 0 && await checkConnexion() == true)
+		match = getRoute(document.location.origin + "/")
+	var actualRoute
+	if (match.route.path == "/")
+		actualRoute = match.route.path + "homepage/?valid=True"
+	else
+		actualRoute = match.route.path + "/?valid=True"
+	if (Prev_match != undefined && Prev_match.route.unload != null)
+		Prev_match.route.unload()
+	fetch(actualRoute)
+	.then(Response => {
+		document.title = match.route.title
+		return Response.text()
+	})
+	.then(html => {
+		document.querySelector("#app").innerHTML = html
+	})
+	.then(value =>
+	{
+		if (match.route.init != null)
+			match.route.init(arg)
+		Prev_match = match
+		// OnLogChange()
+	})
 }
 
 const menuBtn = document.querySelector(".menu_btn")
@@ -162,7 +167,7 @@ for (let i = 0; i < 2; i++)
   profileButton[i].addEventListener("click", async () => {
     let isOpen = profileDropDown[i].classList.contains('open');
     let logStatus = await checkConnexion();
-    if (logStatus == true) 
+    if (logStatus == true)
     {
       if (isOpen) {
         profileDropDown[i].classList.remove('open');
