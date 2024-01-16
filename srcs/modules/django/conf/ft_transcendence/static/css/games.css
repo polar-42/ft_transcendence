@@ -9,66 +9,85 @@ h1 {
   display: flex;
   justify-content: space-between;
   font-size: 1.4rem;
+  min-height: 70vh;
 }
 
 .games_selection {
   justify-content: center;
   text-align: center;
   margin-right: 50px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 30px;
 } 
 
 .tournaments {
   max-width: 400px;
 }
 
+.tournaments,
+.pong,
+.battleship {
+  min-width: 360px;
+}
+
 .headers {
   text-align: center;
 }
 
-.games_selection .headers {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  column-gap: 20px;
-  text-align: center;
+.pong:hover .headers,
+.battleship:hover .headers,
+.tournaments:hover .headers {
+  background: 
+        radial-gradient(ellipse at bottom, var(--main-color), rgba(0, 0, 0, 0) 50%);
 }
+
+.pong.inqueue .headers,
+.battleship.inqueue .headers,
+.tournaments.inqueue .headers {
+  background: 
+        radial-gradient(ellipse at bottom, var(--main-color), rgba(0, 0, 0, 0) 50%);
+}
+
 
 .headers h2 {
   text-align: center;
-  margin-bottom: 5px;
 }
 
 .line1 {
-  height: 2px;
+  height: 1px;
   border-bottom: 1px solid white;
   margin-bottom: 10px;
-}
-
-.games_selection .line1 {
   width: 100%;
 }
 
-.tournaments .line1 {
-  width: 100%;
+.pong .line1 {
+  width: 110%;
 }
 
 .selection_wrapper {
   text-align: justify;
   text-justify: inter-character;
   margin-top: 30px;
+  transition: all .3s ease-in;
+  display: none;
+}
+
+
+.pong:hover .selection_wrapper,
+.battleship:hover .selection_wrapper,
+.tournaments:hover .selection_wrapper {
+  display: block;
+}
+
+.pong.inqueue .selection_wrapper, 
+.battleship.inqueue .selection_wrapper,
+.tournaments.inqueue .selection_wrapper {
+  display: block;
 }
 
 .selection_wrapper section p:first-child {
   margin-bottom: 30px;
-}
-
-.games_selection .selection_wrapper {
-  display: grid;
-  grid-template-areas: 
-  'a a a'
-  'b c d';
-  grid-template-columns: 1fr 1fr;
-  grid-column-gap: 50px;
-
 }
 
 .games_selection .selection_wrapper li {

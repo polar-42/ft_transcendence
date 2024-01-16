@@ -6,28 +6,17 @@ export function initGames() {
   let checkboxArray = document.querySelectorAll("input[type='checkbox']")
   let spanArray = document.querySelectorAll("label span")
   let labelArray = document.querySelectorAll(".selection_wrapper li")
-  let confirmBtn = document.querySelector(".confirm_btn")
-  let cancelBtn = document.querySelector(".cancel_btn")
+  let PongConfirmBtn = document.querySelector(".pong .confirm_btn")
+  let BSConfirmBtn = document.querySelector(".battleship .confirm_btn")
+  let PongCancelBtn = document.querySelector(".pong .cancel_btn")
+  let BSCancelBtn = document.querySelector(".battleship .cancel_btn")
 
   for (let i = 0; i < labelArray.length; i++) {
     labelArray[i].addEventListener("click", labelOnClick)
   }
 
-  confirmBtn.addEventListener("click", () => {
-    for (let i = 0; i < checkboxArray.length; i++) {
-      if (checkboxArray[i].checked === true) {
-        if (checkboxArray[i].name === 'local') {
-          navto("/pongGame/Local", 'True')
-        } else if (checkboxArray[i].name === 'IA') {
-          navto("/pongGame/IA", 'True')
-        } else if (checkboxArray[i].name === 'online') {
-          toggleQueue('pong')
-        } else if (checkboxArray[i].name === 'normal') {
-          toggleQueue('bs')  
-        }
-      }
-    }
-  })
+  PongConfirmBtn.addEventListener("click", PongConfirmBtnClick)
+  BSConfirmBtn.addEventListener("click", BSConfirmBtnClick)
 
   let tournamentBtnArray = document.querySelectorAll(".tournament_btn button")
   tournamentBtnArray.forEach((button) => {
@@ -39,6 +28,28 @@ export function initGames() {
       }
     })
   })
+
+  function PongConfirmBtnClick() {
+    for (let i = 0; i < checkboxArray.length; i++) {
+      if (checkboxArray[i].checked === true) {
+        if (checkboxArray[i].name === 'local') {
+          navto("/pongGame/Local", 'True')
+        } else if (checkboxArray[i].name === 'IA') {
+          navto("/pongGame/IA", 'True')
+        } else if (checkboxArray[i].name === 'online') {
+          PongToggleQueue()
+        } 
+      }
+    }
+  }
+
+  function BSConfirmBtnClick() {
+    for (let i = 0; i < checkboxArray.length; i++) {
+      if (checkboxArray[i].checked === true && checkboxArray[i].name === 'normal') {
+        BSToggleQueue()  
+      }
+    }
+  }
 
   function labelOnClick() {
     let checkbox = this.children[0].children[0]
@@ -62,34 +73,53 @@ export function initGames() {
     }
   }
 
-  function toggleQueue(type) {
-    confirmBtn.classList.add('inqueue')
-    cancelBtn.style.display = 'inline-block'
-    confirmBtn.textContent = "In queue"
+  function PongToggleQueue() {
+    PongConfirmBtn.classList.add('inqueue')
+    PongConfirmBtn.parentElement.parentElement.parentElement.classList.add('inqueue')
+    PongCancelBtn.style.display = 'inline-block'
+    PongConfirmBtn.textContent = "In queue"
     for (let i = 0; i < checkboxArray.length; i++) {
       labelArray[i].removeEventListener("click", labelOnClick)
     }
-    cancelBtn.addEventListener("click", () => {
-      leaveQueue(type)
+    PongCancelBtn.addEventListener("click", () => {
+      PongLeaveQueue()
     }) 
-    if (type === 'pong') {
-      PongJoinMatchmaking()
-    } else {
-      BSJoinMatchmaking()
-    }
+    PongJoinMatchmaking()
   }
 
-  function leaveQueue(type) {
-    confirmBtn.classList.remove('inqueue')
-    cancelBtn.style.display = 'none'
-    confirmBtn.textContent = "Confirm"
+  function BSToggleQueue() {
+    BSConfirmBtn.classList.add('inqueue')
+    BSConfirmBtn.parentElement.parentElement.parentElement.classList.add('inqueue')
+    BSCancelBtn.style.display = 'inline-block'
+    BSConfirmBtn.textContent = "In queue"
+    for (let i = 0; i < checkboxArray.length; i++) {
+      labelArray[i].removeEventListener("click", labelOnClick)
+    }
+    BSCancelBtn.addEventListener("click", () => {
+      BSLeaveQueue()
+    }) 
+    BSJoinMatchmaking()
+  }
+
+  function PongLeaveQueue() {
+    PongConfirmBtn.classList.remove('inqueue')
+    PongConfirmBtn.parentElement.parentElement.parentElement.classList.remove('inqueue')
+    PongCancelBtn.style.display = 'none'
+    PongConfirmBtn.textContent = "Confirm"
     for( let i = 0; i < labelArray.length; i++) {
       labelArray[i].addEventListener("click", labelOnClick)
     }
-    if (type === 'pong') {
-      PongLeaveMatchmaking()
-    } else {
-      BSLeaveMatchmaking()
+    PongLeaveMatchmaking()
+  }
+
+  function BSLeaveQueue() {
+    BSConfirmBtn.classList.remove('inqueue')
+    BSConfirmBtn.parentElement.parentElement.parentElement.classList.remove('inqueue')
+    BSCancelBtn.style.display = 'none'
+    BSConfirmBtn.textContent = "Confirm"
+    for( let i = 0; i < labelArray.length; i++) {
+      labelArray[i].addEventListener("click", labelOnClick)
     }
+    BSLeaveMatchmaking()
   }
 }

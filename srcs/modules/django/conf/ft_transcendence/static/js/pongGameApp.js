@@ -43,7 +43,6 @@ export function JoinMatchmaking()
 {
 	if(matchmakingPongGame != null)
 		return
-	console.log("ws://" + window.location.host + "/pongGame/matchmaking/")
 	matchmakingPongGame = new WebSocket("ws://" + window.location.host + "/pongGame/matchmaking/")
 	matchmakingPongGame.onmessage = e => OnMessage(e)
 }
