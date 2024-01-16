@@ -162,6 +162,12 @@ function FinishGameByScore(data)
 	pongGameSocket = null
 }
 
+function returnToTournament(id)
+{
+	pongGameSocket = null
+	navto("/tournaments/Play", id)
+}
+
 function OnMessage(e)
 {
 	const data = JSON.parse(e.data)
@@ -179,5 +185,9 @@ function OnMessage(e)
 	else if (data.type == 'game_ending')
 	{
 		FinishGameByScore(data);
+	}
+	else if (data.type == 'return_to_tournament')
+	{
+		returnToTournament(data.id)
 	}
 }

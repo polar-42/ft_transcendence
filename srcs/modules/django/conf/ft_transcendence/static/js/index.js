@@ -10,7 +10,7 @@ import { CP_Unload, initGame } from "./BattleshipGame.js"
 import { initGamePong, unLoadGamePong } from "./pongGameRemote.js"
 import { initTournamentsCreation } from "./tournaments/tournamentsCreation.js"
 import { initTournamentsJoinPage } from "./tournaments/tournamentsJoinPage.js"
-import { initTournaments } from "./tournaments/tournament.js"
+import { GoingAway, initTournaments } from "./tournaments/tournament.js"
 
 export function navto(urlpath)
 {
@@ -59,14 +59,14 @@ function getRoute(RoutePath)
 
 async function OnLogChange()
 {
-	var logStatus = await checkConnexion()
-	document.querySelectorAll('.nav__link').forEach(function(button) {
-		let match = getRoute(button.href)
-		if (match == null || (match.route.LogStatus == 1 && logStatus == false) || match.route.LogStatus == 0 && logStatus == true)
-			button.style.display = "none"
-		else
-			button.style.display = "block"
-	})
+  var logStatus = await checkConnexion()
+  document.querySelectorAll('.nav__link').forEach(function(button) {
+    let match = getRoute(button.href)
+    if (match == null || (match.route.LogStatus == 1 && logStatus == false) || match.route.LogStatus == 0 && logStatus == true)
+      button.style.display = "none"
+    else
+      button.style.display = "block"
+  })
 }
 
 let Prev_match = undefined

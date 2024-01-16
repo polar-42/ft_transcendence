@@ -157,7 +157,7 @@ function FinishGameByScore(data)
 {
 	console.log(data)
 	canvas.style.display="none";
-	let message = "Game is finished"; //+ data.winner + " is the winner by the score of " + data.playerone_score + " to " + data.playertwo_score;
+	let message = data.winner + " is the winner by the score of " + data.playerone_score + " to " + data.playertwo_score;
 	document.getElementById('gameMessage').innerHTML = message;
 }
 

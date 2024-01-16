@@ -29,13 +29,14 @@ class socket(WebsocketConsumer):
 	def receive(self, text_data):
 		data = json.loads(text_data)
 
-	def CreateGameMessage(self, event):
+	def JoinGame(self, event):
+		print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaafsdugbduigsduhgjfdbg')
 		if (self.user.id == event['user1'] or self.user.id == event['user2']):
 			(self.send)(text_data=json.dumps({
 				'gameId': event['gameId']
 			}))
 			(self.close)()
-			self.channel_layer.group_discard(
+			self.channel_layer.group_discard( #ASYNC TO SYNC ??
 				Matchmake.channelName,
 				self.channel_name
 			)

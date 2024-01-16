@@ -1,36 +1,41 @@
 import json
-from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.generic.websocket import WebsocketConsumer
 from . import matchmakingThreads
+from asgiref.sync import async_to_sync
 
 pongMatchmaking = matchmakingThreads.pongMatchmaking()
 
-class pongMatchmakingSocket(AsyncWebsocketConsumer):
+class pongMatchmakingSocket(WebsocketConsumer):
 
-	async def connect(self):
+	def connect(self):
 		self.user = self.scope['user']
-		if await pongMatchmaking.AddUser(self.user) == True:
-			await self.accept()
+		self.id = self.user.id
+		if pongMatchmaking.AddUser(self.user) == True:
+			self.accept()
 		else:
-			await self.close()
+			self.close()
 			return
 
-		await self.channel_layer.group_add(
+		async_to_sync(self.channel_layer.group_add)(
 			pongMatchmaking.channelName,
 			self.channel_name
 		)
 
-
-	async def disconnect(self, close_code):
+	def disconnect(self, close_code):
 		if pongMatchmaking.RemoveUser(self.user) == True:
 			print(f"Pong matchmaking user: {self.user} is disconnected")
 
-	async def receive(self, text_data):
+		async_to_sync(self.channel_layer.group_discard)(
+			pongMatchmaking.channelName,
+			self.channel_name
+		)
+
+	def receive(self, text_data):
 		data = json.loads(text_data)
 
-	async def CreatePongGameMessage(self, event):
+	def joinGame(self, event):
 		if (self.user.id == event['user1'] or self.user.id == event['user2']):
-			print ("Send create pong game message to " + self.user.username)
-			await self.send(text_data=json.dumps({
+			self.send(text_data=json.dumps({
 				'gameId': event['gameId']
 			}))
-
+			self.close()

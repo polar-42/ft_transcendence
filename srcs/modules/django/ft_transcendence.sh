@@ -20,6 +20,19 @@ while true ; do
 	sleep 1
 done
 
+#BLOCKCHAIN
+#var=$(ping container_ganache -qc 1 | grep PING | awk '{print $3}'); echo ${var:1:-2}
+#export IP_NODE=${var:1:-2};
+
+#while [ ! -f "/var/blockchain/contract_address.txt" ]; do
+#	sleep 1
+#done
+
+#export CONTRACT_ADDRESS=$(cat /var/blockchain/contract_address.txt)
+
+#BLOCKCHAIN
+
+
 ln -s /var/conf/ft_transcendence .
 cd $SITE_NAME
 
@@ -72,6 +85,9 @@ python manage.py makemigrations
 python manage.py migrate
 python manage.py createsuperuser
 python manage.py create_user
+
+#WAIT FOR CONTRACT DEPLOYEMENT TO BE DONE
+
 python manage.py runserver $(hostname -i):8080;
 #python manage.py collectstatic
 #uwsgi --http $(hostname -i):8080 --module ft_transcendence.wsgi --enable-threads

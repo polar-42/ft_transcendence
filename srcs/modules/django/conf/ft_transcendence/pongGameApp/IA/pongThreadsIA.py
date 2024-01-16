@@ -3,6 +3,12 @@ from channels.layers import get_channel_layer
 from .. import pongGameClasses
 from .PongIA import pongGameIA
 from asgiref.sync import async_to_sync, sync_to_async
+from enum import IntEnum
+
+class ConnexionState(IntEnum):
+	NeverConnected = 0
+	Connected = 1
+	Disconnected = 2
 
 class pongGameLoop(threading.Thread):
 
@@ -198,6 +204,14 @@ def send_timer_async(ping_game_instance, game, sec):
     ping_game_instance.sendTimerFromGame(game, sec)
 
 
+class UserPong():
+    def __init__(self, user):
+        self.sock_user = user
+        self.connexionStatus = ConnexionState.NeverConnected
+        self.id = user.id
+        self.socket = None
+        self.username = str(user)
+
 class pongGame():
     is_running = False
     channelName = ""
@@ -208,10 +222,10 @@ class pongGame():
     def launchGame(self, channelName, socket):
         self.socket = socket
         if channelName != '':
-            self.mythread = pongGameLoop(self, socket)
+            self.mythread = pongGameLoop(self, UserPong(socket))
             self.pongThreadIA = pongGameIA(self.mythread)
 
-            print('game vs IA (', channelName, ') is launch')
+            print('pong between IA and', self.socket.user.username,'on channel (', channelName, ') is launch')
 
             self.channelName = channelName
 
@@ -276,7 +290,7 @@ class pongGame():
                 winner = player1.get_id().username
             else:
                 winner = 'IA'
-            
+
             async_to_sync(self.channel_layer.group_send)(
                 self.channelName,
                 {
@@ -293,7 +307,7 @@ class pongGame():
         self.mythread.inputGame(input, 0)
 
     def quitGame(self, player):
-        print('player', player.username, 'leave the game')
+        print('player', player.user, 'leave the game')
 
         self.mythread.stop()
         self.mythread.join()

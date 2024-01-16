@@ -1,6 +1,5 @@
 // tests/TranscendenceTournamentHistory.scripts.js
 
-const { expect } = require('chai');
 const { ethers } = require('hardhat');
 const fs = require('fs');
 
@@ -16,7 +15,7 @@ async function main() {
     console.log("Address of contract is: ", contract.address);
 
     fs.writeFile('contract_address.txt', contract.address, (err) => {
-     if (err) throw err;
+      if (err) throw err;
     });
 };
 

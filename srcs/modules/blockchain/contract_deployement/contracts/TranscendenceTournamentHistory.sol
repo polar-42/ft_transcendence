@@ -26,7 +26,7 @@ contract TranscendenceTournamentHistory {
     ///////////////////
 
     //Function to add a player to the players tab
-    function addPlayer(string memory userName) public {
+    function addPlayer(string memory userName) private {
         require(msg.sender == owner, "You're not the contract owner");
 
         if (isPlayerExist(userName) == false) {
@@ -39,7 +39,10 @@ contract TranscendenceTournamentHistory {
     function addVictory(string memory userName) public {
         require(msg.sender == owner, "You're not the contract owner");
 
-        if (isPlayerExist(userName)) {
+        if (isPlayerExist(userName) == true) {
+            players[getPlayerIndex(userName)]._numberVictory++;
+        } else {
+            addPlayer(userName);
             players[getPlayerIndex(userName)]._numberVictory++;
         }
     }
