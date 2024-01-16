@@ -75,7 +75,7 @@ nav {
 
 nav a {
   position: relative;
-  margin-left: 40px;
+  margin-right: 40px;
   font-size: 22px;
   font-weight: 700;
   height: auto;
@@ -99,6 +99,10 @@ nav a:hover::before {
 
 header a:visited {
   color: white;
+}
+
+.profile_dropdown {
+  width: 100%;
 }
 
 .profile_button {
@@ -153,7 +157,7 @@ header a:visited {
 }
 
 .profile_button.connected {
-  width: 200px;
+  width: auto;
 }
 
 .profile_button.connected a {
@@ -194,9 +198,9 @@ nav .profile_menu {
 }
 
 .dropdown_menu .profile_menu {
-  top: 285px;
-  left: 60px;
-  width: 180px;
+  top: 220px;
+  left: 80px;
+  width: auto;
 }
 
 .profile_menu.open {
@@ -284,7 +288,7 @@ footer a:hover::before {
   position: absolute;
   right: 1rem;
   top: 80px;
-  width: 300px;
+  width: auto;
   height: 0;
   background: rgba(41, 41, 41, 0.4);
   backdrop-filter: blur(5px);
@@ -294,7 +298,7 @@ footer a:hover::before {
 }
 
 .dropdown_menu.open {
-  height: 310px;
+  height: 250px;
   overflow: visible;
 }
 
@@ -315,6 +319,10 @@ footer a:hover::before {
   text-decoration: underline;
 }
 
+.dropdown_menu .profile_menu li:hover a {
+  color: var(--main-bg-color) !important;
+}
+
 .dropdown_menu .profile_button a {
   text-decoration: none;
 }
@@ -331,11 +339,7 @@ footer a:hover::before {
 
   .dropdown_menu {
     display: block;
-  }
-
-  .profile_button {
-    margin-left: 20%;
-    margin-right: 20%;
+    padding: 0 10% 0 10%;
   }
 } 
 

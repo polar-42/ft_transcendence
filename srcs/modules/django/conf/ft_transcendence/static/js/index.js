@@ -170,6 +170,7 @@ for (let i = 0; i < 2; i++)
         profileDropDown[i].classList.remove('open');
       } else {
         profileDropDown[i].classList.add('open');
+        profileDropDown[i].style.width = profileButton[i].clientWidth.toString() + "px"
       }
     }
     else
