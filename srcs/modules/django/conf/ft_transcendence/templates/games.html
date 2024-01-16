@@ -11,7 +11,7 @@
       </div>
       <div class="line1"></div>
       <div class="selection_wrapper">
-        <p>Surpass your opponents and get ahead of the game in our racket game</p>
+        <p class="game_pres">Surpass your opponents and get ahead of the game in our racket game</p>
         <ul>
           <li>
             <label>
@@ -22,10 +22,10 @@
           </li>
           <li>
             <label>
-              <input type="checkbox" name="IA">
+              <input type="checkbox" name="AI">
               <span></span>
             </label>
-            <p>vs IA</p>
+            <p>vs AI</p>
           </li>
           <li>
             <label>
@@ -35,10 +35,6 @@
             <p>Online game</p>
           </li>
         </ul>
-        <div class="button_wrap">
-          <button class="confirm_btn">Confirm</button>
-          <button class="cancel_btn"><img src="../static/assets/logo/cross.png" alt="cancellation cross"></button>
-        </div>
       </div>
     </section>
     <section class="battleship">
@@ -47,7 +43,7 @@
       </div>
       <div class="line1"></div>
       <div class="selection_wrapper">
-        <p>Show your strategy and surpass your enemy in our naval tactical game</p>
+        <p class="game_pres">Show your strategy and surpass your enemy in our naval tactical game</p>
         <ul>
           <li>
             <label>
@@ -57,12 +53,12 @@
             <p>Online game</p>
           </li>
         </ul>
-        <div class="button_wrap">
-          <button class="confirm_btn">Confirm</button>
-          <button class="cancel_btn"><img src="../static/assets/logo/cross.png" alt="cancellation cross"></button>
-        </div>
       </div>
     </section>
+    <div class="button_wrap">
+      <button class="confirm_btn">Confirm</button>
+      <button class="cancel_btn"><img src="../static/assets/logo/cross.png" alt="cancellation cross"></button>
+    </div>
   </div>
   <div class="tournaments">
     <div class="headers">
@@ -71,13 +67,15 @@
     <div class="line1"></div>
     <div class="selection_wrapper">
       <section>
-        <p>Win your games, move to the next round, and show that your the best</p>
+        <p class="game_pres">Win your games, move to the next round, and show that your the best</p>
         <div class="line4"></div>
-        <div class="tournament_btn">
-          <button name="create_tournament">Create</button>
-        </div>
-        <div class="tournament_btn">
-          <button name="join_tournament">Join</button>
+        <div class="tournament_btn_wrapper">
+          <div class="tournament_btn">
+            <button name="create_tournament">Create</button>
+          </div>
+          <div class="tournament_btn">
+            <button name="join_tournament">Join</button>
+          </div>
         </div>
       </section>
     </div>

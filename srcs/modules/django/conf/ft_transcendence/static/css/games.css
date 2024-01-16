@@ -17,18 +17,23 @@ h1 {
   text-align: center;
   margin-right: 50px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-areas: 
+          'a b'
+          'c c';
   grid-gap: 30px;
+  max-height: 440px;
 } 
 
-.tournaments {
-  max-width: 400px;
+.game_pres {
+  height: 11ch;
 }
 
-.tournaments,
-.pong,
-.battleship {
-  min-width: 360px;
+.tournaments {
+  width: 360px;
+}
+
+.games_selection {
+  width: 600px;
 }
 
 .headers {
@@ -62,7 +67,7 @@ h1 {
 }
 
 .pong .line1 {
-  width: 110%;
+  width: 150%;
 }
 
 .selection_wrapper {
@@ -70,20 +75,6 @@ h1 {
   text-justify: inter-character;
   margin-top: 30px;
   transition: all .3s ease-in;
-  display: none;
-}
-
-
-.pong:hover .selection_wrapper,
-.battleship:hover .selection_wrapper,
-.tournaments:hover .selection_wrapper {
-  display: block;
-}
-
-.pong.inqueue .selection_wrapper, 
-.battleship.inqueue .selection_wrapper,
-.tournaments.inqueue .selection_wrapper {
-  display: block;
 }
 
 .selection_wrapper section p:first-child {
@@ -200,7 +191,8 @@ h3 {
 }
 
 .button_wrap {
-  margin-top: 50px;
+  margin-top: 20px;
+  grid-area: c;
 } 
 
 .confirm_btn {
@@ -224,8 +216,8 @@ h3 {
 
 
 .tournament_btn {
-  padding: 0 25% 0 25%;
   margin-bottom: 40px;
+  width: 200px;
 }
 
 .tournament_btn button {
@@ -234,4 +226,109 @@ h3 {
 
 .games_selection button {
   font-size: 1.5em;
+}
+
+@media (max-width: 1320px) {
+  .wrapper {
+    margin: 30px 15% 0 15%;
+  }
+}
+
+@media (max-width: 1130px) {
+  .wrapper {
+    display: block;
+  }
+
+  .tournaments,
+  .games_selection {
+    width: 70vw; 
+  }
+
+  .tournaments {
+    margin-top: 120px;
+  }
+
+  .tournaments p {
+    text-align: center;
+    padding: 0 10% 0 10%;
+    height: 5ch;
+    margin-bottom: 30px;
+  }
+
+  .games_selection {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 30px;
+    margin-bottom: 40px;
+  }
+
+  .pong .line1 {
+    width: 100%;
+  }
+
+  .selection_wrapper {
+    display: block;
+  }
+
+  .selection_wrapper ul {
+    height: 140px;
+  }
+
+  .tournament_btn_wrapper {
+    display: flex;
+    justify-content: space-around;
+  }
+}
+
+@media (max-width: 680px) {
+  .game_pres {
+    height: 14ch;
+  }
+}
+
+@media (max-width: 600px) {
+  .games_selection {
+    display: block;
+    max-height: none;
+  }
+
+  .button_wrap {
+    margin-top: 30px; 
+  }
+
+  .game_pres {
+    font-size: 1em;
+    height: auto;
+  }
+
+  section {
+    margin-bottom: 30px;
+    height: auto;
+  }
+
+  .selection_wrapper ul {
+    height: auto;
+  }
+
+  .tournaments {
+    margin-top: 0;
+  }
+
+  .tournaments .game_pres {
+    height: auto;
+  } 
+}
+
+@media (max-width: 540px) {
+  .tournament_btn button {
+    font-size: 1em;
+  }
+
+  .game_pres {
+    height: auto;
+  }
+
+  .tournament_btn {
+    padding: 0 10% 0 10%;
+  }
 }
