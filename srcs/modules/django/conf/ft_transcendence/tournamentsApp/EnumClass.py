@@ -4,6 +4,7 @@ class TournamentState(IntEnum):
     Created = 0
     Ongoing = 1
     Ended = 2
+    Cancelled = 3
 
 class GameType(IntEnum):
     Pong = 0
@@ -18,6 +19,7 @@ class UserState(IntEnum):
     Waiting = 0
     Alive = 1
     Dead = 2
+    GivedUp = 3
 
 class TournamentVisibility(IntEnum):
     Public = 0

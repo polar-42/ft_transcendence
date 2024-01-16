@@ -3,5 +3,5 @@
         Type: {{ item.typeGame }} </br>
         Creator: {{ item.creator}} </br>
         Description: {{ item.description }} </br>
-        <button class="joinGame_BTN" id="{{ item.index }}">Join</button> </br> </li>
+        <button class="joinGame_BTN {{ item.joinable }}" id="{{ item.index }}">Join</button> </br> </li>
 {% endfor %}
