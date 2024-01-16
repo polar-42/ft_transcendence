@@ -25,7 +25,7 @@ class TournamentMatch():
         if (self.Users[position] is not None):
             ColorPrint.prYellow("Warning! Tournament[{TId}].Match[{gameId}] : Can't add user {username}, match position \"{Mposition}\" is full.".format(TId=self.TournamentId, gameId=self.GameId, username=user.Username, Mposition=position))
             return False
-        if (user in self.Users):
+        if (user in self.Users and user is not self.Tournament.UndefinedUser):
             ColorPrint.prYellow("Warning! Tournament[{TId}].Match[{gameId}] : Can't add user {username}, already in match.".format(TId=self.TournamentId, gameId=self.GameId, username=user.Username))
             return False
         self.Users[position] = user

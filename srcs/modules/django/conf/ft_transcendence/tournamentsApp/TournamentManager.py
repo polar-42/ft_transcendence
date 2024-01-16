@@ -48,7 +48,7 @@ class TournamentsManager():
 		if (tournament not in self._Tournaments.values()):
 			ColorPrint.prYellow("Warning! Trying to close a non existing Tournament");
 			return
-		del self._Tournaments[tournament.tournamentId]
+		del self._Tournaments[tournament.TournamentId]
 
 	def ConnectUser(self, user, socket, tournamentId : int):
 		tournamentId = int(tournamentId)

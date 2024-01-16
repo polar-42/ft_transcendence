@@ -76,6 +76,8 @@ class Tournament():
 						self.Winner = self.Tree[len(self.Tree) - 1][0].Winner
 						if (self.Winner is self.UndefinedUser):
 							self.Status = TournamentState.Cancelled
+							from .TournamentManager import Manager
+							Manager.closeTournament(self)
 							# TODO Cancel Tournament
 							pass
 						else :
