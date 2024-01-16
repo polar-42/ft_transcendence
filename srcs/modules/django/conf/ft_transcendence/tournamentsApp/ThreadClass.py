@@ -9,8 +9,8 @@ class TimerLoop(threading.Thread):
 
 	def run(self):
 		while not self.stopFlag.is_set():
-			tmp = self.Manager._Tournaments.values().copy()
-			for tournament in tmp:
+			tmp = self.Manager._Tournaments.copy()
+			for tournament in tmp.values():
 				tournament.UpdateMatchsTimer()
 			time.sleep(1)
 
