@@ -5,9 +5,8 @@ h1 {
 }
 
 .wrapper {
-  margin: 30px 20% 0 20%;
+  margin: 30px 20% 90px 20%;
   display: flex;
-  justify-content: space-between;
   font-size: 1.4rem;
   min-height: 70vh;
 }
@@ -20,7 +19,7 @@ h1 {
   grid-template-areas: 
           'a b'
           'c c';
-  grid-gap: 30px;
+  grid-gap: 50px;
   max-height: 440px;
 } 
 
@@ -66,10 +65,6 @@ h1 {
   width: 100%;
 }
 
-.pong .line1 {
-  width: 150%;
-}
-
 .selection_wrapper {
   text-align: justify;
   text-justify: inter-character;
@@ -81,12 +76,15 @@ h1 {
   margin-bottom: 30px;
 }
 
-.games_selection .selection_wrapper li {
+.selection_wrapper ul {
+  text-align: center;  
+}
+
+.selection_wrapper li {
   display: grid;
   grid-template-columns: 40px auto;
   gap: 20px;
-  width: auto;
-  text-align: left;
+  width: 210px;
   margin-top: 20px;
   cursor: pointer;
   user-select: none;
@@ -116,7 +114,7 @@ h1 {
   content: '';
   position: absolute;
   top: -20px;
-  left: 3px;
+  left: 13px;
   width: 7px;
   height: 7px;
   border-radius: 50%;
@@ -191,7 +189,6 @@ h3 {
 }
 
 .button_wrap {
-  margin-top: 20px;
   grid-area: c;
 } 
 
@@ -214,10 +211,25 @@ h3 {
   }
 }
 
+.tournament_btn_wrapper {
+  position: relative;
+}
 
 .tournament_btn {
+  position: absolute;
+  top: 50%;
+  left: 25%;
   margin-bottom: 40px;
-  width: 200px;
+  justify-self: center;
+  width: 50%;
+}
+
+.tournament_btn:first-child {
+  transform: translateY(-50%);
+}
+
+.tournament_btn:nth-child(2) {
+  transform: translateY(100%);
 }
 
 .tournament_btn button {
@@ -228,15 +240,31 @@ h3 {
   font-size: 1.5em;
 }
 
+@media (max-width: 1380px) {
+  .game_pres {
+    height: 13ch;
+  }
+}
+
 @media (max-width: 1320px) {
   .wrapper {
     margin: 30px 15% 0 15%;
   }
 }
 
+@media (max-width: 1220px) {
+  .wrapper {
+    font-size: 1.1rem;
+  }
+}
+
 @media (max-width: 1130px) {
   .wrapper {
     display: block;
+  }
+
+  .wrapper li {
+    font-size: 1.4rem;
   }
 
   .tournaments,
@@ -262,10 +290,6 @@ h3 {
     margin-bottom: 40px;
   }
 
-  .pong .line1 {
-    width: 100%;
-  }
-
   .selection_wrapper {
     display: block;
   }
@@ -277,6 +301,13 @@ h3 {
   .tournament_btn_wrapper {
     display: flex;
     justify-content: space-around;
+    position: static;
+  }
+
+  .tournament_btn_wrapper .tournament_btn {
+    position: static;
+    transform: none;
+    text-align: center;
   }
 }
 
