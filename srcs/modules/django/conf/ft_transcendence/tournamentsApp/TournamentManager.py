@@ -42,6 +42,14 @@ class TournamentsManager():
 			self.thread.start()
 		return True, nTournament.TournamentId
 
+	def closeTournament(self, tournament):
+		if (tournament is None):
+			return
+		if (tournament not in self._Tournaments.values()):
+			ColorPrint.prYellow("Warning! Trying to close a non existing Tournament");
+			return
+		del self._Tournaments[tournament.TournamentId]
+
 	def ConnectUser(self, user, socket, tournamentId : int):
 		tournamentId = int(tournamentId)
 		if tournamentId not in self._Tournaments:
@@ -73,7 +81,7 @@ class TournamentsManager():
 			return False
 		User = self._Tournaments[tournamentId].GetUserById(user.id)
 		if (User is None):
-			ColorPrint.prYellow("Warning! User {username} : Try to leave a tournament when not inside.".format(username=User.Username))
+			ColorPrint.prYellow("Warning! User {username} : Try to leave a tournament when not inside.".format(username=user.username))
 			return False
 		else:
 			self._Tournaments[tournamentId].DisconnectUser(User)

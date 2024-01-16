@@ -14,8 +14,14 @@
         <input type="text" class="TournamentsName"><br/>
 
         <label for="NumberOfPlayer">Number of players:</label>
-        <input type="number" min="4" class="NumberOfPlayer"><br/><br/>
-
+        <!-- <input type="number" min="4" max="64" class="NumberOfPlayer"> -->
+        <select name="NumberOfPlayer" class="NumberOfPlayer">
+            <option value="4">4</option>
+            <option value="8">8</option>
+            <option value="16">16</option>
+            <option value="32">32</option>
+            <option value="64">64</option>
+        </select><br/><br/>
         <label>Game type:</label><br/>
         <label for="typePong">Pong</label>
         <input type="radio" name="TypeGame" value="Pong" class="typePong"><br/>
