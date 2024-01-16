@@ -35,11 +35,11 @@ class TournamentsManager():
 
 		obj.save()
 
-		nTournament = Tournament(tournamentId=obj.id, creator=creator.id, playerAmount=int(data.get('numberOfPlayers')), description="DESCRIPTION TO DO", tournamentName=data.get('tournamentsName'), gameType=tournamentType, visibility=TournamentVisibility.Public)
+		nTournament = Tournament(tournamentId=obj.id, creator=creator.id, playerAmount=int(data.get('numberOfPlayers')), description="DESCRIPTION TO DO", tournamentName=data.get('tournamentsName'), gameType=tournamentType, visibility=TournamentVisibility.Public, obj=obj)
 		self._Tournaments[int(obj.id)] = nTournament
 		if (self.thread is None):
 			self.thread = TimerLoop(self)
-			self.thread.start()	
+			self.thread.start()
 		return True, nTournament.TournamentId
 
 	def ConnectUser(self, user, socket, tournamentId : int):

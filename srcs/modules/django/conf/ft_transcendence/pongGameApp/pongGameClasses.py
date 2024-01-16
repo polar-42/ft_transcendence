@@ -40,8 +40,13 @@ class Ball:
 
 
 class Player:
-    def __init__(self, x, y, player_id):
-        self.player_id = player_id
+    def __init__(self, x, y, player):
+        if player is None:
+            self.player = None
+            self.player_id = None
+        else:
+            self.player = player
+            self.player_id = player.id
         self.score = 0
         self.ball_touch = 0
         self.x = x
@@ -76,8 +81,8 @@ class Player:
     def get_score(self):
         return self.score
 
-    def get_id(self):
-        return self.player_id
+    def get_player(self):
+        return self.player
 
     def get_ball_touch(self):
         return self.ball_touch

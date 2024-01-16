@@ -3,7 +3,7 @@
 if [ -f "/var/blockchain/contract_address.txt" ]; then
     export CONTRACT_ADDRESS=$(cat /var/blockchain/contract_address.txt);
     echo Contract already deployed;
-    sleep 50000
+    exit 0
 fi
 
 if [[ "$(npm list chai)" =~ "empty" ]]; then
@@ -32,30 +32,24 @@ if [ ! -f "/var/blockchain/contract_address.txt" ]; then
     npx hardhat compile;
 fi
 
-export IP_NODE=$(cat /var/blockchain/hostname);
+var=$(ping container_ganache -qc 1 | grep PING | awk '{print $3}'); echo ${var:1:-2}
+export IP_NODE=${var:1:-2};
 
-x=0
-
-while [ "$x" -lt 30 ]; do
-    if [ -d "/var/blockchain/state" ] && [ -f "/var/blockchain/check" ]; then
-        echo find state
-        break
-    else
-        if [ "$x" -lt 30 ]; then
-            x=$((x + 1))
-            sleep 1
-        else
-            exit 1
-        fi
-    fi
+while [ !  -f "/var/blockchain/check" ]; do
+    sleep 1
 done
+
+echo find state
 
 
 if [ ! -f "/var/blockchain/contract_address.txt" ]; then
     echo "running npx hardhat run --network ganache scripts/deploy.js";
     npx hardhat run --network ganache scripts/deploy.js;
+
     cp contract_address.txt /var/blockchain/;
     echo Contract address file is create;
-    export CONTRACT_ADDRESS=$(cat /var/blockchain/contract_address.txt);
+
+    cp artifacts/contracts/TranscendenceTournamentHistory.sol/TranscendenceTournamentHistory.json /var/blockchain
+    echo ABI file is create;
 fi
 

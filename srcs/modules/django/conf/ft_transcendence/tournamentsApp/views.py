@@ -67,7 +67,7 @@ def create_tournament(request):
 	#obj.save()
 	#print(obj.playersId)
 
-	print(tournamentName, 'is create with', numberOfPlayers, 'players')
+	print(tournamentName, 'tournament for', typeGame,'is create with', numberOfPlayers, 'players')
 	return JsonResponse({'message': 'Tournaments ' + tournamentName + ' is created', 'isCreated': True, 'id' : id})
 
 def get_tournaments_html(request):
