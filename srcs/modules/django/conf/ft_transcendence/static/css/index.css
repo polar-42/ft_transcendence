@@ -157,6 +157,7 @@ header a:visited {
 }
 
 .profile_button.connected {
+  min-width: 150px;
   width: auto;
 }
 
