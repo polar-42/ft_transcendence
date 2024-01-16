@@ -123,6 +123,10 @@ function PrintMatchs(data)
         PL.removeChild(child)
         child = PL.lastElementChild
     }
+	if (data.matchs == 'None')
+	{
+		return
+	}
 	const Matchs = data.matchList
 	Matchs.forEach(element => {
 		const txt = document.createElement('li')

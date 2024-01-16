@@ -4,7 +4,7 @@ from .TournamentUser import TournamentUser
 from .EnumClass import GameType, TournamentState, TournamentVisibility, UserPosition, GameState, UserState
 from .TournamentMatchClass import TournamentMatch
 
-import json, math
+import json, math, random
 
 class Tournament():
 
@@ -28,7 +28,7 @@ class Tournament():
 		UsersList = self.PlayersList.copy()
 
 		UserCounter = 0
-		
+		random.shuffle(UsersList)
 		for Match in self.Tree[0]:
 			Match.AddUser(UsersList[UserCounter], 0)
 			ColorPrint.prGreen("Debug! Status = {status}.".format(status=Match.Status))
@@ -91,19 +91,24 @@ class Tournament():
 				Pos2 += 1
 			Pos1 += 1
 
-	def	SendMatch(self, Usered):
+	def GetMatchList(self):
 		SendList = []
 		PosX = 0
 		if (self.Tree is None):
-			return
+			return None
 		for Match in self.Tree:
 			PosY = 0
 			for Match2 in Match:
 				Jsoned = Match2.Objectify(PosX + 1, PosY)
 				SendList.append(Jsoned)
+		return SendList
+
+	def	SendMatch(self, Usered):
+		if (self.Tree is None):
+			return
 		msg = json.dumps({
 			'type' : 'MSG_UpdateMatchList',
-			'matchList' : SendList
+			'matchList' : self.GetMatchList()
 		})
 		if (Usered is not None):
 			Usered.SendMessage(msg)
@@ -111,15 +116,18 @@ class Tournament():
 		for User in self.PlayersList:
 			User.SendMessage(msg)
 
-	def SendUsers(self, Usered):
+	def GetUsersList(self):
 		pos = 0
 		SendList = []
 		for User in self.PlayersList:
 			SendList.append(User.Username)
 			pos += 1
+		return SendList
+
+	def SendUsers(self, Usered):
 		msg = json.dumps({
 			'type' : 'MSG_UpdateUserList',
-			'usrList' : SendList
+			'usrList' : self.GetUsersList()
 		})
 		if (Usered is not None):
 			Usered.SendMessage(msg)

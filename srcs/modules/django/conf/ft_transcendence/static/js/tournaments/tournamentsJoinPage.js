@@ -33,13 +33,19 @@ export async function initTournamentsJoinPage()
 			element.addEventListener('click', function() {ViewTournament(element.id)})
 		}
 		else
+		{
 			element.addEventListener('click', function() {joinTournaments(element.id)})
+			const newButton = document.createElement('button');
+			newButton.textContent = 'View';
+			newButton.addEventListener('click', function() {ViewTournament(element.id)})
+			element.parentElement.appendChild(newButton)
+		}
 	})
 }
 
 function ViewTournament(tournamentsId)
 {
-	console.log("Tournament id = " + tournamentsId)
+	navto("View", tournamentsId)
 }
 
 function joinTournaments(tournamentsId)

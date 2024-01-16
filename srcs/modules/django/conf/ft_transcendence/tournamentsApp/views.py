@@ -67,6 +67,26 @@ def get_tournaments_html(request):
 
 	return render(request, 'tournaments/templateTournaments.html', {'games': dictionnary})
 
+def TournamentSpectateView(request):
+	if (request.method == "GET" and request.GET["valid"] == "True"):
+		return render(request, 'tournaments/tournamentView.html')
+	else:
+		return render(request, 'index.html')
+
+def GetTournamentData(request):
+	if request.method != "POST":
+		return JsonResponse({'error': 'Method is invalid'})
+	data = json.loads(request.body)
+	tournamentId = data.get('tourID')
+	print("TOurnament ID = ", tournamentId)
+	print("Type of TOurnament ID = ", type(tournamentId))
+	Tournament = TournamentManager.Manager.GetTournament(tournamentId)
+	if (Tournament is None):
+		return JsonResponse({'error': 'Invalid Tournament ID'})
+	UserMSG = Tournament.GetUsersList()
+	MatchMSG = Tournament.GetMatchList()
+	return JsonResponse({'users' : UserMSG, 'matchs' : 'None' if MatchMSG is None else MatchMSG})
+
 def get_tournaments(request):
 	tournamentL = TournamentManager.Manager.GetTournaments()
 	dictionnary = []

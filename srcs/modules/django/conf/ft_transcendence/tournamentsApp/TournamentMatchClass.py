@@ -32,15 +32,6 @@ class TournamentMatch():
         target = 0 if position == 1 else 0
         if (self.Users[target] is None):
             return True
-        # if ((self.Users[position] is self.Tournament.UndefinedUser or self.Users[position].Status is UserState.GivedUp) and (self.Users[target] is self.Tournament.UndefinedUser or self.Users[target].Status is UserState.GivedUp)):
-            # self.HandleResult(None, True)
-            # return True
-        # elif (self.Users[target] is self.Tournament.UndefinedUser or (self.Users[target].Status is UserState.GivedUp)):
-            # self.HandleResult(self.Users[position].UserId, True)
-            # return True
-        # elif (self.Users[position] is self.Tournament.UndefinedUser or (self.Users[position].Status is UserState.GivedUp)):
-            # self.HandleResult(self.Users[target].UserId, True)
-            # return True
         if (self.Users[0] is not None and self.Users[1] is not None):
             self.Timer = 30
             self.Status = GameState.Waiting
