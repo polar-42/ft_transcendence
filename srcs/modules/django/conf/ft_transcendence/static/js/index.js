@@ -11,7 +11,6 @@ import { initGamePong, unLoadGamePong } from "./pongGameRemote.js"
 import { initTournamentsCreation } from "./tournaments/tournamentsCreation.js"
 import { initTournamentsJoinPage } from "./tournaments/tournamentsJoinPage.js"
 import { GoingAway, initTournaments } from "./tournaments/tournament.js"
-import { initTournaments } from "./tournaments/tournament.js"
 import { initChat } from "./chatApp.js"
 import { InitTournamentView } from "./tournaments/tournamentSpectate.js"
 
