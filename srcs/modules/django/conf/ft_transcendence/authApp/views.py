@@ -97,5 +97,4 @@ def check_connexion(request):
         return JsonResponse({'connexionStatus': False})
 
 def getUserName(request):
-    print(request.user.username)
     return JsonResponse({'userName': request.user.username})

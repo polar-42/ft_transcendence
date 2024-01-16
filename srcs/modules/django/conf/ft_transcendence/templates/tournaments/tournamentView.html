@@ -1,0 +1,9 @@
+{% load static %}
+<script type="module" src="{% static '/js/loading.js' %}"></script>
+
+<p>
+    {% csrf_token %}
+    <p id="players_in_tournaments"></p>
+    <ul name="PlayerList"></ul><br><br>
+    <ul name="MatchList"></ul><br><br>
+</p>

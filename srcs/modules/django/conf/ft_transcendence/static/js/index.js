@@ -1,5 +1,6 @@
 import { checkConnexion, initLogin, initRegister, logout } from "./authApp.js"
 import { initMatchmaking } from "./battleshipApp.js"
+import { initGames } from "./games.js"
 import { initMatchmakingPong, unLoadMatchmakingPong } from "./pongGameApp.js"
 import { initLocalGamePong } from "./pongGameLocal.js"
 import { initGamePongIA, unloadGamePongIA } from './pongGameIA.js'
@@ -12,6 +13,7 @@ import { initTournamentsJoinPage } from "./tournaments/tournamentsJoinPage.js"
 import { GoingAway, initTournaments } from "./tournaments/tournament.js"
 import { initTournaments } from "./tournaments/tournament.js"
 import { initChat } from "./chatApp.js"
+import { InitTournamentView } from "./tournaments/tournamentSpectate.js"
 
 export function navto(urlpath)
 {
@@ -30,24 +32,26 @@ function getRoute(RoutePath)
 	//Chat function
 	initChat();
 
-	const routes = [
-		{ path: "/404", init: null, unload: null, title:"404", LogStatus: 2},
-		{ path: "/needlog", init: null, unload: null, title:"Login required", LogStatus: 0},
-		{ path: "/", init: initHomePage, unload: null, title:"Home", LogStatus: 2},
-		{ path: "/dashboard", init: initDashboard, unload: null, title:"Home", LogStatus: 2},
-		{ path: "/battleship", init: initGame, unload: CP_Unload, title:"Battleship", LogStatus: 1},
-		{ path: "/battleship/matchmake", init: initMatchmaking, unload: null, title:"Battleship", LogStatus: 1},
-		{ path: "/pongGame/Remote", init: initGamePong, unload: unLoadGamePong, title:"pongGame", LogStatus: 1},
-		{ path: "/pongGame/Home", init: initMatchmakingPong, unload: unLoadMatchmakingPong, title:"pongGame", LogStatus: 1},
-		{ path: "/pongGame/Local", init: initLocalGamePong, unload: null, title:"pongGame", LogStatus: 1},
-		{ path: "/pongGame/IA", init: initGamePongIA, unload: unloadGamePongIA, title:"pongGame", LogStatus: 1},
-		{ path: "/tournaments/Home", init: null, unload: null, title:"initTournaments", LogStatus: 1},
-		{ path: "/tournaments/Create", init: initTournamentsCreation, unload: null, title:"initTournaments", LogStatus: 1},
-		{ path: "/tournaments/Join", init: initTournamentsJoinPage, unload: null, title:"Join Tournaments", LogStatus: 1},
-		{ path: "/tournaments/Play", init: initTournaments, unload: GoingAway, title:"Tournament", LogStatus: 1},
-		{ path: "/authApp/login", init: initLoggin, unload: null, title:"Login", LogStatus: 0},
-		{ path: "/authApp/register", init: initRegister, unload: null, title:"Register", LogStatus: 0},
-	]
+  const routes = [
+    { path: "/404", init: null, unload: null, title:"404", LogStatus: 2},
+    { path: "/needlog", init: null, unload: null, title:"Login required", LogStatus: 0},
+    { path: "/", init: initHomePage, unload: null, title:"Home", LogStatus: 2},
+    { path: "/dashboard", init: initDashboard, unload: null, title:"Home", LogStatus: 1},
+    { path: "/games", init: initGames, unload: null, title:"Games", LogStatus: 1},
+    { path: "/battleship", init: initGame, unload: CP_Unload, title:"Battleship", LogStatus: 1},
+    { path: "/battleship/matchmake", init: initMatchmaking, unload: null, title:"Battleship", LogStatus: 1},
+    { path: "/pongGame/Remote", init: initGamePong, unload: unLoadGamePong, title:"pongGame", LogStatus: 1},
+    { path: "/pongGame/Home", init: initMatchmakingPong, unload: unLoadMatchmakingPong, title:"pongGame", LogStatus: 1},
+    { path: "/pongGame/Local", init: initLocalGamePong, unload: null, title:"pongGame", LogStatus: 1},
+    { path: "/pongGame/IA", init: initGamePongIA, unload: unloadGamePongIA, title:"pongGame", LogStatus: 1},
+    { path: "/tournaments/Home", init: null, unload: null, title:"initTournaments", LogStatus: 1},
+    { path: "/tournaments/Create", init: initTournamentsCreation, unload: null, title:"initTournaments", LogStatus: 1},
+    { path: "/tournaments/Join", init: initTournamentsJoinPage, unload: null, title:"Join Tournaments", LogStatus: 1},
+    { path: "/tournaments/Play", init: initTournaments, unload: null, title:"Tournament", LogStatus: 1},
+    { path: "/tournaments/View", init: InitTournamentView, unload: null, title:"Tournament", LogStatus: 1},
+    { path: "/authApp/login", init: initLogin, unload: null, title:"Login", LogStatus: 0},
+    { path: "/authApp/register", init: initRegister, unload: null, title:"Register", LogStatus: 0},
+  ]
 
   const Potentialroutes = routes.map(route =>
     {
@@ -62,14 +66,14 @@ function getRoute(RoutePath)
 
 async function OnLogChange()
 {
-	var logStatus = await checkConnexion()
-	document.querySelectorAll('.nav__link').forEach(function(button) {
-		let match = getRoute(button.href)
-		if (match == null || (match.route.LogStatus == 1 && logStatus == false) || match.route.LogStatus == 0 && logStatus == true)
-			button.style.display = "none"
-		else
-			button.style.display = "block"
-	})
+  var logStatus = await checkConnexion()
+  document.querySelectorAll('.nav__link').forEach(function(button) {
+    let match = getRoute(button.href)
+    if (match == null || (match.route.LogStatus == 1 && logStatus == false) || match.route.LogStatus == 0 && logStatus == true)
+      button.style.display = "none"
+    else
+      button.style.display = "block"
+  })
 }
 
 let Prev_match = undefined
@@ -173,6 +177,7 @@ for (let i = 0; i < 2; i++)
         profileDropDown[i].classList.remove('open');
       } else {
         profileDropDown[i].classList.add('open');
+        profileDropDown[i].style.width = profileButton[i].clientWidth.toString() + "px"
       }
     }
     else

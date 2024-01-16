@@ -1,9 +1,8 @@
 <!-- authApp/login.html -->
 {% load static %}
-  <link rel="stylesheet" href="{% static '/css/register.css' %}">
   <script type="module" src="{% static '/js/loading.js' %}"></script>
 {% block content %}
-  <section class="container">
+  <section class="register_container">
     <h1>Create your transcendental account</h1>
     <form>
       {% csrf_token %}

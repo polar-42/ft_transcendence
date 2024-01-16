@@ -4,7 +4,7 @@ from django.shortcuts import render
 from .models import TournamentsModels
 from . import TournamentManager
 
-from .EnumClass import TournamentState
+from .EnumClass import TournamentState, UserState
 
 # Create your views here.
 def Home_view(request):
@@ -35,37 +35,11 @@ def create_tournament(request):
 	if (typeGame != "Pong" and typeGame != "Battleship"):
 		return JsonResponse({'message': 'Tournaments Type must be a Pong or a Battleship', 'isCreated': False})
 	numberOfPlayers = int(numberOfPlayers)
-	if numberOfPlayers < 4:
+	if numberOfPlayers != 4 and numberOfPlayers != 8 and numberOfPlayers != 16 and numberOfPlayers != 32 and numberOfPlayers != 64:
 		return JsonResponse({'message': 'Tournaments number of player must be a least 4, 8 or 16', 'isCreated': False})
 	Joined, id = TournamentManager.Manager.CreateTournament(request.user, data)
 	if (Joined is False):
 		return JsonResponse({'message': 'Failed creating game (creator already in lobby)', 'isCreated': False})
-
-	#l = ['player1', 'player2', 'player3']
-	#listJson = json.dumps(l)
-
-	#obj = TournamentsModels.objects.create(
-	#	tournamentsName=tournamentName,
-	#	numberOfPlayers=numberOfPlayers,
-	#	creatorId=request.user.username,
-	#	privateGame=False,
-	#	description='TOURNOIS',
-	#	tournamentsType=typeGame
-	#)
-	#print(type(request.user))
-
-	#obj.save()
-
-	#print(obj.tournamentsName)
-
-	#jsonDec = json.decoder.JSONDecoder()
-	#l = jsonDec.decode(obj.playersId)
-	#l.append('player4')
-	#listJson = json.dumps(l)
-
-	#obj.playersId = listJson
-	#obj.save()
-	#print(obj.playersId)
 
 	print(tournamentName, 'tournament for', typeGame,'is create with', numberOfPlayers, 'players')
 	return JsonResponse({'message': 'Tournaments ' + tournamentName + ' is created', 'isCreated': True, 'id' : id})
@@ -73,9 +47,13 @@ def create_tournament(request):
 def get_tournaments_html(request):
 	tournamentL = TournamentManager.Manager.GetTournaments()
 	dictionnary = []
-	x = 0
 	for tour in tournamentL.values():
-		if tour.Status is TournamentState.Created:
+			Joinable = 'NotJoinable'
+			usr = tour.GetUserById(request.user.id)
+			if (tour.Status is TournamentState.Created and len(tour.PlayersList) != tour.PlayerAmount):
+				Joinable = 'Joinable'
+			elif (tour.Status is not TournamentState.Created and usr is not None and usr.Status is not UserState.Dead and usr.Status is not UserState.GivedUp):
+				Joinable = 'Joinable'
 			dictionnary.append({
 				'index': tour.TournamentId,
 				'name': tour.TournamentName,
@@ -83,11 +61,31 @@ def get_tournaments_html(request):
 				'numberPlayers': len(tour.PlayersList),
 				'creator': tour.Administrator.Username,
 				'private': tour.Visibility,
-				'description': tour.Description
+				'description': tour.Description,
+				'joinable' : Joinable
 			})
-		x += 1
 
 	return render(request, 'tournaments/templateTournaments.html', {'games': dictionnary})
+
+def TournamentSpectateView(request):
+	if (request.method == "GET" and request.GET["valid"] == "True"):
+		return render(request, 'tournaments/tournamentView.html')
+	else:
+		return render(request, 'index.html')
+
+def GetTournamentData(request):
+	if request.method != "POST":
+		return JsonResponse({'error': 'Method is invalid'})
+	data = json.loads(request.body)
+	tournamentId = data.get('tourID')
+	print("TOurnament ID = ", tournamentId)
+	print("Type of TOurnament ID = ", type(tournamentId))
+	Tournament = TournamentManager.Manager.GetTournament(tournamentId)
+	if (Tournament is None):
+		return JsonResponse({'error': 'Invalid Tournament ID'})
+	UserMSG = Tournament.GetUsersList()
+	MatchMSG = Tournament.GetMatchList()
+	return JsonResponse({'users' : UserMSG, 'matchs' : 'None' if MatchMSG is None else MatchMSG})
 
 def get_tournaments(request):
 	tournamentL = TournamentManager.Manager.GetTournaments()

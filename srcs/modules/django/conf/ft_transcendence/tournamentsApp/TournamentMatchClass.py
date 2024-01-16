@@ -1,5 +1,6 @@
 from battleshipApp import ColorPrint
-from .EnumClass import GameType, GameState, UserPosition
+
+from .EnumClass import GameType, GameState, UserPosition, UserState
 from .TournamentUser import TournamentUser
 import json
 from pongGameApp.Remote.pongGameManager import Manager
@@ -18,22 +19,18 @@ class TournamentMatch():
         self.Timer = -1
 
     def AddUser(self, user : TournamentUser, position : int):
+        if (position != 0 and position != 1):
+            ColorPrint.prRed("Error! Tournament[{TId}].Match[{gameId}] : Can't add user {username}, Position {pos} invalid.".format(TId=self.TournamentId, gameId=self.GameId, username=user.Username, pos=position))
+            return False
         if (self.Users[position] is not None):
             ColorPrint.prYellow("Warning! Tournament[{TId}].Match[{gameId}] : Can't add user {username}, match position \"{Mposition}\" is full.".format(TId=self.TournamentId, gameId=self.GameId, username=user.Username, Mposition=position))
             return False
-        if (user in self.Users):
+        if (user in self.Users and user is not self.Tournament.UndefinedUser):
             ColorPrint.prYellow("Warning! Tournament[{TId}].Match[{gameId}] : Can't add user {username}, already in match.".format(TId=self.TournamentId, gameId=self.GameId, username=user.Username))
             return False
         self.Users[position] = user
         target = 0 if position == 1 else 0
-        if (self.Users[position] is self.Tournament.UndefinedUser and self.Users[target] is self.Tournament.UndefinedUser):
-            self.HandleResult(None, True)
-            return True
-        elif (self.Users[target] is self.Tournament.UndefinedUser):
-            self.HandleResult(self.Users[position].UserId, True)
-            return True
-        elif (self.Users[position] is self.Tournament.UndefinedUser):
-            self.HandleResult(self.Users[target].UserId, True)
+        if (self.Users[target] is None):
             return True
         if (self.Users[0] is not None and self.Users[1] is not None):
             self.Timer = 30
@@ -44,7 +41,7 @@ class TournamentMatch():
         if (user not in self.Users):
             ColorPrint.prRed("Error! Tournament[{TId}].Match[{gameId}] : Can't change user {username} readyState, not in match.".format(TId=self.TournamentId, gameId=self.GameId, username=user.Username))
             return False
-        UserPos = 0 if user is self.Users[0] else 1
+        UserPos = 0 if self.Users[0] is user else 1
         self.UserReadyState[UserPos] = True if self.UserReadyState[UserPos] is False else False
         if (self.UserReadyState[0] is True and self.UserReadyState[1] is True):
             self.Start()
@@ -80,17 +77,26 @@ class TournamentMatch():
         if (self.Status is not GameState.Waiting):
             return
         self.Timer -= 1
+        if ((self.Users[0] is self.Tournament.UndefinedUser or self.Users[0].Status is UserState.GivedUp) and (self.Users[1] is self.Tournament.UndefinedUser or self.Users[1].Status is UserState.GivedUp)):
+            self.HandleResult(None, True)
+            return
+        elif (self.Users[0] is self.Tournament.UndefinedUser or (self.Users[0].Status is UserState.GivedUp)):
+            self.HandleResult(self.Users[1].UserId, True)
+            return
+        elif (self.Users[1] is self.Tournament.UndefinedUser or (self.Users[1].Status is UserState.GivedUp)):
+            self.HandleResult(self.Users[0].UserId, True)
+            return
         if (self.Timer == 0):
             if (self.UserReadyState[0] == False and self.UserReadyState[1] == False):
-                self.Status = GameState.Cancelled
-                ColorPrint.prGreen("Debug! Tournament[{TId}].Match[{gameId}] : Cancelled.".format(TId=self.TournamentId, gameId=self.GameId))
+                self.HandleResult(None, True)
+                # ColorPrint.prGreen("Debug! Tournament[{TId}].Match[{gameId}] : Cancelled.".format(TId=self.TournamentId, gameId=self.GameId))
             else:
                 self.Status = GameState.Ended
                 if (self.UserReadyState[0] == False):
-                    self.Winner = self.Users[1]
+                    self.HandleResult(self.Users[1].UserId, True)
                 else:
-                    self.Winner = self.Users[0]
-                ColorPrint.prGreen("Debug! Tournament[{TId}].Match[{gameId}] : Ended with {username} as winner.".format(TId=self.TournamentId, gameId=self.GameId, username=self.Winner.Username))
+                    self.HandleResult(self.Users[0].UserId, True)
+                # ColorPrint.prGreen("Debug! Tournament[{TId}].Match[{gameId}] : Ended with {username} as winner.".format(TId=self.TournamentId, gameId=self.GameId, username=self.Winner.Username))
 
     def __str__(self):
         return "Tournament[{tID}].Match[{matchId}] = Users[0] = {User1}, Users[1] = {User2}".format(tID=self.TournamentId, matchId=self.GameId, User1=self.Users[0].Username if self.Users[0] is not None else None, User2=self.Users[1].Username if self.Users[1] is not None else None)

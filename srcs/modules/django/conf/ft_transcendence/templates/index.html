@@ -5,6 +5,10 @@
   <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="{% static '/css/index.css' %}">
+    <link rel="stylesheet" href="{% static '/css/homepage.css' %}">
+    <link rel="stylesheet" href="{% static '/css/login.css' %}">
+    <link rel="stylesheet" href="{% static '/css/register.css' %}">
+    <link rel="stylesheet" href="{% static '/css/games.css' %}">
     <meta name="ft_transcendence" content="width=device-width, initial-scale=1.0">
     <title>ft_transcendence</title>
   </head>
@@ -28,9 +32,7 @@
 
     <nav>
       <a href="/dashboard" class="nav__link" data-link>Dashboard</a>
-      <a href="/battleship/matchmake" class="nav__link" data-link>Battleship</a>
-      <a href="/pongGame/Home" class="nav__link" data-link>Pong Game</a>
-      <a href="/tournaments/Home" class="nav__link" data-link>Tournaments</a>
+      <a href="/games" class="nav__link" data-link>Play</a>
       <div class="profile_dropdown">
         <div class="profile_button">
           <img src="../static/assets/logo/user.png">
@@ -48,8 +50,7 @@
     <img src="../static/assets/logo/hamburger.png" alt="Navigation Menu" class="menu_btn">
     <div class="dropdown_menu">
       <li><a href="/dashboard" class="menu_link nav__link" data-link>Dashboard</a></li>
-      <li><a href="/battleship/matchmake" class="menu_link nav__link" data-link>Battleship</a></li>
-      <li><a href="/pongGame/Home" class="menu_link nav__link" data-link>Pong Game</a></li>
+      <li><a href="/games" class="menu_link" data-link>Play</a></li>
       <div class="profile_dropdown">
         <div class="profile_button">
           <img src="../static/assets/logo/user.png">
