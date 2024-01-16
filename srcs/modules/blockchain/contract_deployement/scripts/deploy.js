@@ -13,26 +13,10 @@ async function main() {
     await contract.deployed();
 
     console.log("Address of contract is: ", contract.address);
-    console.log(contract);
 
     fs.writeFile('contract_address.txt', contract.address, (err) => {
       if (err) throw err;
     });
-
-    //const dir = path.resolve(
-    //  __dirname,
-    //  "../artifacts/contracts/HelloWorld.sol/HelloWorld.json"
-    //)
-
-    const file = fs.readFileSync("../artifacts/contracts/TranscendenceTournamentHistory.sol/TranscendenceTournamentHistory.json", "utf8")
-    const json = JSON.parse(file)
-    const abi = json.abi
-
-    console.log('abi =', abi);
-
-    fd.writeFile('abi.abi', abi, (err) => {
-      if (err) throw err;
-    })
 };
 
 main().catch((error) => {

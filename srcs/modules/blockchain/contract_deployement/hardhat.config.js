@@ -18,8 +18,7 @@ module.exports = {
         url: 'http://' + process.env.IP_NODE + ':8545', // Hardhat Network URL
         chainId: 31337, // Chain ID for Hardhat Network
         accounts: [
-          process.env.GANACHEPRIVATEKEY,
-          process.env.ACCOUNT2,
+          process.env.PRIVATE_KEY,
         ],
       },
       hardhat: {
@@ -28,10 +27,10 @@ module.exports = {
           mnemonic: process.env.MNEMONIC_PHRASE,
         }
       },
-      sepolia: {
-        url: "https://sepolia.infura.io/v3/" + process.env.INFURA_SEPOLIA_KEY,
-        accounts: [process.env.SEPOLIA_PRIVATE_KEY]
-      }
+      //sepolia: {
+      //  url: "https://sepolia.infura.io/v3/" + process.env.INFURA_SEPOLIA_KEY,
+      //  accounts: [process.env.SEPOLIA_PRIVATE_KEY]
+      //}
     },
     paths: {
       sources: "./contracts",
