@@ -1,6 +1,6 @@
 .login_container {
   max-width: 700px;
-  height: 300px;
+  height: 340px;
   margin:
       80px    
       calc((100vw - 500px) / 2)
@@ -58,6 +58,7 @@ form .input-box input:focus {
  flex-flow: column;
  justify-content: space-between;
  align-items: center;
+ height: 120px;
 }
 
 .submit button {
