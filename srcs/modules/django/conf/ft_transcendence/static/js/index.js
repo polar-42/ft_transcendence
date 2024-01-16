@@ -40,7 +40,7 @@ function getRoute(RoutePath)
 		{ path: "/tournaments/Create", init: initTournamentsCreation, unload: null, title:"initTournaments", LogStatus: 1},
 		{ path: "/tournaments/Join", init: initTournamentsJoinPage, unload: null, title:"Join Tournaments", LogStatus: 1},
 		{ path: "/tournaments/Play", init: initTournaments, unload: GoingAway, title:"Tournament", LogStatus: 1},
-		{ path: "/authApp/login", init: initLoggin, unload: null, title:"Login", LogStatus: 0},
+		{ path: "/authApp/login", init: initLogin, unload: null, title:"Login", LogStatus: 0},
 		{ path: "/authApp/register", init: initRegister, unload: null, title:"Register", LogStatus: 0},
 	]
 

@@ -27,8 +27,19 @@ export async function initTournamentsJoinPage()
 
 	var buttons = document.querySelectorAll('.joinGame_BTN')
 	buttons.forEach(element => {
-		element.addEventListener('click', function() {joinTournaments(element.id)})
+		if (element.classList.contains("NotJoinable"))
+		{
+			element.textContent = "View"
+			element.addEventListener('click', function() {ViewTournament(element.id)})
+		}
+		else
+			element.addEventListener('click', function() {joinTournaments(element.id)})
 	})
+}
+
+function ViewTournament(tournamentsId)
+{
+	console.log("Tournament id = " + tournamentsId)
 }
 
 function joinTournaments(tournamentsId)
