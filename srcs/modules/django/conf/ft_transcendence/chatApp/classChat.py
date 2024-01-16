@@ -94,7 +94,7 @@ class ChannelChat():
 	def sendMessageChannel(self, sender, message):
 		msg = MessageModels.objects.create(
 			message=message,
-			sender=sender.userId,
+			sender=sender.userIdentification,
 			receiver=self.channelName #TO CHANGE ???
 		)
 		msg.save()
@@ -104,7 +104,7 @@ class ChannelChat():
             {
                'type': 'chatChannelMessage',
 				'channel': self.channelName,
-				'sender': sender.userId,
+				'sender': sender.userIdentification,
 				'message': message,
 				'time': time.strftime("%Y-%m-%d %X")
             }

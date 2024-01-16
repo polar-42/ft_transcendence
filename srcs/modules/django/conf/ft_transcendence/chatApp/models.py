@@ -17,4 +17,3 @@ class MessageModels(models.Model):
 	sender = models.CharField(default='NULL')
 	receiver = models.CharField(default='NULL')
 	timeCreation = models.DateTimeField(auto_now=True)
-

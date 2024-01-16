@@ -13,20 +13,22 @@ let chatSocket = undefined;
 
 function startChatConnexion()
 {
-	chatSocket = new WebSocket("ws://" + window.location.host + '/chat/');
+	//chatSocket = new WebSocket("ws://" + window.location.host + '/chat/');
 
-	document.getElementById('chat_submit').addEventListener("click", sendMessage);
-	document.getElementById('channel_submit').addEventListener("click", channelMessage);
-	document.getElementById('channel_join').addEventListener("click", joinChannel);
-	document.getElementById('channel_leave').addEventListener("click", leaveChannel);
-	document.getElementById('user_block').addEventListener("click", blockUser);
-	document.getElementById('user_unblock').addEventListener("click", unblockUser);
-	document.getElementById('get_all_users').addEventListener("click", getAllUsers);
-	document.getElementById('get_history_chat').addEventListener("click", getHistoryChat);
-	document.getElementById('get_history_channel').addEventListener("click", getHistoryChannel);
+	//document.getElementById('chat_submit').addEventListener("click", sendMessage);
+	//document.getElementById('channel_submit').addEventListener("click", channelMessage);
+	//document.getElementById('invite_pong').addEventListener("click", invitePong);
+	//document.getElementById('channel_join').addEventListener("click", joinChannel);
+	//document.getElementById('channel_leave').addEventListener("click", leaveChannel);
+	//document.getElementById('user_block').addEventListener("click", blockUser);
+	//document.getElementById('user_unblock').addEventListener("click", unblockUser);
+	//document.getElementById('get_last_chat').addEventListener("click", getLastChat);
+	//document.getElementById('get_all_users').addEventListener("click", getAllUsers);
+	//document.getElementById('get_history_chat').addEventListener("click", getHistoryChat);
+	//document.getElementById('get_history_channel').addEventListener("click", getHistoryChannel);
 
-	chatSocket.onclose = closeChatSocket;
-	chatSocket.onmessage = e => onMessageChat(e);
+	//chatSocket.onclose = closeChatSocket;
+	//chatSocket.onmessage = e => onMessageChat(e);
 }
 
 function closeChatSocket()
@@ -39,6 +41,26 @@ function onMessageChat(e)
 	const data = JSON.parse(e.data)
 
 	console.log(data);
+	if (data.type == 'invitation_pong')
+	{
+		invitationPong(data)
+	}
+}
+
+function invitationPong(data)
+{
+	if (confirm('Your received an invitation to pong game by ' + data.sender))
+	{
+		console.log('lets go');
+		chatSocket.send(JSON.stringify({
+			'type': 'accept_invitation',
+			'target': data.sender
+		}))
+	}
+	else
+	{
+		console.log('pas go');
+	}
 }
 
 function sendMessage()
@@ -83,6 +105,22 @@ function channelMessage()
 	message.value = "";
 }
 
+function invitePong()
+{
+    let channelName = document.getElementById('target_user');
+
+	if (channelName.value.length <= 3)
+	{
+		console.log('Error: One field too small');
+		return;
+	}
+
+	chatSocket.send(JSON.stringify({
+		'type': 'invite_pong',
+        'target': channelName.value
+    }))
+	channelName.value = "";
+}
 
 function joinChannel()
 {
@@ -152,6 +190,14 @@ function unblockUser()
     }))
 	target.value = "";
 }
+
+function getLastChat()
+{
+	chatSocket.send(JSON.stringify({
+		'type': 'get_last_chat'
+    }))
+}
+
 
 function getAllUsers()
 {
