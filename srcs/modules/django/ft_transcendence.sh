@@ -20,14 +20,16 @@ while true ; do
 	sleep 1
 done
 
-var=$(ping container_ganache -qc 1 | grep PING | awk '{print $3}'); echo ${var:1:-2}
-export IP_NODE=${var:1:-2};
+#BLOCKCHAIN
+#var=$(ping container_ganache -qc 1 | grep PING | awk '{print $3}'); echo ${var:1:-2}
+#export IP_NODE=${var:1:-2};
 
-while [ ! -f "/var/blockchain/contract_address.txt" ]; do
-	sleep 1
-done
+#while [ ! -f "/var/blockchain/contract_address.txt" ]; do
+#	sleep 1
+#done
+#BLOCKCHAIN
 
-export CONTRACT_ADDRESS=$(cat /var/blockchain/contract_address.txt)
+#export CONTRACT_ADDRESS=$(cat /var/blockchain/contract_address.txt)
 
 ln -s /var/conf/ft_transcendence .
 cd $SITE_NAME

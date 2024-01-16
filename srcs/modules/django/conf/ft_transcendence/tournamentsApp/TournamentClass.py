@@ -93,27 +93,27 @@ class Tournament():
 		print('Tournament', self.obj.tournamentsName, ', id =', self.obj.id, ', winnerid =', self.obj.winner, 'is add to DB')
 
 		#ADD TO BLOCKCHAIN
-		from web3 import Web3
-		import os
+		#from web3 import Web3
+		#import os
 
-		w3 = Web3(Web3.HTTPProvider('http://' + os.environ.get('IP_NODE') + ':8545')) #ADDRESS
-		file = open('/var/blockchain/TranscendenceTournamentHistory.json')
-		jsonFile = json.load(file)
-		abi = jsonFile['abi']
+		#w3 = Web3(Web3.HTTPProvider('http://' + os.environ.get('IP_NODE') + ':8545')) #ADDRESS
+		#file = open('/var/blockchain/TranscendenceTournamentHistory.json')
+		#jsonFile = json.load(file)
+		#abi = jsonFile['abi']
 
-		contract_address = os.environ.get('CONTRACT_ADDRESS')
-		contract = w3.eth.contract(address=contract_address, abi=abi)
-		tx = contract.functions.addVictory(str(self.Winner.UserId)).build_transaction({
-			'from': os.environ.get('PUBLIC_KEY'),
-			'nonce': w3.eth.get_transaction_count(os.environ.get('PUBLIC_KEY'))
-		})
-		sign_tx = w3.eth.account.sign_transaction(tx, '0x' + os.environ.get('PRIVATE_KEY'))
-		tx_hash = w3.eth.send_raw_transaction(sign_tx.rawTransaction)
-		w3.eth.wait_for_transaction_receipt(tx_hash)
+		#contract_address = os.environ.get('CONTRACT_ADDRESS')
+		#contract = w3.eth.contract(address=contract_address, abi=abi)
+		#tx = contract.functions.addVictory(str(self.Winner.UserId)).build_transaction({
+		#	'from': os.environ.get('PUBLIC_KEY'),
+		#	'nonce': w3.eth.get_transaction_count(os.environ.get('PUBLIC_KEY'))
+		#})
+		#sign_tx = w3.eth.account.sign_transaction(tx, '0x' + os.environ.get('PRIVATE_KEY'))
+		#tx_hash = w3.eth.send_raw_transaction(sign_tx.rawTransaction)
+		#w3.eth.wait_for_transaction_receipt(tx_hash)
 		#ADD TO BLOCKCHAIN
 
 		#GET TO BLOCKCHAIN
-		print("User", str(self.Winner.Username), "has won", contract.functions.getNumberVictoryPlayer(str(self.Winner.UserId)).call(), 'tournaments')
+		#print("User", str(self.Winner.Username), "has won", contract.functions.getNumberVictoryPlayer(str(self.Winner.UserId)).call(), 'tournaments')
 		#GET TO BLOCKCHAIN
 
 		pass
