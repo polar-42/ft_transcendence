@@ -10,3 +10,4 @@ class User(AbstractUser, PermissionsMixin):
 	channels = ArrayField(models.CharField(), blank=True, null=True)
 	blockedUser = ArrayField(models.CharField(), blank=True, null=True)
 	allPrivateTalks = ArrayField(models.CharField(), blank=True, null=True)
+	avatarImage = models.ImageField(upload_to='images/', blank=True)

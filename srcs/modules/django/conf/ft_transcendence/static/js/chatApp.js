@@ -7,6 +7,20 @@ export async function initChat()
 	if (logStatus == true && chatSocket == undefined)
 	{
 		startChatConnexion();
+
+
+		//TO DEL
+		document.getElementById('user_avatar')
+		const Response = await fetch(document.location.origin + '/authApp/get_avatar_image/',
+		{
+			method: 'GET'
+		})
+		if (Response.ok)
+	  	{
+			var vari = await Response.blob()
+			console.log(vari)
+			document.getElementById("user_avatar").src = URL.createObjectURL(vari)
+	  	}
 	}
 }
 

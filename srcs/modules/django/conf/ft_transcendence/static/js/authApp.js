@@ -18,6 +18,8 @@ export function initLogin()
 
 export function initRegister()
 {
+  avatarButtonFunction() //TO CHANGE
+
   let submitBtn = document.getElementsByClassName("submit_BTN")[0];
   submitBtn.addEventListener("click", register)
   let inputArray = document.querySelectorAll("input");
@@ -30,6 +32,52 @@ export function initRegister()
     })
   })
   inputArray[1].focus()
+}
+
+let imgFile = undefined;
+
+function avatarButtonFunction()
+{
+  const input = document.getElementById("avatar");
+  input.addEventListener("change", function() {
+
+    const file = input.files[0]
+
+    if (file)
+    {
+      const reader = new FileReader()
+
+      reader.onload = function (e) {
+        const img = new Image()
+        img.src = e.target.result;
+
+        img.onload = function () {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+
+          let targetSize = 150
+
+          const scaleFactor = Math.min(targetSize / img.width, targetSize / img.height);
+
+          canvas.width = targetSize
+          canvas.height = targetSize
+
+          const scaledWidth = img.width * scaleFactor;
+          const scaledHeight = img.height * scaleFactor;
+
+          const offsetX = img.width > img.height ? (img.width - img.height) / 2 : 0;
+          const offsetY = img.height > img.width ? (img.height - img.width) / 2 : 0;
+
+          ctx.drawImage(img, offsetX, offsetY, Math.min(img.width, img.height), Math.min(img.width, img.height), 0, 0, targetSize, targetSize);
+
+          const croppedDataURL = canvas.toDataURL('image/png');
+          imgFile = croppedDataURL;
+          document.getElementById('avatar_preview').src = croppedDataURL;
+        }
+      }
+      reader.readAsDataURL(file);
+    }
+  });
 }
 
 function sleep(ms) {
@@ -112,7 +160,7 @@ async function connect(event)
             feedback.style.color = 'green'
             feedback.innerHTML = data.message
             sleep(3000)
-            initProfileButton(true)            
+            initProfileButton(true)
             navto("/")
           }
           else
@@ -131,13 +179,20 @@ async function connect(event)
 function register(event)
 {
   event.preventDefault()
-  const data = 
-    { 
+  const data =
+    {
       username: document.getElementById('Input_usr').value,
       email: document.getElementById('Input_mail').value,
       password: document.getElementById('Input_pwd').value,
-      passwordConfirmation: document.getElementById('Input_confirm_pwd').value
+      passwordConfirmation: document.getElementById('Input_confirm_pwd').value,
+      avatarImage: null
     }
+
+  if (imgFile != undefined)
+  {
+    data.avatarImage = imgFile;
+  }
+
   console.log(data);
 
   var crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
@@ -196,7 +251,7 @@ async function initProfileButton (connected) {
     }
     let userData = await Response.json()
     profiles.forEach((button) => {
-      button.classList.add('connected') 
+      button.classList.add('connected')
       button.children[2].textContent = userData.userName
     })
   }

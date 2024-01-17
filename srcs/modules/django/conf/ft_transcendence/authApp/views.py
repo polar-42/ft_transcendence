@@ -1,10 +1,11 @@
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
-from django.http import JsonResponse
+from django.http import JsonResponse, FileResponse
 from .models import User
 from django.contrib.auth.hashers import make_password
 from .management.commands.create_user import getRandString
-import json, re
+import json, re, base64
+from django.core.files.base import ContentFile
 
 regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
 
@@ -39,6 +40,12 @@ def register(request):
 			password = data.get('password')
 			passwordConfirmation = data.get('passwordConfirmation')
 
+			if data.get('avatarImage'):
+				image_data = data.get('avatarImage')
+				format, imgstr = image_data.split(';base64')
+				ext = format.split('/')[-1]
+				d = ContentFile(base64.b64decode(imgstr), name=f'image.{ext}')
+
 			if len(username) == 0 or len(email) == 0 or len(password) == 0 or len(passwordConfirmation) == 0:
 				return JsonResponse({'error': 'One of the field is empty'})
 
@@ -67,8 +74,10 @@ def register(request):
 				username=username,
 				email=email,
 				password=passwordHash,
-				identification=getRandString(username)
+				identification=getRandString(username),
+				avatarImage=d
 			)
+			new_obj.save()
 
 			return JsonResponse({'message': 'You registered successfully'})
 		else:
@@ -98,3 +107,14 @@ def check_connexion(request):
 
 def getUserName(request):
     return JsonResponse({'userName': request.user.username})
+
+def getAvatarImage(request):
+	if (request.user.is_authenticated):
+		img = User.objects.get(id=request.user.id)
+		import os
+		from django.conf import settings
+		from django.http import HttpResponse
+		image_path = os.path.join(settings.MEDIA_ROOT, str(img.avatarImage))
+		with open(image_path, 'rb') as i:
+			return HttpResponse(i.read(), content_type='image/png')
+
