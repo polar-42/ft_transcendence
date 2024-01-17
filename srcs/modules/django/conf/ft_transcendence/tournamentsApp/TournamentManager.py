@@ -48,6 +48,9 @@ class TournamentsManager():
 		if (tournament not in self._Tournaments.values()):
 			ColorPrint.prYellow("Warning! Trying to close a non existing Tournament");
 			return
+		for User in tournament.PlayersList:
+			if User.Socket.Opened is not False:
+				User.Socket.close()
 		# TODO Close users socket if not closed 
 		del self._Tournaments[tournament.TournamentId]
 

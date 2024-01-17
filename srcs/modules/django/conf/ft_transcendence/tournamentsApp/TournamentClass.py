@@ -77,15 +77,15 @@ class Tournament():
 						self.Winner = self.Tree[len(self.Tree) - 1][0].Winner
 						if (self.Winner is self.UndefinedUser):
 							self.Status = TournamentState.Cancelled
+							self.obj.delete()
 							from .TournamentManager import Manager
 							Manager.closeTournament(self)
-							# TODO Cancel Tournament
 							pass
 						else :
 							ColorPrint.prGreen("Debug ! Tournament[{tID}] ended. User {username} win".format(tID=self.TournamentId, username=self.Winner.Username))
-							self.CloseTimer = 600
+							self.CloseTimer = 10
 							self.Status = TournamentState.Ended
-							self.sendTournamentDB() # TODO Save in DB
+							self.sendTournamentDB()
 							self.SendMatch(None)
 						return
 				Pos2 += 1
