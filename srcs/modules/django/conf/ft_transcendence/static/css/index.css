@@ -290,6 +290,7 @@ footer a:hover::before {
   right: 1rem;
   top: 80px;
   width: auto;
+  min-width: 300px;
   height: 0;
   background: rgba(41, 41, 41, 0.4);
   backdrop-filter: blur(5px);
