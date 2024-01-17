@@ -1,4 +1,5 @@
 import { checkConnexion } from "./authApp.js";
+import { navto } from "./index.js";
 
 export async function initChat()
 {
@@ -17,7 +18,8 @@ function startChatConnexion()
 
 	//document.getElementById('chat_submit').addEventListener("click", sendMessage);
 	//document.getElementById('channel_submit').addEventListener("click", channelMessage);
-	//document.getElementById('invite_pong').addEventListener("click", invitePong);
+	//document.getElementById('invite_pong').addEventListener("click", inviteToPongGame);
+	//document.getElementById('invite_battleship').addEventListener("click", inviteToBattleshipGame);
 	//document.getElementById('channel_join').addEventListener("click", joinChannel);
 	//document.getElementById('channel_leave').addEventListener("click", leaveChannel);
 	//document.getElementById('user_block').addEventListener("click", blockUser);
@@ -41,19 +43,57 @@ function onMessageChat(e)
 	const data = JSON.parse(e.data)
 
 	console.log(data);
-	if (data.type == 'invitation_pong')
+	if (data.type == 'receive_invitation_pong')
 	{
-		invitationPong(data)
+		receivePongInvitation(data)
+	}
+	if (data.type == 'receive_invitation_battleship')
+	{
+		receiveBattleshipInvitation(data)
+	}
+	else if (data.type == 'start_pong_game')
+	{
+		startPongGame(data)
+	}
+	else if (data.type == 'start_battleship_game')
+	{
+		startBattleshipGame(data)
 	}
 }
 
-function invitationPong(data)
+function startPongGame(data)
+{
+	navto("/pongGame/Remote", data.gameId);
+}
+
+function startBattleshipGame(data)
+{
+	navto("/battleship", data.gameId)
+}
+
+function receivePongInvitation(data)
 {
 	if (confirm('Your received an invitation to pong game by ' + data.sender))
 	{
 		console.log('lets go');
 		chatSocket.send(JSON.stringify({
-			'type': 'accept_invitation',
+			'type': 'accept_invitation_pong',
+			'target': data.sender
+		}))
+	}
+	else
+	{
+		console.log('pas go');
+	}
+}
+
+function receiveBattleshipInvitation(data)
+{
+	if (confirm('Your received an invitation to battleship game by ' + data.sender))
+	{
+		console.log('lets go');
+		chatSocket.send(JSON.stringify({
+			'type': 'accept_invitation_battleship',
 			'target': data.sender
 		}))
 	}
@@ -105,7 +145,7 @@ function channelMessage()
 	message.value = "";
 }
 
-function invitePong()
+function inviteToPongGame()
 {
     let channelName = document.getElementById('target_user');
 
@@ -117,6 +157,23 @@ function invitePong()
 
 	chatSocket.send(JSON.stringify({
 		'type': 'invite_pong',
+        'target': channelName.value
+    }))
+	channelName.value = "";
+}
+
+function inviteToBattleshipGame()
+{
+    let channelName = document.getElementById('target_user');
+
+	if (channelName.value.length <= 3)
+	{
+		console.log('Error: One field too small');
+		return;
+	}
+
+	chatSocket.send(JSON.stringify({
+		'type': 'invite_battleship',
         'target': channelName.value
     }))
 	channelName.value = "";

@@ -31,12 +31,12 @@ export function initGames() {
       if (checkboxArray[i].checked === true) {
         if (checkboxArray[i].name === 'local') {
           navto("/pongGame/Local", 'True')
-        } else if (checkboxArray[i].name === 'IA') {
+        } else if (checkboxArray[i].name === 'AI') {
           navto("/pongGame/IA", 'True')
         } else if (checkboxArray[i].name === 'online') {
           toggleQueue("pong")
         } else if (checkboxArray[i].name === 'normal') {
-          toggleQueue("battleship")  
+          toggleQueue("battleship")
         }
       }
     }
@@ -46,7 +46,7 @@ export function initGames() {
     let checkbox = this.children[0].children[0]
     let span =  this.children[0].children[1]
     if (checkbox.checked === false ) {
-      checkbox.checked = true 
+      checkbox.checked = true
       span.classList.add('checked')
       checkboxArray.forEach((other) => {
         if (other !== checkbox) {
@@ -59,7 +59,7 @@ export function initGames() {
         }
       })
     } else {
-      checkbox.checked = false 
+      checkbox.checked = false
       span.classList.remove('checked')
     }
   }
