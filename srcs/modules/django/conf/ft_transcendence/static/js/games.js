@@ -31,7 +31,7 @@ export function initGames() {
       if (checkboxArray[i].checked === true) {
         if (checkboxArray[i].name === 'local') {
           navto("/pongGame/Local", 'True')
-        } else if (checkboxArray[i].name === 'IA') {
+        } else if (checkboxArray[i].name === 'AI') {
           navto("/pongGame/IA", 'True')
         } else if (checkboxArray[i].name === 'online') {
           toggleQueue("pong")

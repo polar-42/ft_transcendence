@@ -5,6 +5,7 @@
   <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="{% static '/css/index.css' %}">
+    <link rel="stylesheet" href="{% static '/css/chatbox.css' %}">
     <link rel="stylesheet" href="{% static '/css/homepage.css' %}">
     <link rel="stylesheet" href="{% static '/css/login.css' %}">
     <link rel="stylesheet" href="{% static '/css/register.css' %}">
@@ -14,22 +15,6 @@
   </head>
   <header>
     <a href="/" class="nav__link home_btn" data-link>ft_transcendence</a>
-
-    <!-- TEST CHAT -->
-    <!--<input type="text" name="message/" id="message_chat">
-    <input type="text" name="target_user/" id="target_user">
-    <button id="chat_submit" type="submit">Priv</button>
-    <button id="channel_submit" type="submit">Chan</button>
-    <button id="invite_pong" type="submit">Pong</button>-->
-    <!--<button id="channel_join" type="submit">Join</button>
-    <button id="channel_leave" type="submit">Leave</button>
-    <button id="user_block" type="submit">Block</button>
-    <button id="user_unblock" type="submit">Unblock</button>
-    <button id="get_last_chat" type="submit">LastConv</button>
-    <button id="get_all_users" type="submit">AllUser</button>
-    <button id="get_history_chat" type="submit">History1</button>
-    <button id="get_history_channel" type="submit">History2</button>-->
-
     <nav>
       <a href="/dashboard" class="nav__link" data-link>Dashboard</a>
       <a href="/games" class="nav__link" data-link>Play</a>
@@ -65,15 +50,161 @@
         </div>
       </div>
     </div>
-
   </header>
   <body>
     <div id="app"></div>
+    <div class="chatbox_wrapper">
+      <div class="chatbox_header_wrapper">
+        <div class="chatbox_header">
+          <img src="../static/assets/logo/chat-solid-24.png" alt="chat logo">
+          <p>Chat</p>
+        </div>
+        <div class="notification_wrapper">
+          <p></p>
+        </div>
+      </div>
+      <div class="open_chatbox_wrapper">
+        <div class="main_box">
+          <div class="main_box_header homepage">
+            <img src="../static/assets/logo/search-regular-24.png" alt="search icon">
+            <input type="text" name"searchbar">
+          </div>
+          <div class="main_box_body homepage">
+            <h2>Discussions</h2>
+            <ul class="conversation_list">
+              <li>
+                <img src="../static/assets/logo/user.png" alt="converstion_picture">
+                <div class="conversation_text">
+                  <div class="conversation_name"> 
+                    <p>Bibo</p>
+                    <div class="connection_point"></div>
+                  </div>
+                  <p class="last_msg">Salut le sang ! fdjig dfjiopg jdfl; ;gjdf gkfdsgfdfghdfklghfdjklhgdfsklhgkldfjkhgfdh;jdf; jg;fdfgdgfdgdffd</p>
+                </div>
+                <div class="notification_wrapper active">
+                  <p>1</p>
+                </div>
+              </li>
+              <li>
+                <img src="../static/assets/logo/user.png" alt="converstion_picture">
+                <div class="conversation_text">
+                  <div class="conversation_name"> 
+                    <p>Bibo</p>
+                    <div class="connection_point"></div>
+                  </div>
+                  <p class="last_msg">Salut le sang ! fdjig dfjiopg jdfl; ;gjdf gkfdsgfdfghdfklghfdjklhgdfsklhgkldfjkhgfdh;jdf; jg;fdfgdgfdgdffd</p>
+                </div>
+                <div class="notification_wrapper active">
+                  <p>1</p>
+                </div>
+              </li>
+              <li>
+                <img src="../static/assets/logo/user.png" alt="converstion_picture">
+                <div class="conversation_text">
+                  <div class="conversation_name"> 
+                    <p>Bibo</p>
+                    <div class="connection_point"></div>
+                  </div>
+                  <p class="last_msg">Salut le sang ! fdjig dfjiopg jdfl; ;gjdf gkfdsgfdfghdfklghfdjklhgdfsklhgkldfjkhgfdh;jdf; jg;fdfgdgfdgdffd</p>
+                </div>
+                <div class="notification_wrapper active">
+                  <p>1</p>
+                </div>
+              </li>
+              <li>
+                <img src="../static/assets/logo/user.png" alt="converstion_picture">
+                <div class="conversation_text">
+                  <div class="conversation_name"> 
+                    <p>Bibo</p>
+                    <div class="connection_point"></div>
+                  </div>
+                  <p class="last_msg">Salut le sang ! fdjig dfjiopg jdfl; ;gjdf gkfdsgfdfghdfklghfdjklhgdfsklhgkldfjkhgfdh;jdf; jg;fdfgdgfdgdffd</p>
+                </div>
+                <div class="notification_wrapper active">
+                  <p>1</p>
+                </div>
+              </li>
+              <li>
+                <img src="../static/assets/logo/user.png" alt="converstion_picture">
+                <div class="conversation_text">
+                  <div class="conversation_name"> 
+                    <p>Bibo</p>
+                    <div class="connection_point"></div>
+                  </div>
+                  <p class="last_msg">Salut le sang ! fdjig dfjiopg jdfl; ;gjdf gkfdsgfdfghdfklghfdjklhgdfsklhgkldfjkhgfdh;jdf; jg;fdfgdgfdgdffd</p>
+                </div>
+                <div class="notification_wrapper active">
+                  <p>1</p>
+                </div>
+              </li>
+
+
+
+              <li>
+                <img src="../static/assets/logo/user.png" alt="converstion_picture">
+                <div class="conversation_text">
+                  <div class="conversation_name"> 
+                    <p>Bibo</p>
+                    <div class="connection_point"></div>
+                  </div>
+                  <p class="last_msg">Salut le sang ! fdjig dfjiopg jdfl; ;gjdf gkfdsgfdfghdfklghfdjklhgdfsklhgkldfjkhgfdh;jdf; jg;fdfgdgfdgdffd</p>
+                </div>
+                <div class="notification_wrapper active">
+                  <p>1</p>
+                </div>
+              </li>
+              <li>
+                <img src="../static/assets/logo/user.png" alt="converstion_picture">
+                <div class="conversation_text">
+                  <div class="conversation_name"> 
+                    <p>Bibo</p>
+                    <div class="connection_point"></div>
+                  </div>
+                  <p class="last_msg">Salut le sang ! fdjig dfjiopg jdfl; ;gjdf gkfdsgfdfghdfklghfdjklhgdfsklhgkldfjkhgfdh;jdf; jg;fdfgdgfdgdffd</p>
+                </div>
+                <div class="notification_wrapper active">
+                  <p>1</p>
+                </div>
+              </li>
+              <li>
+                <img src="../static/assets/logo/user.png" alt="converstion_picture">
+                <div class="conversation_text">
+                  <div class="conversation_name"> 
+                    <p>Bibo</p>
+                    <div class="connection_point"></div>
+                  </div>
+                  <p class="last_msg">Salut le sang ! fdjig dfjiopg jdfl; ;gjdf gkfdsgfdfghdfklghfdjklhgdfsklhgkldfjkhgfdh;jdf; jg;fdfgdgfdgdffd</p>
+                </div>
+                <div class="notification_wrapper active">
+                  <p>1</p>
+                </div>
+              </li>
+              <li>
+                <img src="../static/assets/logo/user.png" alt="converstion_picture">
+                <div class="conversation_text">
+                  <div class="conversation_name"> 
+                    <p>Bibo</p>
+                    <div class="connection_point"></div>
+                  </div>
+                  <p class="last_msg">Salut le sang ! fdjig dfjiopg jdfl; ;gjdf gkfdsgfdfghdfklghfdjklhgdfsklhgkldfjkhgfdh;jdf; jg;fdfgdgfdgdffd</p>
+                </div>
+                <div class="notification_wrapper active">
+                  <p>1</p>
+                </div>
+              </li>
+            </ul>
+            <div class="chatbox_homepage_navbar">
+              <button name="discussions">Discussions</button>
+              <button name="friends">Friends</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <script type="module" src="{% static '/js/index.js' %}"></script>
   </body>
   <footer>
     <a href="/#about" class="foot_link">About</a>
     <a href="" class="foot_link" data-link>Contact</a>
-
   </footer>
 </html>

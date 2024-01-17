@@ -41,10 +41,10 @@ function onMessageChat(e)
 	const data = JSON.parse(e.data)
 
 	console.log(data);
-	if (data.type == 'invitation_pong')
-	{
-		invitationPong(data)
-	}
+	// if (data.type == 'invitation_pong')
+	// {
+	// 	invitationPong(data)
+	// }
 }
 
 function invitationPong(data)
