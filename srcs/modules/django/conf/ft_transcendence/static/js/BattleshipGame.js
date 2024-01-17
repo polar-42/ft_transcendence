@@ -43,7 +43,7 @@ export function initGame()
 		return
 	}
 	gameId = arguments[0]
-	battleshipSocket = new WebSocket("ws://" + window.location.host + '/battleshipApp/Game/' + gameId)
+	battleshipSocket = new WebSocket("wss://" + window.location.host + '/battleshipApp/Game/' + gameId)
 	battleshipSocket.onmessage = e => OnMessage(e)
 }
 

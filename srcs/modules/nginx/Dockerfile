@@ -1,20 +1,16 @@
-FROM nginx:1.25-alpine
+FROM alpine:3.19
 
-RUN apk update
-RUN apk add nodejs
-RUN apk add npm
+RUN apk update; apk upgrade
+RUN apk add nginx
+RUN apk add openssl
 
-COPY testBootstrap /usr/share/nginx/html
+RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt -subj "/C=FR/ST=Charente/L=Angouleme/O=42/OU=tmp/CN=tmp.42.fr"
 
-RUN mkdir -p /usr/share/app/hardhat
-RUN mkdir -p /var/blockchain
+WORKDIR /etc/nginx
 
-RUN mkdir scripts
+RUN rm nginx.conf http.d/*
 
-COPY nginx.sh /usr/share/nginx/html
-COPY hardhat.config.js /usr/share/nginx/html
-
-EXPOSE 8080
-EXPOSE 8545
-
-CMD [ "sh", "/usr/share/nginx/html/nginx.sh" ]
+COPY ./nginx.conf nginx.conf
+COPY ./transcendence_server.conf http.d
+RUN mkdir -p /home/app/web/static
+CMD [ "nginx" ]

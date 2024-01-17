@@ -9,6 +9,7 @@ Matchmake = BattleshipMatchmaking.Matchmaking()
 class socket(WebsocketConsumer):
 
 	def connect(self):
+		print("Hello")
 		self.user = self.scope['user']
 		if Matchmake.AddUser(self.user) == True:
 			self.accept()

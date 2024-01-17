@@ -13,17 +13,22 @@ from django.core.asgi import get_asgi_application
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
 from django.core.asgi import get_asgi_application
+from channels.security.websocket import OriginValidator
+
+application2 = get_asgi_application()
+
 from socketApp import routing
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ft_transcendence.settings')
 
-application2 = get_asgi_application()
-
 application = ProtocolTypeRouter({
-    'http': application2,
-    'websocket': AuthMiddlewareStack(
-        URLRouter(
-            routing.websocket_urlpatterns
-        )
-    ),
+    'https': application2,
+    "websocket": OriginValidator({
+        AuthMiddlewareStack(
+            URLRouter([
+                routing.websocket_urlpatterns
+            ])
+        ),
+        ["*"],
+    })
 })
