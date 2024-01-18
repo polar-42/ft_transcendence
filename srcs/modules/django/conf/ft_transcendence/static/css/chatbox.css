@@ -116,13 +116,19 @@
 
 .main_box_body.homepage .conversation_list li {
   border-radius: 5px;
+  border: 1px solid var(--secondary-bg-color);
   background: var(--secondary-bg-color);
-  box-shadow: 
-  2px 2px 4px var(--secondary);
+  box-shadow: 2px 2px 4px var(--secondary);
   margin: 8px 11px 15px 8px;
   display: grid;
   grid-template-columns: 1fr 5fr 1fr;
   grid-gap: 10px;
+}
+
+.main_box_body.homepage .conversation_list li:hover {
+  box-shadow: 2px 2px 4px var(--fourth);
+  background: var(--main-bg-color);
+  border: 1px solid var(--fourth);
 }
 
 .main_box_body.homepage .conversation_list img {
