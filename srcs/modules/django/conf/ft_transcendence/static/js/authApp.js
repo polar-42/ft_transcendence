@@ -179,31 +179,28 @@ async function connect(event)
 function register(event)
 {
   event.preventDefault()
-  const data =
-    {
-      username: document.getElementById('Input_usr').value,
-      email: document.getElementById('Input_mail').value,
-      password: document.getElementById('Input_pwd').value,
-      passwordConfirmation: document.getElementById('Input_confirm_pwd').value,
-      avatarImage: null
-    }
+
+  let formData = new FormData();
+  formData.append('username', document.getElementById('Input_usr').value);
+  formData.append('email', document.getElementById('Input_mail').value);
+  formData.append('password', document.getElementById('Input_pwd').value);
+  formData.append('passwordConfirmation', document.getElementById('Input_confirm_pwd').value);
 
   if (imgFile != undefined)
   {
-    data.avatarImage = imgFile;
+    formData.append('avatar', dataURItoBlob(imgFile));
   }
 
   var crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
   let feedback = document.querySelector('.feedback')
   var headers = new Headers()
-  headers.append('Content-Type', 'application/json')
   headers.append('X-CSRFToken', crsf_token)
 
   fetch(document.location.origin + "/authApp/register/",
     {
       method: 'POST',
       headers: headers,
-      body: JSON.stringify(data),
+      body: formData,
     })
     .then(Response =>
       {
@@ -234,6 +231,17 @@ function register(event)
           feedback.innerHTML = data.message
           return
         })
+}
+
+function dataURItoBlob(dataURI) {
+  const byteString = atob(dataURI.split(',')[1]);
+  const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+  const ab = new ArrayBuffer(byteString.length);
+  const ia = new Uint8Array(ab);
+  for (let i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i);
+  }
+  return new Blob([ab], { type: mimeString });
 }
 
 async function initProfileButton (connected) {
