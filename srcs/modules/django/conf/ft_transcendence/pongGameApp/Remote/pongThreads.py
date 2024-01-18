@@ -235,7 +235,7 @@ class pongGame():
         self.Status = GameState.Playing
 
     def getUser(self, user):
-        if (user.id == self.users[0].sock_user.id):
+        if user.id == self.users[0].sock_user.id:
             return self.users[0]
         elif user.id == self.users[1].sock_user.id:
             return self.users[1]
