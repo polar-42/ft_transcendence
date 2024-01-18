@@ -80,7 +80,7 @@ def register(request):
 			)
 
 			if avatarImage != None:
-				new_obj.avatarImage = avatarImage
+				new_obj.avatarImage = avatarImage.read()
 
 			new_obj.save()
 
