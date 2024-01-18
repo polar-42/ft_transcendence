@@ -193,8 +193,6 @@ function register(event)
     data.avatarImage = imgFile;
   }
 
-  console.log(data);
-
   var crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
   let feedback = document.querySelector('.feedback')
   var headers = new Headers()
@@ -254,6 +252,23 @@ async function initProfileButton (connected) {
       button.classList.add('connected')
       button.children[2].textContent = userData.userName
     })
+
+    let profileImage = document.querySelectorAll('img.user_logo')
+    Response = await fetch(document.location.origin + '/authApp/get_avatar_image/',
+		{
+			method: 'GET'
+		})
+		if (Response.ok)
+	  	{
+			var vari = await Response.blob()
+			if (vari.type == "image/png")
+      {
+        profileImage.forEach((img) => {
+          img.src = URL.createObjectURL(vari)
+          img.style.borderRadius = '50%';
+        })
+      }
+	  }
   }
   else {
     profiles.forEach((button) => {

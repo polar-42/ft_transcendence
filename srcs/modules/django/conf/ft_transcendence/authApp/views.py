@@ -4,8 +4,10 @@ from django.http import JsonResponse, FileResponse
 from .models import User
 from django.contrib.auth.hashers import make_password
 from .management.commands.create_user import getRandString
-import json, re, base64
+import json, re, base64, os
 from django.core.files.base import ContentFile
+from django.conf import settings
+from django.http import HttpResponse
 
 regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
 
@@ -109,12 +111,11 @@ def getUserName(request):
     return JsonResponse({'userName': request.user.username})
 
 def getAvatarImage(request):
-	if (request.user.is_authenticated):
-		img = User.objects.get(id=request.user.id)
-		import os
-		from django.conf import settings
-		from django.http import HttpResponse
-		image_path = os.path.join(settings.MEDIA_ROOT, str(img.avatarImage))
+	if request.user.is_authenticated:
+		usr = User.objects.get(id=request.user.id)
+		if len(str(usr.avatarImage)) <= 0:
+			return HttpResponse(None)
+		image_path = os.path.join(settings.MEDIA_ROOT, str(usr.avatarImage))
 		with open(image_path, 'rb') as i:
 			return HttpResponse(i.read(), content_type='image/png')
 
