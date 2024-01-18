@@ -50,6 +50,7 @@ function getRoute(RoutePath)
     { path: "/tournaments/View", init: InitTournamentView, unload: null, title:"Tournament", LogStatus: 1},
     { path: "/authApp/login", init: initLogin, unload: null, title:"Login", LogStatus: 0},
     { path: "/authApp/register", init: initRegister, unload: null, title:"Register", LogStatus: 0},
+    { path: "/userManagement", init: null, unload: null, title:"userManagement", LogStatus: 1},
   ]
 
   const Potentialroutes = routes.map(route =>

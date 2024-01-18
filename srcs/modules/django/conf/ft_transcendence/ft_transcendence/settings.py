@@ -43,6 +43,7 @@ INSTALLED_APPS = [
 	'pongGameApp',
 	'tournamentsApp',
 	'chatApp',
+	'userManagementApp',
 ]
 
 MIDDLEWARE = [
