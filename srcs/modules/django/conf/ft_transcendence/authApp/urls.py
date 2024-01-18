@@ -9,4 +9,5 @@ urlpatterns = [
     path('check_connexion/', views.check_connexion),
     path('testSocket/', views.socket),
     path('getUserName/', views.getUserName),
+    path('get_avatar_image/', views.getAvatarImage),
 ]

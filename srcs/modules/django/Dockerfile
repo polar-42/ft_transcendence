@@ -18,7 +18,7 @@ COPY conf/ ./conf
 COPY ft_transcendence.sh .
 
 RUN pip install --upgrade pip
-RUN pip install --no-cache-dir daphne  Django==4.2.6 requests psycopg2-binary Pillow channels==4.0.0 web3
+RUN pip install --no-cache-dir daphne Django==4.2.6 requests psycopg2-binary Pillow channels==4.0.0 web3
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
