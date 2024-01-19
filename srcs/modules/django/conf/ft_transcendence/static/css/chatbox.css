@@ -23,9 +23,13 @@
   border: 1px solid var(--third);
   border-bottom: none;
   font-size: 1.2em;
-  height: 3.2ch;
+  height: 0;
   cursor: pointer;
-  transition: .5s ease;
+  overflow: hidden;
+}
+
+.chatbox_header_wrapper.connected {
+  height: 3.2ch;
 }
 
 .chatbox_header_wrapper:hover {
@@ -71,8 +75,12 @@
 }
 
 .chatbox_wrapper .open_chatbox_wrapper {
+  height: 0;
+  transition: height .3s ease;
+}
+
+.chatbox_wrapper.open .open_chatbox_wrapper {
   height: 400px;
-  background: white;
 }
 
 .main_box {

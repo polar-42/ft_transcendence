@@ -1,12 +1,89 @@
 import { checkConnexion } from "./authApp.js";
 
+
+let chatHeader = document.querySelector(".chatbox_header_wrapper");
+
 export async function initChat()
 {
 	let logStatus = await checkConnexion();
 	if (logStatus == true && chatSocket == undefined)
 	{
+    chatHeader.classList.add('connected')
+    chatHeader.addEventListener("click", openChatbox)
+    initChatHomepage()
 		startChatConnexion();
 	}
+}
+
+function openChatbox() {
+  document.querySelector(".chatbox_wrapper").classList.add("open")
+  chatHeader.removeEventListener("click", openChatbox)
+  chatHeader.addEventListener("click", closeChatbox)
+}
+
+export function closeChatbox() {
+  document.querySelector(".chatbox_wrapper").classList.remove("open")
+  chatHeader.removeEventListener("click", closeChatbox)
+  chatHeader.addEventListener("click", openChatbox)
+}
+
+function initChatHomepage() {
+  initHomepageBody()
+  initHomepageHeader()
+}
+
+function initHomepageHeader() {
+  let mainBoxHeader = document.querySelector(".main_box_header")
+
+  mainBoxHeader.classList.add("homepage")
+  mainBoxHeader.appendChild(document.createElement("img"))
+  mainBoxHeader.children[0].src = "../static/assets/logo/search-regular-24.png";
+  mainBoxHeader.children[0].alt = "search icon";
+  let searchBar = mainBoxHeader.appendChild(document.createElement("input"))
+  searchBar.type = "text"
+  searchBar.name = "searchbar"
+  searchBar.placeholder = "Search a user or a channel"
+}
+
+function initHomepageBody() {
+  let mainBoxBody = document.querySelector(".main_box_body")
+  mainBoxBody.classList.add("homepage")
+  let title = mainBoxBody.appendChild(document.createElement("h2"))
+  title.textContent = "Discussions"
+  let conversationList = mainBoxBody.appendChild(document.createElement("ul"))
+  conversationList.classList.add("conversation_list")
+  let navbar = mainBoxBody.appendChild(document.createElement("div"))
+  navbar.classList.add("chatbox_homepage_navbar")
+  let discussionButton = navbar.appendChild(document.createElement("button"))
+  let friendsButton = navbar.appendChild(document.createElement("button"))
+  discussionButton.name = "discussions"
+  discussionButton.textContent = "Discussions"
+  friendsButton.name = "friends"
+  friendsButton.textContent = "Friends"
+
+}
+
+export function unsetChatbox() {
+  closeChatbox()
+  let mainBoxBody = document.querySelector(".main_box_body")
+  let mainBoxHeader = document.querySelector(".main_box_header")
+  chatHeader.classList.remove("connected")
+  mainBoxBody.classList.forEach((className) => {
+    if (className !== "main_box_body") {
+      mainBoxBody.classList.remove(className)
+    }
+  })
+  mainBoxHeader.classList.forEach((className) => {
+    if (className !== "main_box_header") {
+      mainBoxHeader.classList.remove(className)
+    }
+  })
+  while (mainBoxBody.children.length > 0) {
+    mainBoxBody.children[0].remove()
+  }
+  while (mainBoxHeader.children.length > 0) {
+    mainBoxHeader.children[0].remove()
+  }
 }
 
 let chatSocket = undefined;

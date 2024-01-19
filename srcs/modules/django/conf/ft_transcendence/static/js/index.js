@@ -11,7 +11,7 @@ import { initGamePong, unLoadGamePong } from "./pongGameRemote.js"
 import { initTournamentsCreation } from "./tournaments/tournamentsCreation.js"
 import { initTournamentsJoinPage } from "./tournaments/tournamentsJoinPage.js"
 import { GoingAway, initTournaments } from "./tournaments/tournament.js"
-import { initChat } from "./chatApp.js"
+import { initChat, unsetChatbox } from "./chatApp.js"
 import { InitTournamentView } from "./tournaments/tournamentSpectate.js"
 
 export function navto(urlpath)
@@ -28,8 +28,8 @@ const navigateTo = url =>
 
 function getRoute(RoutePath)
 {
-	//Chat function
-	initChat();
+  //Chat function
+  initChat();
 
   const routes = [
     { path: "/404", init: null, unload: null, title:"404", LogStatus: 2},
@@ -79,40 +79,40 @@ let Prev_match = undefined
 
 const router = async (arg) =>
 {
-	let match = getRoute(document.location.origin + location.pathname)
-	/* define 404 error page */
-	if (!match)
-	{
-		match = getRoute(document.location.origin + "/404")
-	}
-	else if (match.route.LogStatus == 1 && await checkConnexion() == false)
-	{
-		match = getRoute(document.location.origin + "/needlog")
-	}
-	else if (match.route.LogStatus == 0 && await checkConnexion() == true)
-		match = getRoute(document.location.origin + "/")
-	var actualRoute
-	if (match.route.path == "/")
-		actualRoute = match.route.path + "homepage/?valid=True"
-	else
-		actualRoute = match.route.path + "/?valid=True"
-	if (Prev_match != undefined && Prev_match.route.unload != null)
-		Prev_match.route.unload()
-	fetch(actualRoute)
-	.then(Response => {
-		document.title = match.route.title
-		return Response.text()
-	})
-	.then(html => {
-		document.querySelector("#app").innerHTML = html
-	})
-	.then(value =>
-	{
-		if (match.route.init != null)
-			match.route.init(arg)
-		Prev_match = match
-		// OnLogChange()
-	})
+  let match = getRoute(document.location.origin + location.pathname)
+  /* define 404 error page */
+  if (!match)
+  {
+    match = getRoute(document.location.origin + "/404")
+  }
+  else if (match.route.LogStatus == 1 && await checkConnexion() == false)
+  {
+    match = getRoute(document.location.origin + "/needlog")
+  }
+  else if (match.route.LogStatus == 0 && await checkConnexion() == true)
+    match = getRoute(document.location.origin + "/")
+  var actualRoute
+  if (match.route.path == "/")
+    actualRoute = match.route.path + "homepage/?valid=True"
+  else
+    actualRoute = match.route.path + "/?valid=True"
+  if (Prev_match != undefined && Prev_match.route.unload != null)
+    Prev_match.route.unload()
+  fetch(actualRoute)
+    .then(Response => {
+      document.title = match.route.title
+      return Response.text()
+    })
+    .then(html => {
+      document.querySelector("#app").innerHTML = html
+    })
+    .then(value =>
+      {
+        if (match.route.init != null)
+          match.route.init(arg)
+        Prev_match = match
+        // OnLogChange()
+      })
 }
 
 const menuBtn = document.querySelector(".menu_btn")
@@ -133,12 +133,13 @@ document.addEventListener("DOMContentLoaded", () =>
     router()
   })
 
-function clickLogout(e) {
+async function clickLogout(e) {
   let profileDropDowns = document.querySelectorAll(".profile_menu");
-  profileDropDowns.forEach((menu) => menu.classList.remove("open"));
+  profileDropDowns.forEach((menu) => menu.classList.remove("active"));
   dropDownMenu.classList.remove('open')
   menuBtn.src = '../static/assets/logo/hamburger.png'
-  logout(e);
+  unsetChatbox()
+  await logout(e);
   navto("/");
 }
 
@@ -168,20 +169,20 @@ const profileDropDown  = document.querySelectorAll(".profile_menu");
 for (let i = 0; i < 2; i++)
 {
   profileButton[i].addEventListener("click", async () => {
-    let isOpen = profileDropDown[i].classList.contains('open');
+    let isOpen = profileDropDown[i].classList.contains('active');
     let logStatus = await checkConnexion();
     if (logStatus == true)
     {
       if (isOpen) {
-        profileDropDown[i].classList.remove('open');
+        profileDropDown[i].classList.remove('active');
       } else {
-        profileDropDown[i].classList.add('open');
+        profileDropDown[i].classList.add('active');
         profileDropDown[i].style.width = profileButton[i].clientWidth.toString() + "px"
       }
     }
     else
     {
-      dropDownMenu.classList.toggle('open')
+      dropDownMenu.classList.toggle('active')
       menuBtn.src = '../static/assets/logo/hamburger.png'
       navto("/authApp/login");
     }
@@ -190,12 +191,12 @@ for (let i = 0; i < 2; i++)
 
 document.addEventListener("click", (event) => {
   if (!dropDownMenu.contains(event.target) && !menuBtn.contains(event.target)) {
-    dropDownMenu.classList.remove('open');
+    dropDownMenu.classList.remove('active');
     menuBtn.src="../static/assets/logo/hamburger.png";
   };
   for (let menu of profileDropDown) {
     if (!menu.contains(event.target)) {
-      menu.classList.remove("open");
+      menu.classList.remove("active");
     }
   }
 })

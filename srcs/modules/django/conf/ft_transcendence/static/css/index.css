@@ -127,8 +127,9 @@ header a:visited {
   display: none;
 }
 
-.profile_button a {
+.profile_button p {
   margin: 5px;
+  text-transform: none;
 }
 
 .profile_button:hover {
@@ -148,11 +149,11 @@ header a:visited {
   display: block;
 }
 
-.profile_button:hover a {
+.profile_button:hover p {
   color: var(--fourth) !important;
 }
 
-.profile_button a::before {
+.profile_button p::before {
   display: none;
 }
 
@@ -161,7 +162,7 @@ header a:visited {
   width: auto;
 }
 
-.profile_button.connected a {
+.profile_button.connected p {
   text-transform: none;
 }
 
@@ -325,7 +326,7 @@ footer a:hover::before {
   color: var(--main-bg-color) !important;
 }
 
-.dropdown_menu .profile_button a {
+.dropdown_menu .profile_button p {
   text-decoration: none;
 }
 
