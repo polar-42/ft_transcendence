@@ -10,8 +10,8 @@ export async function initChat()
 	{
     chatHeader.classList.add('connected')
     chatHeader.addEventListener("click", openChatbox)
-    initChatHomepage()
 		startChatConnexion();
+    // initChatHomepage()
 	}
 }
 
@@ -28,8 +28,9 @@ export function closeChatbox() {
 }
 
 function initChatHomepage() {
-  initHomepageBody()
+  console.log(chatSocket)
   initHomepageHeader()
+  initHomepageBody()
 }
 
 function initHomepageHeader() {
@@ -60,7 +61,7 @@ function initHomepageBody() {
   discussionButton.textContent = "Discussions"
   friendsButton.name = "friends"
   friendsButton.textContent = "Friends"
-
+  getLastChat()
 }
 
 export function unsetChatbox() {
@@ -90,8 +91,7 @@ let chatSocket = undefined;
 
 function startChatConnexion()
 {
-	//chatSocket = new WebSocket("ws://" + window.location.host + '/chat/');
-
+	chatSocket = new WebSocket("ws://" + window.location.host + '/chat/');
 	//document.getElementById('chat_submit').addEventListener("click", sendMessage);
 	//document.getElementById('channel_submit').addEventListener("click", channelMessage);
 	//document.getElementById('invite_pong').addEventListener("click", invitePong);
@@ -104,8 +104,9 @@ function startChatConnexion()
 	//document.getElementById('get_history_chat').addEventListener("click", getHistoryChat);
 	//document.getElementById('get_history_channel').addEventListener("click", getHistoryChannel);
 
-	//chatSocket.onclose = closeChatSocket;
-	//chatSocket.onmessage = e => onMessageChat(e);
+  chatSocket.onopen = initChatHomepage
+	chatSocket.onclose = closeChatSocket;
+	chatSocket.onmessage = e => onMessageChat(e);
 }
 
 function closeChatSocket()

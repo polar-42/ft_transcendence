@@ -244,8 +244,8 @@ class chatSocket(WebsocketConsumer):
 		allMessageChannels = []
 		if self.UserModel.channels is not None:
 			for chan in self.UserModel.channels:
-				msgs = MessageModels.objects.filter(receiver=chan)
-				if msgs is not None:
+				# msgs = MessageModels.objects.filter(receiver=chan)
+				# if msgs.count() > 0:
 					allMessageChannels.append(msgs.order_by('-id')[0])
 
 		allMessages = MessageModels.objects.filter(Q(sender=self.userId) | Q(receiver=self.userId))
@@ -272,9 +272,9 @@ class chatSocket(WebsocketConsumer):
 				allConv.append(msg)
 
 		#print()
-		#print('All conv of', self.user)
+		print('All conv of', self.user)
 		for conv in allConv:
-			#print('conv is between', conv.sender, 'to', conv.receiver)
+			print('conv is between', conv.sender, 'to', conv.receiver)
 
 			self.send(text_data=json.dumps({
 				'type': 'all_chat_history',
