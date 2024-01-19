@@ -15,7 +15,7 @@ from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 # from socketApp import routing
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ft_transcendence.settings')
+# os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ft_transcendence.settings')
 
 # application = ProtocolTypeRouter({
 #    'http': get_wsgi_application(),

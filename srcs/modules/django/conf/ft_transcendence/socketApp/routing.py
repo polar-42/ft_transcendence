@@ -12,6 +12,6 @@ websocket_urlpatterns = [
     path('pongGame/matchmaking/', PongMatchmakingConsumers.pongMatchmakingSocket.as_asgi()),
 	path('pongGame/gameVsIA', PongGameIAConsumers.PongGameIASocket.as_asgi()),
     path('pongGame/RemoteGame/<str:gameId>', PongGameConsumers.PongGameSocket.as_asgi()),
-    path('tournamentsApp/<str:tournamentId>', tournamentConsumer.TournamentSocket.as_asgi()),
+    path('socketApp/tournamentsApp/<str:tournamentId>', tournamentConsumer.TournamentSocket.as_asgi()),
 	path('chat/', chatConsumer.chatSocket.as_asgi()),
 ]

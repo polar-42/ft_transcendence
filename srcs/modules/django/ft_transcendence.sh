@@ -92,8 +92,4 @@ python manage.py create_user
 #python manage.py collectstatic
 #uwsgi --http $(hostname -i):8080 --module ft_transcendence.wsgi --enable-threads
 
-# cd ft_transcendence
-echo "CONNNNNNARRRRRRRD22222222222222222222222222222";
-daphne -b 0.0.0.0 -p 8001 ft_transcendence.asgi:application --daemon
-echo "CONNNNNNARRRRRRRD";
-gunicorn ft_transcendence.wsgi:application --bind 0.0.0.0:8000 --log-level debug --reload
+gunicorn -w 4 -b 0.0.0.0:8000 ft_transcendence.asgi:application --access-logfile '-' --error-logfile '-' --worker-class uvicorn.workers.UvicornWorker --reload --log-level debug

@@ -18,8 +18,8 @@ COPY conf/ ./conf
 COPY ft_transcendence.sh .
 
 RUN pip install --upgrade pip
-# Pillow
-RUN pip install --no-cache-dir daphne gunicorn psycopg2-binary Django==4.2.6 requests channels==4.0.0 web3
+# Pillow daphne
+RUN pip install --no-cache-dir "uvicorn[standard]" gunicorn psycopg2-binary Django==4.2.6 requests channels==4.0.0 web3
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1

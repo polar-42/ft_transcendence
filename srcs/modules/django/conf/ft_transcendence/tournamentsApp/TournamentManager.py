@@ -5,6 +5,7 @@ from .TournamentClass import Tournament
 
 from battleshipApp import ColorPrint
 from .ThreadClass import TimerLoop
+
 class TournamentsManager():
 
 	_Tournaments = {}
@@ -51,13 +52,12 @@ class TournamentsManager():
 		for User in tournament.PlayersList:
 			if User.Socket.Opened is not False:
 				User.Socket.close()
-		# TODO Close users socket if not closed 
 		del self._Tournaments[tournament.TournamentId]
 
 	def ConnectUser(self, user, socket, tournamentId : int):
 		tournamentId = int(tournamentId)
 		if tournamentId not in self._Tournaments:
-			ColorPrint.prYellow("Warning! User {username} : Try to join a non existing tournament.".format(username=user.username))
+			ColorPrint.prYellow("Warning! User {username} : Try to join a non existing tournament ({tID}).".format(username=user.username, tID=tournamentId))
 			return False
 		User = self._Tournaments[tournamentId].GetUserById(user.id)
 		if User is not None:

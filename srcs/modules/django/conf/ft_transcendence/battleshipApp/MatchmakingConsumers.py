@@ -9,7 +9,6 @@ Matchmake = BattleshipMatchmaking.Matchmaking()
 class socket(WebsocketConsumer):
 
 	def connect(self):
-		print("Hello")
 		self.user = self.scope['user']
 		if Matchmake.AddUser(self.user) == True:
 			self.accept()
@@ -37,7 +36,7 @@ class socket(WebsocketConsumer):
 				'gameId': event['gameId']
 			}))
 			(self.close)()
-			self.channel_layer.group_discard( #ASYNC TO SYNC ??
+			async_to_sync(self.channel_layer.group_discard)(
 				Matchmake.channelName,
 				self.channel_name
 			)

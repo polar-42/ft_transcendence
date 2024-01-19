@@ -11,6 +11,6 @@ WORKDIR /etc/nginx
 RUN rm nginx.conf http.d/*
 
 COPY ./nginx.conf nginx.conf
-COPY ./transcendence_server.conf http.d
+COPY ./django_server.conf http.d
 RUN mkdir -p /home/app/web/static
 CMD [ "nginx" ]
