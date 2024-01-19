@@ -4,4 +4,5 @@ from . import views
 
 urlpatterns = [
     path('', views.userManagementView),
+    path('updateAccount/', views.updateAccount),
 ]

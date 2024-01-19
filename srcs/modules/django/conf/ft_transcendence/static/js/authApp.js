@@ -98,9 +98,11 @@ export async function logout(event)
   {
     var vari = await Response.json()
     if(vari.success == false) {
+      location.reload()
       return false
     }
     initProfileButton(false)
+    location.reload()
     return true
   }
   else
@@ -129,9 +131,9 @@ export async function checkConnexion()
 async function connect(event)
 {
   event.preventDefault()
-  var username = document.getElementById('Input_usr').value
+  var email = document.getElementById('Input_mail').value
   var password = document.getElementById('Input_pwd').value
-  const data = { username: username, password: password }
+  const data = { email: email, password: password }
   let feedback = document.querySelector('.feedback')
 
   const crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
