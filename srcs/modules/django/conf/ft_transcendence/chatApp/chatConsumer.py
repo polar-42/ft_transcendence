@@ -1,6 +1,6 @@
 import json, time
-from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
+from channels.generic.websocket import WebsocketConsumer
 from .enumChat import connexionStatus, channelPrivacy
 from django.db import models
 from authApp import models as userModels
@@ -107,9 +107,10 @@ class chatSocket(WebsocketConsumer):
 			self.getHistoryChannel(data['target'])
 		elif data['type'] == 'invite_pong':
 			self.invitePong(data['target'])
-
 		elif data['type'] == 'accept_invitation':
 			self.acceptInvitation(data['target'])
+		elif data['type'] == 'search_conv':
+			self.searchConv(data['input'])
 
 	def joinChannel(self, channelName):
 		if channelName not in self.allChannels:
@@ -244,8 +245,8 @@ class chatSocket(WebsocketConsumer):
 		allMessageChannels = []
 		if self.UserModel.channels is not None:
 			for chan in self.UserModel.channels:
-				# msgs = MessageModels.objects.filter(receiver=chan)
-				# if msgs.count() > 0:
+				msgs = MessageModels.objects.filter(receiver=chan)
+				if msgs.count() > 0:
 					allMessageChannels.append(msgs.order_by('-id')[0])
 
 		allMessages = MessageModels.objects.filter(Q(sender=self.userId) | Q(receiver=self.userId))
@@ -273,6 +274,7 @@ class chatSocket(WebsocketConsumer):
 
 		#print()
 		print('All conv of', self.user)
+		print(allConv)
 		for conv in allConv:
 			print('conv is between', conv.sender, 'to', conv.receiver)
 
@@ -465,3 +467,24 @@ class chatSocket(WebsocketConsumer):
 			'message': message,
 			'time': time.strftime("%Y-%m-%d %X")
     	}))
+
+	def searchConv(self, input):
+		allUsers = userModels.User.objects.exclude(Q(username='IA') | Q(username='admin')) 
+		allChannels = self.UserModel.channels 
+		response = []
+
+		print(input)
+		for chan in allChannels:
+			if chan.find(input) >= 0: 
+				response.append({'name': chan})
+
+		for user in allUsers:
+			if user.username.find(input) >= 0:
+				response.append({'name': user.username})
+
+		print(response)
+		self.send(text_data = json.dumps({
+			'type': 'search_conv',
+			'data': response
+		}))
+

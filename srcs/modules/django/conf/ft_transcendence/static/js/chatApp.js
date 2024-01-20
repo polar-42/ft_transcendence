@@ -2,6 +2,7 @@ import { checkConnexion } from "./authApp.js";
 
 
 let chatHeader = document.querySelector(".chatbox_header_wrapper");
+let chatSocket = undefined;
 
 export async function initChat()
 {
@@ -11,7 +12,6 @@ export async function initChat()
     chatHeader.classList.add('connected')
     chatHeader.addEventListener("click", openChatbox)
 		startChatConnexion();
-    // initChatHomepage()
 	}
 }
 
@@ -44,6 +44,20 @@ function initHomepageHeader() {
   searchBar.type = "text"
   searchBar.name = "searchbar"
   searchBar.placeholder = "Search a user or a channel"
+  searchBar.addEventListener("keypress", (event) => {
+    if (event.key === 'Enter') {
+      searchConv()
+    }
+  })
+}
+
+function searchConv() {
+  console.log(chatSocket)
+  let search = document.querySelector(".main_box_header input").value
+  chatSocket.send(JSON.stringify({
+    'type': 'search_conv',
+    'input': search
+  }))
 }
 
 function initHomepageBody() {
@@ -87,234 +101,254 @@ export function unsetChatbox() {
   }
 }
 
-let chatSocket = undefined;
 
 function startChatConnexion()
 {
-	chatSocket = new WebSocket("ws://" + window.location.host + '/chat/');
-	//document.getElementById('chat_submit').addEventListener("click", sendMessage);
-	//document.getElementById('channel_submit').addEventListener("click", channelMessage);
-	//document.getElementById('invite_pong').addEventListener("click", invitePong);
-	//document.getElementById('channel_join').addEventListener("click", joinChannel);
-	//document.getElementById('channel_leave').addEventListener("click", leaveChannel);
-	//document.getElementById('user_block').addEventListener("click", blockUser);
-	//document.getElementById('user_unblock').addEventListener("click", unblockUser);
-	//document.getElementById('get_last_chat').addEventListener("click", getLastChat);
-	//document.getElementById('get_all_users').addEventListener("click", getAllUsers);
-	//document.getElementById('get_history_chat').addEventListener("click", getHistoryChat);
-	//document.getElementById('get_history_channel').addEventListener("click", getHistoryChannel);
+  chatSocket = new WebSocket("ws://" + window.location.host + '/chat/');
+  //document.getElementById('chat_submit').addEventListener("click", sendMessage);
+  //document.getElementById('channel_submit').addEventListener("click", channelMessage);
+  //document.getElementById('invite_pong').addEventListener("click", invitePong);
+  //document.getElementById('channel_join').addEventListener("click", joinChannel);
+  //document.getElementById('channel_leave').addEventListener("click", leaveChannel);
+  //document.getElementById('user_block').addEventListener("click", blockUser);
+  //document.getElementById('user_unblock').addEventListener("click", unblockUser);
+  //document.getElementById('get_last_chat').addEventListener("click", getLastChat);
+  //document.getElementById('get_all_users').addEventListener("click", getAllUsers);
+  //document.getElementById('get_history_chat').addEventListener("click", getHistoryChat);
+  //document.getElementById('get_history_channel').addEventListener("click", getHistoryChannel);
 
   chatSocket.onopen = initChatHomepage
-	chatSocket.onclose = closeChatSocket;
-	chatSocket.onmessage = e => onMessageChat(e);
+  chatSocket.onclose = closeChatSocket;
+  chatSocket.onmessage = e => onMessageChat(e);
 }
 
 function closeChatSocket()
 {
-	chatSocket = undefined;
+  chatSocket = undefined;
 }
 
 function onMessageChat(e)
 {
-	const data = JSON.parse(e.data)
+  const data = JSON.parse(e.data)
 
-	console.log(data);
-	// if (data.type == 'invitation_pong')
-	// {
-	// 	invitationPong(data)
-	// }
+  switch (data['type']) {
+    case 'search_conv':
+      displaySearchResult(data.data) 
+      break;
+  }
+  // if (data.type == 'invitation_pong')
+  // {
+  // 	invitationPong(data)
+  // }
+}
+
+function displaySearchResult(data) {
+  let resultWrapper = document.querySelector(".conversation_list")
+  // console.log(data)
+  for (let i = 0; i < data.length; i++) {
+    console.log(data[i])
+    let item = document.createElement("li")
+    item.appendChild(document.createElement("img"))
+    item.children[0].src = "../static/assets/logo/user.png"
+    item.children[0].alt = "conversation_picture"
+    item.appendChild(document.createElement("div"))
+    item.children[1].classList.add('conversation_name')
+    item.children[1].appendChild(document.createElement("p"))
+    item.children[1].children[0].textContent = data[i].name
+    resultWrapper.appendChild(item)
+  }
 }
 
 function invitationPong(data)
 {
-	if (confirm('Your received an invitation to pong game by ' + data.sender))
-	{
-		console.log('lets go');
-		chatSocket.send(JSON.stringify({
-			'type': 'accept_invitation',
-			'target': data.sender
-		}))
-	}
-	else
-	{
-		console.log('pas go');
-	}
+  if (confirm('Your received an invitation to pong game by ' + data.sender))
+  {
+    console.log('lets go');
+    chatSocket.send(JSON.stringify({
+      'type': 'accept_invitation',
+      'target': data.sender
+    }))
+  }
+  else
+  {
+    console.log('pas go');
+  }
 }
 
 function sendMessage()
 {
-    let message = document.getElementById('message_chat');
-    let targetUser = document.getElementById('target_user');
+  let message = document.getElementById('message_chat');
+  let targetUser = document.getElementById('target_user');
 
-	if (message.value.length <= 0 || targetUser.value.length <= 3)
-	{
-		console.log('Error: One field too small');
-		return;
-	}
+  if (message.value.length <= 0 || targetUser.value.length <= 3)
+  {
+    console.log('Error: One field too small');
+    return;
+  }
 
-	console.log('message is', message.value, 'and tagetUser is', targetUser.value);
+  console.log('message is', message.value, 'and tagetUser is', targetUser.value);
 
-    chatSocket.send(JSON.stringify({
-		'type': 'chat_message',
-        'message': message.value,
-        'target': targetUser.value
-    }))
-	message.value = "";
-	targetUser.value = "";
+  chatSocket.send(JSON.stringify({
+    'type': 'chat_message',
+    'message': message.value,
+    'target': targetUser.value
+  }))
+  message.value = "";
+  targetUser.value = "";
 }
 
 function channelMessage()
 {
-    let message = document.getElementById('message_chat');
-    let channelName = document.getElementById('target_user');
+  let message = document.getElementById('message_chat');
+  let channelName = document.getElementById('target_user');
 
-	if (channelName.value.length <= 3)
-	{
-		console.log('Error: One field too small');
-		return;
-	}
+  if (channelName.value.length <= 3)
+  {
+    console.log('Error: One field too small');
+    return;
+  }
 
-	chatSocket.send(JSON.stringify({
-		'type': 'channel_message',
-        'target': channelName.value,
-		'message': message.value
-    }))
-	channelName.value = "";
-	message.value = "";
+  chatSocket.send(JSON.stringify({
+    'type': 'channel_message',
+    'target': channelName.value,
+    'message': message.value
+  }))
+  channelName.value = "";
+  message.value = "";
 }
 
 function invitePong()
 {
-    let channelName = document.getElementById('target_user');
+  let channelName = document.getElementById('target_user');
 
-	if (channelName.value.length <= 3)
-	{
-		console.log('Error: One field too small');
-		return;
-	}
+  if (channelName.value.length <= 3)
+  {
+    console.log('Error: One field too small');
+    return;
+  }
 
-	chatSocket.send(JSON.stringify({
-		'type': 'invite_pong',
-        'target': channelName.value
-    }))
-	channelName.value = "";
+  chatSocket.send(JSON.stringify({
+    'type': 'invite_pong',
+    'target': channelName.value
+  }))
+  channelName.value = "";
 }
 
 function joinChannel()
 {
-    let channelName = document.getElementById('target_user');
+  let channelName = document.getElementById('target_user');
 
-	if (channelName.value.length <= 3)
-	{
-		console.log('Error: channel name too small');
-		return;
-	}
+  if (channelName.value.length <= 3)
+  {
+    console.log('Error: channel name too small');
+    return;
+  }
 
-	chatSocket.send(JSON.stringify({
-		'type': 'channel_join',
-        'target': channelName.value
-    }))
-	channelName.value = "";
+  chatSocket.send(JSON.stringify({
+    'type': 'channel_join',
+    'target': channelName.value
+  }))
+  channelName.value = "";
 }
 
 
 function leaveChannel()
 {
-    let channelName = document.getElementById('target_user');
+  let channelName = document.getElementById('target_user');
 
-	if (channelName.value.length <= 3)
-	{
-		console.log('Error: channel name too small');
-		return;
-	}
+  if (channelName.value.length <= 3)
+  {
+    console.log('Error: channel name too small');
+    return;
+  }
 
-	chatSocket.send(JSON.stringify({
-		'type': 'channel_leave',
-        'target': channelName.value
-    }))
-	channelName.value = "";
+  chatSocket.send(JSON.stringify({
+    'type': 'channel_leave',
+    'target': channelName.value
+  }))
+  channelName.value = "";
 }
 
 function blockUser()
 {
-    let target = document.getElementById('target_user');
+  let target = document.getElementById('target_user');
 
-	if (target.value.length <= 3)
-	{
-		console.log('Error: channel name too small');
-		return;
-	}
+  if (target.value.length <= 3)
+  {
+    console.log('Error: channel name too small');
+    return;
+  }
 
-	chatSocket.send(JSON.stringify({
-		'type': 'block_user',
-        'target': target.value
-    }))
-	target.value = "";
+  chatSocket.send(JSON.stringify({
+    'type': 'block_user',
+    'target': target.value
+  }))
+  target.value = "";
 }
 
 function unblockUser()
 {
-    let target = document.getElementById('target_user');
+  let target = document.getElementById('target_user');
 
-	if (target.value.length <= 3)
-	{
-		console.log('Error: channel name too small');
-		return;
-	}
+  if (target.value.length <= 3)
+  {
+    console.log('Error: channel name too small');
+    return;
+  }
 
-	chatSocket.send(JSON.stringify({
-		'type': 'unblock_user',
-        'target': target.value
-    }))
-	target.value = "";
+  chatSocket.send(JSON.stringify({
+    'type': 'unblock_user',
+    'target': target.value
+  }))
+  target.value = "";
 }
 
 function getLastChat()
 {
-	chatSocket.send(JSON.stringify({
-		'type': 'get_last_chat'
-    }))
+  chatSocket.send(JSON.stringify({
+    'type': 'get_last_chat'
+  }))
 }
 
 
 function getAllUsers()
 {
-	chatSocket.send(JSON.stringify({
-		'type': 'get_all_users'
-    }))
+  chatSocket.send(JSON.stringify({
+    'type': 'get_all_users'
+  }))
 }
 
 
 function getHistoryChat()
 {
-    let target = document.getElementById('target_user');
+  let target = document.getElementById('target_user');
 
-	if (target.value.length <= 3)
-	{
-		console.log('Error: channel name too small');
-		return;
-	}
+  if (target.value.length <= 3)
+  {
+    console.log('Error: channel name too small');
+    return;
+  }
 
-	chatSocket.send(JSON.stringify({
-		'type': 'get_history_chat',
-        'target': target.value
-    }))
-	target.value = "";
+  chatSocket.send(JSON.stringify({
+    'type': 'get_history_chat',
+    'target': target.value
+  }))
+  target.value = "";
 }
 
 function getHistoryChannel()
 {
-    let target = document.getElementById('target_user');
+  let target = document.getElementById('target_user');
 
-	if (target.value.length <= 3)
-	{
-		console.log('Error: channel name too small');
-		return;
-	}
+  if (target.value.length <= 3)
+  {
+    console.log('Error: channel name too small');
+    return;
+  }
 
-	chatSocket.send(JSON.stringify({
-		'type': 'get_history_channel',
-        'target': target.value
-    }))
-	target.value = "";
+  chatSocket.send(JSON.stringify({
+    'type': 'get_history_channel',
+    'target': target.value
+  }))
+  target.value = "";
 }
