@@ -1,8 +1,8 @@
 from ft_transcendence import ColorPrint
 from .models import TournamentsModels
-from .TournamentUser import TournamentUser
-from .EnumClass import GameType, TournamentState, TournamentVisibility, UserPosition, GameState, UserState
-from .TournamentMatchClass import TournamentMatch
+from .T_User import TournamentUser
+from .T_Enum import GameType, TournamentState, TournamentVisibility, UserPosition, GameState, UserState
+from .T_Match import TournamentMatch
 
 import json, math, random
 
@@ -78,7 +78,7 @@ class Tournament():
 						if (self.Winner is self.UndefinedUser):
 							self.Status = TournamentState.Cancelled
 							self.obj.delete()
-							from .TournamentManager import Manager
+							from .T_Manager import Manager
 							Manager.closeTournament(self)
 							pass
 						else :
@@ -257,7 +257,7 @@ class Tournament():
 		if self.Status is TournamentState.Ended:
 			self.CloseTimer -= 1
 			if self.CloseTimer <= 0:
-				from .TournamentManager import Manager
+				from .T_Manager import Manager
 				Manager.closeTournament(self)
 		for Match in self.Tree:
 			for Match2 in Match:

@@ -1,10 +1,10 @@
 from .models import TournamentsModels
 
-from .EnumClass import GameType, UserState, TournamentVisibility
-from .TournamentClass import Tournament
+from .T_Enum import GameType, UserState, TournamentVisibility
+from .T_Tournament import Tournament
 
 from ft_transcendence import ColorPrint
-from .ThreadClass import TimerLoop
+from .T_Thread import TimerLoop
 
 class TournamentsManager():
 

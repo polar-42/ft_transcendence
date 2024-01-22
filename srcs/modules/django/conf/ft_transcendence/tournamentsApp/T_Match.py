@@ -1,8 +1,8 @@
 from ft_transcendence import ColorPrint
 from battleshipApp import BS_Match
 
-from .EnumClass import GameType, GameState, UserPosition, UserState
-from .TournamentUser import TournamentUser
+from .T_Enum import GameType, GameState, UserPosition, UserState
+from .T_User import TournamentUser
 import json
 from pongGameApp.Remote.pongGameManager import Manager
 
@@ -51,7 +51,7 @@ class TournamentMatch():
     def Start(self):
         ColorPrint.prYellow("Debug! Tournament[{TId}].Match[{gameId}] : starting.".format(TId=self.TournamentId, gameId=self.GameId))
         if (self.Type is GameType.Battleship):
-            from srcs.modules.django.conf.ft_transcendence.battleshipApp import BS_MatchmakingManager
+            from battleshipApp import BS_MatchmakingManager
             BS_MatchmakingManager.GameManager.CreateGame(BS_MatchmakingManager.GameManager, self.Users[0].SockUser, self.Users[1].SockUser, self.GameId, BS_Match.GameType.Tournament, self)
             msg = json.dumps({
 			'type': "MSG_LoadGame",

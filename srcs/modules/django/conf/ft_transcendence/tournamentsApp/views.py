@@ -2,9 +2,9 @@ import json
 from django.http import JsonResponse
 from django.shortcuts import render
 from .models import TournamentsModels
-from . import TournamentManager
+from . import T_Manager
 
-from .EnumClass import TournamentState, UserState
+from .T_Enum import TournamentState, UserState
 
 # Create your views here.
 def Home_view(request):
@@ -37,7 +37,7 @@ def create_tournament(request):
 	numberOfPlayers = int(numberOfPlayers)
 	if numberOfPlayers != 4 and numberOfPlayers != 8 and numberOfPlayers != 16 and numberOfPlayers != 32 and numberOfPlayers != 64:
 		return JsonResponse({'message': 'Tournaments number of player must be a least 4, 8 or 16', 'isCreated': False})
-	Joined, TourId = TournamentManager.Manager.CreateTournament(request.user, data)
+	Joined, TourId = T_Manager.Manager.CreateTournament(request.user, data)
 	if (Joined is False):
 		return JsonResponse({'message': 'Failed creating game (creator already in lobby)', 'isCreated': False})
 
@@ -45,7 +45,7 @@ def create_tournament(request):
 	return JsonResponse({'message': 'Tournaments ' + tournamentName + ' is created', 'isCreated': True, 'id' : TourId})
 
 def get_tournaments_html(request):
-	tournamentL = TournamentManager.Manager.GetTournaments()
+	tournamentL = T_Manager.Manager.GetTournaments()
 	dictionnary = []
 	for tour in tournamentL.values():
 			Joinable = 'NotJoinable'
@@ -80,7 +80,7 @@ def GetTournamentData(request):
 	tournamentId = data.get('tourID')
 	print("TOurnament ID = ", tournamentId)
 	print("Type of TOurnament ID = ", type(tournamentId))
-	Tournament = TournamentManager.Manager.GetTournament(tournamentId)
+	Tournament = T_Manager.Manager.GetTournament(tournamentId)
 	if (Tournament is None):
 		return JsonResponse({'error': 'Invalid Tournament ID'})
 	UserMSG = Tournament.GetUsersList()
@@ -88,7 +88,7 @@ def GetTournamentData(request):
 	return JsonResponse({'users' : UserMSG, 'matchs' : 'None' if MatchMSG is None else MatchMSG})
 
 def get_tournaments(request):
-	tournamentL = TournamentManager.Manager.GetTournaments()
+	tournamentL = T_Manager.Manager.GetTournaments()
 	dictionnary = []
 	x = 0
 	for tour in tournamentL:
@@ -133,4 +133,4 @@ def Tournament_view(request):
 		return render(request, 'index.html')
 
 def get_tournaments_manager():
-	return TournamentManager.Manager
+	return T_Manager.Manager

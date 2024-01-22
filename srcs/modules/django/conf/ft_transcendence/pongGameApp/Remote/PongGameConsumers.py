@@ -1,10 +1,11 @@
 import json, asyncio
 from channels.generic.websocket import WebsocketConsumer
 from channels.layers import get_channel_layer
+from tournamentsApp import T_Manager, T_Tournament
 from . import pongThreads
 from ..models import PongGameModels
 from asgiref.sync import async_to_sync
-from tournamentsApp import views, TournamentManager, TournamentClass
+from tournamentsApp import views
 from .pongGameManager import Manager
 
 

@@ -2,8 +2,7 @@ from django.urls import path
 from pongGameApp.IA import PongGameIAConsumers
 from pongGameApp.Remote import PongGameConsumers
 from pongGameApp.Matchmaking import PongMatchmakingConsumers
-from battleshipApp import BS_Consumer_Match,BS_Consumer_Matchmaking
-from tournamentsApp import tournamentConsumer
+from tournamentsApp import T_Consumer
 from chatApp import chatConsumer
 
 websocket_urlpatterns = [
@@ -12,6 +11,6 @@ websocket_urlpatterns = [
     path('pongGame/matchmaking/', PongMatchmakingConsumers.pongMatchmakingSocket.as_asgi()),
 	path('pongGame/gameVsIA', PongGameIAConsumers.PongGameIASocket.as_asgi()),
     path('pongGame/RemoteGame/<str:gameId>', PongGameConsumers.PongGameSocket.as_asgi()),
-    path('socketApp/tournamentsApp/<str:tournamentId>', tournamentConsumer.TournamentSocket.as_asgi()),
+    path('socketApp/tournamentsApp/<str:tournamentId>', T_Consumer.TournamentSocket.as_asgi()),
 	path('chat/', chatConsumer.chatSocket.as_asgi()),
 ]
