@@ -1,143 +1,11 @@
-import asyncio
 from channels.layers import get_channel_layer
-from enum import IntEnum
-import threading, time
 import random
-from . import ColorPrint
+from ft_transcendence import ColorPrint
 import json
 
-class GameState(IntEnum):
-	RequestBoat = -1
-	Initialisation = 0
-	BoatPlacement = 1
-	Playing = 2
-	RequestHit = 4
-	Ending = 3
-
-class ConnexionState(IntEnum):
-	NeverConnected = 0
-	Connected = 1
-	Disconnected = 2
-
-class GameType(IntEnum):
-	Normal = 0
-	Tournament = 1
-
-class GameEndReason(IntEnum):
-	Disconnected = 0
-	GiveUp = 1
-	Win = 2
-
-class Case():
-
-	def __init__(self, x, y):
-		self.PosX = x
-		self.PosY = y
-		pass
-	def __str__(self) -> str:
-		return "posX = " + str(self.PosX) + " PosY = " + str(self.PosY)
-
-class Boat():
-	def __init__(self, name, size, orientation, posX, posY):
-		self.Name = name
-		self.BoatArray = []
-		self. HittedArray = []
-		while size > 0:
-			if (orientation == 'V'):
-				self.BoatArray.append(Case(posX, posY + size - 1))
-			else:
-				self.BoatArray.append(Case(posX + size - 1, posY))
-			size -= 1
-
-	def Hit(self, posX, posY):
-		for case in self.BoatArray:
-			if case.PosX == posX and case.PosY == posY:
-				if self.HittedArray.__contains__(case) == True:
-					return 0
-				else:
-					self.HittedArray.append(case)
-					if (len (self.HittedArray) == len (self.BoatArray)):
-						return 2
-					return 1
-		return 0
-
-class User():
-	def __init__(self, user):
-		self.BoatList = []
-		self.sock_user = user
-		self.Name = self.sock_user.username
-		self.ConnexionStatus = ConnexionState.NeverConnected
-		return
-
-	def SendMessage(self, msg):
-		if (self.ConnexionStatus != ConnexionState.Connected):
-			ColorPrint.prYellow("Warning! Trying to send message to not connected user : {username}.".format(username=self.Name))
-			return
-		if (self.socket == None):
-			ColorPrint.prRed("Error! Trying to send message to user : {username} with None socket.".format(username=self.Name) )
-			return
-		(self.socket.send)(text_data=msg)
-
-	def ParseBoats(self, boatsList):
-		if (len(self.BoatList) != 0):
-			self.BoatList.clear()
-			return
-		else:
-			for boat in boatsList:
-				ori = 'H' if boat['horizontal'] is True else 'V'
-				if (boat['ArrayX'] < 0 or boat['ArrayY'] < 0):
-					return False
-				self.BoatList.append(Boat(boat['name'], boat['size'], ori, boat['ArrayX'], boat['ArrayY']))
-		return True
-
-	def Hit(self, case):
-		result = 0
-		pos = 0
-		for boat in self.BoatList:
-			result = boat.Hit(case['ArrayPosX'], case['ArrayPosY'])
-			if (result > 0):
-				return result if result == 1 else result + pos
-			pos += 1
-		return False
-
-	def CountDestroyedBoats(self):
-		count = 0
-		for boat in self.BoatList:
-			if (len(boat.BoatArray) == len(boat.HittedArray)):
-				count += 1
-		return count
-
-	def checkPlayerBoats(self):
-		count = 0
-		for boat in self.BoatList:
-			if (len(boat.BoatArray) == len(boat.HittedArray)):
-				count += 1
-		return (count == len(self.BoatList))
-
-class GameLoop(threading.Thread):
-	def __init__(self, current) :
-		super().__init__()
-		self.match = current
-		self.stopFlag = threading.Event()
-
-	def run(self):
-		while not self.stopFlag.is_set():
-			if self.match.currentTimer != -1:
-				self.match.currentTimer -= 1
-				ColorPrint.prGreen("Debug! GAME {gID}: Timer : {curTime}.".format(gID=self.match.gameId, curTime=self.match.currentTimer))
-				if self.match.Gamestatus is GameState.Ending:
-					self.match.CloseGame()
-					return
-				time.sleep(1)
-
-			if  self.match.currentTimer == 0:
-				self.match.ForceStep()
-				if self.match.Gamestatus is GameState.Ending:
-					self.match.CloseGame()
-					return
-
-	def stop(self):
-		self.stopFlag.set()
+from .BS_Enum import GameState, ConnexionState, GameEndReason, GameType
+from .BS_User import User
+from .BS_Thread import GameLoop
 
 class BattleshipMatch():
 
@@ -149,7 +17,6 @@ class BattleshipMatch():
 	def __init__(self, gameId, user1, user2, GameManager, GameType, tournamentGame):
 		self.gm = GameManager
 		self.Gamestatus = GameState.Initialisation
-		self.channelName = "BattleshipGame" + gameId
 		self.gameId = gameId
 		self.channel_layer = get_channel_layer()
 		self.Users = [User(user1), User(user2)]
@@ -320,7 +187,6 @@ class BattleshipMatch():
 			ColorPrint.prGreen("Debug! Game {gameid} : User {username} end the game.".format(gameid=self.gameId, username=self.TurnUser.Name))
 			self.GameEnd(self.GetUserId(self.TurnUser), GameEndReason.Win)
 		else:
-		# 	self.StopGame(True, True, "Game Ended! Winner is " + self.TurnUser.Name + ". He destroyed the " + str(Target.CountDestroyedBoats()) + " " + Target.Name + " boats while getting only " + str(self.TurnUser.CountDestroyedBoats()) + " of its own boat destroyed.")
 			self.ChangeTurn()
 
 	def GetUserId(self, user):
@@ -372,10 +238,12 @@ class BattleshipMatch():
 				})
 		self.Users[0].SendMessage(msg)
 		self.Users[1].SendMessage(msg)
-		self.Users[0].socket.close()
-		self.Users[1].socket.close()
-		from . import BattleshipGameManager
-		BattleshipGameManager.GameManager.CloseGame(BattleshipGameManager.GameManager, self.gameId)
+		if (self.Users[0].socket.Connected == True):
+			self.Users[0].socket.close()
+		if (self.Users[0].socket.Connected == True):
+			self.Users[1].socket.close()
+		from . import BS_MatchmakingManager
+		BS_MatchmakingManager.GameManager.CloseGame(BS_MatchmakingManager.GameManager, self.gameId)
 
 	def closeThread(self):
 		if (self.thread == None):

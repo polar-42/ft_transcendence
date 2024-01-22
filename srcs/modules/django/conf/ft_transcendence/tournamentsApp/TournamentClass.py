@@ -1,4 +1,4 @@
-from battleshipApp import ColorPrint
+from ft_transcendence import ColorPrint
 from .models import TournamentsModels
 from .TournamentUser import TournamentUser
 from .EnumClass import GameType, TournamentState, TournamentVisibility, UserPosition, GameState, UserState

@@ -3,7 +3,7 @@ from .models import TournamentsModels
 from .EnumClass import GameType, UserState, TournamentVisibility
 from .TournamentClass import Tournament
 
-from battleshipApp import ColorPrint
+from ft_transcendence import ColorPrint
 from .ThreadClass import TimerLoop
 
 class TournamentsManager():

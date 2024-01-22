@@ -1,7 +1,7 @@
 import json, os
 from channels.generic.websocket import WebsocketConsumer
 
-from battleshipApp import ColorPrint
+from ft_transcendence import ColorPrint
 
 from . import TournamentManager
 
