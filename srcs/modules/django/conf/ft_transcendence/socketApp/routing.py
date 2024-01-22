@@ -1,5 +1,3 @@
-import sys
-sys.path.append(".")
 from django.urls import path
 from pongGameApp.IA import PongGameIAConsumers
 from pongGameApp.Remote import PongGameConsumers
@@ -7,7 +5,6 @@ from pongGameApp.Matchmaking import PongMatchmakingConsumers
 from battleshipApp import MatchmakingConsumers, BattleshipConsumers
 from tournamentsApp import tournamentConsumer
 from chatApp import chatConsumer
-from tournamentsApp import tournamentConsumer
 
 websocket_urlpatterns = [
     path('battleshipApp/Matchmaking/', MatchmakingConsumers.socket.as_asgi()),

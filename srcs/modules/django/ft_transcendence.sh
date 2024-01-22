@@ -93,11 +93,8 @@ cd $SITE_NAME
 echo "python mysite/manage.py runserver";
 python manage.py makemigrations
 python manage.py migrate
-python manage.py createsuperuser
+# python manage.py createsuperuser
 python manage.py create_user
 
 #WAIT FOR CONTRACT DEPLOYEMENT TO BE DONE
-
-python manage.py runserver $(hostname -i):8080;
-#python manage.py collectstatic
-#uwsgi --http $(hostname -i):8080 --module ft_transcendence.wsgi --enable-threads
+gunicorn -c /usr/src/app/gunicornConf.py ft_transcendence.asgi:application

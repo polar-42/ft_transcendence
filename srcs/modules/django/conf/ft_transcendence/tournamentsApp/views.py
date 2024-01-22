@@ -37,12 +37,12 @@ def create_tournament(request):
 	numberOfPlayers = int(numberOfPlayers)
 	if numberOfPlayers != 4 and numberOfPlayers != 8 and numberOfPlayers != 16 and numberOfPlayers != 32 and numberOfPlayers != 64:
 		return JsonResponse({'message': 'Tournaments number of player must be a least 4, 8 or 16', 'isCreated': False})
-	Joined, id = TournamentManager.Manager.CreateTournament(request.user, data)
+	Joined, TourId = TournamentManager.Manager.CreateTournament(request.user, data)
 	if (Joined is False):
 		return JsonResponse({'message': 'Failed creating game (creator already in lobby)', 'isCreated': False})
 
 	print(tournamentName, 'tournament for', typeGame,'is create with', numberOfPlayers, 'players')
-	return JsonResponse({'message': 'Tournaments ' + tournamentName + ' is created', 'isCreated': True, 'id' : id})
+	return JsonResponse({'message': 'Tournaments ' + tournamentName + ' is created', 'isCreated': True, 'id' : TourId})
 
 def get_tournaments_html(request):
 	tournamentL = TournamentManager.Manager.GetTournaments()

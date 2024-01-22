@@ -95,7 +95,7 @@ export function initGames() {
       PongLeaveMatchmaking()
     } else {
       document.querySelector(".battleship").classList.remove("inqueue")
-      BSJoinMatchmaking();
+      BSLeaveMatchmaking();
     }
   }
 }

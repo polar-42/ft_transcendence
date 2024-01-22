@@ -43,7 +43,7 @@ export function initGame()
 		return
 	}
 	gameId = arguments[0]
-	battleshipSocket = new WebSocket("ws://" + window.location.host + '/battleshipApp/Game/' + gameId)
+	battleshipSocket = new WebSocket("wss://" + window.location.host + '/battleshipApp/Game/' + gameId)
 	battleshipSocket.onmessage = e => OnMessage(e)
 }
 
@@ -592,11 +592,10 @@ function SP_mouseClick(event)
 		BoardCases.forEach( element => {
 			if (element.ArrayPosX == ArrayPos.x && element.ArrayPosY == ArrayPos.y)
 			{
-				if (SP_selected == undefined)
-					SP_drawSendBTN()
 				if (SP_selected != element)
 				{
-					SP_selected = element
+					if (element.status == 0)
+						SP_selected = element
 					SP_Draw()
 				}
 			}
@@ -617,9 +616,6 @@ function SP_Load()
 	]
 	SP_drawEnemyBoats()
 	SP_Draw()
-	// battleshipSocket.send(JSON.stringify({
-	// 	'function': 'LoadEnded',
-	// }))
 }
 
 function SP_Timer()

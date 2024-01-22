@@ -3,7 +3,6 @@ from channels.layers import get_channel_layer
 from .. import pongGameClasses
 from asgiref.sync import async_to_sync
 from enum import IntEnum
-from . import pongGameManager
 
 class GameState(IntEnum):
 	RequestBoat = -1
@@ -352,6 +351,7 @@ class pongGame():
             if self.Status is GameState.Ending:
                 return
             self.Status = GameState.Ending
+            from . import pongGameManager
             pongGameManager.Manager.closeGame(self.channelName)
 
     def inputGame(self, input, player):
@@ -386,7 +386,7 @@ class pongGame():
             self.winner = self.users[1]
         else:
             self.winner = self.users[0]
-
+        from . import pongGameManager
         pongGameManager.Manager.closeGame(self.channelName)
 
         if self.tournament is not None:
