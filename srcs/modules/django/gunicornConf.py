@@ -5,6 +5,8 @@ workers = 1
 
 proxy_allow_ips = '0.0.0.0'
 
+reload = True
+
 #region Log Handler
 
 accesslog = "-"

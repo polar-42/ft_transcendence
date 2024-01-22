@@ -1,10 +1,10 @@
 import json
 from channels.generic.websocket import WebsocketConsumer
-from . import BattleshipMatchmaking
+from . import BS_Matchmaking
 from asgiref.sync import async_to_sync
 
 
-Matchmake = BattleshipMatchmaking.Matchmaking()
+Matchmake = BS_Matchmaking.Matchmaking()
 
 class socket(WebsocketConsumer):
 

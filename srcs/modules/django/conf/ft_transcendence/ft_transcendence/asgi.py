@@ -15,13 +15,17 @@ from django.core.asgi import get_asgi_application
 from channels.routing import ProtocolTypeRouter, URLRouter, get_default_application
 from channels.auth import AuthMiddlewareStack
 from django.core.asgi import get_asgi_application
-from socketApp import routing
+from socketApp import routing as socketAppRouter
+from battleshipApp import BS_Router
 
 application = ProtocolTypeRouter({
    'http': get_asgi_application(),
    'websocket': AuthMiddlewareStack(
        URLRouter(
-           routing.websocket_urlpatterns
+           socketAppRouter.websocket_urlpatterns +
+           BS_Router.websocket_urlpatterns
+           
+
        )
    ),
 })

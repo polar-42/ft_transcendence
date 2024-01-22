@@ -8,7 +8,7 @@ from .classChannel import ChannelChat
 from .models import MessageModels, ChannelModels
 from django.db.models import Q
 from pongGameApp.Remote.pongGameManager import Manager as pongManager
-from battleshipApp.BattleshipGameManager import GameManager as battleshipManager
+from battleshipApp.BS_MatchmakingManager import GameManager as battleshipManager
 
 
 def createGeneralChat(allChannels):

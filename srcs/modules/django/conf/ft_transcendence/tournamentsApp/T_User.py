@@ -1,5 +1,5 @@
-from .EnumClass import UserState, UserPosition
-from battleshipApp import ColorPrint
+from .T_Enum import UserState, UserPosition
+from ft_transcendence import ColorPrint
 
 class TournamentUser():
 
