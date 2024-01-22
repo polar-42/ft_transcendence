@@ -7,9 +7,10 @@ else
 	echo initialisation already done;
 fi
 
-export IP_DJANGO=$(ping container_django | head -n 1 | awk '{print $3}'# | cut -c2- | rev | cut -c3- | rev)
+export IP_DJANGO=$(ping container_django | head -n 2 | awk '{print $3}'# | cut -c2- | rev | cut -c3- | rev)
 
-echo "host $DB_NAME all $IP_DJANGO/32 trust" >> /var/db/pg_hba.conf
+# echo "host $DB_NAME all $IP_DJANGO/32 trust" >> /var/db/pg_hba.conf
+echo "host $DB_NAME all 0.0.0.0/0 trust" >> /var/db/pg_hba.conf
 
 pg_ctl -D /var/db start >> /var/log/postgres.log 2>> /var/log/error.log;
 

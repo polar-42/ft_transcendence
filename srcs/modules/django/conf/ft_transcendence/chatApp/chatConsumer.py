@@ -101,9 +101,10 @@ class chatSocket(WebsocketConsumer):
 			self.getLastChat()
 		elif data['type'] == 'get_all_users':
 			self.getAllUsers()
+		elif data['type'] == 'get_user':
+			self.getUser(data['target'])
 		elif data['type'] == 'get_history_chat':
 			self.getHistoryChat(data['target'])
-		elif data['type'] == 'get_history_channel':
 			self.getHistoryChannel(data['target'])
 		elif data['type'] == 'invite_pong':
 			self.invitePong(data['target'])
@@ -157,7 +158,7 @@ class chatSocket(WebsocketConsumer):
 
 		receiverModel = userModels.User.objects.get(identification=receiver)
 
-		if self.isBlock(receiverModel):
+		if self.isBlock(receiverModel): 
 			print(self.user.username, 'try to send a message to', receiver, 'but he block him')
 			return
 
@@ -171,7 +172,8 @@ class chatSocket(WebsocketConsumer):
 			receiver=receiverModel.identification
 		)
 		msg.save()
-
+		
+		print(receiver)
 		async_to_sync(self.channel_layer.group_send)(
             'chat_' + receiver,
             {
@@ -314,6 +316,18 @@ class chatSocket(WebsocketConsumer):
 				'online_status': user['connexionStatus']
 			}))
 
+	def getUser(self, target):
+		user = userModels.User.objects.get(identification=target)
+		print(user)
+		self.send(text_data=json.dumps({
+			'type': 'get_user_data',
+			'name': user.username,
+			'identification': user.identification,
+			'connexion_status': user.connexionStatus,
+			'conversation': user.allPrivateTalks
+			})
+		)
+
 	def getAllChannels(self):
 		tab = self.UserModel.channels
 		if tab is None:
@@ -340,26 +354,30 @@ class chatSocket(WebsocketConsumer):
 		idChatTarget = userModels.User.objects.get(identification=chatTarget).identification
 
 		messages = MessageModels.objects.filter(
-			(Q(sender=str(self.userIdentification)) & Q(receiver=idChatTarget)) |
- 			(Q(receiver=str(self.userIdentification)) & Q(sender=idChatTarget))).order_by('-id')[:10]
+			(Q(sender=str(self.userIdentification)) & Q(receiver=chatTarget)) |
+ 			(Q(receiver=str(self.userIdentification)) & Q(sender=chatTarget))).order_by('-id')[:10]
+
+		response = []
 
 		for msg in messages.values():
+			print(msg['sender'])
 			if msg['sender'] == self.userIdentification:
-				sender = self.userIdentification
+				received = False
 			else:
-				sender = chatTarget
-			if msg['receiver'] == self.userIdentification:
-				receiver = self.userIdentification
-			else:
-				receiver = chatTarget
+				received = True
 
-			self.send(text_data=json.dumps({
-				'type': 'chat_history',
+			response.append({
 				'time': str(msg['timeCreation']),
-				'sender': sender,
-				'receiver': receiver,
+				'received': received,
 				'message': msg['message']
-			}))
+			})
+
+		print('response: ',response)
+		self.send(json.dumps({
+			'type': 'chat_history',
+			'data': response
+			})
+		)
 
 	def getHistoryChannel(self, channelTarget):
 		if ChannelModels.objects.filter(channelName=channelTarget).exists() is False:
@@ -469,18 +487,37 @@ class chatSocket(WebsocketConsumer):
     	}))
 
 	def searchConv(self, input):
-		allUsers = userModels.User.objects.exclude(Q(username='IA') | Q(username='admin')) 
+		allUsers = userModels.User.objects.exclude(Q(username='IA') | Q(username='admin') | Q(username = self.UserModel.username)) 
 		allChannels = self.UserModel.channels 
 		response = []
 
 		print(input)
 		for chan in allChannels:
-			if chan.find(input) >= 0: 
-				response.append({'name': chan})
+			if chan.find(input) >= 0:
+				msgs = MessageModels.objects.filter(receiver=chan) 
+				if msgs.count() > 0:
+					response.append({'name': chan, 'last_msg': msgs[0] })
+				else:
+					response.append({'name': chan, 'last_msg': "" })
+
 
 		for user in allUsers:
 			if user.username.find(input) >= 0:
-				response.append({'name': user.username})
+				msgs = MessageModels.objects.filter(receiver=chan)
+				connexionStatus = user.connexionStatus
+				if msgs.count() > 0:
+					response.append({
+						'name': user.username,
+						'identification': user.identification,
+						'connexion_status': connexionStatus, 
+						'last_msg': msgs[0]})
+				else:
+					response.append({
+						'name': user.username,
+						'identification': user.identification,
+					  	'connexion_status': connexionStatus,
+						'last_msg': '' })
+
 
 		print(response)
 		self.send(text_data = json.dumps({

@@ -28,7 +28,6 @@ export function closeChatbox() {
 }
 
 function initChatHomepage() {
-  console.log(chatSocket)
   initHomepageHeader()
   initHomepageBody()
 }
@@ -52,7 +51,6 @@ function initHomepageHeader() {
 }
 
 function searchConv() {
-  console.log(chatSocket)
   let search = document.querySelector(".main_box_header input").value
   chatSocket.send(JSON.stringify({
     'type': 'search_conv',
@@ -105,7 +103,7 @@ export function unsetChatbox() {
 function startChatConnexion()
 {
   chatSocket = new WebSocket("ws://" + window.location.host + '/chat/');
-  //document.getElementById('chat_submit').addEventListener("click", sendMessage);
+    //document.getElementById('chat_submit').addEventListener("click", sendMessage);
   //document.getElementById('channel_submit').addEventListener("click", channelMessage);
   //document.getElementById('invite_pong').addEventListener("click", invitePong);
   //document.getElementById('channel_join').addEventListener("click", joinChannel);
@@ -134,7 +132,15 @@ function onMessageChat(e)
   switch (data['type']) {
     case 'search_conv':
       displaySearchResult(data.data) 
-      break;
+      break
+    case 'get_user_data':
+      displayPrivMsg(data)
+      break
+    case 'chat_history':
+      displayChatHistory(data)
+      break
+    case 'chat_private_message':
+      receiveMsg(data)
   }
   // if (data.type == 'invitation_pong')
   // {
@@ -144,9 +150,12 @@ function onMessageChat(e)
 
 function displaySearchResult(data) {
   let resultWrapper = document.querySelector(".conversation_list")
-  // console.log(data)
+
+  while (resultWrapper.children.length > 0) {
+    resultWrapper.removeChild(resultWrapper.children[0])
+  }
+
   for (let i = 0; i < data.length; i++) {
-    console.log(data[i])
     let item = document.createElement("li")
     item.appendChild(document.createElement("img"))
     item.children[0].src = "../static/assets/logo/user.png"
@@ -155,8 +164,68 @@ function displaySearchResult(data) {
     item.children[1].classList.add('conversation_name')
     item.children[1].appendChild(document.createElement("p"))
     item.children[1].children[0].textContent = data[i].name
+    item.children[1].appendChild(document.createElement("div"))
+    if (data[i].connexion_status === 2) {
+      item.children[1].children[1].classList.add("connection_point", "connected")
+    } else if (data[i].connexion_status === 0) {
+      item.children[1].children[1].classList.add("connection_point", "disconnected")
+    }
+    item.appendChild(document.createElement("p"))
+    item.children[2].classList.add("last_msg")
+    item.children[2].textContent = data[i].last_msg
+    item.addEventListener("click", () => {
+      goToConv(data[i].identification)
+    })
     resultWrapper.appendChild(item)
   }
+}
+
+function displayChatHistory(data) {
+  let conversation = document.querySelector(".conversation")
+    console.log(data['data'])
+  for (let i = 0; i < data['data'].length; i++) {
+    console.log(data['data'][i])
+    let item = conversation.appendChild(document.createElement("li"))
+    if (data['data'][i].received === true) {
+      item.classList.add("message_item")
+    } else {
+      item.classList.add("message_item", "own")
+    }
+    item.appendChild(document.createElement("p"))
+    item.children[0].classList.add("message")
+    item.children[0].textContent = data['data'][i].message
+    item.appendChild(document.createElement("p"))
+    item.children[1].classList.add("timestamp")
+    item.children[1].textContent = data['data'][i].time.substring(0, 19);
+  }
+  conversation.scrollTo(0, conversation.scrollHeight)
+}
+
+function goToConv(data) {
+  let mainBoxBody = document.querySelector(".main_box_body")
+  let mainBoxHeader = document.querySelector(".main_box_header")
+  cleanMainBox()
+  mainBoxBody.classList.add("private_message")
+  mainBoxHeader.classList.add("private_message")
+  chatSocket.send(JSON.stringify({
+    'type': 'get_user',
+    'target': data
+  })
+  )
+}
+
+function cleanMainBox() {
+  let mainBoxBody = document.querySelector(".main_box_body")
+  let mainBoxHeader = document.querySelector(".main_box_header")
+
+  while (mainBoxBody.children.length > 0) {
+    mainBoxBody.removeChild(mainBoxBody.children[0])
+  }
+  while (mainBoxHeader.children.length > 0) {
+    mainBoxHeader.removeChild(mainBoxHeader.children[0])
+  }
+  mainBoxBody.classList.remove("homepage")
+  mainBoxHeader.classList.remove("homepage")
 }
 
 function invitationPong(data)
@@ -175,26 +244,35 @@ function invitationPong(data)
   }
 }
 
-function sendMessage()
+function sendMessage(message, targetUser)
 {
-  let message = document.getElementById('message_chat');
-  let targetUser = document.getElementById('target_user');
+  console.log('message is', message, 'and tagetUser is', targetUser);
 
-  if (message.value.length <= 0 || targetUser.value.length <= 3)
-  {
-    console.log('Error: One field too small');
-    return;
-  }
-
-  console.log('message is', message.value, 'and tagetUser is', targetUser.value);
-
+  let conversation = document.querySelector(".conversation")
+  let date = new Date()
+  let datevalues = [
+    date.getFullYear(),
+    date.getMonth() + 1,
+    date.getDate(),
+    date.getHours(),
+    date.getMinutes(),
+    date.getSeconds()
+  ]
+  let timestamp = `${datevalues[0]}-${datevalues[1]}-${datevalues[2]} ${datevalues[3]}:${datevalues[4]}:${datevalues[5]}`
+  conversation.appendChild(document.createElement("li"))
+  conversation.lastChild.classList.add("message_item", "own")
+  conversation.lastChild.appendChild(document.createElement("p"))
+  conversation.lastChild.lastChild.classList.add("message")
+  conversation.lastChild.lastChild.textContent = message
+  conversation.lastChild.appendChild(document.createElement("p"))
+  conversation.lastChild.lastChild.classList.add("timestamp")
+  conversation.lastChild.lastChild.textContent = timestamp 
+  conversation.scrollTo(0, conversation.scrollHeight)
   chatSocket.send(JSON.stringify({
     'type': 'chat_message',
-    'message': message.value,
-    'target': targetUser.value
+    'message': message,
+    'target': targetUser
   }))
-  message.value = "";
-  targetUser.value = "";
 }
 
 function channelMessage()
@@ -319,21 +397,12 @@ function getAllUsers()
 }
 
 
-function getHistoryChat()
+function getHistoryChat(target)
 {
-  let target = document.getElementById('target_user');
-
-  if (target.value.length <= 3)
-  {
-    console.log('Error: channel name too small');
-    return;
-  }
-
   chatSocket.send(JSON.stringify({
     'type': 'get_history_chat',
-    'target': target.value
+    'target': target
   }))
-  target.value = "";
 }
 
 function getHistoryChannel()
@@ -351,4 +420,83 @@ function getHistoryChannel()
     'target': target.value
   }))
   target.value = "";
+}
+
+function displayPrivMsg(data) {
+  let mainBoxHeader = document.querySelector(".main_box_header")
+  let mainBoxBody = document.querySelector(".main_box_body")
+
+  initPrvMsgHeader(data)
+  initPrvMsgBody(data.identification)
+
+  function  initPrvMsgHeader(data) {
+    let contactWrapper = mainBoxHeader.appendChild(document.createElement("div"))
+
+    contactWrapper.classList.add("contact_wrapper")
+    contactWrapper.setAttribute('userID', data.identification)
+    contactWrapper.appendChild(document.createElement("img"))
+    contactWrapper.children[0].src = "../static/assets/logo/user.png"
+    let contactNameWrapper = contactWrapper.appendChild(document.createElement("div"))
+    contactNameWrapper.classList.add("contact_name_wrapper")
+    contactNameWrapper.appendChild(document.createElement("p"))
+    contactNameWrapper.children[0].textContent = data.name
+    contactNameWrapper.appendChild(document.createElement("div"))
+    if (data.connexion_status === 0) {
+      contactNameWrapper.children[1].classList.add("connection_point", "disconnected")
+    }
+    else if (data.connexion_status === 2) {
+      contactNameWrapper.children[1].classList.add("connection_point", "connected")
+    }
+    mainBoxHeader.appendChild(document.createElement("img"))
+    mainBoxHeader.children[1].src = "../static/assets/logo/arrow-back-regular-60.png"
+    mainBoxHeader.children[1].alt = "return arrow button"
+    mainBoxHeader.children[1].addEventListener("click", () => {
+      mainBoxHeader.classList.remove("private_message")
+      mainBoxBody.classList.remove("private_message")
+      cleanMainBox()
+      initChatHomepage()
+    })
+  }
+
+  function initPrvMsgBody(id) {
+    let conversationWrapper = mainBoxBody.appendChild(document.createElement("div"))
+    let sendbox = mainBoxBody.appendChild(document.createElement("div"))
+    conversationWrapper.classList.add("conversation_wrapper")
+    sendbox.classList.add("sendbox")
+    conversationWrapper.appendChild(document.createElement("ul"))
+    conversationWrapper.children[0].classList.add("conversation")
+    sendbox.appendChild(document.createElement("input"))
+    sendbox.children[0].type = "text"
+    sendbox.children[0].placeholder = "Enter your message"
+    sendbox.appendChild(document.createElement("img"))
+    sendbox.children[1].src = "../static/assets/logo/send-solid-60.png"
+    sendbox.children[1].alt = "send arrow"
+    sendbox.children[0].addEventListener("keypress", (event) => {
+      if (event.key === "Enter") {
+        console.log(sendbox.children[0].value, id)
+        sendMessage(sendbox.children[0].value, id)
+        sendbox.children[0].value = ""
+      }
+    })
+    sendbox.children[1].addEventListener("click", () => {
+      sendMessage(sendbox.children[0].textContent, id)
+      sendbox.children[0].value = ""
+    })
+    getHistoryChat(id)
+  }
+}
+
+function receiveMsg(data) {
+  if (document.querySelector(".contact_wrapper").getAttribute('userID') === data.sender) {
+    let conversation = document.querySelector(".conversation")
+    conversation.appendChild(document.createElement("li"))
+    conversation.lastChild.classList.add("message_item")
+    conversation.lastChild.appendChild(document.createElement("p"))
+    conversation.lastChild.lastChild.classList.add("message")
+    conversation.lastChild.lastChild.textContent = data.message
+    conversation.lastChild.appendChild(document.createElement("p"))
+    conversation.lastChild.lastChild.classList.add("timestamp")
+    conversation.lastChild.lastChild.textContent = data.time
+    conversation.scrollTo(0, conversation.scrollHeight)
+  }
 }
