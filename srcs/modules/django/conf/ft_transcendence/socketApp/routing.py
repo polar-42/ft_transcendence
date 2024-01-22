@@ -7,8 +7,8 @@ from tournamentsApp import tournamentConsumer
 from chatApp import chatConsumer
 
 websocket_urlpatterns = [
-    path('battleshipApp/Matchmaking/', BS_Consumer_Matchmaking.socket.as_asgi()),
-    path('battleshipApp/Game/<str:gameId>', BS_Consumer_Match.socket.as_asgi()),
+    # path('battleshipApp/Matchmaking/', BS_Consumer_Matchmaking.socket.as_asgi()),
+    # path('battleshipApp/Game/<str:gameId>', BS_Consumer_Match.socket.as_asgi()),
     path('pongGame/matchmaking/', PongMatchmakingConsumers.pongMatchmakingSocket.as_asgi()),
 	path('pongGame/gameVsIA', PongGameIAConsumers.PongGameIASocket.as_asgi()),
     path('pongGame/RemoteGame/<str:gameId>', PongGameConsumers.PongGameSocket.as_asgi()),

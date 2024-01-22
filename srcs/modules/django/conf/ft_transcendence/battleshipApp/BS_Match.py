@@ -239,8 +239,9 @@ class BattleshipMatch():
 		self.Users[0].SendMessage(msg)
 		self.Users[1].SendMessage(msg)
 		if (self.Users[0].socket.Connected == True):
+			ColorPrint.prGreen("User0 Disconnect")
 			self.Users[0].socket.close()
-		if (self.Users[0].socket.Connected == True):
+		if (self.Users[1].socket.Connected == True):
 			self.Users[1].socket.close()
 		from . import BS_MatchmakingManager
 		BS_MatchmakingManager.GameManager.CloseGame(BS_MatchmakingManager.GameManager, self.gameId)

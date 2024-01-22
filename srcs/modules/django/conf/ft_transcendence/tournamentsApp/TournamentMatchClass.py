@@ -1,5 +1,5 @@
 from ft_transcendence import ColorPrint
-from srcs.modules.django.conf.ft_transcendence.battleshipApp import BS_Match
+from battleshipApp import BS_Match
 
 from .EnumClass import GameType, GameState, UserPosition, UserState
 from .TournamentUser import TournamentUser

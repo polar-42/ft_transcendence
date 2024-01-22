@@ -18,6 +18,7 @@ class socket(WebsocketConsumer):
 		self.Game = BS_MatchmakingManager.GameManager.JoinGame(BS_MatchmakingManager.GameManager, self.GameId, self.scope['user'], self)
 
 	def disconnect(self, close_code):
+		
 		from . import BS_MatchmakingManager
 		BS_MatchmakingManager.GameManager.LeaveGame(BS_MatchmakingManager.GameManager, self.GameId, self.user)
 		# self.channel_layer.group_discard(
