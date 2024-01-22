@@ -91,5 +91,4 @@ python manage.py create_user
 # python manage.py runserver $(hostname -i):8080;
 #python manage.py collectstatic
 #uwsgi --http $(hostname -i):8080 --module ft_transcendence.wsgi --enable-threads
-
-gunicorn -w 4 -b 0.0.0.0:8000 ft_transcendence.asgi:application --access-logfile '-' --error-logfile '-' --worker-class uvicorn.workers.UvicornWorker --reload --log-level debug
+gunicorn -c /usr/src/app/gunicornConf.py ft_transcendence.asgi:application

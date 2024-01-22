@@ -11,18 +11,20 @@ RUN apk add py-pip
 # RUN apk add linux-headers
 
 RUN mkdir -p /var/site_files
+RUN mkdir -p /var/log/gunicorn/
 
 WORKDIR /usr/src/app
 
 COPY conf/ ./conf
 COPY ft_transcendence.sh .
+COPY gunicornConf.py .
 
 RUN pip install --upgrade pip
 # Pillow daphne
-RUN pip install --no-cache-dir "uvicorn[standard]" gunicorn psycopg2-binary Django==4.2.6 requests channels==4.0.0 web3
+RUN pip install "uvicorn[standard]" gunicorn psycopg2-binary Django==4.2.6 requests channels==4.0.0 web3
 
 ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+ENV PYTHONUNBUFFERED=TRUE
 ENV DJANGO_SETTINGS_MODULE=ft_transcendence.settings
 
 CMD [ "sh", "ft_transcendence.sh" ]
