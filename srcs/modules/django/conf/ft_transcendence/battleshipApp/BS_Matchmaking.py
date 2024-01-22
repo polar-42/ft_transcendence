@@ -2,8 +2,8 @@ import threading, time
 import random
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-import asyncio
 
+from ft_transcendence import ColorPrint
 from . import BS_Match
 
 class MatchmakingLoop(threading.Thread):
@@ -33,6 +33,8 @@ class Matchmaking():
         self.channel_layer = get_channel_layer()
 
     def AddUser(self, user):
+        if user.is_authenticated == False:
+            return False
         if self.userList.__contains__(user) == False:
             self.userList.append(user)
             return True

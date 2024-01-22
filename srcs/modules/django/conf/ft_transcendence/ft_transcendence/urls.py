@@ -32,3 +32,4 @@ urlpatterns = [
     path('', views.index_view),
 	re_path(r'^.*/?$', views.index_view),
 ]
+

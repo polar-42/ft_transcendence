@@ -9,22 +9,14 @@ class socket(WebsocketConsumer):
 		self.Connected = True
 		self.GameId = self.scope['url_route']['kwargs']['gameId']
 		self.isTournament = self.GameId.startswith("Tournament")
-		# async_to_sync(self.channel_layer.group_add)(
-			# "BattleshipGame" + self.GameId,
-			# self.channel_name
-		# )
 		self.user = self.scope['user']
 		from . import BS_MatchmakingManager
 		self.Game = BS_MatchmakingManager.GameManager.JoinGame(BS_MatchmakingManager.GameManager, self.GameId, self.scope['user'], self)
 
 	def disconnect(self, close_code):
-		
+
 		from . import BS_MatchmakingManager
 		BS_MatchmakingManager.GameManager.LeaveGame(BS_MatchmakingManager.GameManager, self.GameId, self.user)
-		# self.channel_layer.group_discard(
-			# "BattleshipGame" + self.GameId,
-			# self.channel_name
-		# )
 		print(f"Utilisateur déconnecté: {self.scope['user']}")
 		self.Connected = False
 
