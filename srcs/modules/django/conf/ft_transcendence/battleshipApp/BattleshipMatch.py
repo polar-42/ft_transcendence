@@ -89,7 +89,7 @@ class User():
 					return False
 				self.BoatList.append(Boat(boat['name'], boat['size'], ori, boat['ArrayX'], boat['ArrayY']))
 		return True
-	
+
 	def Hit(self, case):
 		result = 0
 		pos = 0
@@ -99,14 +99,14 @@ class User():
 				return result if result == 1 else result + pos
 			pos += 1
 		return False
-	
+
 	def CountDestroyedBoats(self):
 		count = 0
 		for boat in self.BoatList:
 			if (len(boat.BoatArray) == len(boat.HittedArray)):
 				count += 1
 		return count
-	
+
 	def checkPlayerBoats(self):
 		count = 0
 		for boat in self.BoatList:
@@ -129,7 +129,7 @@ class GameLoop(threading.Thread):
 					self.match.CloseGame()
 					return
 				time.sleep(1)
-			
+
 			if  self.match.currentTimer == 0:
 				self.match.ForceStep()
 				if self.match.Gamestatus is GameState.Ending:
@@ -149,7 +149,7 @@ class BattleshipMatch():
 	def __init__(self, gameId, user1, user2, GameManager, GameType, tournamentGame):
 		self.gm = GameManager
 		self.Gamestatus = GameState.Initialisation
-		self.channelName = "BattleshipGame" + gameId 
+		self.channelName = "BattleshipGame" + gameId
 		self.gameId = gameId
 		self.channel_layer = get_channel_layer()
 		self.Users = [User(user1), User(user2)]
@@ -251,7 +251,7 @@ class BattleshipMatch():
 			'playerName' : self.TurnUser.Name,
 			'timer': 30
 			})
-		self.Users[oldUsr].SendMessage(msg)    
+		self.Users[oldUsr].SendMessage(msg)
 
 	def ForceStep(self):
 		match (self.Gamestatus):
@@ -275,7 +275,7 @@ class BattleshipMatch():
 				else:
 					usr = 0 if len(self.Users[0].BoatList) == 0 else 1
 				self.GameEnd(usr, GameEndReason.GiveUp)
-			
+
 			case GameState.Playing:
 				msg = json.dumps({
 					'function': "RetrieveHit",
@@ -289,7 +289,7 @@ class BattleshipMatch():
 			case GameState.RequestHit:
 				other = 0 if self.TurnUser is self.Users[1] else 1
 				self.GameEnd(0 if other == 1 else 1, GameEndReason.GiveUp)
-	
+
 	def RCV_HitCase(self, user, case):
 		if (self.Gamestatus is not GameState.Playing and self.Gamestatus is not GameState.RequestHit):
 			return
@@ -332,7 +332,7 @@ class BattleshipMatch():
 		if (self.Users[1].CountDestroyedBoats() == len (self.Users[1].BoatList)):
 			return self.Users[1]
 		return None
-	
+
 	def GameEnd(self, usrID, Reason):
 		if (usrID == 2):
 			user = None

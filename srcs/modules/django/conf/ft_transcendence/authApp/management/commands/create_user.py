@@ -6,7 +6,7 @@ def getRandString(username):
 	s = string.ascii_letters + string.digits
 	str = ''.join(random.choice(s) for i in range(5))
 
-	return username + '_' + str
+	return username + '-' + str
 
 class Command(BaseCommand):
     help = 'Create a new user'

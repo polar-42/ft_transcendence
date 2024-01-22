@@ -169,6 +169,7 @@ for (let i = 0; i < 2; i++)
 {
   profileButton[i].addEventListener("click", async () => {
     let isOpen = profileDropDown[i].classList.contains('open');
+    console.log(isOpen)
     let logStatus = await checkConnexion();
     if (logStatus == true)
     {
