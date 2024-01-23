@@ -11,91 +11,92 @@ from django.http import HttpResponse
 from django.db import models
 from authApp.models import User
 
+from ft_transcendence import ColorPrint
+
 regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
 
 def logPage(request):
-	if (request.method == "GET" and request.GET["valid"] == "True") or (request.method == "POST"):
-		if request.method == "POST":
-			data = json.loads(request.body)
-			email = data.get('email')
-			password = data.get('password')
-
-			if len(email) == 0 or len(password) == 0 :
-				return JsonResponse({'error': 'One of the field is empty'})
-
-			if User.objects.filter(email=email).exists() is False:
-				return JsonResponse({'error': 'Email or Password is invalid'})
-			userModel = User.objects.get(email=email)
-			if check_password(password, userModel.password):
-				isPasswordValid = True
-			else:
-				isPasswordValid = False
-
-			if isPasswordValid:
-				login(request, userModel)
-				return JsonResponse({'message': 'Connexion successfull'})
-			else:
-				return JsonResponse({'error': 'Email or Password is invalid'})
-		else:
-			return render(request, 'authApp/login.html')
-	else:
+	if (request.user.is_authenticated == True):
 		return render(request, 'index.html')
-
-def register(request):
-	if (request.method == "GET" and request.GET["valid"] == "True") or (request.method == "POST"):
-		if request.method == "POST":
-
-			username = request.POST.get('username')
-			email = request.POST.get('email')
-			password = request.POST.get('password')
-			passwordConfirmation = request.POST.get('passwordConfirmation')
-
-			if request.FILES.get('avatar') != None:
-				avatarImage = request.FILES.get('avatar')
-			else:
-				avatarImage = None
-
-			if len(username) == 0 or len(email) == 0 or len(password) == 0 or len(passwordConfirmation) == 0:
-				return JsonResponse({'error': 'One of the field is empty'})
-
-			if password != passwordConfirmation:
-				return JsonResponse({'error': 'Password do not match'})
-
-			if len(username) < 3:
-				return JsonResponse({'error': 'Username length is too small'})
-			elif len(username) > 16:
-				return JsonResponse({'error': 'Username length is too big'})
-
-			if len(password) < 6:
-				return JsonResponse({'error': 'Password length is too small'})
-
-			if re.fullmatch(regex, email) is None:
-				return JsonResponse({'error': 'Email is invalid'})
-
-			if User.objects.filter(email=email).exists():
-				return JsonResponse({'error': 'Email is already taken'})
-
-			passwordHash = make_password(password)
-			new_obj = User.objects.create(
-				customUsername=username,
-				email=email,
-				password=passwordHash,
-				username=getRandString()
-			)
-
-			if avatarImage != None:
-				new_obj.avatarImage = avatarImage.read()
-
-			new_obj.save()
-
-			return JsonResponse({'message': 'You registered successfully'})
-		else:
-			return render(request, 'authApp/register.html')
 	else:
-		return render(request, 'index.html',)
+		return render(request, 'authApp/login.html')
+
+def UserConnexion(request):
+	if (request.method != "POST"):
+		ColorPrint.prRed("Error! Invalid request type")
+		return JsonResponse({'error': 'Invalid request type.'})
+	if (request.user.is_authenticated == True):
+		ColorPrint.prYellow("Warning! User Already Connected")
+		return JsonResponse({'error': 'Already connected.'})
+	data = json.loads(request.body)
+	email = data.get('email')
+	password = data.get('password')
+
+	if len(email) == 0 or len(password) == 0 :
+		return JsonResponse({'error': 'One of the field is empty'})
+
+	if User.objects.filter(email=email).exists() is False:
+		return JsonResponse({'error': 'Email or Password is invalid'})
+	userModel = User.objects.get(email=email)
+	if check_password(password, userModel.password):
+		isPasswordValid = True
+	else:
+		isPasswordValid = False
+	if isPasswordValid:
+		login(request, userModel)
+		return JsonResponse({'message': 'Connexion successfull'})
+	else:
+		return JsonResponse({'error': 'Email or Password is invalid'})
+
+def registerPage(request):
+	if (request.user.is_authenticated == True):
+		return render(request, 'index.html')
+	else:
+		return render(request, 'authApp/register.html')
+
+def UserRegistration(request):
+	if (request.method != "POST"):
+		ColorPrint.prRed("Error! Invalid request type")
+		return JsonResponse({'error': 'Invalid request type.'})
+	if (request.user.is_authenticated == True):
+		ColorPrint.prYellow("Warning! User Already Connected")
+		return JsonResponse({'error': 'Already connected.'})
+	username = request.POST.get('username')
+	email = request.POST.get('email')
+	password = request.POST.get('password')
+	passwordConfirmation = request.POST.get('passwordConfirmation')
+	if request.FILES.get('avatar') != None:
+		avatarImage = request.FILES.get('avatar')
+	else:
+		avatarImage = None
+	if len(username) == 0 or len(email) == 0 or len(password) == 0 or len(passwordConfirmation) == 0:
+		return JsonResponse({'error': 'One of the field is empty'})
+	if password != passwordConfirmation:
+			return JsonResponse({'error': 'Password do not match'})
+	if len(username) < 3:
+		return JsonResponse({'error': 'Username length is too small'})
+	elif len(username) > 16:
+		return JsonResponse({'error': 'Username length is too big'})
+	if len(password) < 6:
+		return JsonResponse({'error': 'Password length is too small'})
+	if re.fullmatch(regex, email) is None:
+		return JsonResponse({'error': 'Email is invalid'})
+	if User.objects.filter(email=email).exists():
+		return JsonResponse({'error': 'Email is already taken'})
+	passwordHash = make_password(password)
+	new_obj = User.objects.create(
+		customUsername=username,
+		email=email,
+		password=passwordHash,
+		username=getRandString()
+	)
+	if avatarImage != None:
+		new_obj.avatarImage = avatarImage.read()
+	new_obj.save()
+	return JsonResponse({'message': 'You registered successfully'})
 
 def socket(request):
-	if (request.method == "GET" and request.GET["valid"] == "True"):
+	if (request.method == "GET"):
 		return render(request, 'authApp/testSocket.html')
 	else:
 		return render(request, 'index.html',)

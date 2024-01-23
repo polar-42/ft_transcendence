@@ -21,7 +21,7 @@ def userManagementView(request):
 def updateAccount(request):
     if request.user.is_authenticated is False:
         return render(request, '/')
-    if (request.method == "GET" and request.GET["valid"] == "True") or (request.method == "POST"):
+    if (request.method == "GET") or (request.method == "POST"):
         if request.method == "POST":
             userModel = User.objects.get(id=request.user.id)
             

@@ -4,7 +4,7 @@ import { navto } from '../index.js'
 export async function initTournamentsJoinPage()
 {
 	//Print tournaments
-	await fetch(document.location.origin + "/tournaments/get_tournaments_html/",
+	await fetch(document.location.origin + "/tournaments/get_tournaments_html",
 	{
 		method: 'GET',
 	})
@@ -61,7 +61,7 @@ function joinTournaments(tournamentsId)
 		'tournamentsId': tournamentsId,
 	}
 
-	fetch(document.location.origin + "/tournaments/join_tournaments/",
+	fetch(document.location.origin + "/tournaments/join_tournaments",
 	{
 		method: 'POST',
 		headers: headers,

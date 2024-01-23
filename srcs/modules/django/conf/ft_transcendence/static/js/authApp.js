@@ -90,7 +90,7 @@ function sleep(ms) {
 export async function logout(event)
 {
   event.preventDefault()
-  const Response = await fetch(document.location.origin + '/authApp/logout/',
+  const Response = await fetch(document.location.origin + '/authApp/logout',
     {
       method: 'GET'
     })
@@ -111,7 +111,7 @@ export async function logout(event)
 
 export async function checkConnexion()
 {
-  const Response = await fetch(document.location.origin + '/authApp/check_connexion/',
+  const Response = await fetch(document.location.origin + '/authApp/check_connexion',
     {
       method: 'GET'
     })
@@ -141,7 +141,7 @@ async function connect(event)
   var headers = new Headers()
   headers.append('Content-Type', 'application/json')
   headers.append('X-CSRFToken', crsf_token)
-  await fetch(document.location.origin + "/authApp/login/",
+  await fetch(document.location.origin + "/authApp/Connexion",
     {
       method: 'POST',
       headers: headers,
@@ -198,7 +198,7 @@ function register(event)
   var headers = new Headers()
   headers.append('X-CSRFToken', crsf_token)
 
-  fetch(document.location.origin + "/authApp/register/",
+  fetch(document.location.origin + "/authApp/Registration",
     {
       method: 'POST',
       headers: headers,
@@ -250,7 +250,7 @@ async function initProfileButton (connected) {
   let profiles = document.querySelectorAll(".profile_button")
   if ( connected === true ) {
     let profiles = document.querySelectorAll(".profile_button")
-    let Response = await fetch(document.location.origin + '/authApp/getUserName/',
+    let Response = await fetch(document.location.origin + '/authApp/getUserName',
       {
         method: 'GET'
       })
@@ -264,7 +264,7 @@ async function initProfileButton (connected) {
     })
 
     let profileImage = document.querySelectorAll('img.user_logo')
-    Response = await fetch(document.location.origin + '/authApp/get_avatar_image/',
+    Response = await fetch(document.location.origin + '/authApp/get_avatar_image',
 		{
 			method: 'GET'
 		})

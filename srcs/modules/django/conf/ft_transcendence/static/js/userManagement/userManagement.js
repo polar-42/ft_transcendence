@@ -85,7 +85,7 @@ function updateAccount(event)
   var headers = new Headers()
   headers.append('X-CSRFToken', crsf_token)
 
-  fetch(document.location.origin + "/userManagement/updateAccount/",
+  fetch(document.location.origin + "/userManagement/updateAccount",
     {
       method: 'POST',
       headers: headers,
