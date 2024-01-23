@@ -104,7 +104,7 @@ class chatSocket(WebsocketConsumer):
 		elif data['type'] == 'get_user':
 			self.getUser(data['target'])
 		elif data['type'] == 'get_history_chat':
-			self.getHistoryChat(data['target'])
+			self.getHistoryChat(data['target'], data['msgId'])
 			self.getHistoryChannel(data['target'])
 		elif data['type'] == 'invite_pong':
 			self.invitePong(data['target'])
@@ -173,11 +173,11 @@ class chatSocket(WebsocketConsumer):
 		)
 		msg.save()
 		
-		print(receiver)
 		async_to_sync(self.channel_layer.group_send)(
             'chat_' + receiver,
             {
                 'type': 'chatPrivateMessage',
+                'id': msg.id,
 				'sender': self.userIdentification,
 				'message': message
             }
@@ -347,26 +347,39 @@ class chatSocket(WebsocketConsumer):
 					'description': chanModel.description
 				}))
 
-	def getHistoryChat(self, chatTarget):
+	def getHistoryChat(self, chatTarget, msgId):
 		if userModels.User.objects.filter(identification=chatTarget).exists() is False:
 			return
 
 		idChatTarget = userModels.User.objects.get(identification=chatTarget).identification
+		if msgId == -1:
+			type = 'chat_history'		
+			messages = MessageModels.objects.filter(
+				(Q(sender=str(self.userIdentification)) & Q(receiver=chatTarget)) |
+				(Q(receiver=str(self.userIdentification)) & Q(sender=chatTarget))).order_by('-id')[:10]
+		else:
+			type = 'actualize_chat_history'
+			lastId = int(msgId)
+			firstId = lastId - 10
+			if firstId <= 0:
+				firstId = 1
+			print('msg from id ', firstId , ' to ', lastId)
+			messages = MessageModels.objects.filter(
+				(Q(sender=str(self.userIdentification)) & Q(receiver=chatTarget)) |
+				(Q(receiver=str(self.userIdentification)) & Q(sender=chatTarget))).order_by('id')[firstId - 1:lastId - 1]
 
-		messages = MessageModels.objects.filter(
-			(Q(sender=str(self.userIdentification)) & Q(receiver=chatTarget)) |
- 			(Q(receiver=str(self.userIdentification)) & Q(sender=chatTarget))).order_by('-id')[:10]
+
 
 		response = []
 
 		for msg in messages.values():
-			print(msg['sender'])
 			if msg['sender'] == self.userIdentification:
 				received = False
 			else:
 				received = True
 
 			response.append({
+                'id': msg['id'],
 				'time': str(msg['timeCreation']),
 				'received': received,
 				'message': msg['message']
@@ -374,7 +387,7 @@ class chatSocket(WebsocketConsumer):
 
 		print('response: ',response)
 		self.send(json.dumps({
-			'type': 'chat_history',
+			'type': type,
 			'data': response
 			})
 		)

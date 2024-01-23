@@ -156,6 +156,7 @@
   margin: auto;
 }
 
+
 .main_box_body.homepage .conversation_list .conversation_name {
   display: flex;
 }
@@ -294,6 +295,11 @@
     background: linear-gradient(to bottom, #4c77e6 5%, #7f4af5);
     float: right;
   }
+
+ .loading {
+	display: inline-block;
+	margin-left: 152px;
+}
 }
 
 .main_box_body.private_message .sendbox,

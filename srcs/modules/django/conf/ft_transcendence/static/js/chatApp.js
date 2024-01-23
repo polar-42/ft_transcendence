@@ -1,3 +1,4 @@
+// import { convertArray } from "three/src/animation/AnimationUtils.js";
 import { checkConnexion } from "./authApp.js";
 
 
@@ -139,6 +140,9 @@ function onMessageChat(e)
     case 'chat_history':
       displayChatHistory(data)
       break
+    case 'actualize_chat_history':
+      actualizeChatHistory(data.data)
+      break
     case 'chat_private_message':
       receiveMsg(data)
   }
@@ -182,15 +186,14 @@ function displaySearchResult(data) {
 
 function displayChatHistory(data) {
   let conversation = document.querySelector(".conversation")
-    console.log(data['data'])
-  for (let i = 0; i < data['data'].length; i++) {
-    console.log(data['data'][i])
+  for (let i = data['data'].length - 1; i > 0; i--) {
     let item = conversation.appendChild(document.createElement("li"))
     if (data['data'][i].received === true) {
       item.classList.add("message_item")
     } else {
       item.classList.add("message_item", "own")
     }
+    item.setAttribute('msgId', data['data'][i].id)
     item.appendChild(document.createElement("p"))
     item.children[0].classList.add("message")
     item.children[0].textContent = data['data'][i].message
@@ -397,11 +400,13 @@ function getAllUsers()
 }
 
 
-function getHistoryChat(target)
+function getHistoryChat(target, msgId)
 {
+  console.log(msgId)
   chatSocket.send(JSON.stringify({
     'type': 'get_history_chat',
-    'target': target
+    'target': target,
+    'msgId': msgId
   }))
 }
 
@@ -473,7 +478,6 @@ function displayPrivMsg(data) {
     sendbox.children[1].alt = "send arrow"
     sendbox.children[0].addEventListener("keypress", (event) => {
       if (event.key === "Enter") {
-        console.log(sendbox.children[0].value, id)
         sendMessage(sendbox.children[0].value, id)
         sendbox.children[0].value = ""
       }
@@ -482,13 +486,19 @@ function displayPrivMsg(data) {
       sendMessage(sendbox.children[0].textContent, id)
       sendbox.children[0].value = ""
     })
-    getHistoryChat(id)
+    conversationWrapper.children[0].addEventListener("scroll", () => {
+      if (conversationWrapper.children[0].scrollTop === 0) {
+        prvMsgOnTopScroll(id)
+      }
+    })
+    getHistoryChat(id, -1)
   }
 }
 
 function receiveMsg(data) {
   if (document.querySelector(".contact_wrapper").getAttribute('userID') === data.sender) {
     let conversation = document.querySelector(".conversation")
+    conversation.setAttribute('msgId', data.id)
     conversation.appendChild(document.createElement("li"))
     conversation.lastChild.classList.add("message_item")
     conversation.lastChild.appendChild(document.createElement("p"))
@@ -499,4 +509,40 @@ function receiveMsg(data) {
     conversation.lastChild.lastChild.textContent = data.time
     conversation.scrollTo(0, conversation.scrollHeight)
   }
+}
+
+function prvMsgOnTopScroll(contactId) {
+  let conversation = document.querySelector(".conversation")
+  let lastMsgId = parseInt(conversation.firstChild.getAttribute('msgId')) - 1
+  getHistoryChat(contactId, lastMsgId)
+}
+
+function sleep (time) {
+  return new Promise((resolve) => setTimeout(resolve, time));
+}
+
+async function actualizeChatHistory(data) {
+  let conversation = document.querySelector(".conversation")
+  conversation.prepend(document.createElement("img"))
+  let loadingImg = conversation.firstChild
+  conversation.firstChild.src = "../static/assets/logo/loader-circle-regular-36.png"
+  conversation.firstChild.classList.add("loading")
+  await sleep(500)
+  for (let i = data.length - 1; i >= 0; i--) {
+    let item = document.createElement("li")
+    loadingImg.after(item)
+    if (data[i].received === true) {
+      item.classList.add("message_item")
+    } else {
+      item.classList.add("message_item", "own")
+    }
+    item.setAttribute('msgId', data[i].id)
+    item.appendChild(document.createElement("p"))
+    item.children[0].classList.add("message")
+    item.children[0].textContent = data[i].message
+    item.appendChild(document.createElement("p"))
+    item.children[1].classList.add("timestamp")
+    item.children[1].textContent = data[i].time.substring(0, 19);
+  }
+  conversation.firstChild.remove()
 }
