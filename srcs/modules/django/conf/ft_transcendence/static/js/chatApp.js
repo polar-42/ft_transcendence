@@ -35,16 +35,11 @@ function initChatHomepage() {
 
 function initHomepageHeader() {
   let mainBoxHeader = document.querySelector(".main_box_header")
-
   mainBoxHeader.classList.add("homepage")
-  mainBoxHeader.appendChild(document.createElement("img"))
-  mainBoxHeader.children[0].src = "../static/assets/logo/search-regular-24.png";
-  mainBoxHeader.children[0].alt = "search icon";
-  let searchBar = mainBoxHeader.appendChild(document.createElement("input"))
-  searchBar.type = "text"
-  searchBar.name = "searchbar"
-  searchBar.placeholder = "Search a user or a channel"
-  searchBar.addEventListener("keypress", (event) => {
+
+  let html = '<img src="../static/assets/logo/search-regular-24.png" alt="search icon"><input type="text" name"searchbar">'
+  mainBoxHeader.innerHTML = html
+  mainBoxHeader.children[1].addEventListener("keypress", (event) => {
     if (event.key === 'Enter') {
       searchConv()
     }
@@ -62,18 +57,14 @@ function searchConv() {
 function initHomepageBody() {
   let mainBoxBody = document.querySelector(".main_box_body")
   mainBoxBody.classList.add("homepage")
-  let title = mainBoxBody.appendChild(document.createElement("h2"))
-  title.textContent = "Discussions"
-  let conversationList = mainBoxBody.appendChild(document.createElement("ul"))
-  conversationList.classList.add("conversation_list")
-  let navbar = mainBoxBody.appendChild(document.createElement("div"))
-  navbar.classList.add("chatbox_homepage_navbar")
-  let discussionButton = navbar.appendChild(document.createElement("button"))
-  let friendsButton = navbar.appendChild(document.createElement("button"))
-  discussionButton.name = "discussions"
-  discussionButton.textContent = "Discussions"
-  friendsButton.name = "friends"
-  friendsButton.textContent = "Friends"
+
+  let html = '<h2>Discussions</h2>' +
+    '<ul class="conversation_list"></ul>' +
+    '<div class="chatbox_homepage_navbar">' +
+    '<button name="discussions">Discussions</button>' +
+    '<button name="friends">Friends</button>' +
+	  '</div>'
+  mainBoxBody.innerHTML = html
   getLastChat()
 }
 
@@ -104,17 +95,6 @@ export function unsetChatbox() {
 function startChatConnexion()
 {
   chatSocket = new WebSocket("ws://" + window.location.host + '/chat/');
-    //document.getElementById('chat_submit').addEventListener("click", sendMessage);
-  //document.getElementById('channel_submit').addEventListener("click", channelMessage);
-  //document.getElementById('invite_pong').addEventListener("click", invitePong);
-  //document.getElementById('channel_join').addEventListener("click", joinChannel);
-  //document.getElementById('channel_leave').addEventListener("click", leaveChannel);
-  //document.getElementById('user_block').addEventListener("click", blockUser);
-  //document.getElementById('user_unblock').addEventListener("click", unblockUser);
-  //document.getElementById('get_last_chat').addEventListener("click", getLastChat);
-  //document.getElementById('get_all_users').addEventListener("click", getAllUsers);
-  //document.getElementById('get_history_chat').addEventListener("click", getHistoryChat);
-  //document.getElementById('get_history_channel').addEventListener("click", getHistoryChannel);
 
   chatSocket.onopen = initChatHomepage
   chatSocket.onclose = closeChatSocket;
@@ -146,10 +126,6 @@ function onMessageChat(e)
     case 'chat_private_message':
       receiveMsg(data)
   }
-  // if (data.type == 'invitation_pong')
-  // {
-  // 	invitationPong(data)
-  // }
 }
 
 function displaySearchResult(data) {
@@ -159,47 +135,61 @@ function displaySearchResult(data) {
     resultWrapper.removeChild(resultWrapper.children[0])
   }
 
+  let isConnected
+
   for (let i = 0; i < data.length; i++) {
-    let item = document.createElement("li")
-    item.appendChild(document.createElement("img"))
-    item.children[0].src = "../static/assets/logo/user.png"
-    item.children[0].alt = "conversation_picture"
-    item.appendChild(document.createElement("div"))
-    item.children[1].classList.add('conversation_name')
-    item.children[1].appendChild(document.createElement("p"))
-    item.children[1].children[0].textContent = data[i].name
-    item.children[1].appendChild(document.createElement("div"))
-    if (data[i].connexion_status === 2) {
-      item.children[1].children[1].classList.add("connection_point", "connected")
-    } else if (data[i].connexion_status === 0) {
-      item.children[1].children[1].classList.add("connection_point", "disconnected")
+    if (data[i].connexion_status == 2) {
+      isConnected = 'connected'
+    } else { 
+      isConnected = 'disconnected'
     }
-    item.appendChild(document.createElement("p"))
-    item.children[2].classList.add("last_msg")
-    item.children[2].textContent = data[i].last_msg
-    item.addEventListener("click", () => {
+    let isNoticationActive = ''
+
+    let item = 
+      '<li>' +
+        '<img src="../static/assets/logo/user.png" alt="converstion_picture">' +
+        '<div class="conversation_text">' +
+          '<div class="conversation_name">' +
+            '<p>' + data[i].name + '</p>' +
+            '<div class="connection_point ' + isConnected + '"></div>' +
+          '</div>' +
+          '<p class="last_msg"></p>' +
+        '</div>' +
+        '<div class="notification_wrapper ' + isNoticationActive + '"></div>' +
+      '</li>'
+
+    if (resultWrapper.children.length > 0) {
+      resultWrapper.lastChild.insertAdjacentHTML("afterend", item)
+    } else {
+      resultWrapper.innerHTML = item
+    }
+    resultWrapper.lastChild.addEventListener("click", () => {
       goToConv(data[i].identification)
     })
-    resultWrapper.appendChild(item)
   }
 }
 
 function displayChatHistory(data) {
   let conversation = document.querySelector(".conversation")
-  for (let i = data['data'].length - 1; i > 0; i--) {
-    let item = conversation.appendChild(document.createElement("li"))
+  for (let i = 0 ; i < data['data'].length - 1; i++) {
+    let sender 
     if (data['data'][i].received === true) {
-      item.classList.add("message_item")
+      sender = ''
     } else {
-      item.classList.add("message_item", "own")
+      sender = 'own'
     }
-    item.setAttribute('msgId', data['data'][i].id)
-    item.appendChild(document.createElement("p"))
-    item.children[0].classList.add("message")
-    item.children[0].textContent = data['data'][i].message
-    item.appendChild(document.createElement("p"))
-    item.children[1].classList.add("timestamp")
-    item.children[1].textContent = data['data'][i].time.substring(0, 19);
+
+    let item = 
+						'<li class="message_item" msgid=' + data['data'][i].id + '>' +
+							'<p class="message">' + data['data'][i].message + '</p>' +
+							'<p class="timestamp">' + data['data'][i].time.substring(0, 19) + '</p>' +
+						'</li>'
+    
+    if (conversation.children.length === 0) {
+      conversation.innerHTML = item
+    } else {
+      conversation.firstChild.insertAdjacentHTML("beforebegin", item)
+    }
   }
   conversation.scrollTo(0, conversation.scrollHeight)
 }
@@ -262,14 +252,12 @@ function sendMessage(message, targetUser)
     date.getSeconds()
   ]
   let timestamp = `${datevalues[0]}-${datevalues[1]}-${datevalues[2]} ${datevalues[3]}:${datevalues[4]}:${datevalues[5]}`
-  conversation.appendChild(document.createElement("li"))
-  conversation.lastChild.classList.add("message_item", "own")
-  conversation.lastChild.appendChild(document.createElement("p"))
-  conversation.lastChild.lastChild.classList.add("message")
-  conversation.lastChild.lastChild.textContent = message
-  conversation.lastChild.appendChild(document.createElement("p"))
-  conversation.lastChild.lastChild.classList.add("timestamp")
-  conversation.lastChild.lastChild.textContent = timestamp 
+  let html = 
+      '<li class="message_item own">' +
+        '<p class="message">' + message + '</p>' +
+        '<p class="timestamp">' + timestamp + '</p>' +
+      '</li>'
+  conversation.lastChild.insertAdjacentHTML('afterend', html)
   conversation.scrollTo(0, conversation.scrollHeight)
   chatSocket.send(JSON.stringify({
     'type': 'chat_message',
@@ -402,7 +390,6 @@ function getAllUsers()
 
 function getHistoryChat(target, msgId)
 {
-  console.log(msgId)
   chatSocket.send(JSON.stringify({
     'type': 'get_history_chat',
     'target': target,
@@ -435,26 +422,23 @@ function displayPrivMsg(data) {
   initPrvMsgBody(data.identification)
 
   function  initPrvMsgHeader(data) {
-    let contactWrapper = mainBoxHeader.appendChild(document.createElement("div"))
-
-    contactWrapper.classList.add("contact_wrapper")
-    contactWrapper.setAttribute('userID', data.identification)
-    contactWrapper.appendChild(document.createElement("img"))
-    contactWrapper.children[0].src = "../static/assets/logo/user.png"
-    let contactNameWrapper = contactWrapper.appendChild(document.createElement("div"))
-    contactNameWrapper.classList.add("contact_name_wrapper")
-    contactNameWrapper.appendChild(document.createElement("p"))
-    contactNameWrapper.children[0].textContent = data.name
-    contactNameWrapper.appendChild(document.createElement("div"))
-    if (data.connexion_status === 0) {
-      contactNameWrapper.children[1].classList.add("connection_point", "disconnected")
+    let isConnected 
+    if (data.connexion_status === 2) {
+      isConnected = 'connected'
+    } else {
+      isConnected = 'disconnected'
     }
-    else if (data.connexion_status === 2) {
-      contactNameWrapper.children[1].classList.add("connection_point", "connected")
-    }
-    mainBoxHeader.appendChild(document.createElement("img"))
-    mainBoxHeader.children[1].src = "../static/assets/logo/arrow-back-regular-60.png"
-    mainBoxHeader.children[1].alt = "return arrow button"
+    let html = 
+				'<div class="contact_wrapper userID="' + data.identification + '">' +
+					'<img src="../static/assets/logo/user.png" alt="contact profile picture">' +
+					'<div class="contact_name_wrapper">' +
+						'<p>' + data.name + '</p>' +
+						'<div class="connection_point ' + isConnected + '"></div>' +
+					'</div>' +
+				'</div>' +
+        '<img src="../static/assets/logo/arrow-back-regular-60.png" alt="return arrow button">'
+        
+    document.querySelector(".main_box_header").innerHTML = html
     mainBoxHeader.children[1].addEventListener("click", () => {
       mainBoxHeader.classList.remove("private_message")
       mainBoxBody.classList.remove("private_message")
@@ -464,18 +448,17 @@ function displayPrivMsg(data) {
   }
 
   function initPrvMsgBody(id) {
-    let conversationWrapper = mainBoxBody.appendChild(document.createElement("div"))
-    let sendbox = mainBoxBody.appendChild(document.createElement("div"))
-    conversationWrapper.classList.add("conversation_wrapper")
-    sendbox.classList.add("sendbox")
-    conversationWrapper.appendChild(document.createElement("ul"))
-    conversationWrapper.children[0].classList.add("conversation")
-    sendbox.appendChild(document.createElement("input"))
-    sendbox.children[0].type = "text"
-    sendbox.children[0].placeholder = "Enter your message"
-    sendbox.appendChild(document.createElement("img"))
-    sendbox.children[1].src = "../static/assets/logo/send-solid-60.png"
-    sendbox.children[1].alt = "send arrow"
+    let html = 
+				'<div class="conversation_wrapper">' +
+					'<ul class="conversation"></ul>' +
+				'</div>' +
+				'<div class="sendbox">' +
+					'<input type="text" placeholder="Enter your message">' +
+					'<img src="../static/assets/logo/send-solid-60.png" alt="send arrow">' +
+				'</div>'
+    document.querySelector(".main_box_body").innerHTML = html
+    let sendbox = document.querySelector(".sendbox")
+    let conversation = document.querySelector(".conversation")
     sendbox.children[0].addEventListener("keypress", (event) => {
       if (event.key === "Enter") {
         sendMessage(sendbox.children[0].value, id)
@@ -486,8 +469,8 @@ function displayPrivMsg(data) {
       sendMessage(sendbox.children[0].textContent, id)
       sendbox.children[0].value = ""
     })
-    conversationWrapper.children[0].addEventListener("scroll", () => {
-      if (conversationWrapper.children[0].scrollTop === 0) {
+    conversation.addEventListener("scroll", () => {
+      if (conversation.scrollTop === 0) {
         prvMsgOnTopScroll(id)
       }
     })
@@ -498,22 +481,18 @@ function displayPrivMsg(data) {
 function receiveMsg(data) {
   if (document.querySelector(".contact_wrapper").getAttribute('userID') === data.sender) {
     let conversation = document.querySelector(".conversation")
-    conversation.setAttribute('msgId', data.id)
-    conversation.appendChild(document.createElement("li"))
-    conversation.lastChild.classList.add("message_item")
-    conversation.lastChild.appendChild(document.createElement("p"))
-    conversation.lastChild.lastChild.classList.add("message")
-    conversation.lastChild.lastChild.textContent = data.message
-    conversation.lastChild.appendChild(document.createElement("p"))
-    conversation.lastChild.lastChild.classList.add("timestamp")
-    conversation.lastChild.lastChild.textContent = data.time
+    let msgItem = "<li class='message_item' msgid='" + data.id + "'><p class='message'>" +
+      data.message +
+      "</p><p class='timestamp'>" +
+      data.time +
+      "</p></li>"
+    conversation.lastChild.insertAdjacentHTML('afterend', msgItem)
     conversation.scrollTo(0, conversation.scrollHeight)
   }
 }
 
 function prvMsgOnTopScroll(contactId) {
-  let conversation = document.querySelector(".conversation")
-  let lastMsgId = parseInt(conversation.firstChild.getAttribute('msgId')) - 1
+  let lastMsgId = parseInt(document.querySelector(".conversation > li").getAttribute('msgId')) - 1
   getHistoryChat(contactId, lastMsgId)
 }
 
@@ -523,26 +502,32 @@ function sleep (time) {
 
 async function actualizeChatHistory(data) {
   let conversation = document.querySelector(".conversation")
-  conversation.prepend(document.createElement("img"))
-  let loadingImg = conversation.firstChild
-  conversation.firstChild.src = "../static/assets/logo/loader-circle-regular-36.png"
-  conversation.firstChild.classList.add("loading")
-  await sleep(500)
-  for (let i = data.length - 1; i >= 0; i--) {
-    let item = document.createElement("li")
-    loadingImg.after(item)
-    if (data[i].received === true) {
-      item.classList.add("message_item")
-    } else {
-      item.classList.add("message_item", "own")
+  if (data.length === 0) {
+    if (conversation.firstChild.classList[0] !== 'top_point') {
+      conversation.prepend(document.createElement("div"))
+      conversation.children[0].classList.add("top_point")
     }
-    item.setAttribute('msgId', data[i].id)
-    item.appendChild(document.createElement("p"))
-    item.children[0].classList.add("message")
-    item.children[0].textContent = data[i].message
-    item.appendChild(document.createElement("p"))
-    item.children[1].classList.add("timestamp")
-    item.children[1].textContent = data[i].time.substring(0, 19);
+  } else {
+    let loadingHtml = "<img src ='../static/assets/logo/loader-circle-regular-36.png' class='loading'>"
+    conversation.firstChild.insertAdjacentHTML("beforebegin", loadingHtml)
+    await sleep(500)
+
+    for (let i = data.length - 1; i >= 0; i--) {
+      let received
+
+      if (data[i].received === true) {
+        received = 'own'
+      } else {
+        received = ''
+      }
+      let item = 
+        '<li class="message_item ' + received + '" msgId="' + data[i].id + '>' +
+        '<p class="message">' + data[i].message + '</p>' +
+        '<p class="timestamp">' + data[i].time.substring(0, 19) + '"</p>' +
+        '</li>'
+
+      conversation.firstChild.insertAdjacentHTML("afterend", item)
+    }
+    conversation.firstChild.remove()
   }
-  conversation.firstChild.remove()
 }

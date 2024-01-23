@@ -352,7 +352,14 @@ class chatSocket(WebsocketConsumer):
 			return
 
 		idChatTarget = userModels.User.objects.get(identification=chatTarget).identification
-		if msgId == -1:
+		if msgId == 0:
+			self.send(json.dumps({
+				'type': 'actualize_chat_history',
+				'data': {}
+				})
+			 )
+			return
+		elif msgId == -1:
 			type = 'chat_history'		
 			messages = MessageModels.objects.filter(
 				(Q(sender=str(self.userIdentification)) & Q(receiver=chatTarget)) |
