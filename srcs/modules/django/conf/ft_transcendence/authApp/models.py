@@ -11,3 +11,5 @@ class User(AbstractUser):
     blockedUser = ArrayField(models.CharField(), blank=True, null=True)
     allPrivateTalks = ArrayField(models.CharField(), blank=True, null=True)
     avatarImage = models.BinaryField(blank=True, default=None, null=True)
+    tfEnable = models.BooleanField(default=False)
+    tfType = models.IntegerField(default=0)
