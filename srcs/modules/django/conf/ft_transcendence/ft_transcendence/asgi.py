@@ -15,13 +15,13 @@ from django.core.asgi import get_asgi_application
 from channels.routing import ProtocolTypeRouter, URLRouter, get_default_application
 from channels.auth import AuthMiddlewareStack
 from django.core.asgi import get_asgi_application
-from socketApp import routing as socketAppRouter
 
 #region Router
 
 from battleshipApp import BS_Router
 from pongGameApp import PG_Router
 from tournamentsApp import T_Router
+from chatApp import Chat_Router
 
 #endregion
 
@@ -29,10 +29,10 @@ application = ProtocolTypeRouter({
    'http': get_asgi_application(),
    'websocket': AuthMiddlewareStack(
        URLRouter(
-           socketAppRouter.websocket_urlpatterns +
-           BS_Router.websocket_urlpatterns +
-           PG_Router.websocket_urlpatterns +
-           T_Router.websocket_urlpatterns
+            BS_Router.websocket_urlpatterns +
+            PG_Router.websocket_urlpatterns +
+            T_Router.websocket_urlpatterns +
+            Chat_Router.websocket_urlpatterns
        )
    ),
 })
