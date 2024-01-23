@@ -20,10 +20,10 @@ COPY ft_transcendence.sh .
 COPY gunicornConf.py .
 
 RUN pip install --upgrade pip
-RUN pip install --no-cache-dir "uvicorn[standard]" gunicorn psycopg2-binary Django==4.2.6 requests channels==4.0.0 web3 Pillow
+RUN pip install --no-cache-dir "uvicorn[standard]" daphne gunicorn psycopg2-binary Django==4.2.6 requests channels==4.0.0 web3 Pillow
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=TRUE
 ENV DJANGO_SETTINGS_MODULE=ft_transcendence.settings
-
+ENV WATCHFILES_FORCE_POLLING=true
 CMD [ "sh", "ft_transcendence.sh" ]

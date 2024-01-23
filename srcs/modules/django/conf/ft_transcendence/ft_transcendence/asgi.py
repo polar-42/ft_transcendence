@@ -21,6 +21,7 @@ from socketApp import routing as socketAppRouter
 
 from battleshipApp import BS_Router
 from pongGameApp import PG_Router
+from tournamentsApp import T_Router
 
 #endregion
 
@@ -30,9 +31,8 @@ application = ProtocolTypeRouter({
        URLRouter(
            socketAppRouter.websocket_urlpatterns +
            BS_Router.websocket_urlpatterns +
-           PG_Router.websocket_urlpatterns
-           
-
+           PG_Router.websocket_urlpatterns +
+           T_Router.websocket_urlpatterns
        )
    ),
 })

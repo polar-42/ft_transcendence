@@ -11,7 +11,7 @@ export function initTournaments()
 	}
 	const tournamentId = arguments[0]
 	if (tournamentSocket == undefined || tournamentSocket.url.endsWith(tournamentId) == false)
-		tournamentSocket = new WebSocket("wss://" + window.location.host + '/socketApp/tournamentsApp/' + tournamentId)
+		tournamentSocket = new WebSocket("ws://" + window.location.host + '/tournamentsApp/' + tournamentId)
 	else
 	{
 		console.log("ReconnectToTournament")

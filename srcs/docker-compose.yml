@@ -1,21 +1,21 @@
 version: '3'
 
 services:
-  nginx:
-    build: 
-      context: modules/nginx
-      dockerfile: Dockerfile
-    image: ft_transcendence_nginx:1.0
-    container_name: container_nginx
-    restart: on-failure
-    networks:
-      - transcendence_network   
-    volumes:
-      - static_v:/home/app/web/static
-    ports:
-      - 443:443
-    depends_on:
-      - django
+  # nginx:
+    # build: 
+      # context: modules/nginx
+      # dockerfile: Dockerfile
+    # image: ft_transcendence_nginx:1.0
+    # container_name: container_nginx
+    # restart: on-failure
+    # networks:
+      # - transcendence_network   
+    # volumes:
+      # - static_v:/home/app/web/static
+    # ports:
+      # - 443:443
+    # depends_on:
+      # - django
 
   django:
     build: modules/django
@@ -33,8 +33,8 @@ services:
     #depends_on:
     #  postgresql:
     #    condition: service_healthy
-    expose:
-      - 8000
+    ports:
+      - 8000:8000
 
   postgresql:
     build: modules/postgresql
