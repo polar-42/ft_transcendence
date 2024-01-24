@@ -11,8 +11,13 @@ from django.http import HttpResponse
 from django.contrib.auth.hashers import check_password
 from django.db import models
 
+from ft_transcendence import ColorPrint
+from ft_transcendence.decorators import isValidLoading
+
 regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
 
+
+@isValidLoading
 def userManagementView(request):
     if request.user.is_authenticated:
         return render(request, 'userManagementApp/userManagement.html')

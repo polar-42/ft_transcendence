@@ -12,9 +12,10 @@ from django.db import models
 from authApp.models import User
 
 from ft_transcendence import ColorPrint
+from ft_transcendence.decorators import isValidLoading
 
 regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
-
+@isValidLoading
 def logPage(request):
 	if (request.user.is_authenticated == True):
 		return render(request, 'index.html')
@@ -48,6 +49,7 @@ def UserConnexion(request):
 	else:
 		return JsonResponse({'error': 'Email or Password is invalid'})
 
+@isValidLoading
 def registerPage(request):
 	if (request.user.is_authenticated == True):
 		return render(request, 'index.html')

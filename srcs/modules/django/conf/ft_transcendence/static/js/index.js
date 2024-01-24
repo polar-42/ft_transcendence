@@ -81,6 +81,11 @@ let Prev_match = undefined
 
 const router = async (arg) =>
 {
+  if (location.href.endsWith("/?Erroneus=True"))
+  {
+    console.log("dois pas passer ici")
+    navigateTo(document.location.origin + location.pathname.slice(0, -1))
+  }
 	let match = getRoute(document.location.origin + location.pathname)
 	/* define 404 error page */
 	if (!match)
