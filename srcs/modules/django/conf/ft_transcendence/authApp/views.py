@@ -1,14 +1,11 @@
 from django.shortcuts import render
-from django.contrib.auth import authenticate, login, logout
-from django.http import JsonResponse, FileResponse
+from django.contrib.auth import login, logout
+from django.http import JsonResponse
 from .models import User
 from django.contrib.auth.hashers import make_password, check_password
 from .management.commands.create_user import getRandString
-import json, re, base64, os
-from django.core.files.base import ContentFile
-from django.conf import settings
+import json, re
 from django.http import HttpResponse
-from django.db import models
 from authApp.models import User
 
 from ft_transcendence import ColorPrint
@@ -130,3 +127,8 @@ def getAvatarImage(request):
             return HttpResponse(None, content_type='image/null')
         return HttpResponse(usr.avatarImage, content_type='image/png')
 
+def Get2FaStatus(request):
+	if request.user.is_authenticated == False:
+		return JsonResponse({'error': 'User not authenticated'})
+	usr = User.objects.get(id=request.user.id)
+	return JsonResponse({'status': True if (usr.tfEnable == True and usr.tfValidated == True) else False})

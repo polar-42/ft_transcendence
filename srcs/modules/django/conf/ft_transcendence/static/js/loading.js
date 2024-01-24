@@ -1,7 +1,7 @@
 onload = (event) => {
 	if(document.querySelector("#app") == null)
 	{
-		console.log(window.location.origin + window.location.pathname)
+		// console.log(window.location.origin + window.location.pathname)
 		// window.history.replaceState(null, null, window.location.origin + window.location.pathname)
 		window.location.replace(window.location.origin + window.location.pathname + '/?Erroneus=True')
 	}

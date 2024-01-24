@@ -1,5 +1,6 @@
 <!-- authApp/login.html -->
 {% load static %}
+  <link type='text/css' rel='stylesheet' href="{% static '/css/settings.css' %}">
   <script type="module" src="{% static '/js/loading.js' %}"></script>
 {% block content %}
   <section class="register_container">
@@ -32,9 +33,14 @@
         <img id="avatar_preview"></img>
       </div>
     </form>
+    <label class="switch">
+      <input type="checkbox">
+      <span class="slider round"></span>
+    </label>
     <div class="submit">
       <button class="submit_BTN">Submit</button>
       <p class="feedback"></p>
     </div>
+
   </section>
 {% endblock content %}

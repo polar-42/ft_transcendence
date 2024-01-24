@@ -83,7 +83,7 @@ const router = async (arg) =>
 {
   if (location.href.endsWith("/?Erroneus=True"))
   {
-    console.log("dois pas passer ici")
+    // console.log("dois pas passer ici")
     navigateTo(document.location.origin + location.pathname.slice(0, -1))
   }
 	let match = getRoute(document.location.origin + location.pathname)
@@ -176,7 +176,6 @@ for (let i = 0; i < 2; i++)
 {
   profileButton[i].addEventListener("click", async () => {
     let isOpen = profileDropDown[i].classList.contains('open');
-    console.log(isOpen)
     let logStatus = await checkConnexion();
     if (logStatus == true)
     {

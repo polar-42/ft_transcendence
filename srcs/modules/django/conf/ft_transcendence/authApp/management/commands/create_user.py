@@ -46,7 +46,7 @@ class Command(BaseCommand):
 
         username = 'brave'
         email = 'brave@brave.com'
-
+        password = make_password('123456789')
         # Check if the user already exists
         if not User.objects.filter(username=username).exists():
             User.objects.create_user(
