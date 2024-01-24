@@ -1,4 +1,4 @@
-import { checkCoonexion, initLogin, initRegister, logout } from "./authApp.js"
+import { checkConnexion, initLogin, initRegister, logout } from "./authApp.js"
 import { initMatchmaking } from "./battleshipApp.js"
 import { initGames } from "./games.js"
 import { initMatchmakingPong, unLoadMatchmakingPong } from "./pongGameApp.js"

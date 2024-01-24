@@ -117,14 +117,24 @@ function onMessageChat(e)
     case 'get_user_data':
       displayPrivMsg(data)
       break
+    case 'get_channel_data':
+      displayChannel(data)
+      break
     case 'chat_history':
       displayChatHistory(data)
       break
     case 'actualize_chat_history':
       actualizeChatHistory(data.data)
       break
+    case 'channel_history':
+      displayChannelHistory(data.data)
+      break
     case 'chat_private_message':
       receiveMsg(data)
+      break
+    case 'chat_channel_message':
+      receiveChanMsg(data)
+      break
   }
 }
 
@@ -140,13 +150,15 @@ function displaySearchResult(data) {
   for (let i = 0; i < data.length; i++) {
     if (data[i].connexion_status == 2) {
       isConnected = 'connected'
-    } else { 
+    } else if (data[i].connexion_status === 0) {  
       isConnected = 'disconnected'
+    } else {
+      isConnected = ''
     }
     let isNoticationActive = ''
 
     let item = 
-      '<li>' +
+      '<li type="' + data[i].type + '">' +
         '<img src="../static/assets/logo/user.png" alt="converstion_picture">' +
         '<div class="conversation_text">' +
           '<div class="conversation_name">' +
@@ -164,7 +176,11 @@ function displaySearchResult(data) {
       resultWrapper.innerHTML = item
     }
     resultWrapper.lastChild.addEventListener("click", () => {
-      goToConv(data[i].identification)
+      if (data[i].type === 'private_message') { 
+        goToConv(data[i].identification)
+      } else if (data[i].type === 'channel') {
+        goToChan(data[i].name)
+      }
     })
   }
 }
@@ -194,7 +210,136 @@ function displayChatHistory(data) {
   conversation.scrollTo(0, conversation.scrollHeight)
 }
 
-function goToConv(data) {
+function displayChannel(data) {
+  initChanHeader(data)
+  initChanBody(data)
+
+  function initChanHeader(data) {
+    let html = 
+      '<div class="contact_wrapper">' +
+        '<img src="../static/assets/logo/user.png" alt="channel picture">' +
+        '<div class="contact_name_wrapper">' +
+          '<p class="channel_name">' + data.name + '</p>' +
+          '<p class="channel_description">' + data.description + '</p>' +
+        '</div>' +
+      '</div>' +
+      '<img src="../static/assets/logo/arrow-back-regular-60.png" alt="return arrow button">'
+
+
+    document.querySelector(".main_box_header").innerHTML = html
+    document.querySelector(".main_box_header").children[1].addEventListener("click", () => {
+      document.querySelector(".main_box_header").classList.remove("channel")
+      document.querySelector(".main_box_body").classList.remove("channel")
+      cleanMainBox()
+      initChatHomepage()
+    })
+  }
+
+  function initChanBody(data) {
+    let html = 
+      '<div class="conversation_body">' +
+        '<div class="sidebar"></div>' +
+        '<div class="conversation"></div>' +
+      '</div>' +
+      '<div class="sendbox">' +
+        '<input type="text" placeholder="Enter your message">' +
+        '<img src="../static/assets/logo/send-solid-60.png" alt="send arrow">' +
+      '</div>'
+
+    document.querySelector(".main_box_body").innerHTML = html
+    let sendbox = document.querySelector(".sendbox")
+    sendbox.children[0].addEventListener("keypress", (event) => {
+      if (event.key === "Enter") {
+        channelMessage(sendbox.children[0].value, data.name)
+        sendbox.children[0].value = ""
+      }
+    })
+    sendbox.children[1].addEventListener("click", () => {
+      channelMessage(sendbox.children[0].textContent, data.name)
+      sendbox.children[0].value = ""
+    })
+
+
+    loadChanUser(data)
+
+    chatSocket.send(JSON.stringify({
+      'type': 'get_history_chat',
+      'target': data.name
+    }))
+
+    function loadChanUser(data) {
+      let users = data['users']
+      let sidebar = document.querySelector(".sidebar")
+      for (let i = 0; i < users.length; i++) {
+        let isConnected
+        if (users[i].connexion_status === 2) {
+          isConnected = 'connected'
+        } else if (users[i].connexion_status === 0) {
+          isConnected = 'disconnected'
+        } else {
+          isConnected = ''
+        }
+
+        if (users[i] !== self.username) {
+          let item = 
+            '<div class="user_wrapper">' +
+            '<div class="connection_point ' + isConnected + '"></div>' +
+            '<img src="../static/assets/logo/user.png" alt="channel member profile picture">' +
+            '<p class="username">' + users[i].name + '</p>' +
+            '</div>'
+
+          if (sidebar.children.length > 0) {
+            sidebar.lastChild.insertAdjacentHTML("afterend", item)
+          } else {
+            sidebar.innerHTML = item
+          }
+        }
+      }
+    }
+  }
+}
+
+async function displayChannelHistory(data) {
+  let conversation = document.querySelector(".conversation")
+  let Response = await fetch(document.location.origin + '/authApp/getUserID/',
+    {
+      method: 'GET'
+    })
+  if (!Response.ok) {
+    throw new Error('Error when fetching user datas')
+  }
+  let userData = await Response.json()
+
+  for (let i = 0; i < data.length - 1; i++) {
+
+    let sender 
+    let received
+    if (data[i].senderID === userData.userID) {
+      received = "own"
+      sender =  ''
+    } else {
+      received = ""
+      sender = data[i].sender
+    }
+
+    let item = 
+      '<li class="message_item ' + received + '">' +
+      '<div class="sender">' + sender + '</div>' +
+      '<div class="message_wrapper">' +
+      '<p class="message">' + data[i].message + '</p>' +
+      '<p class="timestamp">' + data[i].time + '</p>' +
+      '</div>' +
+      '</li>'
+
+    if (conversation.children.length === 0) {
+      conversation.innerHTML = item
+    } else {
+      conversation.lastChild.insertAdjacentHTML("afterend", item)
+    }
+  }
+}
+
+function goToConv(id) {
   let mainBoxBody = document.querySelector(".main_box_body")
   let mainBoxHeader = document.querySelector(".main_box_header")
   cleanMainBox()
@@ -202,9 +347,21 @@ function goToConv(data) {
   mainBoxHeader.classList.add("private_message")
   chatSocket.send(JSON.stringify({
     'type': 'get_user',
-    'target': data
-  })
-  )
+    'target': id 
+  }))
+}
+
+function goToChan(name) {
+  let mainBoxBody = document.querySelector(".main_box_body")
+  let mainBoxHeader = document.querySelector(".main_box_header")
+  cleanMainBox()
+  mainBoxBody.classList.add("channel")
+  mainBoxHeader.classList.add("channel")
+  console.log('target: ', name)
+  chatSocket.send(JSON.stringify({
+    'type': 'get_channel',
+    'target': name 
+  }))
 }
 
 function cleanMainBox() {
@@ -253,10 +410,10 @@ function sendMessage(message, targetUser)
   ]
   let timestamp = `${datevalues[0]}-${datevalues[1]}-${datevalues[2]} ${datevalues[3]}:${datevalues[4]}:${datevalues[5]}`
   let html = 
-      '<li class="message_item own">' +
-        '<p class="message">' + message + '</p>' +
-        '<p class="timestamp">' + timestamp + '</p>' +
-      '</li>'
+    '<li class="message_item own">' +
+    '<p class="message">' + message + '</p>' +
+    '<p class="timestamp">' + timestamp + '</p>' +
+    '</li>'
   conversation.lastChild.insertAdjacentHTML('afterend', html)
   conversation.scrollTo(0, conversation.scrollHeight)
   chatSocket.send(JSON.stringify({
@@ -266,24 +423,13 @@ function sendMessage(message, targetUser)
   }))
 }
 
-function channelMessage()
+function channelMessage(message, targetChannel)
 {
-  let message = document.getElementById('message_chat');
-  let channelName = document.getElementById('target_user');
-
-  if (channelName.value.length <= 3)
-  {
-    console.log('Error: One field too small');
-    return;
-  }
-
   chatSocket.send(JSON.stringify({
     'type': 'channel_message',
-    'target': channelName.value,
-    'message': message.value
+    'target': targetChannel,
+    'message': message
   }))
-  channelName.value = "";
-  message.value = "";
 }
 
 function invitePong()
@@ -429,15 +575,15 @@ function displayPrivMsg(data) {
       isConnected = 'disconnected'
     }
     let html = 
-				'<div class="contact_wrapper userID="' + data.identification + '">' +
-					'<img src="../static/assets/logo/user.png" alt="contact profile picture">' +
-					'<div class="contact_name_wrapper">' +
-						'<p>' + data.name + '</p>' +
-						'<div class="connection_point ' + isConnected + '"></div>' +
-					'</div>' +
-				'</div>' +
-        '<img src="../static/assets/logo/arrow-back-regular-60.png" alt="return arrow button">'
-        
+      '<div class="contact_wrapper userID="' + data.identification + '">' +
+      '<img src="../static/assets/logo/user.png" alt="contact profile picture">' +
+      '<div class="contact_name_wrapper">' +
+      '<p>' + data.name + '</p>' +
+      '<div class="connection_point ' + isConnected + '"></div>' +
+      '</div>' +
+      '</div>' +
+      '<img src="../static/assets/logo/arrow-back-regular-60.png" alt="return arrow button">'
+
     document.querySelector(".main_box_header").innerHTML = html
     mainBoxHeader.children[1].addEventListener("click", () => {
       mainBoxHeader.classList.remove("private_message")
@@ -449,13 +595,13 @@ function displayPrivMsg(data) {
 
   function initPrvMsgBody(id) {
     let html = 
-				'<div class="conversation_wrapper">' +
-					'<ul class="conversation"></ul>' +
-				'</div>' +
-				'<div class="sendbox">' +
-					'<input type="text" placeholder="Enter your message">' +
-					'<img src="../static/assets/logo/send-solid-60.png" alt="send arrow">' +
-				'</div>'
+      '<div class="conversation_wrapper">' +
+      '<ul class="conversation"></ul>' +
+      '</div>' +
+      '<div class="sendbox">' +
+      '<input type="text" placeholder="Enter your message">' +
+      '<img src="../static/assets/logo/send-solid-60.png" alt="send arrow">' +
+      '</div>'
     document.querySelector(".main_box_body").innerHTML = html
     let sendbox = document.querySelector(".sendbox")
     let conversation = document.querySelector(".conversation")
@@ -469,10 +615,15 @@ function displayPrivMsg(data) {
       sendMessage(sendbox.children[0].textContent, id)
       sendbox.children[0].value = ""
     })
+
+    var lastScrollTop = 0
     conversation.addEventListener("scroll", () => {
-      if (conversation.scrollTop === 0) {
+      let st = conversation.scrollTop
+
+      if (st <= (lastScrollTop * 0.1)) {
         prvMsgOnTopScroll(id)
       }
+      lastScrollTop = st
     })
     getHistoryChat(id, -1)
   }
@@ -481,17 +632,54 @@ function displayPrivMsg(data) {
 function receiveMsg(data) {
   if (document.querySelector(".contact_wrapper").getAttribute('userID') === data.sender) {
     let conversation = document.querySelector(".conversation")
-    let msgItem = "<li class='message_item' msgid='" + data.id + "'><p class='message'>" +
-      data.message +
-      "</p><p class='timestamp'>" +
-      data.time +
-      "</p></li>"
+    let msgItem = 
+      "<li class='message_item' msgid='" + data.id + "'>" +
+      "<p class='message'>" + data.message + "</p>" +
+      "<p class='timestamp'>" + data.time + "</p>" +
+      "</li>"
     conversation.lastChild.insertAdjacentHTML('afterend', msgItem)
     conversation.scrollTo(0, conversation.scrollHeight)
   }
 }
 
-function prvMsgOnTopScroll(contactId) {
+async function receiveChanMsg(data) {
+  let conversation = document.querySelector(".conversation")
+  let Response = await fetch(document.location.origin + '/authApp/getUserID/',
+    {
+      method: 'GET'
+    })
+  if (!Response.ok) {
+    throw new Error('Error when fetching user datas')
+  }
+  let userData = await Response.json()
+  let sender, received
+  if (data.senderID === userData.userID){
+    received = "own"
+    sender =  ''
+  } else {
+    received = ""
+    sender = data.sender
+  }
+
+  let item =
+    '<li class="message_item ' + received + '">' +
+    '<div class="sender">' + sender + '</div>' +
+    '<div class="message_wrapper">' +
+    '<p class="message">' + data.message + '</p>' +
+    '<p class="timestamp">' + data.time.substring(0, 19) + '</p>' +
+    '</div>' +
+    '</li>'
+
+  console.log(item)
+  if (conversation.children.length > 0) {
+    conversation.lastChild.insertAdjacentHTML("afterend", item)
+  } else {
+    conversation.innerHTML = item
+  }
+  conversation.scrollTo(0, conversation.scrollHeight)
+}
+
+async function prvMsgOnTopScroll(contactId) {
   let lastMsgId = parseInt(document.querySelector(".conversation > li").getAttribute('msgId')) - 1
   getHistoryChat(contactId, lastMsgId)
 }
@@ -510,9 +698,9 @@ async function actualizeChatHistory(data) {
   } else {
     let loadingHtml = "<img src ='../static/assets/logo/loader-circle-regular-36.png' class='loading'>"
     conversation.firstChild.insertAdjacentHTML("beforebegin", loadingHtml)
-    await sleep(500)
+    await sleep(300)
 
-    for (let i = data.length - 1; i >= 0; i--) {
+    for (let i = 0; i < data.length - 1; i++) {
       let received
 
       if (data[i].received === true) {
@@ -521,7 +709,7 @@ async function actualizeChatHistory(data) {
         received = ''
       }
       let item = 
-        '<li class="message_item ' + received + '" msgId="' + data[i].id + '>' +
+        '<li class="message_item ' + received + '" msgId="' + data[i].id + '">' +
         '<p class="message">' + data[i].message + '</p>' +
         '<p class="timestamp">' + data[i].time.substring(0, 19) + '"</p>' +
         '</li>'

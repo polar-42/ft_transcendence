@@ -10,7 +10,6 @@
 
 .chatbox_wrapper p {
   overflow: hidden;
-  white-space: nowrap;
 }
 
 .chatbox_header_wrapper {
@@ -248,10 +247,18 @@
 
 .main_box_header.private_message .contact_name_wrapper,
 .main_box_header.channel .contact_name_wrapper {
-  display: flex;
   font-size: 1.2em;
   height: 100%;
+	align-self: center;
+}
+
+.main_box_header.private_message .contact_name_wrapper {
+  display: flex;
   padding-top: 10px;
+}
+
+.main_box_header.channel .contact_name_wrapper .channel_description {
+	font-size: 0.7em
 }
 
 .main_box_header.private_message img,
@@ -265,8 +272,8 @@
   cursor: pointer;
 }
 
-.main_box_body.private_message .conversation_wrapper,
-.main_box_body.channel .conversation_wrapper {
+.main_box_body.private_message .conversation_body,
+.main_box_body.channel .conversation_body {
   height: 300px;
 }
 
@@ -290,6 +297,10 @@
     margin-top: 10px;
     padding: 5px;
 		float: left;
+
+		.message {
+			overflow-wrap: break-word;
+		}
 
     .timestamp {
       font-size: 0.7em;
@@ -346,10 +357,10 @@
 
 .main_box_body.channel .sidebar {
   height: 300px;
-  min-width: 50px;
+  min-width: 70px;
   overflow: scroll;
   border-right: 1px solid var(--secondary-bg-color);
-  box-shadow: 1px 0 5px var(--secondary-bg-color);
+  box-shadow: 1px 0 2px var(--secondary-bg-color);
   padding-top: 10px;
   text-align: center;
 

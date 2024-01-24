@@ -98,3 +98,6 @@ def check_connexion(request):
 
 def getUserName(request):
     return JsonResponse({'userName': request.user.username})
+
+def getUserID(request):
+    return JsonResponse({'userID': request.user.identification})
