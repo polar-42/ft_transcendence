@@ -104,13 +104,11 @@ class chatSocket(WebsocketConsumer):
 		elif data['type'] == 'get_user':
 			self.getUser(data['target'])
 		elif data['type'] == 'get_channel':
-			print(data['target'])
 			self.getChannel(data['target'])
 		elif data['type'] == 'get_history_chat':
-			if 'msgId' in data.keys():
-				self.getHistoryChat(data['target'], data['msgId'])
-			else:
-				self.getHistoryChannel(data['target'])
+			self.getHistoryChat(data['target'], data['msgId'])
+		elif data['type'] == 'get_history_channel':
+			self.getHistoryChannel(data['target'], data['msgId'])
 		elif data['type'] == 'invite_pong':
 			self.invitePong(data['target'])
 		elif data['type'] == 'accept_invitation':
@@ -430,15 +428,27 @@ class chatSocket(WebsocketConsumer):
 			})
 		)
 
-	def getHistoryChannel(self, channelTarget):
+	def getHistoryChannel(self, channelTarget, msgId):
 		if ChannelModels.objects.filter(channelName=channelTarget).exists() is False:
 			return
 
-		messages = MessageModels.objects.filter(receiver=channelTarget).order_by('-id')[:10]
+		if int(msgId) == 0:
+			self.send(json.dumps({
+				'type': 'actualize_channel_history',
+				'data': {}
+				})
+			 )
+		elif int(msgId) == -1:
+			type = 'channel_history'
+			messages = MessageModels.objects.filter(receiver=channelTarget).order_by('-id')[:10]
+		else:
+			type = 'actualize_channel_history'
+			messages = MessageModels.objects.filter(Q(receiver=channelTarget) & Q(id__lt=int(msgId))).order_by('-id')[:10]
+
+
 		response = []
 
 		for msg in messages.values():
-			print('msg["sender"]: ',msg['sender'])
 			senderModel = userModels.User.objects.get(identification=msg['sender'])
 
 			if self.isBlock(senderModel) is False:
@@ -451,7 +461,7 @@ class chatSocket(WebsocketConsumer):
 				})
 
 		self.send(json.dumps({
-			'type': 'channel_history',
+			'type': type,
 			'data': response
 			})
 			)

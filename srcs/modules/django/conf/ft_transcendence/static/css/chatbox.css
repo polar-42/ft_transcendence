@@ -281,7 +281,7 @@
 .main_box_body.channel .conversation {
   padding: 10px 5px 5px 5px; 
   overflow: scroll;
-  height: 100%;
+  height: 300px;
 
 	.top_point {
 		border-radius: 50%;
@@ -298,6 +298,23 @@
     padding: 5px;
 		float: left;
 
+    .sender {
+      display: flex;
+      align-content: space-between;
+      margin-bottom: 5px;
+
+      img {
+        width: 25px;
+        height: auto;
+        margin-right: 10px;
+      }
+
+      p {
+        font-weight: 1000;
+        font-size: 0.9em;
+      }
+    }
+
 		.message {
 			overflow-wrap: break-word;
 		}
@@ -312,6 +329,10 @@
   .message_item.own {
     background: linear-gradient(to bottom, #4c77e6 5%, #7f4af5);
     float: right;
+
+    img {
+      display: none;
+    }
   }
 
  .loading {

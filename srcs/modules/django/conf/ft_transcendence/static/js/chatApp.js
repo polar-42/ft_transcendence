@@ -110,6 +110,7 @@ function onMessageChat(e)
 {
   const data = JSON.parse(e.data)
 
+  console.log(data)
   switch (data['type']) {
     case 'search_conv':
       displaySearchResult(data.data) 
@@ -125,6 +126,9 @@ function onMessageChat(e)
       break
     case 'actualize_chat_history':
       actualizeChatHistory(data.data)
+      break
+    case 'actualize_channel_history':
+      actualizeChannelHistory(data.data)
       break
     case 'channel_history':
       displayChannelHistory(data.data)
@@ -247,6 +251,7 @@ function displayChannel(data) {
       '</div>'
 
     document.querySelector(".main_box_body").innerHTML = html
+    let conversation = document.querySelector(".conversation")
     let sendbox = document.querySelector(".sendbox")
     sendbox.children[0].addEventListener("keypress", (event) => {
       if (event.key === "Enter") {
@@ -259,12 +264,23 @@ function displayChannel(data) {
       sendbox.children[0].value = ""
     })
 
+    var lastScrollTop = 0
+    conversation.addEventListener("scroll", () => {
+      let st = conversation.scrollTop
+
+      if (st <= (lastScrollTop * 0.1)) {
+        chanOnTopScroll(data.name)
+      }
+      lastScrollTop = st
+    })
+
 
     loadChanUser(data)
 
     chatSocket.send(JSON.stringify({
-      'type': 'get_history_chat',
-      'target': data.name
+      'type': 'get_history_channel',
+      'target': data.name,
+      'msgId': -1
     }))
 
     function loadChanUser(data) {
@@ -299,6 +315,7 @@ function displayChannel(data) {
   }
 }
 
+
 async function displayChannelHistory(data) {
   let conversation = document.querySelector(".conversation")
   let Response = await fetch(document.location.origin + '/authApp/getUserID/',
@@ -310,7 +327,7 @@ async function displayChannelHistory(data) {
   }
   let userData = await Response.json()
 
-  for (let i = 0; i < data.length - 1; i++) {
+  for (let i =  data.length - 1; i >= 0; i--) {
 
     let sender 
     let received
@@ -323,11 +340,14 @@ async function displayChannelHistory(data) {
     }
 
     let item = 
-      '<li class="message_item ' + received + '">' +
-      '<div class="sender">' + sender + '</div>' +
+      '<li class="message_item ' + received + '" msgId="' + data[i].id + '">' +
+      '<div class="sender">' +
+        '<img src="../static/assets/logo/user.png" alt="sender profile picture">' +
+        '<p>' +sender + '</p>' +
+      '</div>' +
       '<div class="message_wrapper">' +
       '<p class="message">' + data[i].message + '</p>' +
-      '<p class="timestamp">' + data[i].time + '</p>' +
+      '<p class="timestamp">' + data[i].time.substring(0, 19) + '</p>' +
       '</div>' +
       '</li>'
 
@@ -337,6 +357,7 @@ async function displayChannelHistory(data) {
       conversation.lastChild.insertAdjacentHTML("afterend", item)
     }
   }
+  conversation.scrollTo(0, conversation.scrollHeight)
 }
 
 function goToConv(id) {
@@ -360,7 +381,8 @@ function goToChan(name) {
   console.log('target: ', name)
   chatSocket.send(JSON.stringify({
     'type': 'get_channel',
-    'target': name 
+    'target': name,
+    'msgId': -1
   }))
 }
 
@@ -543,21 +565,13 @@ function getHistoryChat(target, msgId)
   }))
 }
 
-function getHistoryChannel()
+function getHistoryChannel(channelName, msgId)
 {
-  let target = document.getElementById('target_user');
-
-  if (target.value.length <= 3)
-  {
-    console.log('Error: channel name too small');
-    return;
-  }
-
   chatSocket.send(JSON.stringify({
     'type': 'get_history_channel',
-    'target': target.value
+    'target': channelName,
+    'msgId': msgId
   }))
-  target.value = "";
 }
 
 function displayPrivMsg(data) {
@@ -663,14 +677,16 @@ async function receiveChanMsg(data) {
 
   let item =
     '<li class="message_item ' + received + '">' +
-    '<div class="sender">' + sender + '</div>' +
-    '<div class="message_wrapper">' +
+    '<div class="sender">' +
+      '<img src="../static/assets/logo/user.png" alt="sender profile picture">' +
+      '<p>' + sender + '<p>' +
+    '</div>' +
+    '<div class="messGage_wrapper">' +
     '<p class="message">' + data.message + '</p>' +
     '<p class="timestamp">' + data.time.substring(0, 19) + '</p>' +
     '</div>' +
     '</li>'
 
-  console.log(item)
   if (conversation.children.length > 0) {
     conversation.lastChild.insertAdjacentHTML("afterend", item)
   } else {
@@ -680,8 +696,14 @@ async function receiveChanMsg(data) {
 }
 
 async function prvMsgOnTopScroll(contactId) {
-  let lastMsgId = parseInt(document.querySelector(".conversation > li").getAttribute('msgId')) - 1
+  let lastMsgId = parseInt(document.querySelector(".conversation > li").getAttribute('msgId'))
   getHistoryChat(contactId, lastMsgId)
+}
+
+async function chanOnTopScroll(channelName) {
+  let lastMsgId = parseInt(document.querySelector(".conversation > li").getAttribute('msgId'))
+  console.log(lastMsgId)
+  getHistoryChannel(channelName, lastMsgId)
 }
 
 function sleep (time) {
@@ -716,6 +738,55 @@ async function actualizeChatHistory(data) {
 
       conversation.firstChild.insertAdjacentHTML("afterend", item)
     }
+    conversation.firstChild.remove()
+  }
+}
+
+async function actualizeChannelHistory(data) {
+  let conversation = document.querySelector(".conversation")
+  if (data.length === 0) {
+    if (conversation.firstChild.classList[0] !== 'top_point') {
+      conversation.prepend(document.createElement("div"))
+      conversation.children[0].classList.add("top_point")
+    }
+  } else {
+    let loadingHtml = "<img src='../static/assets/logo/loader-circle-regular-36.png' class='loading'>"
+    conversation.firstChild.insertAdjacentHTML("beforebegin", loadingHtml)
+    await sleep(300)
+    let html = ''
+    for (let i = data.length - 1; i >= 0; i--) {
+      let Response = await fetch(document.location.origin + '/authApp/getUserID/',
+        {
+          method: 'GET'
+        })
+      if (!Response.ok) {
+        throw new Error('Error when fetching user datas')
+      }
+      let userData = await Response.json()
+      let received
+      let sender
+
+      if (data[i].senderID !== userData.userID) {
+        received = 'own'
+        sender = '' 
+      } else {
+        received = ''
+        sender = data[i].sender
+      }
+      let item = 
+        '<li class="message_item ' + received + '" msgid="' + data[i].id + '">' +
+        '<div class="sender">' +
+          '<img src="../static/assets/logo/user.png" alt="sender profile picture">' +
+          '<p>' + sender + '<p>' +
+        '</div>' +
+        '<div class="messGage_wrapper">' +
+        '<p class="message">' + data[i].message + '</p>' +
+        '<p class="timestamp">' + data[i].time.substring(0, 19) + '</p>' +
+        '</div>' +
+        '</li>'
+        html += item
+    }
+    conversation.firstChild.insertAdjacentHTML("afterend", html)
     conversation.firstChild.remove()
   }
 }
