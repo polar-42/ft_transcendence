@@ -140,6 +140,7 @@ document.addEventListener("DOMContentLoaded", () =>
     router()
   })
 
+  
 function clickLogout(e) {
   let profileDropDowns = document.querySelectorAll(".profile_menu");
   profileDropDowns.forEach((menu) => menu.classList.remove("open"));

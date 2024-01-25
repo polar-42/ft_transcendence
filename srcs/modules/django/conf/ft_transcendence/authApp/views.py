@@ -132,3 +132,14 @@ def Get2FaStatus(request):
 		return JsonResponse({'error': 'User not authenticated'})
 	usr = User.objects.get(id=request.user.id)
 	return JsonResponse({'status': True if (usr.tfEnable == True and usr.tfValidated == True) else False})
+
+def Start2FaActivation(request):
+	if request.user.is_authenticated == False:
+		return render(request, 'index.html')
+	usr = User.objects.get(id=request.user.id)
+	return render(request, 'authApp/TFA/PopUp.html')
+
+def TFAConfirmPass(request):
+	if request.user.is_authenticated == False:
+		return render(request, 'index.html')
+	return render(request, 'authApp/TFA/ConfirmPass.html')

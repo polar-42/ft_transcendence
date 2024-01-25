@@ -27,13 +27,61 @@ export function initUpdateAccount() {
 				throw new Error(data.error)
 			if (data.status == true)
 				document.querySelector('input[type="checkbox"]').checked = true
-			console.log(data.status)
 		})
 		.catch(error =>
 			{
 			  console.error('Error:', error)
 			  feedback.innerHTML = data.message
 			})
+		let checkbox = document.querySelector('input[type="checkbox"]')
+		checkbox.addEventListener('change', function() {
+		Handle2FaToggle(checkbox)
+	})
+}
+
+function Handle2FaToggle(checkbox)
+{
+	if (checkbox.checked == true)
+	{
+		fetch(window.location.origin + "/authApp/Start2FaActivation")
+		.then (Response => {
+			if (!Response.ok) {
+				throw new Error('Network response was not okay')
+			}
+			return Response.text()
+		})
+		.then (texted => {
+			document.querySelector("#app").lastElementChild.insertAdjacentHTML("afterend", texted)
+			const doc = document.querySelector("#app").lastElementChild
+			return doc
+		})
+		.then( doc => {
+			Effective2Fa(doc)
+		})
+		.catch (error => {
+			console.log(error)
+		})
+	}
+	else
+	{
+
+	}
+}
+
+function Effective2Fa(doc)
+{
+	let content = doc.querySelector('.TFA_Content')
+	fetch (window.location.origin + "/authApp/TFAConfirmPass")
+	.then (Response => {
+		if (!Response.ok) {
+			throw new Error('Network response was not okay')
+		}
+		return Response.text()
+	})
+	.then (texted => {
+		content.innerHTML = texted
+		return
+	})
 }
 
 let imgFile = undefined
