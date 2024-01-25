@@ -6,7 +6,7 @@ from authApp import models as userModels
 import time
 
 class ChannelChat():
-	def __init__(self, name, privacyStatus, creator):
+	def __init__(self, name, description, privacyStatus, creator):
 		if ChannelModels.objects.filter(channelName=name).exists():
 
 			self.ChanModel = ChannelModels.objects.get(channelName=name)
@@ -25,20 +25,23 @@ class ChannelChat():
 			return
 
 		self.channelName = name
+		self.description = description
 		self.privacyStatus = channelPrivacy(privacyStatus)
-		self.admin = creator
+		self.admin = userModels.User.objects.get(identification=creator)
 		self.channel_layer = get_channel_layer()
 		self.usersSocket = []
 
 		if self.admin is not None:
 			self.usersSocket.append(creator)
 
+			print('admin: ',self.admin)
 			obj = ChannelModels.objects.create(
 				channelName=self.channelName,
 				privacyStatus = self.privacyStatus,
-				users=[self.admin.userIdentification],
+                description = self.description,
+				users=[self.admin.identification],
 			)
-			print(self.admin.userIdentification, 'create channel', self.channelName)
+			print(self.admin.identification, 'create channel', self.channelName)
 
 		else: #ONLY FOR GENERAL CHANNEL
 			obj = ChannelModels.objects.create(
@@ -68,13 +71,13 @@ class ChannelChat():
 			tab = []
 			tab.append(user.userIdentification)
 
-		elif user.userIdentification not in self.ChanModel.users:
+		elif user.identification not in self.ChanModel.users:
 			tab.append(user.userIdentification)
 
 		self.ChanModel.users = tab
 		self.ChanModel.save()
 
-		print(user.userIdentification, 'join channel', self.channelName, 'with', self.ChanModel.users)
+		print(user.identification, 'join channel', self.channelName, 'with', self.ChanModel.users)
 
 	def leaveChannel(self, user):
 		if user is None:
@@ -89,12 +92,12 @@ class ChannelChat():
 			self.ChanModel.users = tab
 			self.ChanModel.save()
 
-		print(user.userIdentification, 'leave channel', self.channelName, 'with', self.ChanModel.users) #TO DEL
+		print(user.identification, 'leave channel', self.channelName, 'with', self.ChanModel.users) #TO DEL
 
 	def sendMessageChannel(self, sender, message):
 		msg = MessageModels.objects.create(
 			message=message,
-			sender=sender.userIdentification,
+			sender=sender.identification,
 			receiver=self.channelName #TO CHANGE ???
 		)
 		msg.save()
@@ -104,7 +107,7 @@ class ChannelChat():
             {
                'type': 'chatChannelMessage',
 				'channel': self.channelName,
-				'sender': sender.userIdentification,
+				'sender': sender.identification,
 				'message': message,
 				'time': time.strftime("%Y-%m-%d %X")
             }

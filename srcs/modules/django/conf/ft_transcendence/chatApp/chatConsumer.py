@@ -10,7 +10,7 @@ from django.db.models import Q
 
 
 def createGeneralChat(allChannels):
-	allChannels["General"] = ChannelChat("General", channelPrivacy.Public, None)
+	allChannels["General"] = ChannelChat("General", "General channel", channelPrivacy.Public, None)
 
 class chatSocket(WebsocketConsumer):
 	allChannels = {}
@@ -89,6 +89,8 @@ class chatSocket(WebsocketConsumer):
 			self.sendPrivateMessage(data['target'], data['message'])
 		elif data['type'] == 'channel_message':
 			self.sendChannelMessage(data['target'], data['message'])
+		elif data['type'] == 'create_channel':
+			self.createChannel(data['channel_name'], data['channel_description'], data['adminId'], data['privacy_status'])
 		elif data['type'] == 'channel_join':
 			self.joinChannel(data['target'])
 		elif data['type'] == 'channel_leave':
@@ -118,8 +120,8 @@ class chatSocket(WebsocketConsumer):
  
 	def joinChannel(self, channelName):
 		if channelName not in self.allChannels:
+			return
 			#TO CHANGE FOR A CREATE CHANNEL BUTTON WITH OPTIONS
-			self.allChannels[channelName] = ChannelChat(channelName, channelPrivacy.Public, self)
 		else:
 			self.allChannels[channelName].joinChannel(self)
 
@@ -609,3 +611,19 @@ class chatSocket(WebsocketConsumer):
 			'data': response
 			}))
 
+	def createChannel(self, channelName, channelDescription, adminId, privacyStatus):
+		if ChannelModels.objects.get(channelName=channelName) is None:
+			self.allChannels[channelName] = ChannelChat(channelName, channelDescription, privacyStatus, adminId)
+			self.send(json.dumps({
+				'type': 'channel_creation',
+				'state': 'success',
+				'channel_name': self.allChannels[channelName].channelName
+				})
+			 )
+		else:
+			self.send(json.dumps({
+				'type': 'channel_creation',
+				'state': 'failed',
+				'reason': 'Channel already exists'
+				})
+			 )

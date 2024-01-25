@@ -100,6 +100,10 @@
   width: 80%;
 }
 
+.main_box_header.homepage img.back_arrow {
+  cursor: pointer;
+}
+
 .main_box_body.homepage {
   background: var(--main-bg-color);
   position: relative;
@@ -216,6 +220,77 @@
   color: var(--main-bg-color);
 }
 
+.main_box_body.homepage .channel_creation_box {
+  position: relative;
+  bottom: 350px;
+  width: 80%;
+  height: 280px;
+  background: var(--fourth);
+  border-radius: 2px;
+  margin: auto;
+  box-shadow: 0px 0px 5px var(--main-color);
+
+  h2 {
+    font-size: 1.3em;
+  }
+
+  div {
+    width: 70%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  input[type="text"] {
+    outline: none;
+    border-radius: 2px;
+    border: 1px solid #ccc;
+    border-bottom-width: 2px;
+    padding-left: 10px;
+  }
+
+  .privacy_checkbox_wrapper {
+    display: flex;
+    justify-content: space-evenly;
+    margin-bottom: 5px;
+  }
+
+  .checkbox_wrapper input {
+    display: inline-block;
+    margin-left: 5px;
+    margin-right: 5px;
+  }
+
+  button {
+    width: 100px;
+    padding: 3px 7px 3px 7px;
+    font-size: 1em;
+    color: white;
+    background: 
+    linear-gradient(135deg, var(--secondary-bg-color),  var(--main-bg-color)),
+    var(--main-bg-color);
+    border: 1px solid var(--main-bg-color);
+    border-radius: 2px;
+    transition: all .3s ease;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background: 
+      linear-gradient(135deg, rgba(0, 155, 217, 0.1), rgba(0, 155, 217, 0.4)),
+      white;
+    color: var(--main-bg-color);
+    cursor: pointer;
+  }
+
+  .feedback {
+    font-size: 0.7em;
+    font-family: radjhanibold;
+    color: red;
+  } 
+}
+
 .main_box_header.private_message ,
 .main_box_header.channel {
   background: var(--secondary-bg-color);
@@ -227,7 +302,7 @@
 
 .main_box_body.channel .conversation_body {
   display: flex;
-  
+
 }
 
 .main_box_header.private_message .contact_wrapper, 
@@ -249,7 +324,7 @@
 .main_box_header.channel .contact_name_wrapper {
   font-size: 1.2em;
   height: 100%;
-	align-self: center;
+  align-self: center;
 }
 
 .main_box_header.private_message .contact_name_wrapper {
@@ -258,7 +333,7 @@
 }
 
 .main_box_header.channel .contact_name_wrapper .channel_description {
-	font-size: 0.7em
+  font-size: 0.7em
 }
 
 .main_box_header.private_message img,
@@ -283,20 +358,20 @@
   overflow: scroll;
   height: 300px;
 
-	.top_point {
-		border-radius: 50%;
-		background: #6d5af0;
-		height: 10px;
-		width: 10px;
-		margin: 10px auto 15px auto;
-	}
+  .top_point {
+    border-radius: 50%;
+    background: #6d5af0;
+    height: 10px;
+    width: 10px;
+    margin: 10px auto 15px auto;
+  }
   .message_item {
     border-radius: 8px;
     background: linear-gradient(to bottom, #585858, var(--secondary-bg-color));
     width: 70%;
     margin-top: 10px;
     padding: 5px;
-		float: left;
+    float: left;
 
     .sender {
       display: flex;
@@ -315,9 +390,9 @@
       }
     }
 
-		.message {
-			overflow-wrap: break-word;
-		}
+    .message {
+      overflow-wrap: break-word;
+    }
 
     .timestamp {
       font-size: 0.7em;
@@ -335,10 +410,10 @@
     }
   }
 
- .loading {
-	display: inline-block;
-	margin-left: 152px;
-}
+  .loading {
+    display: inline-block;
+    margin-left: 152px;
+  }
 }
 
 .main_box_body.private_message .sendbox,
@@ -400,7 +475,7 @@
   .username {
     text-overflow: ellipsis;
   }
-  
+
   .connection_point {
     position: relative;
     top: 0;

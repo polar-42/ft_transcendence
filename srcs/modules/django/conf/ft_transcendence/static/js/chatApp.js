@@ -1,5 +1,6 @@
 // import { convertArray } from "three/src/animation/AnimationUtils.js";
 import { checkConnexion } from "./authApp.js";
+import { navto } from "./index.js";
 
 
 let chatHeader = document.querySelector(".chatbox_header_wrapper");
@@ -36,8 +37,9 @@ function initChatHomepage() {
 function initHomepageHeader() {
   let mainBoxHeader = document.querySelector(".main_box_header")
   mainBoxHeader.classList.add("homepage")
-
-  let html = '<img src="../static/assets/logo/search-regular-24.png" alt="search icon"><input type="text" name"searchbar">'
+  let html = 
+    '<img src="../static/assets/logo/search-regular-24.png" alt="search icon">' +
+    '<input type="text" name"searchbar">'
   mainBoxHeader.innerHTML = html
   mainBoxHeader.children[1].addEventListener("keypress", (event) => {
     if (event.key === 'Enter') {
@@ -61,10 +63,13 @@ function initHomepageBody() {
   let html = '<h2>Discussions</h2>' +
     '<ul class="conversation_list"></ul>' +
     '<div class="chatbox_homepage_navbar">' +
-    '<button name="discussions">Discussions</button>' +
-    '<button name="friends">Friends</button>' +
+      '<button name="discussions">Discussions</button>' +
+      '<button name="friends">Friends</button>' +
+      '<button name="create_channel">Create a channel</button>' +
 	  '</div>'
   mainBoxBody.innerHTML = html
+
+  document.querySelector("button[name='create_channel']").addEventListener("click", initCreateChannel)
   getLastChat()
 }
 
@@ -144,6 +149,11 @@ function onMessageChat(e)
 
 function displaySearchResult(data) {
   let resultWrapper = document.querySelector(".conversation_list")
+  document.querySelector(".main_box_header").insertAdjacentHTML("beforeend", '<img src="../static/assets/logo/arrow-back-regular-60.png" alt="return back button" class="back_arrow">')
+  document.querySelector(".main_box_header img.back_arrow").addEventListener("click", () => {
+    cleanMainBox()
+    initChatHomepage()
+  })
 
   while (resultWrapper.children.length > 0) {
     resultWrapper.removeChild(resultWrapper.children[0])
@@ -790,3 +800,98 @@ async function actualizeChannelHistory(data) {
     conversation.firstChild.remove()
   }
 }
+
+function initCreateChannel() {
+  let navbar = document.querySelector(".chatbox_homepage_navbar")
+  let navbarBTN = document.querySelector("button[name='create_channel']")
+
+  let html = 
+    '<div class="channel_creation_box">' +
+      '<h2>Create a new channel</h2>' +
+      '<div class="channel_name_wrapper">' +
+        '<p>Channel name:</p>' +
+        '<input type="text" name="channel_name" placeholder="Enter channel name">' +
+      '</div>' +
+      '<div class="channel_description_wrapper">' +
+        '<p>Channel description:</p>' +
+        '<input type="text" name="channel_description" placeholder="Enter channel description">' +
+      '</div>' +
+      '<div class="privacy_setting>' +
+        '<p class="privacy_label">Privacy settings</p>' +
+        '<div class="privacy_checkbox_wrapper">' +
+          '<div class="checkbox_wrapper">' +
+            '<input type="checkbox" name="Public"/>' +
+            '<label for="Public">Public</label>' + 
+          '</div>' +
+          '<div class="checkbox_wrapper">' +
+            '<input type="checkbox" name="Private"/>' +
+            '<label for="Private">Private</label>' + 
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="submit_wrapper">' +
+        '<button class="creation_BTN">Create</button>' +
+        '<p class="feedback"></p>'+
+    '</div>'
+
+  navbar.insertAdjacentHTML("afterend", html)
+  navbarBTN.removeEventListener("click", initCreateChannel)
+  navbarBTN.addEventListener("click", closeChannelCreationBox)
+  document.querySelector(".channel_creation_box button").addEventListener("click", createChannel)
+  document.querySelectorAll(".channel_creation_box input").forEach((inputBox) => {
+    inputBox.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") 
+        createChannel()
+    })
+  })
+  let checkboxes = document.querySelectorAll(".privacy_checkbox_wrapper input")
+  checkboxes.forEach((input) => {
+    input.addEventListener("change", () => {
+      checkboxes.forEach((item) => {
+        if (item !== input) 
+          item.checked = false
+      })
+    })
+  })
+  document.querySelector(".channel_creation_box input").focus()
+
+  function closeChannelCreationBox() {
+    document.querySelector(".channel_creation_box").remove()
+    let navbarBTN = document.querySelector("button[name='create_channel']")
+    navbarBTN.removeEventListener("click", closeChannelCreationBox)
+    navbarBTN.addEventListener("click", initCreateChannel)
+  }
+}
+
+async function createChannel() {
+  let channelName = document.querySelector(".channel_creation_box input[name='channel_name']").value
+  let channelDescription = document.querySelector(".channel_creation_box input[name='channel_description']").value
+  let Response = await fetch(document.location.origin + '/authApp/getUserID/',
+    {
+      method: 'GET'
+    })
+  if (!Response.ok) {
+    throw new Error('Error when fetching user datas')
+  }
+  let adminData = await Response.json()
+  let checkboxes = document.querySelectorAll(".privacy_checkbox_wrapper input")
+  let privacyStatus
+  if (checkboxes[0].checked === true)
+    privacyStatus = 0
+  else
+    privacyStatus = 1
+  if (channelName.length === 0 || channelDescription.length === 0) {
+      let html = '<p class="feedback">Empty field</p>'
+      document.querySelector(".channel_creation_box button").insertAdjacentHTML("afterend", html)
+      return
+  }
+
+  chatSocket.send(JSON.stringify({
+    'type': 'create_channel',
+    'channel_name': channelName,
+    'channel_description': channelDescription,
+    'privacy_status': privacyStatus,
+    'adminId': adminData.userID
+  }))
+}
+
