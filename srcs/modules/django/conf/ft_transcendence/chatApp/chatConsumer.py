@@ -1,4 +1,4 @@
-import json, time
+import json, time, operator
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from .enumChat import connexionStatus, channelPrivacy
@@ -16,8 +16,11 @@ class chatSocket(WebsocketConsumer):
 	allChannels = {}
 
 	def connect(self):
-		if len(self.allChannels) <= 0:
+		if len(ChannelModels.objects.all()) <= 0:
 			createGeneralChat(self.allChannels)
+		else:
+			for chan in ChannelModels.objects.all():
+				self.allChannels[chan.channelName] = ChannelChat(chan.channelName, chan.description, chan.privacyStatus, chan.admin[0])
 
 		self.user = self.scope['user']
 		self.userId = self.scope['user'].id
@@ -33,11 +36,13 @@ class chatSocket(WebsocketConsumer):
 		print(self.user.username, 'is connected to chat socket with chatId =', self.chatId)
 
 		tabChannels = self.UserModel.channels
+		print('tabChannels: ',tabChannels)
 		if tabChannels is not None:
 			for chan in tabChannels:
 				self.joinChannel(chan)
 		else:
-			self.joinChannel("general")
+			print('here')
+			self.allChannels['General'].joinChannel(self.UserModel)
 
 		async_to_sync(self.channel_layer.group_add)(
 			self.chatId,
@@ -119,11 +124,11 @@ class chatSocket(WebsocketConsumer):
 			self.searchConv(data['input'])
  
 	def joinChannel(self, channelName):
-		if channelName not in self.allChannels:
+		if self.UserModel.channels is None or channelName in self.UserModel.channels:
 			return
-			#TO CHANGE FOR A CREATE CHANNEL BUTTON WITH OPTIONS
 		else:
-			self.allChannels[channelName].joinChannel(self)
+			print('la')
+			self.allChannels[channelName].joinChannel(self.UserModel)
 
 		tab = self.UserModel.channels
 		if tab is None:
@@ -350,6 +355,7 @@ class chatSocket(WebsocketConsumer):
 				})
 
 		for userName in channel.users:
+			print(userName)
 			user = userModels.User.objects.get(identification=userName)
 			channelUsers.append({
 				'name': user.username,
@@ -560,18 +566,22 @@ class chatSocket(WebsocketConsumer):
 
 	def searchConv(self, input):
 		allUsers = userModels.User.objects.exclude(Q(username='IA') | Q(username='admin') | Q(username = self.UserModel.username)) 
-		allChannelsName = self.UserModel.channels 
-		allChannels = ChannelModels.objects.filter(channelName__in=allChannelsName)
+		allChannels = ChannelModels.objects.all()
 		response = []
 
 		for chan in allChannels:
-			print('channel: ', chan)
 			if chan.channelName.find(input) >= 0:
 				msgs = MessageModels.objects.filter(receiver=chan.channelName) 
+				if chan.users is not None and self.UserModel.identification in chan.users:
+					member = True
+				else:
+					member = False
+
 				if msgs.count() > 0:
 					response.append({
 						'type': 'channel',
 						'name': chan.channelName,
+						'member': member,
 						'users': chan.users,
 						'description': chan.description,
 						'last_msg': msgs[0].message
@@ -580,6 +590,7 @@ class chatSocket(WebsocketConsumer):
 					response.append({
 						'type': 'channel',
 						'name': chan.channelName,
+						'member': member,
 						'users': chan.users,
 						'description': chan.description,
 						'last_msg': "" })
@@ -605,15 +616,19 @@ class chatSocket(WebsocketConsumer):
 						'last_msg': '' })
 
 
-		print(response)
+		response.sort(key=lambda el: el['name'].lower())
 		self.send(json.dumps({
 			'type': 'search_conv',
 			'data': response
 			}))
 
 	def createChannel(self, channelName, channelDescription, adminId, privacyStatus):
-		if ChannelModels.objects.get(channelName=channelName) is None:
+		if ChannelModels.objects.filter(channelName=channelName).exists() is False:
+			print(self.allChannels)
 			self.allChannels[channelName] = ChannelChat(channelName, channelDescription, privacyStatus, adminId)
+			print(self.allChannels)
+			self.UserModel.channels.append(channelName)
+			self.UserModel.save()
 			self.send(json.dumps({
 				'type': 'channel_creation',
 				'state': 'success',
