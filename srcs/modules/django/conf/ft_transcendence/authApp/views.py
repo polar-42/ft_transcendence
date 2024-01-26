@@ -139,7 +139,20 @@ def Start2FaActivation(request):
 	usr = User.objects.get(id=request.user.id)
 	return render(request, 'authApp/TFA/PopUp.html')
 
-def TFAConfirmPass(request):
+def TFAConfirmPassPage(request):
 	if request.user.is_authenticated == False:
 		return render(request, 'index.html')
 	return render(request, 'authApp/TFA/ConfirmPass.html')
+
+def TFACheckPass(request):
+	if request.user.is_authenticated == False:
+		return HttpResponse('', content_type="text/plain")
+	userModel = User.objects.get(id=request.user.id)
+	ColorPrint.prGreen(userModel)
+	ColorPrint.prYellow(type(userModel))
+	data = json.loads(request.body)
+	if len(data.get('password')) == 0:
+		return HttpResponse('', content_type="text/plain")
+	if check_password(data.get('password'), userModel.password):
+		return render(request, 'authApp/TFA/Choose2FA.html')
+	return HttpResponse('', content_type="text/plain") 

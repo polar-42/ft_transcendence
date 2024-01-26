@@ -106,20 +106,19 @@
     width: calc(100% / 2 - 20px);
   }
   
-  .input-box input {
+  .TFA_PopUp .input-box input {
     height: 45px;
     width: 100%;
     outline: none;
     border-radius: 5px;
-    border: 1px solid #ccc;
     border-bottom-width: 2px;
     padding-left: 15px;
     font-size: 20px;
     transition: all .2s;
   }
   
-  .input-box input:focus {
-    border-color: var(--secondary); 
+  .TFA_PopUp .input-box input:focus {
+    /* border-color: var(--secondary);  */
   }
 
   .TFA_Content .button_wrapper {
@@ -128,7 +127,7 @@
     margin-top: 50px;
   }
 
-  .TFA_Content button {
+  .TFA_Content .button_wrapper button {
     width: 150px;
     letter-spacing: 2px;
     background: 
@@ -143,10 +142,25 @@
     transition: all .3s;
   }
   
-  .TFA_Content button:hover {
+  .TFA_Content .button_wrapper button:hover {
     background: 
         linear-gradient(135deg, rgba(0, 155, 217, 0.1), rgba(0, 155, 217, 0.4)),
         white;
     color: var(--main-bg-color);
     cursor: pointer;
+  }
+
+  .TFA_Content .button_selector {
+    margin-top: 30px;
+    margin-left: 50px;
+    margin-right: 50px;
+  }
+
+  .selector_button {
+    height: 50px;
+    width: 50px;
+    border-radius: 5px;
+  }
+  .selector_button.selected_BTN {
+    border: 1px solid var(--main-bg-color);
   }

@@ -28,60 +28,139 @@ export function initUpdateAccount() {
 			if (data.status == true)
 				document.querySelector('input[type="checkbox"]').checked = true
 		})
-		.catch(error =>
-			{
-			  console.error('Error:', error)
-			  feedback.innerHTML = data.message
-			})
-		let checkbox = document.querySelector('input[type="checkbox"]')
-		checkbox.addEventListener('change', function() {
+		.catch(error => {
+			console.error('Error:', error)
+			feedback.innerHTML = data.message
+		})
+	let checkbox = document.querySelector('input[type="checkbox"]')
+	checkbox.addEventListener('change', function () {
 		Handle2FaToggle(checkbox)
 	})
 }
 
-function Handle2FaToggle(checkbox)
-{
-	if (checkbox.checked == true)
-	{
+function Handle2FaToggle(checkbox) {
+	if (checkbox.checked == true) {
 		fetch(window.location.origin + "/authApp/Start2FaActivation")
-		.then (Response => {
+			.then(Response => {
+				if (!Response.ok) {
+					throw new Error('Network response was not okay')
+				}
+				return Response.text()
+			})
+			.then(texted => {
+				document.querySelector("#app").lastElementChild.insertAdjacentHTML("afterend", texted)
+				const doc = document.querySelector("#app").lastElementChild
+				return doc
+			})
+			.then(doc => {
+				Effective2Fa(doc)
+			})
+			.catch(error => {
+				console.log(error)
+			})
+	}
+	else {
+
+	}
+}
+
+function Effective2Fa(doc) {
+	let content = doc.querySelector('.TFA_Content')
+	fetch(window.location.origin + "/authApp/TFAConfirmPass")
+		.then(Response => {
 			if (!Response.ok) {
 				throw new Error('Network response was not okay')
 			}
 			return Response.text()
 		})
-		.then (texted => {
-			document.querySelector("#app").lastElementChild.insertAdjacentHTML("afterend", texted)
-			const doc = document.querySelector("#app").lastElementChild
-			return doc
+		.then(texted => {
+			content.innerHTML = texted
+			content.querySelector('.submit_BTN').addEventListener('click', () => {
+				VerifyPass(content)
+			})
 		})
-		.then( doc => {
-			Effective2Fa(doc)
+		.catch(error => {
+			console.error(error)
 		})
-		.catch (error => {
-			console.log(error)
-		})
-	}
-	else
-	{
+}
 
+function VerifyPass(content) {
+
+	console.log ("Toto")
+	const crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
+	var header = new Headers()
+	header.append('Content-Type', 'application/json')
+	header.append('X-CSRFToken', crsf_token)
+	const data = { password: content.querySelector('#Input_pwd').value }
+	content.querySelector('#messageError').text = ""
+	fetch(document.location.origin + "/authApp/TFACheckPass",
+		{
+			method: 'POST',
+			headers: header,
+			body: JSON.stringify(data)
+		})
+		.then(Response => {
+			if (!Response.ok)
+			{
+				throw new Error('Network response was not okay')
+			}
+			return Response.text()
+		})
+		.then (texted => {
+			if (texted.length === 0)
+			{
+				content.querySelector('#messageError').text = "Invalid password"
+				content.querySelector('#Input_pwd').style.background =  "#fa6969"
+			}
+			else
+			{
+				Select2FA(content, texted)
+			}
+		})
+		.catch(error => {
+			console.error(error)
+		})
+}
+
+var selected = undefined
+
+function Select2FA(content, text)
+{
+	content.querySelector('.submit_BTN').removeEventListener('click', VerifyPass)
+	content.innerHTML = text
+	selected = undefined
+	const list = content.querySelectorAll(".selector_button")
+	list.forEach(Element =>{
+		Element.addEventListener("click", () => {
+			console.log(Element)
+			SelectorButtonBehavior(list, Element)
+		})
+	})
+	content.querySelector('.submit_BTN').addEventListener('click', () => {
+		ChooseAuth(content)
+	})
+}
+
+function SelectorButtonBehavior(list, self)
+{
+	console.log(list)
+	console.log(self)
+	if (self.classList.contains("selected_BTN") == false)
+	{
+		selected = self.id
+		self.classList.add("selected_BTN")
+		list.forEach(Element => {
+			if (Element != self && Element.classList.contains("selected_BTN") == true)
+			{
+				Element.classList.remove("selected_BTN")
+			}
+		})
 	}
 }
 
-function Effective2Fa(doc)
+function ChooseAuth(content)
 {
-	let content = doc.querySelector('.TFA_Content')
-	fetch (window.location.origin + "/authApp/TFAConfirmPass")
-	.then (Response => {
-		if (!Response.ok) {
-			throw new Error('Network response was not okay')
-		}
-		return Response.text()
-	})
-	.then (texted => {
-		content.innerHTML = texted
-		return
-	})
+	console.log("Choose")
 }
 
 let imgFile = undefined

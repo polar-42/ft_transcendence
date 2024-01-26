@@ -14,6 +14,7 @@ urlpatterns = [
     path('get_avatar_image', views.getAvatarImage),
     path('Get2FaStatus', views.Get2FaStatus),
     path('Start2FaActivation', views.Start2FaActivation),
-    path('TFAConfirmPass', views.TFAConfirmPass),
+    path('TFAConfirmPass', views.TFAConfirmPassPage),
+    path('TFACheckPass', views.TFACheckPass),
 
 ]
