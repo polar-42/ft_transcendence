@@ -29,11 +29,11 @@ class chatSocket(WebsocketConsumer):
 		self.UserModel.connexionStatus = connexionStatus.Connected
 		self.UserModel.save()
 
-		self.userIdentification = self.UserModel.identification
+		self.userIdentification = self.UserModel.username
 		self.allUsers[self.userIdentification] = self.user
 		self.chatId = 'chat_' + self.userIdentification
 
-		print(self.user.username, 'is connected to chat socket with chatId =', self.chatId)
+		print(self.user.nickname, 'is connected to chat socket with chatId =', self.chatId) #TO DEL
 
 		tabChannels = self.UserModel.channels
 		if tabChannels is not None:
@@ -52,14 +52,14 @@ class chatSocket(WebsocketConsumer):
 		#TO DEL
 		tab = self.UserModel.channels
 		if tab is not None:
-			print('All', self.user.username, 'channels:')
+			print('All', self.user.nickname, 'channels:')
 			for x in tab:
 				print(x)
 		tab = self.UserModel.blockedUser
 		if tab is not None:
-			print('All', self.user.username, 'blockedUser:')
+			print('All', self.user.nickname, 'blockedUser:')
 			for x in tab:
-				print(userModels.User.objects.get(identification=x).identification)
+				print(userModels.User.objects.get(username=x).nickname)
 		#TO DEL
 
 	def disconnect(self, code):
@@ -155,24 +155,24 @@ class chatSocket(WebsocketConsumer):
 		)
 
 	def sendPrivateMessage(self, receiver, message):
-		if userModels.User.objects.filter(identification=receiver).exists() is False:
-			print(self.user.username, 'try to send a message to', receiver, 'but he dont exist')
+		if userModels.User.objects.filter(username=receiver).exists() is False or receiver == self.userIdentification:
+			print(self.user.username, 'try to send a message to', receiver, 'but he dont exist') #TO DEL
 			return
 
-		receiverModel = userModels.User.objects.get(identification=receiver)
+		receiverModel = userModels.User.objects.get(username=receiver)
 
 		if self.isBlock(receiverModel):
-			print(self.user.username, 'try to send a message to', receiver, 'but he block him')
+			print(self.user.nickname, 'try to send a message to', receiverModel.nickname, 'but he block him') #TO DEL
 			return
 
 		if self.isBlockBy(receiverModel):
-			print(self.user.username, 'try to send a message to user', receiver, 'who block him') #TO DEL
+			print(self.user.nickname, 'try to send a message to user', receiverModel.nickname, 'who block him') #TO DEL
 			return
 
 		msg = MessageModels.objects.create(
 			message=message,
 			sender=self.userIdentification,
-			receiver=receiverModel.identification
+			receiver=receiver
 		)
 		msg.save()
 
@@ -180,7 +180,7 @@ class chatSocket(WebsocketConsumer):
             'chat_' + receiver,
             {
                 'type': 'chatPrivateMessage',
-				'sender': self.userIdentification,
+				'sender': self.user.nickname + '-' + self.userIdentification,
 				'message': message
             }
         )
@@ -191,20 +191,20 @@ class chatSocket(WebsocketConsumer):
 
 			if tab is not None and channel in tab:
 				self.allChannels[channel].sendMessageChannel(self, message)
-				print('message from', self.user.username, 'to channel', channel, 'is', message) #TO DEL
+				print('message from', self.user.nickname, 'to channel', channel, 'is', message) #TO DEL
 				return #TO DEL
 
-		print(self.user.username, 'is not in channel', channel, 'and cant send message') #TO DEL
+		print(self.user.nickname, 'is not in channel', channel, 'and cant send message') #TO DEL
 
 	def blockUser(self, user):
-		if userModels.User.objects.filter(identification=user).exists() is False:
-			print(user, 'has been try to be block by', self.user.username, 'but', user, 'dont exist') #TO DEL
+		if userModels.User.objects.filter(username=user).exists() is False:
+			print(user, 'has been try to be block by', self.user.nickname, 'but', user, 'dont exist') #TO DEL
 			return
 
-		userModel = userModels.User.objects.get(identification=user)
+		userModel = userModels.User.objects.get(username=user)
 
 		if userModel.id == self.userId:
-			print(self.user.username, 'try to block himself') #TO DEL
+			print(self.user.nickname, 'try to block himself') #TO DEL
 			return
 
 		blockedUser = self.UserModel.blockedUser
@@ -212,19 +212,19 @@ class chatSocket(WebsocketConsumer):
 		if blockedUser is None:
 			blockedUser = []
 
-		if str(userModel.id) not in blockedUser:
-			blockedUser.append(userModel.identification)
+		if userModel.username not in blockedUser:
+			blockedUser.append(userModel.username)
 			self.UserModel.blockedUser = blockedUser
 			self.UserModel.save()
 
-		print(user, 'has been block by', self.user.username) #TO DEL
+		print(userModel.nickname, 'has been block by', self.user.nickname) #TO DEL
 
 	def unblockUser(self, user):
-		if userModels.User.objects.filter(identification=user).exists() is False:
-			print(user, 'has been try to be unblock by', self.user.username, 'but', user, 'dont exist') #TO DEL
+		if userModels.User.objects.filter(username=user).exists() is False:
+			print(user, 'has been try to be unblock by', self.user.nickname, 'but', user, 'dont exist') #TO DEL
 			return
 
-		userModel = userModels.User.objects.get(identification=user)
+		userModel = userModels.User.objects.get(username=user)
 
 		if userModel.id == self.userId:
 			print(self.user.username, 'try to unblock himself') #TO DEL
@@ -235,12 +235,12 @@ class chatSocket(WebsocketConsumer):
 		if blockedUser is None:
 			blockedUser = []
 
-		if str(userModel.identification) in blockedUser:
-			blockedUser.remove(userModel.identification)
+		if userModel.username in blockedUser:
+			blockedUser.remove(userModel.username)
 			self.UserModel.blockedUser = blockedUser
 			self.UserModel.save()
 
-		print(user, 'has been unblock by', self.user.username) #TO DEL
+		print(user, 'has been unblock by', self.user.nickname) #TO DEL
 
 	def getLastChat(self):
 		allMessageChannels = []
@@ -250,7 +250,7 @@ class chatSocket(WebsocketConsumer):
 				if msgs is not None:
 					allMessageChannels.append(msgs.order_by('-id')[0])
 
-		allMessages = MessageModels.objects.filter(Q(sender=self.userId) | Q(receiver=self.userId))
+		allMessages = MessageModels.objects.filter(Q(sender=self.userIdentification) | Q(receiver=self.userIdentification))
 		allConv = allMessageChannels
 
 		blockedUser = self.UserModel.blockedUser
@@ -258,14 +258,16 @@ class chatSocket(WebsocketConsumer):
 		for msg in allMessages:
 			x = 0
 			for conv in allConv:
-
-				if conv.receiver in blockedUser or conv.sender in blockedUser or msg.sender in blockedUser or msg.receiver in blockedUser:
+				if blockedUser is not None and (conv.receiver in blockedUser or conv.sender in blockedUser or msg.sender in blockedUser or msg.receiver in blockedUser):
 					x = -1
 					break
 				elif conv.receiver == msg.receiver and conv.sender == msg.sender:
 					x = -1
 					break
-				elif conv.receiver == msg.sender and conv.sender == msg.receive:
+				elif conv.receiver == msg.sender and conv.sender == msg.receiver:
+					x = -1
+					break
+				elif conv.receiver == msg.receiver:
 					x = -1
 					break
 				x += 1
@@ -274,11 +276,23 @@ class chatSocket(WebsocketConsumer):
 				allConv.append(msg)
 
 		for conv in allConv:
+			if userModels.User.objects.filter(username=conv.sender).exists():
+				senderModel = userModels.User.objects.get(username=conv.sender)
+				sender = senderModel.nickname + '-' + senderModel.username
+			else:
+				sender = conv.sender
+
+			if userModels.User.objects.filter(username=conv.receiver).exists():
+				receiverModel = userModels.User.objects.get(username=conv.receiver)
+				receiver = receiverModel.nickname + '-' + receiverModel.username
+			else:
+				receiver = conv.receiver
+   
 			self.send(text_data=json.dumps({
 				'type': 'all_chat_history',
 				'message': conv.message,
-				'sender': conv.sender,
-				'receiver': conv.receiver,
+				'sender': sender,
+				'receiver': receiver,
 				'time': str(conv.timeCreation)
 			}))
 
@@ -286,7 +300,7 @@ class chatSocket(WebsocketConsumer):
 		if userModels.User.objects.filter(id=user.id).exists():
 			blockedUser = self.UserModel.blockedUser
 
-			if blockedUser is not None and user.identification in blockedUser:
+			if blockedUser is not None and user.username in blockedUser:
 				return True
 
 		return False
@@ -304,9 +318,10 @@ class chatSocket(WebsocketConsumer):
 		allUsers = userModels.User.objects.exclude(Q(username='IA') | Q(username='admin'))
 
 		for user in allUsers.values():
+			username = user['nickname'] + '-' + user['username']
 			self.send(text_data=json.dumps({
 				'type': 'all_users_data',
-				'username': user['identification'],
+				'username': username,
 				'online_status': user['connexionStatus']
 			}))
 
@@ -328,31 +343,31 @@ class chatSocket(WebsocketConsumer):
 				}))
 
 	def getHistoryChat(self, chatTarget):
-		if userModels.User.objects.filter(identification=chatTarget).exists() is False:
+		if userModels.User.objects.filter(username=chatTarget).exists() is False:
 			return
 
-		identificationChatTarget = userModels.User.objects.get(identification=chatTarget).identification
+		modelChatTarget = userModels.User.objects.get(username=chatTarget)
 
 		messages = MessageModels.objects.filter(
-			(Q(sender=str(self.userIdentification)) & Q(receiver=identificationChatTarget)) |
- 			(Q(receiver=str(self.userIdentification)) & Q(sender=identificationChatTarget))).order_by('-id')[:10]
+			(Q(sender=str(self.userIdentification)) & Q(receiver=modelChatTarget.username)) |
+ 			(Q(receiver=str(self.userIdentification)) & Q(sender=modelChatTarget.username))).order_by('-id')[:10]
 
 		for msg in messages.values():
 			if msg['sender'] == self.userIdentification:
-				sender = self.userIdentification
+				sender = self.user.nickname + '-' + self.userIdentification
 			else:
-				sender = chatTarget
+				sender = modelChatTarget.nickname + '-' + modelChatTarget.username
 			if msg['receiver'] == self.userIdentification:
-				receiver = self.userIdentification
+				receiver = self.user.nickname + '-' + self.userIdentification
 			else:
-				receiver = chatTarget
+				receiver = modelChatTarget.nickname + '-' + modelChatTarget.username
 
 			self.send(text_data=json.dumps({
 				'type': 'chat_history',
-				'time': str(msg['timeCreation']),
 				'sender': sender,
 				'receiver': receiver,
-				'message': msg['message']
+				'message': msg['message'],
+				'time': str(msg['timeCreation'])
 			}))
 
 	def getHistoryChannel(self, channelTarget):
@@ -362,34 +377,34 @@ class chatSocket(WebsocketConsumer):
 		messages = MessageModels.objects.filter(receiver=channelTarget).order_by('-id')[:10]
 
 		for msg in messages.values():
-			senderModel = userModels.User.objects.get(identification=msg['sender'])
+			senderModel = userModels.User.objects.get(username=msg['sender'])
 
 			if self.isBlock(senderModel) is False:
 				self.send(text_data=json.dumps({
 					'type': 'chat_history',
 					'time': str(msg['timeCreation']),
-					'sender': senderModel.identification,
+					'sender': senderModel.nickname + '-' + senderModel.username,
 					'receiver': msg['receiver'],
 					'message': msg['message']
 				}))
 
 	def inviteToPong(self, receiver):
-		if userModels.User.objects.filter(identification=receiver).exists() is False:
-			print(self.user.username, 'try to invite', receiver, 'but he dont exist')
+		if userModels.User.objects.filter(username=receiver).exists() is False or receiver == self.userIdentification:
+			print(self.user.username, 'try to invite', receiver, 'but he dont exist') #TO DEL
 			return
 
-		receiverModel = userModels.User.objects.get(identification=receiver)
+		receiverModel = userModels.User.objects.get(username=receiver)
 
 		if receiverModel.connexionStatus != connexionStatus.Connected:
-			print(self.user.username, 'try to invite', receiver, 'but he is not online')
+			print(self.user.username, 'try to invite', receiverModel.nickname, 'but he is not online') #TO DEL
 			return
 
 		if self.isBlock(receiverModel):
-			print(self.user.username, 'try to invite', receiver, 'but he block him')
+			print(self.user.username, 'try to invite', receiverModel.nickname, 'but he block him') #TO DEL
 			return
 
 		if self.isBlockBy(receiverModel):
-			print(self.user.username, 'try to invite', receiver, 'who block him') #TO DEL
+			print(self.user.username, 'try to invite', receiverModel.nickname, 'who block him') #TO DEL
 			return
 
 		async_to_sync(self.channel_layer.group_send)(
@@ -401,11 +416,11 @@ class chatSocket(WebsocketConsumer):
         )
 
 	def inviteBattleship(self, receiver):
-		if userModels.User.objects.filter(identification=receiver).exists() is False:
-			print(self.user.username, 'try to invite', receiver, 'but he dont exist')
+		if userModels.User.objects.filter(username=receiver).exists() is False:
+			print(self.user.username, 'try to invite', receiver, 'but he dont exist') #TO DEL
 			return
 
-		receiverModel = userModels.User.objects.get(identification=receiver)
+		receiverModel = userModels.User.objects.get(username=receiver)
 
 		if receiverModel.connexionStatus != connexionStatus.Connected:
 			print(self.user.username, 'try to invite', receiver, 'but he is not online')
@@ -428,7 +443,7 @@ class chatSocket(WebsocketConsumer):
         )
 
 	def acceptInvitationPong(self, sender):
-		senderModel = userModels.User.objects.get(identification=sender)
+		senderModel = userModels.User.objects.get(username=sender)
 		if senderModel is None:
 			return
 
@@ -452,7 +467,7 @@ class chatSocket(WebsocketConsumer):
 		)
 
 	def acceptInvitationBattleship(self, sender):
-		senderModel = userModels.User.objects.get(identification=sender)
+		senderModel = userModels.User.objects.get(username=sender)
 		if senderModel is None:
 			return
 
@@ -522,15 +537,15 @@ class chatSocket(WebsocketConsumer):
 		message = event['message']
 		channel = event['channel']
 
-		senderModel = userModels.User.objects.get(identification=sender)
+		senderModel = userModels.User.objects.get(username=sender)
 		if self.isBlock(senderModel):
-			print(sender, 'try to send a message on channel', channel, 'to', self.user.username, 'but he block him') #TO DEL
+			print(sender, 'try to send a message on channel', channel, 'to', self.user.nickname, 'but he block him') #TO DEL
 			return
 
 		self.send(text_data=json.dumps({
     		'type': 'chat_channel_message',
 			'channel': channel,
-			'sender': senderModel.identification,
+			'sender': senderModel.nickname + '-' + senderModel.username,
 			'message': message,
 			'time': time.strftime("%Y-%m-%d %X")
     	}))

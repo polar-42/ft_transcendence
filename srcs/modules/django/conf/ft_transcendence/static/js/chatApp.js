@@ -14,23 +14,24 @@ let chatSocket = undefined;
 
 function startChatConnexion()
 {
-	//chatSocket = new WebSocket("ws://" + window.location.host + '/chat/');
+	chatSocket = new WebSocket("ws://" + window.location.host + '/chat/');
+	//chatSocket = new WebSocket("wss://" + window.location.host + '/chat/');
 
-	//document.getElementById('chat_submit').addEventListener("click", sendMessage);
-	//document.getElementById('channel_submit').addEventListener("click", channelMessage);
-	//document.getElementById('invite_pong').addEventListener("click", inviteToPongGame);
-	//document.getElementById('invite_battleship').addEventListener("click", inviteToBattleshipGame);
-	//document.getElementById('channel_join').addEventListener("click", joinChannel);
-	//document.getElementById('channel_leave').addEventListener("click", leaveChannel);
-	//document.getElementById('user_block').addEventListener("click", blockUser);
-	//document.getElementById('user_unblock').addEventListener("click", unblockUser);
-	//document.getElementById('get_last_chat').addEventListener("click", getLastChat);
-	//document.getElementById('get_all_users').addEventListener("click", getAllUsers);
-	//document.getElementById('get_history_chat').addEventListener("click", getHistoryChat);
-	//document.getElementById('get_history_channel').addEventListener("click", getHistoryChannel);
+	document.getElementById('chat_submit').addEventListener("click", sendMessage);
+	document.getElementById('channel_submit').addEventListener("click", channelMessage);
+	document.getElementById('invite_pong').addEventListener("click", inviteToPongGame);
+	document.getElementById('invite_battleship').addEventListener("click", inviteToBattleshipGame);
+	document.getElementById('channel_join').addEventListener("click", joinChannel);
+	document.getElementById('channel_leave').addEventListener("click", leaveChannel);
+	document.getElementById('user_block').addEventListener("click", blockUser);
+	document.getElementById('user_unblock').addEventListener("click", unblockUser);
+	document.getElementById('get_last_chat').addEventListener("click", getLastChat);
+	document.getElementById('get_all_users').addEventListener("click", getAllUsers);
+	document.getElementById('get_history_chat').addEventListener("click", getHistoryChat);
+	document.getElementById('get_history_channel').addEventListener("click", getHistoryChannel);
 
-	//chatSocket.onclose = closeChatSocket;
-	//chatSocket.onmessage = e => onMessageChat(e);
+	chatSocket.onclose = closeChatSocket;
+	chatSocket.onmessage = e => onMessageChat(e);
 }
 
 function closeChatSocket()

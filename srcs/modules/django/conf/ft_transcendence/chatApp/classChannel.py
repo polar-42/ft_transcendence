@@ -77,7 +77,7 @@ class ChannelChat():
 		print(user.userIdentification, 'join channel', self.channelName, 'with', self.ChanModel.users)
 
 	def leaveChannel(self, user):
-		if user is None:
+		if user is None or user not in self.usersSocket:
 			return
 
 		if user in self.usersSocket:
@@ -85,9 +85,10 @@ class ChannelChat():
 
 		if self.ChanModel.users is not None:
 			tab = self.ChanModel.users
-			tab.remove(user.userIdentification)
-			self.ChanModel.users = tab
-			self.ChanModel.save()
+			if user.userIdentification in tab:
+				tab.remove(user.userIdentification)
+				self.ChanModel.users = tab
+				self.ChanModel.save()
 
 		print(user.userIdentification, 'leave channel', self.channelName, 'with', self.ChanModel.users) #TO DEL
 

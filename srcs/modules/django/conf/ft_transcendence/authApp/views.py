@@ -31,6 +31,7 @@ def logPage(request):
 			else:
 				isPasswordValid = False
 
+			print('test', isPasswordValid)
 			if isPasswordValid:
 				login(request, userModel)
 				return JsonResponse({'message': 'Connexion successfull'})
@@ -77,7 +78,7 @@ def register(request):
 
 			passwordHash = make_password(password)
 			new_obj = User.objects.create(
-				customUsername=username,
+				nickname=username,
 				email=email,
 				password=passwordHash,
 				username=getRandString()
@@ -116,7 +117,7 @@ def check_connexion(request):
 
 def getUserName(request):
     if request.user.is_authenticated:
-        return JsonResponse({'userName': request.user.customUsername})
+        return JsonResponse({'userName': request.user.nickname})
     else:
         return JsonResponse({'userName': 'LOG IN'})
 

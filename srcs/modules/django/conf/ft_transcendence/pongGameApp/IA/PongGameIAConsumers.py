@@ -74,7 +74,7 @@ class PongGameIASocket(WebsocketConsumer):
 				'reason': 'score',
 				'playerone_score': str(playerone_score),
 				'playertwo_score': str(playertwo_score),
-				'playerone_username': self.user.username,
+				'playerone_username': self.user.nickname,
 				'playertwo_username': 'IA',
     	}))
 

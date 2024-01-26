@@ -19,10 +19,10 @@ class Command(BaseCommand):
         password = make_password('123456789')
 
         # Check if the user already exists
-        if not User.objects.filter(username=username).exists():
+        if not User.objects.filter(email=email).exists():
             User.objects.create(
                 username=getRandString(),
-                customUsername=username,
+                nickname=username,
                 email=email,
                 password=password
             )
@@ -32,11 +32,12 @@ class Command(BaseCommand):
 
         username = 'chromeprivate'
         email = 'chromeprivate@chromeprivate.com'
+        password = make_password('123456789')
 
         # Check if the user already exists
-        if not User.objects.filter(username=username).exists():
+        if not User.objects.filter(email=email).exists():
             User.objects.create_user(
-                customUsername=username,
+                nickname=username,
                 email=email,
                 password=password,
                 username=getRandString())
@@ -46,11 +47,12 @@ class Command(BaseCommand):
 
         username = 'brave'
         email = 'brave@brave.com'
+        password = make_password('123456789')
 
         # Check if the user already exists
-        if not User.objects.filter(username=username).exists():
+        if not User.objects.filter(email=email).exists():
             User.objects.create_user(
-                customUsername=username,
+                nickname=username,
                 email=email,
                 password=password,
                 username=getRandString())
@@ -60,12 +62,12 @@ class Command(BaseCommand):
 
         username = 'braveprivate'
         email = 'braveprivate@braveprivate.com'
-        password = '123456789'
+        password = make_password('123456789')
 
         # Check if the user already exists
-        if not User.objects.filter(username=username).exists():
+        if not User.objects.filter(email=email).exists():
             User.objects.create_user(
-                customUsername=username,
+                nickname=username,
                 email=email,
                 password=password,
                 username=getRandString())
@@ -75,14 +77,15 @@ class Command(BaseCommand):
 
         username = 'IA'
         email = 'IA@test.com'
+        password = make_password('123456789')
 
         # Check if the user already exists
-        if not User.objects.filter(username=username).exists():
+        if not User.objects.filter(email=email).exists():
             User.objects.create_user(
-                customUsername=username,
+                nickname=username,
                 email=email,
                 password=password,
-                username=getRandString())
+                username=username)
             print('User created successfully')
         else:
             print('User already exists')
