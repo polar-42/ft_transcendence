@@ -4,3 +4,5 @@ sujet_transcendence.pdf
 mysite/
 __pycache__/
 *.pyc
+*.ttf
+*.eot

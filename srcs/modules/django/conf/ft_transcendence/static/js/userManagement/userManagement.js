@@ -133,7 +133,7 @@ function Select2FA(content, text)
 	list.forEach(Element =>{
 		Element.addEventListener("click", () => {
 			console.log(Element)
-			SelectorButtonBehavior(list, Element)
+			SelectorButtonBehavior(list, Element, content)
 		})
 	})
 	content.querySelector('.submit_BTN').addEventListener('click', () => {
@@ -141,10 +141,8 @@ function Select2FA(content, text)
 	})
 }
 
-function SelectorButtonBehavior(list, self)
+function SelectorButtonBehavior(list, self, content)
 {
-	console.log(list)
-	console.log(self)
 	if (self.classList.contains("selected_BTN") == false)
 	{
 		selected = self.id
@@ -156,11 +154,38 @@ function SelectorButtonBehavior(list, self)
 			}
 		})
 	}
+	if (selected != undefined)
+		content.querySelector('.submit_BTN').removeAttribute("disabled")
+	else
+		content.querySelector('.submit_BTN').addAttribute("disabled")
 }
 
 function ChooseAuth(content)
 {
-	console.log("Choose")
+	if (selected == undefined)
+		return
+
+	const crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
+	var header = new Headers()
+	header.append('Content-Type', 'application/json')
+	header.append('X-CSRFToken', crsf_token)
+	const data = { selectedAuth: selected }
+	fetch(document.location.origin + "/authApp/TFASelected",
+	{
+		method: 'POST',
+		headers: header,
+		body: JSON.stringify(data)
+	})
+	.then(Response => {
+		if (!Response.ok)
+		{
+			throw new Error('Network response was not okay')
+		}
+		return Response.json()
+	})
+	.then(data => {
+		
+	})
 }
 
 let imgFile = undefined

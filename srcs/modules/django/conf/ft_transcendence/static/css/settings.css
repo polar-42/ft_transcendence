@@ -116,10 +116,6 @@
     font-size: 20px;
     transition: all .2s;
   }
-  
-  .TFA_PopUp .input-box input:focus {
-    /* border-color: var(--secondary);  */
-  }
 
   .TFA_Content .button_wrapper {
     display: flex;
@@ -152,8 +148,14 @@
 
   .TFA_Content .button_selector {
     margin-top: 30px;
-    margin-left: 50px;
-    margin-right: 50px;
+	margin-left: calc(50% - 50px);
+  }
+  .TFA_Content .button_selector .selector_button_div {
+	width: fit-content;
+	text-align: center;
+  }	
+  .TFA_Content .button_selector p {
+	text-align: center;
   }
 
   .selector_button {
