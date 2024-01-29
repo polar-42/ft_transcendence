@@ -13,6 +13,7 @@ export function initGamePong()
 	gameId = arguments[0];
 	console.log("GameID = " + gameId);
 	console.log("ws://" + window.location.host + '/pongGame/RemoteGame/' + gameId);
+	//pongGameSocket = new WebSocket("wss://" + window.location.host + '/pongGame/RemoteGame/' + gameId);
 	pongGameSocket = new WebSocket("ws://" + window.location.host + '/pongGame/RemoteGame/' + gameId);
 	console.log(pongGameSocket);
 

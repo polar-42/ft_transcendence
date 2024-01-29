@@ -11,7 +11,7 @@ const boxSize = 60
 const offsetX = 10
 const offsetY = 100
 
-const FP_BTN_Validate = 
+const FP_BTN_Validate =
 {
 	x : (offsetX + boxSize * gridSizeX + 2) + ((1080 - (offsetX + boxSize * gridSizeX + 2)) / 2) - 100,
 	y : 600,
@@ -43,6 +43,7 @@ export function initGame()
 		return
 	}
 	gameId = arguments[0]
+	//battleshipSocket = new WebSocket("wss://" + window.location.host + '/battleshipApp/Game/' + gameId)
 	battleshipSocket = new WebSocket("ws://" + window.location.host + '/battleshipApp/Game/' + gameId)
 	battleshipSocket.onmessage = e => OnMessage(e)
 }
@@ -245,7 +246,7 @@ let FP_tmpBoat = {x : 0, y : 0, horizontal : true}
 function FP_mouseDown(e)
 {
 	if (e.button != 0 || validated == true)
-		return 
+		return
 	const mouseX = e.clientX - canvas.getBoundingClientRect().left
 	const mouseY = e.clientY - canvas.getBoundingClientRect().top
 
@@ -257,17 +258,17 @@ function FP_mouseDown(e)
 			FP_tmpBoat.horizontal = element.horizontal
 			if (element.ArrayX != -1)
 			{
-				if (element.horizontal == true) 
+				if (element.horizontal == true)
 				{
-					for (let i = 0; i < element.size; i++) 
+					for (let i = 0; i < element.size; i++)
 					{
 						if (BoardArray[element.ArrayY][element.ArrayX + i] == 1)
 							BoardArray[element.ArrayY][element.ArrayX + i] = 0
 					}
 				}
-				else 
+				else
 				{
-					for (let i = 0; i < element.size; i++) 
+					for (let i = 0; i < element.size; i++)
 					{
 						if (BoardArray[element.ArrayY + i][element.ArrayX] == 1)
 							BoardArray[element.ArrayY + i][element.ArrayX] = 0
@@ -392,7 +393,7 @@ function FP_mouseRightClick(e)
     e.preventDefault()
 	const mouseX = e.clientX - canvas.getBoundingClientRect().left
     const mouseY = e.clientY - canvas.getBoundingClientRect().top
-	BoatList.forEach(element => 
+	BoatList.forEach(element =>
 	{
 		if (element.isDragging)
 		{
@@ -408,13 +409,13 @@ function FP_mouseRightClick(e)
 
 function FP_drawBoats( dragging )
 {
-	BoatList.forEach(element => 
+	BoatList.forEach(element =>
 	{
 		if (element.isDragging == false || dragging == true)
 		{
 			ctx.beginPath()
 			if (element.horizontal == true)
-				ctx.rect(element.x, element.y, element.size * boxSize, boxSize)	
+				ctx.rect(element.x, element.y, element.size * boxSize, boxSize)
 			else
 				ctx.rect(element.x, element.y, boxSize, element.size * boxSize)
 			ctx.fillStyle = "blue"
@@ -426,13 +427,13 @@ function FP_drawBoats( dragging )
 
 function FP_drawDragged()
 {
-	BoatList.forEach(element => 
+	BoatList.forEach(element =>
 		{
 			if (element.isDragging == true)
 			{
 				ctx.beginPath()
 				if (element.horizontal == true)
-					ctx.rect(element.x, element.y, element.size * boxSize, boxSize)	
+					ctx.rect(element.x, element.y, element.size * boxSize, boxSize)
 				else
 					ctx.rect(element.x, element.y, boxSize, element.size * boxSize)
 				ctx.fillStyle = "red"
@@ -571,9 +572,9 @@ function SP_mouseClick(event)
 {
 	const mouseX = event.clientX - canvas.getBoundingClientRect().left
 	const mouseY = event.clientY - canvas.getBoundingClientRect().top
-	
+
 	const ArrayPos = CP_getArrayPos(mouseX, mouseY)
-	
+
 	if (ArrayPos.x == - 1)
 	{
 		if (mouseX > FP_BTN_Validate.x && mouseX < FP_BTN_Validate.x + FP_BTN_Validate.w && mouseY > FP_BTN_Validate.y && mouseY < FP_BTN_Validate.y + FP_BTN_Validate.h)
