@@ -8,13 +8,13 @@ let chatSocket = undefined;
 
 export async function initChat()
 {
-  let logStatus = await checkConnexion();
-  if (logStatus == true && chatSocket == undefined)
-  {
+	let logStatus = await checkConnexion();
+	if (logStatus == true && chatSocket == undefined)
+	{
     chatHeader.classList.add('connected')
     chatHeader.addEventListener("click", openChatbox)
-    startChatConnexion();
-  }
+		startChatConnexion();
+	}
 }
 
 function openChatbox() {
@@ -63,10 +63,10 @@ function initHomepageBody() {
   let html = '<h2>Discussions</h2>' +
     '<ul class="conversation_list"></ul>' +
     '<div class="chatbox_homepage_navbar">' +
-    '<button name="discussions">Discussions</button>' +
-    '<button name="friends">Friends</button>' +
-    '<button name="create_channel">Create a channel</button>' +
-    '</div>'
+      '<button name="discussions">Discussions</button>' +
+      '<button name="friends">Friends</button>' +
+      '<button name="create_channel">Create a channel</button>' +
+	  '</div>'
   mainBoxBody.innerHTML = html
 
   document.querySelector("button[name='create_channel']").addEventListener("click", initCreateChannel)
@@ -144,9 +144,6 @@ function onMessageChat(e)
     case 'chat_channel_message':
       receiveChanMsg(data)
       break
-    case 'channel_creation':
-      receiveChannelCreation(data)
-      break
   }
 }
 
@@ -176,16 +173,15 @@ function displaySearchResult(data) {
 
     let item = 
       '<li type="' + data[i].type + '">' +
-      '<img src="../static/assets/logo/user.png" alt="converstion_picture">' +
-      '<div class="conversation_text">' +
-      '<div class="conversation_name">' +
-      '<p>' + data[i].name + '</p>' +
-      '<div class="connection_point ' + isConnected + '"></div>' +
-      '</div>' +
-      '<p class="last_msg"></p>' +
-      '</div>' +
-      '<img src="../static/assets/logo/user-plus-regular-36.png" name="join_btn" alt="Join channe button">' +
-      '<div class="notification_wrapper ' + isNoticationActive + '"></div>' +
+        '<img src="../static/assets/logo/user.png" alt="converstion_picture">' +
+        '<div class="conversation_text">' +
+          '<div class="conversation_name">' +
+            '<p>' + data[i].name + '</p>' +
+            '<div class="connection_point ' + isConnected + '"></div>' +
+          '</div>' +
+          '<p class="last_msg"></p>' +
+        '</div>' +
+        '<div class="notification_wrapper ' + isNoticationActive + '"></div>' +
       '</li>'
 
     if (resultWrapper.children.length > 0) {
@@ -193,20 +189,13 @@ function displaySearchResult(data) {
     } else {
       resultWrapper.innerHTML = item
     }
-    if (data[i].type === 'private_message' || data[i].member === true) {
-      resultWrapper.lastChild.querySelector("img[name='join_btn']").style.display = 'none'
-      resultWrapper.lastChild.addEventListener("click", () => {
-        if (data[i].type === 'private_message') { 
-          goToConv(data[i].identification)
-        } else if (data[i].type === 'channel') {
-          goToChan(data[i].name)
-        }
-      })
-    } else {
-      resultWrapper.lastChild.querySelector("img[name='join_btn']").addEventListener("click", () => {
-        joinChannel(data[i].name)
-      })
-    }
+    resultWrapper.lastChild.addEventListener("click", () => {
+      if (data[i].type === 'private_message') { 
+        goToConv(data[i].identification)
+      } else if (data[i].type === 'channel') {
+        goToChan(data[i].name)
+      }
+    })
   }
 }
 
@@ -221,11 +210,11 @@ function displayChatHistory(data) {
     }
 
     let item = 
-      '<li class="message_item" msgid=' + data['data'][i].id + '>' +
-      '<p class="message">' + data['data'][i].message + '</p>' +
-      '<p class="timestamp">' + data['data'][i].time.substring(0, 19) + '</p>' +
-      '</li>'
-
+						'<li class="message_item" msgid=' + data['data'][i].id + '>' +
+							'<p class="message">' + data['data'][i].message + '</p>' +
+							'<p class="timestamp">' + data['data'][i].time.substring(0, 19) + '</p>' +
+						'</li>'
+    
     if (conversation.children.length === 0) {
       conversation.innerHTML = item
     } else {
@@ -242,11 +231,11 @@ function displayChannel(data) {
   function initChanHeader(data) {
     let html = 
       '<div class="contact_wrapper">' +
-      '<img src="../static/assets/logo/user.png" alt="channel picture">' +
-      '<div class="contact_name_wrapper">' +
-      '<p class="channel_name">' + data.name + '</p>' +
-      '<p class="channel_description">' + data.description + '</p>' +
-      '</div>' +
+        '<img src="../static/assets/logo/user.png" alt="channel picture">' +
+        '<div class="contact_name_wrapper">' +
+          '<p class="channel_name">' + data.name + '</p>' +
+          '<p class="channel_description">' + data.description + '</p>' +
+        '</div>' +
       '</div>' +
       '<img src="../static/assets/logo/arrow-back-regular-60.png" alt="return arrow button">'
 
@@ -263,12 +252,12 @@ function displayChannel(data) {
   function initChanBody(data) {
     let html = 
       '<div class="conversation_body">' +
-      '<div class="sidebar"></div>' +
-      '<div class="conversation"></div>' +
+        '<div class="sidebar"></div>' +
+        '<div class="conversation"></div>' +
       '</div>' +
       '<div class="sendbox">' +
-      '<input type="text" placeholder="Enter your message">' +
-      '<img src="../static/assets/logo/send-solid-60.png" alt="send arrow">' +
+        '<input type="text" placeholder="Enter your message">' +
+        '<img src="../static/assets/logo/send-solid-60.png" alt="send arrow">' +
       '</div>'
 
     document.querySelector(".main_box_body").innerHTML = html
@@ -363,8 +352,8 @@ async function displayChannelHistory(data) {
     let item = 
       '<li class="message_item ' + received + '" msgId="' + data[i].id + '">' +
       '<div class="sender">' +
-      '<img src="../static/assets/logo/user.png" alt="sender profile picture">' +
-      '<p>' +sender + '</p>' +
+        '<img src="../static/assets/logo/user.png" alt="sender profile picture">' +
+        '<p>' +sender + '</p>' +
       '</div>' +
       '<div class="message_wrapper">' +
       '<p class="message">' + data[i].message + '</p>' +
@@ -492,12 +481,21 @@ function invitePong()
   channelName.value = "";
 }
 
-function joinChannel(channelName)
+function joinChannel()
 {
+  let channelName = document.getElementById('target_user');
+
+  if (channelName.value.length <= 3)
+  {
+    console.log('Error: channel name too small');
+    return;
+  }
+
   chatSocket.send(JSON.stringify({
     'type': 'channel_join',
-    'target': channelName
+    'target': channelName.value
   }))
+  channelName.value = "";
 }
 
 
@@ -690,8 +688,8 @@ async function receiveChanMsg(data) {
   let item =
     '<li class="message_item ' + received + '">' +
     '<div class="sender">' +
-    '<img src="../static/assets/logo/user.png" alt="sender profile picture">' +
-    '<p>' + sender + '<p>' +
+      '<img src="../static/assets/logo/user.png" alt="sender profile picture">' +
+      '<p>' + sender + '<p>' +
     '</div>' +
     '<div class="messGage_wrapper">' +
     '<p class="message">' + data.message + '</p>' +
@@ -788,15 +786,15 @@ async function actualizeChannelHistory(data) {
       let item = 
         '<li class="message_item ' + received + '" msgid="' + data[i].id + '">' +
         '<div class="sender">' +
-        '<img src="../static/assets/logo/user.png" alt="sender profile picture">' +
-        '<p>' + sender + '<p>' +
+          '<img src="../static/assets/logo/user.png" alt="sender profile picture">' +
+          '<p>' + sender + '<p>' +
         '</div>' +
         '<div class="messGage_wrapper">' +
         '<p class="message">' + data[i].message + '</p>' +
         '<p class="timestamp">' + data[i].time.substring(0, 19) + '</p>' +
         '</div>' +
         '</li>'
-      html += item
+        html += item
     }
     conversation.firstChild.insertAdjacentHTML("afterend", html)
     conversation.firstChild.remove()
@@ -809,31 +807,31 @@ function initCreateChannel() {
 
   let html = 
     '<div class="channel_creation_box">' +
-    '<h2>Create a new channel</h2>' +
-    '<div class="channel_name_wrapper">' +
-    '<p>Channel name:</p>' +
-    '<input type="text" name="channel_name" placeholder="Enter channel name">' +
-    '</div>' +
-    '<div class="channel_description_wrapper">' +
-    '<p>Channel description:</p>' +
-    '<input type="text" name="channel_description" placeholder="Enter channel description">' +
-    '</div>' +
-    '<div class="privacy_setting>' +
-    '<p class="privacy_label">Privacy settings</p>' +
-    '<div class="privacy_checkbox_wrapper">' +
-    '<div class="checkbox_wrapper">' +
-    '<input type="checkbox" name="Public"/>' +
-    '<label for="Public">Public</label>' + 
-    '</div>' +
-    '<div class="checkbox_wrapper">' +
-    '<input type="checkbox" name="Private"/>' +
-    '<label for="Private">Private</label>' + 
-    '</div>' +
-    '</div>' +
-    '</div>' +
-    '<div class="submit_wrapper">' +
-    '<button class="creation_BTN">Create</button>' +
-    '<p class="feedback"></p>'+
+      '<h2>Create a new channel</h2>' +
+      '<div class="channel_name_wrapper">' +
+        '<p>Channel name:</p>' +
+        '<input type="text" name="channel_name" placeholder="Enter channel name">' +
+      '</div>' +
+      '<div class="channel_description_wrapper">' +
+        '<p>Channel description:</p>' +
+        '<input type="text" name="channel_description" placeholder="Enter channel description">' +
+      '</div>' +
+      '<div class="privacy_setting>' +
+        '<p class="privacy_label">Privacy settings</p>' +
+        '<div class="privacy_checkbox_wrapper">' +
+          '<div class="checkbox_wrapper">' +
+            '<input type="checkbox" name="Public"/>' +
+            '<label for="Public">Public</label>' + 
+          '</div>' +
+          '<div class="checkbox_wrapper">' +
+            '<input type="checkbox" name="Private"/>' +
+            '<label for="Private">Private</label>' + 
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="submit_wrapper">' +
+        '<button class="creation_BTN">Create</button>' +
+        '<p class="feedback"></p>'+
     '</div>'
 
   navbar.insertAdjacentHTML("afterend", html)
@@ -883,8 +881,9 @@ async function createChannel() {
   else
     privacyStatus = 1
   if (channelName.length === 0 || channelDescription.length === 0) {
-    document.querySelector(".channel_creation_box .submit_wrapper .feedback").textContent = 'Empty field'
-    return
+      let html = '<p class="feedback">Empty field</p>'
+      document.querySelector(".channel_creation_box button").insertAdjacentHTML("afterend", html)
+      return
   }
 
   chatSocket.send(JSON.stringify({
@@ -896,12 +895,3 @@ async function createChannel() {
   }))
 }
 
-
-function receiveChannelCreation(data) {
-  if (data['state'] === 'failed') {
-    document.querySelector(".channel_creation_box .submit_wrapper .feedback").textContent = data['reason'] 
-    return
-  }
-  cleanMainBox()
-  goToChan(data['channel_name'])
-}

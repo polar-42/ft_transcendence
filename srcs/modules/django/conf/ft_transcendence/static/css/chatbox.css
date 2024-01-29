@@ -156,13 +156,9 @@
 .main_box_body.homepage .conversation_list img {
   width: 30px;
   display: block;
-  cursor: pointer;
-  margin: 5px;
+  margin: auto;
 }
 
-.main_box_body.homepage .conversation_list .notification_wrapper {
-  display: none;
-}
 
 .main_box_body.homepage .conversation_list .conversation_name {
   display: flex;
@@ -226,9 +222,9 @@
 
 .main_box_body.homepage .channel_creation_box {
   position: relative;
-  bottom: 360px;
+  bottom: 350px;
   width: 80%;
-  height: 300px;
+  height: 280px;
   background: var(--fourth);
   border-radius: 2px;
   margin: auto;
