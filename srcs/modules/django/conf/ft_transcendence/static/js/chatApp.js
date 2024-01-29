@@ -183,6 +183,7 @@ function displaySearchResult(data) {
   }
 
   let isConnected
+  let member
 
   for (let i = 0; i < data.length; i++) {
     if (data[i].connexion_status == 2) {
@@ -192,10 +193,16 @@ function displaySearchResult(data) {
     } else {
       isConnected = ''
     }
+    if (data[i].member === false) {
+      member = 'not_member'
+    } else {
+      member = ''
+    }
+    console.log(member)
     let isNoticationActive = ''
 
     let item = 
-      '<li type="' + data[i].type + '">' +
+      '<li class="' + data[i].type + ' ' + member + '">' +
         '<img src="../static/assets/logo/user.png" alt="converstion_picture">' +
         '<div class="conversation_text">' +
           '<div class="conversation_name">' +
@@ -205,8 +212,8 @@ function displaySearchResult(data) {
           '<p class="last_msg"></p>' +
         '</div>' +
         '<div class="notification_wrapper ' + isNoticationActive + '"></div>' +
+        '<img class="join_btn" src="../static/assets/logo/user-plus-regular-36.png" alt="join channel button">' +
       '</li>'
-
     if (resultWrapper.children.length > 0) {
       resultWrapper.lastChild.insertAdjacentHTML("afterend", item)
     } else {
@@ -215,7 +222,7 @@ function displaySearchResult(data) {
     resultWrapper.lastChild.addEventListener("click", () => {
       if (data[i].type === 'private_message') { 
         goToConv(data[i].identification)
-      } else if (data[i].type === 'channel') {
+      } else if (data[i].type === 'channel' && data[i].member === true) {
         goToChan(data[i].name)
       }
     })

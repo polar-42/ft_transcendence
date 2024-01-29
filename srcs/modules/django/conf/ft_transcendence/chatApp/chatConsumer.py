@@ -27,7 +27,6 @@ class chatSocket(WebsocketConsumer):
 
 	
 	initAllChannels(allChannels)
-	
 	def connect(self):
 		if len(self.allChannels) <= 0:
 			createGeneralChat(self.allChannels)
@@ -659,30 +658,33 @@ class chatSocket(WebsocketConsumer):
 
 	def searchConv(self, input):
 		allUsers = userModels.User.objects.exclude(Q(username='IA') | Q(username='admin') | Q(username = self.UserModel.username)) 
-		allChannelsName = self.UserModel.channels 
-		print('allUsers:', allUsers)
-		print('allChannelsName:', allChannelsName)
-		allChannels = ChannelModels.objects.filter(channelName__in=allChannelsName)
 		response = []
 
-		for chan in allChannels:
-			print('channel: ', chan)
-			if chan.channelName.find(input) >= 0:
-				msgs = MessageModels.objects.filter(receiver=chan.channelName) 
+		for chan in self.allChannels.keys():
+			print('channel: ', self.allChannels[chan])
+			if chan.find(input) >= 0:
+				print('user:', self.username, 'chan users:', self.allChannels[chan].ChanModel.users)
+				if self.username in self.allChannels[chan].ChanModel.users:
+					member =  True
+				else :
+					member = False
+				msgs = MessageModels.objects.filter(receiver=chan) 
 				if msgs.count() > 0:
 					response.append({
 						'type': 'channel',
-						'name': chan.channelName,
-						'users': chan.users,
-						'description': chan.description,
+						'name': chan,
+						'users': self.allChannels[chan].ChanModel.users,
+						'description': self.allChannels[chan].ChanModel.description,
+						'member': member,
 						'last_msg': msgs[0].message
 						})
 				else:
 					response.append({
 						'type': 'channel',
-						'name': chan.channelName,
-						'users': chan.users,
-						'description': chan.description,
+						'name': chan,
+						'users': self.allChannels[chan].ChanModel.users,
+						'description': self.allChannels[chan].ChanModel.description,
+						'member': member,
 						'last_msg': "" })
 
 
@@ -719,6 +721,7 @@ class chatSocket(WebsocketConsumer):
 			else:
 				password = None
 			self.allChannels[channelName] = ChannelChat(channelName, channelDescription, privacyStatus, password,  adminId)
+			joinChannel(channelName)
 			self.send(json.dumps({
 				'type': 'channel_creation',
 				'state': 'success',

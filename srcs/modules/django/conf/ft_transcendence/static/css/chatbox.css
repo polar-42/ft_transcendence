@@ -159,6 +159,16 @@
   margin: auto;
 }
 
+.main_box_body.homepage .conversation_list img.join_btn {
+	display: none
+}
+
+.main_box_body.homepage .conversation_list .not_member img.join_btn {
+	display: inline-block;
+	cursor: pointer;
+}
+
+
 
 .main_box_body.homepage .conversation_list .conversation_name {
   display: flex;
