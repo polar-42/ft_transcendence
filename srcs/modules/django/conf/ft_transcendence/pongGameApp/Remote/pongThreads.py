@@ -208,7 +208,7 @@ class UserPong():
         self.connexionStatus = ConnexionState.NeverConnected
         self.id = user.id
         self.socket = None
-        self.username = str(user)
+        self.username = user.nickname + '-' + user.identification
 
 class StatGame():
     def __init__(self, p1_id, p2_id, p1_score, p2_score, p1_n_ball_touch, p2_n_ball_touch, reason, idTournament=-1):
@@ -401,11 +401,11 @@ class pongGame():
         else:
             self.winner.socket.send(text_data=json.dumps({
                 'type': 'game_ending',
-				'winner': str(self.winner.sock_user),
+				'winner': self.winner.username,
 				'reason': 'disconnexion',
 				'playerone_score': 3,
 				'playertwo_score': 0,
-				'playerone_username': str(self.winner.sock_user),
-				'playertwo_username': str(player),
+				'playerone_username': self.winner.username,
+				'playertwo_username': player.user.nickname,
             }))
 

@@ -96,7 +96,7 @@ class ChannelChat():
 		msg = MessageModels.objects.create(
 			message=message,
 			sender=sender.userIdentification,
-			receiver=self.channelName #TO CHANGE ???
+			receiver=self.channelName
 		)
 		msg.save()
 

@@ -20,10 +20,13 @@ def logPage(request):
 			email = data.get('email')
 			password = data.get('password')
 
+			print(email)
+
 			if len(email) == 0 or len(password) == 0 :
 				return JsonResponse({'error': 'One of the field is empty'})
 
 			if User.objects.filter(email=email).exists() is False:
+				print('aaa')
 				return JsonResponse({'error': 'Email or Password is invalid'})
 			userModel = User.objects.get(email=email)
 			if check_password(password, userModel.password):
@@ -81,7 +84,7 @@ def register(request):
 				nickname=username,
 				email=email,
 				password=passwordHash,
-				username=getRandString()
+				identification=getRandString()
 			)
 
 			if avatarImage != None:

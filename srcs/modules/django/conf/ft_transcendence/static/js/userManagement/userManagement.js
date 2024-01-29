@@ -1,4 +1,5 @@
 import { navto } from "../index.js"
+import { closeChat  } from "../chatApp.js";
 
 let imgFile = undefined
 
@@ -85,6 +86,7 @@ function updateAccount(event)
   var headers = new Headers()
   headers.append('X-CSRFToken', crsf_token)
 
+  closeChat()
   fetch(document.location.origin + "/userManagement/updateAccount/",
     {
       method: 'POST',
@@ -105,7 +107,7 @@ function updateAccount(event)
           {
             feedback.style.color = "green"
             feedback.innerHTML = data.message
-            navto("authApp/login")
+            navto("/")
           }
           else
           {

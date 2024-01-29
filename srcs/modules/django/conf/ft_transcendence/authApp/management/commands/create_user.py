@@ -15,77 +15,81 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         # Your logic to create a user
         username = 'chrome'
-        email = 'chrome@chrome.com'
+        email = 'chrome@test.fr'
         password = make_password('123456789')
 
         # Check if the user already exists
         if not User.objects.filter(email=email).exists():
             User.objects.create(
-                username=getRandString(),
                 nickname=username,
                 email=email,
-                password=password
+                password=password,
+                identification=getRandString()
             )
             print('User created successfully')
         else:
             print('User already exists')
 
         username = 'chromeprivate'
-        email = 'chromeprivate@chromeprivate.com'
+        email = 'chromeprivate@test.fr'
         password = make_password('123456789')
 
         # Check if the user already exists
         if not User.objects.filter(email=email).exists():
-            User.objects.create_user(
+            User.objects.create(
                 nickname=username,
                 email=email,
                 password=password,
-                username=getRandString())
+                identification=getRandString()
+            )
             print('User created successfully')
         else:
             print('User already exists')
 
         username = 'brave'
-        email = 'brave@brave.com'
+        email = 'brave@test.fr'
         password = make_password('123456789')
 
         # Check if the user already exists
         if not User.objects.filter(email=email).exists():
-            User.objects.create_user(
+            User.objects.create(
                 nickname=username,
                 email=email,
                 password=password,
-                username=getRandString())
+                identification=getRandString()
+            )
             print('User created successfully')
         else:
             print('User already exists')
 
         username = 'braveprivate'
-        email = 'braveprivate@braveprivate.com'
+        email = 'braveprivate@test.fr'
         password = make_password('123456789')
 
         # Check if the user already exists
         if not User.objects.filter(email=email).exists():
-            User.objects.create_user(
+            User.objects.create(
                 nickname=username,
                 email=email,
                 password=password,
-                username=getRandString())
+                identification=getRandString()
+            )
             print('User created successfully')
         else:
             print('User already exists')
 
-        username = 'IA'
-        email = 'IA@test.com'
+        username = 'AI'
+        email = 'AI@test.com'
         password = make_password('123456789')
 
         # Check if the user already exists
         if not User.objects.filter(email=email).exists():
-            User.objects.create_user(
+            User.objects.create(
                 nickname=username,
                 email=email,
                 password=password,
-                username=username)
+                identification='AI'
+            )
             print('User created successfully')
         else:
             print('User already exists')

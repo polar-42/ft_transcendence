@@ -210,7 +210,7 @@ class UserPong():
         self.connexionStatus = ConnexionState.NeverConnected
         self.id = user.id
         self.socket = None
-        self.username = str(user)
+        self.username = user.user.nickname + '-' + user.user.identification
 
 class pongGame():
     is_running = False
@@ -225,7 +225,7 @@ class pongGame():
             self.mythread = pongGameLoop(self, UserPong(socket))
             self.pongThreadIA = pongGameIA(self.mythread)
 
-            print('pong between IA and', self.socket.user.nickname,'on channel (', channelName, ') is launch')
+            print('pong between AI and', self.socket.user.nickname,'on channel (', channelName, ') is launch')
 
             self.channelName = channelName
 
@@ -289,7 +289,7 @@ class pongGame():
             if player1_score >= 3:
                 winner = player1.get_id().username
             else:
-                winner = 'IA'
+                winner = 'AI'
 
             async_to_sync(self.channel_layer.group_send)(
                 self.channelName,
