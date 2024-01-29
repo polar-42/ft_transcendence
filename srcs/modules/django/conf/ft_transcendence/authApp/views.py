@@ -155,4 +155,27 @@ def TFACheckPass(request):
 		return HttpResponse('', content_type="text/plain")
 	if check_password(data.get('password'), userModel.password):
 		return render(request, 'authApp/TFA/Choose2FA.html')
-	return HttpResponse('', content_type="text/plain") 
+	return HttpResponse('', content_type="text/plain")
+
+import pyotp
+import qrcode
+
+def TFASelected(request):
+	if request.user.is_authenticated == False:
+		return HttpResponse('', content_type="text/plain")
+	data = json.loads(request.body)
+	match data.get('selectedAuth'):
+		case '0':
+			return render(request, 'authApp/TFA/Auth2FA.html')
+		case _:
+			return HttpResponse('', content_type="text/plain")
+		
+def TFARequestQR(request):
+	if request.user.is_authenticated == False:
+		return HttpResponse('', content_type="text/plain")	
+	userModel = User.objects.get(id=request.user.id)
+	k = pyotp.random_base32() #TODO Save To user model + check on connect + security
+	totp_auth = pyotp.totp.TOTP(k).provisioning_uri( name=userModel.email, issuer_name='ft_transcendenceServer')
+	qrcode_uri = "https://www.google.com/chart?chs=200x200&chld=M|0&cht=qr&chl={}".format(totp_auth)	
+	ColorPrint.prGreen("Key = {key}".format(key=k))
+	return JsonResponse({'qr' : qrcode_uri})

@@ -164,7 +164,6 @@ function ChooseAuth(content)
 {
 	if (selected == undefined)
 		return
-
 	const crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
 	var header = new Headers()
 	header.append('Content-Type', 'application/json')
@@ -181,10 +180,21 @@ function ChooseAuth(content)
 		{
 			throw new Error('Network response was not okay')
 		}
-		return Response.json()
+		return Response.text()
 	})
 	.then(data => {
-		
+		content.innerHTML = data
+		fetch(window.location.origin + "/authApp/TFARequestQR")
+		.then(Response => {
+			if (!Response.ok) {
+				throw new Error('Network response was not okay')
+			}
+			return Response.json()
+		})
+		.then(data => {
+			console.log(data.qr)
+			content.querySelector(".qrDisplayer").src = data.qr
+		})
 	})
 }
 

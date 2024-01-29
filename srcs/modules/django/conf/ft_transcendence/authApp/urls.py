@@ -16,5 +16,7 @@ urlpatterns = [
     path('Start2FaActivation', views.Start2FaActivation),
     path('TFAConfirmPass', views.TFAConfirmPassPage),
     path('TFACheckPass', views.TFACheckPass),
+    path('TFASelected', views.TFASelected),
+    path('TFARequestQR', views.TFARequestQR),
 
 ]
