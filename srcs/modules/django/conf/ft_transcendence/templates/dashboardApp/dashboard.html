@@ -1,0 +1,49 @@
+<!-- game.html -->
+{% load static %}
+<script type="module" src="{% static '/js/loading.js' %}"></script>
+{% block content %}
+<div class="boxTwoGame">
+	<button class="buttonGame">Pong</button>
+
+	<button class="buttonGame">Battleship</button>
+</div>
+
+<div class="dashboardInformation">
+	<div class="dash_nicknameUser">
+		Username
+	</div>
+
+	<div class="dash_classicMatchs">
+		Classics Matchs
+		<li class="dash_classicMatch">p1 vs p2 | score | date</li>
+		<li class="dash_classicMatch">p1 vs p2 | score | date</li>
+		<li class="dash_classicMatch">p1 vs p2 | score | date</li>
+		<li class="dash_classicMatch">p1 vs p2 | score | date</li>
+		<li class="dash_classicMatch">p1 vs p2 | score | date</li>
+		<li class="dash_classicMatch">p1 vs p2 | score | date</li>
+		<li class="dash_classicMatch">p1 vs p2 | score | date</li>
+		<li class="dash_classicMatch">p1 vs p2 | score | date</li>
+		<li class="dash_classicMatch">p1 vs p2 | score | date</li>
+		<li class="dash_classicMatch">p1 vs p2 | score | date</li>
+	</div>
+
+	<div class="dash_tournaments">
+		Tournaments
+		<li class="dash_tournament">p1 vs p2 | score | date</li>
+		<li class="dash_tournament">p1 vs p2 | score | date</li>
+		<li class="dash_tournament">p1 vs p2 | score | date</li>
+		<li class="dash_tournament">p1 vs p2 | score | date</li>
+		<li class="dash_tournament">p1 vs p2 | score | date</li>
+		<li class="dash_tournament">p1 vs p2 | score | date</li>
+		<li class="dash_tournament">p1 vs p2 | score | date</li>
+		<li class="dash_tournament">p1 vs p2 | score | date</li>
+		<li class="dash_tournament">p1 vs p2 | score | date</li>
+		<li class="dash_tournament">p1 vs p2 | score | date</li>
+	</div>
+
+	<div class="dash_lastMatchs">
+		Last Matchs
+		<li class="dash_matchs">p1 vs p2 | score | date</li>
+	</div>
+</div>
+{% endblock content %}
