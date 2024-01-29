@@ -18,6 +18,8 @@ export function initLogin()
 
 export function initRegister()
 {
+  avatarButtonFunction() //TO CHANGE
+
   let submitBtn = document.getElementsByClassName("submit_BTN")[0];
   submitBtn.addEventListener("click", register)
   let inputArray = document.querySelectorAll("input");
@@ -30,6 +32,52 @@ export function initRegister()
     })
   })
   inputArray[1].focus()
+}
+
+let imgFile = undefined;
+
+function avatarButtonFunction()
+{
+  const input = document.getElementById("avatar");
+  input.addEventListener("change", function() {
+
+    const file = input.files[0]
+
+    if (file)
+    {
+      const reader = new FileReader()
+
+      reader.onload = function (e) {
+        const img = new Image()
+        img.src = e.target.result;
+
+        img.onload = function () {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+
+          let targetSize = 150
+
+          const scaleFactor = Math.min(targetSize / img.width, targetSize / img.height);
+
+          canvas.width = targetSize
+          canvas.height = targetSize
+
+          const scaledWidth = img.width * scaleFactor;
+          const scaledHeight = img.height * scaleFactor;
+
+          const offsetX = img.width > img.height ? (img.width - img.height) / 2 : 0;
+          const offsetY = img.height > img.width ? (img.height - img.width) / 2 : 0;
+
+          ctx.drawImage(img, offsetX, offsetY, Math.min(img.width, img.height), Math.min(img.width, img.height), 0, 0, targetSize, targetSize);
+
+          const croppedDataURL = canvas.toDataURL('image/png');
+          imgFile = croppedDataURL;
+          document.getElementById('avatar_preview').src = croppedDataURL;
+        }
+      }
+      reader.readAsDataURL(file);
+    }
+  });
 }
 
 function sleep(ms) {
@@ -50,9 +98,11 @@ export async function logout(event)
   {
     var vari = await Response.json()
     if(vari.success == false) {
+      location.reload()
       return false
     }
     initProfileButton(false)
+    location.reload()
     return true
   }
   else
@@ -81,9 +131,9 @@ export async function checkConnexion()
 async function connect(event)
 {
   event.preventDefault()
-  var username = document.getElementById('Input_usr').value
+  var email = document.getElementById('Input_mail').value
   var password = document.getElementById('Input_pwd').value
-  const data = { username: username, password: password }
+  const data = { email: email, password: password }
   let feedback = document.querySelector('.feedback')
 
   const crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
@@ -112,7 +162,7 @@ async function connect(event)
             feedback.style.color = 'green'
             feedback.innerHTML = data.message
             sleep(3000)
-            initProfileButton(true)            
+            initProfileButton(true)
             navto("/")
           }
           else
@@ -131,26 +181,28 @@ async function connect(event)
 function register(event)
 {
   event.preventDefault()
-  const data = 
-    { 
-      username: document.getElementById('Input_usr').value,
-      email: document.getElementById('Input_mail').value,
-      password: document.getElementById('Input_pwd').value,
-      passwordConfirmation: document.getElementById('Input_confirm_pwd').value
-    }
-  console.log(data);
+
+  let formData = new FormData();
+  formData.append('username', document.getElementById('Input_usr').value);
+  formData.append('email', document.getElementById('Input_mail').value);
+  formData.append('password', document.getElementById('Input_pwd').value);
+  formData.append('passwordConfirmation', document.getElementById('Input_confirm_pwd').value);
+
+  if (imgFile != undefined)
+  {
+    formData.append('avatar', dataURItoBlob(imgFile));
+  }
 
   var crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
   let feedback = document.querySelector('.feedback')
   var headers = new Headers()
-  headers.append('Content-Type', 'application/json')
   headers.append('X-CSRFToken', crsf_token)
 
   fetch(document.location.origin + "/authApp/register/",
     {
       method: 'POST',
       headers: headers,
-      body: JSON.stringify(data),
+      body: formData,
     })
     .then(Response =>
       {
@@ -183,6 +235,17 @@ function register(event)
         })
 }
 
+function dataURItoBlob(dataURI) {
+  const byteString = atob(dataURI.split(',')[1]);
+  const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+  const ab = new ArrayBuffer(byteString.length);
+  const ia = new Uint8Array(ab);
+  for (let i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i);
+  }
+  return new Blob([ab], { type: mimeString });
+}
+
 async function initProfileButton (connected) {
   let profiles = document.querySelectorAll(".profile_button")
   if ( connected === true ) {
@@ -196,9 +259,26 @@ async function initProfileButton (connected) {
     }
     let userData = await Response.json()
     profiles.forEach((button) => {
-      button.classList.add('connected') 
+      button.classList.add('connected')
       button.children[2].textContent = userData.userName
     })
+
+    let profileImage = document.querySelectorAll('img.user_logo')
+    Response = await fetch(document.location.origin + '/authApp/get_avatar_image/',
+		{
+			method: 'GET'
+		})
+		if (Response.ok)
+	  	{
+			var vari = await Response.blob()
+			if (vari.type == "image/png")
+      {
+        profileImage.forEach((img) => {
+          img.src = URL.createObjectURL(vari)
+          img.style.borderRadius = '50%';
+        })
+      }
+	  }
   }
   else {
     profiles.forEach((button) => {

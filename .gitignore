@@ -2,3 +2,5 @@
 sujet_transcendence.pdf
 .vscode
 mysite/
+__pycache__/
+*.pyc

@@ -205,7 +205,7 @@ nav .profile_menu {
   width: auto;
 }
 
-.profile_menu.active {
+.profile_menu.open{
   max-height: 500px;
 }
 

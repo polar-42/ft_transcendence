@@ -10,4 +10,5 @@ urlpatterns = [
     path('testSocket/', views.socket),
     path('getUserName/', views.getUserName),
     path('getUserID/', views.getUserID),
+    path('get_avatar_image/', views.getAvatarImage),
 ]

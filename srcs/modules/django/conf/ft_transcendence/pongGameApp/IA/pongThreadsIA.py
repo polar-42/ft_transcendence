@@ -225,7 +225,7 @@ class pongGame():
             self.mythread = pongGameLoop(self, UserPong(socket))
             self.pongThreadIA = pongGameIA(self.mythread)
 
-            print('pong between IA and', self.socket.user.username,'on channel (', channelName, ') is launch')
+            print('pong between IA and', self.socket.user.nickname,'on channel (', channelName, ') is launch')
 
             self.channelName = channelName
 
@@ -307,7 +307,7 @@ class pongGame():
         self.mythread.inputGame(input, 0)
 
     def quitGame(self, player):
-        print('player', player.user, 'leave the game')
+        print('player', player.user.nickname, 'leave the game')
 
         self.mythread.stop()
         self.mythread.join()

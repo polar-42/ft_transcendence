@@ -8,22 +8,33 @@ https://docs.djangoproject.com/en/5.0/howto/deployment/asgi/
 """
 
 import os
-
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ft_transcendence.settings')
+import django
+django.setup()
 from django.core.asgi import get_asgi_application
-from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.routing import ProtocolTypeRouter, URLRouter, get_default_application
 from channels.auth import AuthMiddlewareStack
 from django.core.asgi import get_asgi_application
-from socketApp import routing
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ft_transcendence.settings')
+#region Router
 
-application2 = get_asgi_application()
+from battleshipApp import BS_Router
+from pongGameApp import PG_Router
+from tournamentsApp import T_Router
+from chatApp import Chat_Router
+
+#endregion
 
 application = ProtocolTypeRouter({
-    'http': application2,
-    'websocket': AuthMiddlewareStack(
-        URLRouter(
-            routing.websocket_urlpatterns
-        )
-    ),
+   'http': get_asgi_application(),
+   'websocket': AuthMiddlewareStack(
+       URLRouter(
+            BS_Router.websocket_urlpatterns +
+            PG_Router.websocket_urlpatterns +
+            T_Router.websocket_urlpatterns +
+            Chat_Router.websocket_urlpatterns
+       )
+   ),
 })
+
+application = get_default_application()
