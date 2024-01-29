@@ -15,28 +15,17 @@ def createGeneralChat(allChannels):
 	allChannels["General"] = ChannelChat("General", "General channel", channelPrivacy.Public, None)
 
 class chatSocket(WebsocketConsumer):
-	allChannels = {}
+	allChannels = ChannelModels.objects.all() 
 	allUsers = {} 
 
-
-	def initAllChannels(allChannelsDict):
-		allChannelsSet = ChannelModels.objects.all()
-		for item in allChannelsSet:
-			channelName = item.channelName
-			allChannelsDict[channelName] = ChannelChat(channelName, item.description, item.privacyStatus, item.password, item.admin)
-
-	
-	initAllChannels(allChannels)
-	
 	def connect(self):
 		if len(self.allChannels) <= 0:
 			createGeneralChat(self.allChannels)
 
-		print(self.scope['user'])
 		self.user = self.scope['user']
-		self.username = self.scope['user'].username
+		self.userId = self.scope['user'].id
 
-		self.UserModel = userModels.User.objects.get(username=self.username)
+		self.UserModel = userModels.User.objects.get(id=self.userId)
 		self.UserModel.connexionStatus = connexionStatus.Connected
 		self.UserModel.save()
 
@@ -51,7 +40,7 @@ class chatSocket(WebsocketConsumer):
 			for chan in tabChannels:
 				self.joinChannel(chan)
 		else:
-			self.joinChannel("General")
+			self.joinChannel("general")
 
 		async_to_sync(self.channel_layer.group_add)(
 			self.chatId,
@@ -101,7 +90,7 @@ class chatSocket(WebsocketConsumer):
 		elif data['type'] == 'channel_message':
 			self.sendChannelMessage(data['target'], data['message'])
 		elif data['type'] == 'create_channel':
-			self.createChannel(data['channel_name'], data['channel_description'], data['privacy_status'], data['password'], data['adminId'])
+			self.createChannel(data['channel_name'], data['channel_description'], data['adminId'], data['privacy_status'])
 		elif data['type'] == 'channel_join':
 			self.joinChannel(data['target'])
 		elif data['type'] == 'channel_leave':
@@ -135,9 +124,8 @@ class chatSocket(WebsocketConsumer):
 			self.acceptInvitationBattleship(data['target'])
 
 	def joinChannel(self, channelName):
-		print('join channel:', channelName)
-		print(self.allChannels)
-		if self.allChannels[channelName] is None:
+		if channelName not in self.allChannels:
+			print('uuh')
 			return
 			#TO CHANGE FOR A CREATE CHANNEL BUTTON WITH OPTIONS
 		else:
@@ -200,7 +188,7 @@ class chatSocket(WebsocketConsumer):
             'chat_' + receiver,
             {
                 'type': 'chatPrivateMessage',
-				'sender': self.userIdentification,
+				'sender': self.user.nickname + '-' + self.userIdentification,
 				'message': message
             }
         )
@@ -348,12 +336,12 @@ class chatSocket(WebsocketConsumer):
 			}))
 
 	def getUser(self, target):
-		user = userModels.User.objects.get(username=target)
+		user = userModels.User.objects.get(identification=target)
 		print(user)
 		self.send(text_data=json.dumps({
 			'type': 'get_user_data',
-			'name': user.nickname,
-			'identification':  user.username,
+			'name': user.username,
+			'identification': user.identification,
 			'connexion_status': user.connexionStatus,
 			'conversation': user.allPrivateTalks
 			})
@@ -366,6 +354,7 @@ class chatSocket(WebsocketConsumer):
 		channelUsers = []
 			
 		for msg in msgsObjs:
+			print(msg)
 			channelMessages.append({
 				'id': msg.id,
 				'sender': msg.sender,
@@ -375,10 +364,10 @@ class chatSocket(WebsocketConsumer):
 				})
 
 		for userName in channel.users:
-			user = userModels.User.objects.get(username=userName)
+			user = userModels.User.objects.get(identification=userName)
 			channelUsers.append({
-				'name': user.nickname,
-				'id': user.username,
+				'name': user.username,
+				'id': user.identification,
 				'connexion_status': user.connexionStatus
 				})
 
@@ -408,7 +397,7 @@ class chatSocket(WebsocketConsumer):
 				}))
 
 	def getHistoryChat(self, chatTarget, msgId):
-		if userModels.User.objects.filter(username=chatTarget).exists() is False:
+		if userModels.User.objects.filter(identification=chatTarget).exists() is False:
 			return
 
 		print('conv between ', self.userIdentification, ' and ', chatTarget)
@@ -436,16 +425,14 @@ class chatSocket(WebsocketConsumer):
 		for msg in messages.values():
 			if msg['sender'] == self.userIdentification:
 				received = False
-				contact = self.userIdentification
 			else:
 				received = True
-				contact = msg['sender']
 
 			response.append({
                 'id': msg['id'],
 				'time': str(msg['timeCreation']),
-                'contact': contact,
-				'received': received,
+                'contact': sender,
+				'received': chatTarget,
 				'message': msg['message']
 			})
 
@@ -483,8 +470,7 @@ class chatSocket(WebsocketConsumer):
 				response.append({
 					'id': msg['id'],
 					'time': str(msg['timeCreation']),
-					'sender': senderModel.nickname,
-					'senderID':  senderModel.username,
+					'sender': senderModel.nickname + '-' + senderModel.username,
 					'message': msg['message']
 				})
 
@@ -651,8 +637,7 @@ class chatSocket(WebsocketConsumer):
 		self.send(text_data=json.dumps({
 			'type': 'chat_channel_message',
 			'channel': channel,
-			'sender': senderModel.nickname, 
-			'senderID':  senderModel.username,
+			'sender': senderModel.nickname + '-' + senderModel.username,
 			'message': message,
 			'time': time.strftime("%Y-%m-%d %X")
 			}))
@@ -693,15 +678,15 @@ class chatSocket(WebsocketConsumer):
 				if msgs.count() > 0:
 					response.append({
 						'type': 'private_message',
-						'name': user.nickname,
-						'identification': user.username,
+						'name': user.username,
+						'identification': user.identification,
 						'connexion_status': connexionStatus, 
 						'last_msg': msgs[0].message})
 				else:
 					response.append({
 						'type': 'private_message',
-						'name': user.nickname,
-						'identification': user.username,
+						'name': user.username,
+						'identification': user.identification,
 						'connexion_status': connexionStatus,
 						'last_msg': '' })
 
@@ -712,13 +697,9 @@ class chatSocket(WebsocketConsumer):
 			'data': response
 			}))
 
-	def createChannel(self, channelName, channelDescription, privacyStatus, password, adminId):
-		if ChannelModels.objects.filter(channelName=channelName).exists() is False:
-			if (privacyStatus == 0):
-				password = password
-			else:
-				password = None
-			self.allChannels[channelName] = ChannelChat(channelName, channelDescription, privacyStatus, password,  adminId)
+	def createChannel(self, channelName, channelDescription, adminId, privacyStatus):
+		if ChannelModels.objects.get(channelName=channelName) is None:
+			self.allChannels[channelName] = ChannelChat(channelName, channelDescription, privacyStatus, adminId)
 			self.send(json.dumps({
 				'type': 'channel_creation',
 				'state': 'success',

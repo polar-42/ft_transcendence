@@ -222,9 +222,9 @@
 
 .main_box_body.homepage .channel_creation_box {
   position: relative;
-  bottom: 350px;
+  bottom: 500px;
   width: 80%;
-  height: 280px;
+  height: 440px;
   background: var(--fourth);
   border-radius: 2px;
   margin: auto;
@@ -238,7 +238,7 @@
     width: 70%;
     margin-left: auto;
     margin-right: auto;
-    margin-bottom: 10px;
+		margin-bottom: 10px;
     text-align: center;
   }
 
@@ -254,6 +254,11 @@
     display: flex;
     justify-content: space-evenly;
     margin-bottom: 5px;
+
+		div {
+			margin-bottom: 0;
+			width: 40%;
+		}
   }
 
   .checkbox_wrapper input {
@@ -261,6 +266,10 @@
     margin-left: 5px;
     margin-right: 5px;
   }
+
+	label {
+		font-size: 0.8em;
+	}
 
   button {
     width: 100px;

@@ -9,6 +9,7 @@ class ChannelModels(models.Model):
 	admin = models.CharField(default='0')
 	users = ArrayField(models.CharField(), blank=True, null=True)
 	privacyStatus = models.IntegerField(default=channelPrivacy.Public)
+	password = models.CharField(blank=True)
 	description = models.CharField(max_length=255, default="PAS2DESCRIPTION")
 	timeCreation = models.DateTimeField(auto_now=True)
 

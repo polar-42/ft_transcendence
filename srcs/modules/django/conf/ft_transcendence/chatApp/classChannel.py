@@ -3,16 +3,18 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from .models import ChannelModels, MessageModels
 from authApp import models as userModels
+from django.contrib.auth.hashers import make_password
 import time
 
 class ChannelChat():
-	def __init__(self, name, description, privacyStatus, creator):
+	def __init__(self, name, description, privacyStatus, password, creator):
 		if ChannelModels.objects.filter(channelName=name).exists():
 
 			self.ChanModel = ChannelModels.objects.get(channelName=name)
 			self.channelName = self.ChanModel.channelName
 			self.channelId = self.ChanModel.id
 			self.privacyStatus = self.ChanModel.privacyStatus
+			self.password = make_password(password)
 			self.usersSocket = []
 			self.channel_layer = get_channel_layer()
 
@@ -27,11 +29,11 @@ class ChannelChat():
 		self.channelName = name
 		self.description = description
 		self.privacyStatus = channelPrivacy(privacyStatus)
-		self.admin = userModels.User.objects.get(identification=creator)
 		self.channel_layer = get_channel_layer()
 		self.usersSocket = []
 
-		if self.admin is not None:
+		if creator != None:
+			self.admin = userModels.User.objects.get(username=creator)
 			self.usersSocket.append(creator)
 
 			print('admin: ',self.admin)
@@ -39,11 +41,12 @@ class ChannelChat():
 				channelName=self.channelName,
 				privacyStatus = self.privacyStatus,
                 description = self.description,
-				users=[self.admin.identification],
+				users=[self.admin.username],
 			)
-			print(self.admin.identification, 'create channel', self.channelName)
+			print(self.admin.username, 'create channel', self.channelName)
 
 		else: #ONLY FOR GENERAL CHANNEL
+			self.admin = creator
 			obj = ChannelModels.objects.create(
 				channelName=self.channelName,
 				privacyStatus = channelPrivacy.Public,
@@ -54,12 +57,13 @@ class ChannelChat():
 		self.ChanModel = obj
 		self.channelId = obj.id
 
-		self.joinChannel(creator)
+		self.joinChannel(self.admin)
 
 		print('channel is', obj.channelName, 'with', obj.users)
 
 
 	def joinChannel(self, user):
+		print(user)
 		if user is None:
 			return
 
@@ -71,13 +75,13 @@ class ChannelChat():
 			tab = []
 			tab.append(user.userIdentification)
 
-		elif user.identification not in self.ChanModel.users:
+		elif user.username not in self.ChanModel.users:
 			tab.append(user.userIdentification)
 
 		self.ChanModel.users = tab
 		self.ChanModel.save()
 
-		print(user.identification, 'join channel', self.channelName, 'with', self.ChanModel.users)
+		print(user.username, 'join channel', self.channelName, 'with', self.ChanModel.users)
 
 	def leaveChannel(self, user):
 		if user is None or user not in self.usersSocket:
@@ -93,12 +97,12 @@ class ChannelChat():
 				self.ChanModel.users = tab
 				self.ChanModel.save()
 
-		print(user.identification, 'leave channel', self.channelName, 'with', self.ChanModel.users) #TO DEL
+		print(user.username, 'leave channel', self.channelName, 'with', self.ChanModel.users) #TO DEL
 
 	def sendMessageChannel(self, sender, message):
 		msg = MessageModels.objects.create(
 			message=message,
-			sender=sender.identification,
+			sender=sender.username,
 			receiver=self.channelName #TO CHANGE ???
 		)
 		msg.save()
@@ -108,7 +112,7 @@ class ChannelChat():
             {
                'type': 'chatChannelMessage',
 				'channel': self.channelName,
-				'sender': sender.identification,
+				'sender': sender.username,
 				'message': message,
 				'time': time.strftime("%Y-%m-%d %X")
             }

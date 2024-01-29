@@ -258,6 +258,7 @@ async function initProfileButton (connected) {
       throw new Error('Error when fetching user datas')
     }
     let userData = await Response.json()
+    console.log(userData)
     profiles.forEach((button) => {
       button.classList.add('connected')
       button.children[2].textContent = userData.userName

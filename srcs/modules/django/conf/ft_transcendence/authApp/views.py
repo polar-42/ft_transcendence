@@ -123,7 +123,7 @@ def getUserName(request):
     return JsonResponse({'userName': request.user.username})
 
 def getUserID(request):
-    return JsonResponse({'userID': request.user.identification})
+    return JsonResponse({'userID': request.user.username})
 
 def getAvatarImage(request):
     if request.user.is_authenticated:
