@@ -98,7 +98,7 @@ class Tournament():
 
 		self.obj.playersId = tabId
 		self.obj.winner = self.Winner.UserId
-		self.obj.save
+		self.obj.save()
 
 		print('Tournament', self.obj.tournamentsName, ', id =', self.obj.id, ', winnerid =', self.obj.winner, 'is add to DB')
 		#self.addToBlockchain()

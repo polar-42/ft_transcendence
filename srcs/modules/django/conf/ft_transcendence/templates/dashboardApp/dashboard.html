@@ -3,47 +3,51 @@
 <script type="module" src="{% static '/js/loading.js' %}"></script>
 {% block content %}
 <div class="boxTwoGame">
-	<button class="buttonGame">Pong</button>
+	<button class="buttonGame" id="buttonGamePong">Pong</button>
 
-	<button class="buttonGame">Battleship</button>
+	<button class="buttonGame" id="buttonGameBattleship">Battleship</button>
 </div>
 
 <div class="dashboardInformation">
-	<div class="dash_nicknameUser">
-		Username
-	</div>
-
 	<div class="dash_classicMatchs">
-		Classics Matchs
-		<li class="dash_classicMatch">p1 vs p2 | score | date</li>
-		<li class="dash_classicMatch">p1 vs p2 | score | date</li>
-		<li class="dash_classicMatch">p1 vs p2 | score | date</li>
-		<li class="dash_classicMatch">p1 vs p2 | score | date</li>
-		<li class="dash_classicMatch">p1 vs p2 | score | date</li>
-		<li class="dash_classicMatch">p1 vs p2 | score | date</li>
-		<li class="dash_classicMatch">p1 vs p2 | score | date</li>
-		<li class="dash_classicMatch">p1 vs p2 | score | date</li>
-		<li class="dash_classicMatch">p1 vs p2 | score | date</li>
-		<li class="dash_classicMatch">p1 vs p2 | score | date</li>
+		<h4 class="h4">
+			Classics Matchs
+		</h4>
+
+		<ul id="dash_listPongClassicMatch">
+		</ul>
 	</div>
 
 	<div class="dash_tournaments">
-		Tournaments
-		<li class="dash_tournament">p1 vs p2 | score | date</li>
-		<li class="dash_tournament">p1 vs p2 | score | date</li>
-		<li class="dash_tournament">p1 vs p2 | score | date</li>
-		<li class="dash_tournament">p1 vs p2 | score | date</li>
-		<li class="dash_tournament">p1 vs p2 | score | date</li>
-		<li class="dash_tournament">p1 vs p2 | score | date</li>
-		<li class="dash_tournament">p1 vs p2 | score | date</li>
-		<li class="dash_tournament">p1 vs p2 | score | date</li>
-		<li class="dash_tournament">p1 vs p2 | score | date</li>
-		<li class="dash_tournament">p1 vs p2 | score | date</li>
+		<h4 class="h4">
+			Tournaments
+		</h4>
+		<ul id="dash_listPongTournaments">
+		</ul>
 	</div>
 
-	<div class="dash_lastMatchs">
-		Last Matchs
-		<li class="dash_matchs">p1 vs p2 | score | date</li>
+	<div class="dash_stats">
+		<h4 class="h4" id="statName">
+			Stats
+		</h4>
+		<div class="pongStat">
+			<div class="piechartGame">
+
+			</div>
+			<div class="piechartStatGame">
+				<p id="winGame">Win</p>
+				<p id="loseGame">Lose</p>
+			</div>
+
+			<div class="piechartTournament">
+
+			</div>
+			<div class="piechartStatTournament">
+				<p id="winTournament">Win</p>
+				<p id="loseTournament">Lose</p>
+			</div>
+
+		</div>
 	</div>
 </div>
 {% endblock content %}
