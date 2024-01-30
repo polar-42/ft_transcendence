@@ -7,12 +7,13 @@ from authApp import models as userModels
 from .classChannel import ChannelChat
 from .models import MessageModels, ChannelModels
 from django.db.models import Q
+from django.contrib.auth.hashers import check_password
 from pongGameApp.Remote.pongGameManager import Manager as pongManager
 from battleshipApp.BS_MatchmakingManager import GameManager as battleshipManager
 
 
 def createGeneralChat(allChannels):
-	allChannels["General"] = ChannelChat("General", "General channel", channelPrivacy.Public, None)
+	allChannels["General"] = ChannelChat("General", "General channel", channelPrivacy.Public, None, None)
 
 class chatSocket(WebsocketConsumer):
 	allChannels = {}
@@ -46,11 +47,7 @@ class chatSocket(WebsocketConsumer):
 		print(self.user.nickname, 'is connected to chat socket with chatId =', self.chatId) #TO DEL
 
 		tabChannels = self.UserModel.channels
-		if tabChannels is not None:
-			for chan in tabChannels:
-				self.joinChannel(chan)
-		else:
-			self.joinChannel("General")
+
 
 		async_to_sync(self.channel_layer.group_add)(
 			self.chatId,
@@ -58,6 +55,14 @@ class chatSocket(WebsocketConsumer):
 		)
 
 		self.accept()
+
+		if tabChannels is not None:
+			for chan in tabChannels:
+				self.allChannels[chan].joinChannel(self)
+				# self.joinChannel(chan, False, None)
+		else:
+			self.allChannels['General'].joinChannel(self)
+			# self.joinChannel("General", False, None)
 
 		#TO DEL
 		tab = self.UserModel.channels
@@ -102,7 +107,11 @@ class chatSocket(WebsocketConsumer):
 		elif data['type'] == 'create_channel':
 			self.createChannel(data['channel_name'], data['channel_description'], data['privacy_status'], data['password'], data['adminId'])
 		elif data['type'] == 'channel_join':
-			self.joinChannel(data['target'])
+			print(data)
+			if data['privacy_status'] is False:
+				self.joinChannel(data['target'], False, None)
+			else:
+				self.joinChannel(data['target'], data['privacy_status'], data['password'])
 		elif data['type'] == 'channel_leave':
 			self.leaveChannel(data['target'])
 		elif data['type'] == 'block_user':
@@ -133,28 +142,43 @@ class chatSocket(WebsocketConsumer):
 		elif data['type'] == 'accept_invitation_battleship':
 			self.acceptInvitationBattleship(data['target'])
 
-	def joinChannel(self, channelName):
-		print('join channel:', channelName)
-		print(self.allChannels)
+	def joinChannel(self, channelName, privacyStatus, password):
 		if self.allChannels[channelName] is None:
 			return
-			#TO CHANGE FOR A CREATE CHANNEL BUTTON WITH OPTIONS
 		else:
+			if	privacyStatus is True and check_password(password, self.allChannels[channelName].ChanModel.password) is False:
+				self.send(json.dumps({
+					'type': 'join_channel_response',
+					'channel_name': channelName,
+					'state': 'failed',
+					'reason': 'Wrong password'
+					})
+				)
+				return
+
 			self.allChannels[channelName].joinChannel(self)
+			tab = self.UserModel.channels
+			if tab is None:
+				tab = []
 
-		tab = self.UserModel.channels
-		if tab is None:
-			tab = []
+			if channelName not in tab:
+				tab.append(channelName)
+				self.UserModel.channels = tab
+				self.UserModel.save()
 
-		if channelName not in tab:
-			tab.append(channelName)
-			self.UserModel.channels = tab
-			self.UserModel.save()
+			print(self)
 
-		async_to_sync(self.channel_layer.group_add)(
-			'channel_' + channelName,
-			self.channel_name
-		)
+			self.send(json.dumps({
+				'type': 'join_channel_response',
+				'channel_name': channelName,
+				'state': 'success'
+				})
+			)
+
+			async_to_sync(self.channel_layer.group_add)(
+					'channel_' + channelName,
+					self.channel_name
+					)
 
 	def leaveChannel(self, channelName):
 		if channelName not in self.allChannels or channelName == "general":
@@ -169,9 +193,9 @@ class chatSocket(WebsocketConsumer):
 			self.UserModel.save()
 
 		async_to_sync(self.channel_layer.group_discard)(
-			'channel_' + channelName,
-			self.channel_name
-		)
+				'channel_' + channelName,
+				self.channel_name
+				)
 
 	def sendPrivateMessage(self, receiver, message):
 		if userModels.User.objects.filter(username=receiver).exists() is False or receiver == self.userIdentification:
@@ -189,20 +213,20 @@ class chatSocket(WebsocketConsumer):
 			return
 
 		msg = MessageModels.objects.create(
-			message=message,
-			sender=self.userIdentification,
-			receiver=receiver
-		)
+				message=message,
+				sender=self.userIdentification,
+				receiver=receiver
+				)
 		msg.save()
-		
+
 		async_to_sync(self.channel_layer.group_send)(
-            'chat_' + receiver,
-            {
-                'type': 'chatPrivateMessage',
-				'sender': self.userIdentification,
-				'message': message
-            }
-        )
+				'chat_' + receiver,
+				{
+					'type': 'chatPrivateMessage',
+					'sender': self.userIdentification,
+					'message': message
+					}
+				)
 
 	def sendChannelMessage(self, channel, message):
 		if channel in self.allChannels:
@@ -308,14 +332,14 @@ class chatSocket(WebsocketConsumer):
 				receiver = receiverModel.nickname + '-' + receiverModel.username
 			else:
 				receiver = conv.receiver
-   
+
 			self.send(text_data=json.dumps({
 				'type': 'all_chat_history',
 				'message': conv.message,
 				'sender': sender,
 				'receiver': receiver,
 				'time': str(conv.timeCreation)
-			}))
+				}))
 
 	def isBlock(self, user):
 		if userModels.User.objects.filter(id=user.id).exists():
@@ -344,7 +368,7 @@ class chatSocket(WebsocketConsumer):
 				'type': 'all_users_data',
 				'username': username,
 				'online_status': user['connexionStatus']
-			}))
+				}))
 
 	def getUser(self, target):
 		user = userModels.User.objects.get(username=target)
@@ -356,14 +380,14 @@ class chatSocket(WebsocketConsumer):
 			'connexion_status': user.connexionStatus,
 			'conversation': user.allPrivateTalks
 			})
-		)
+			)
 
 	def getChannel(self, target):
 		channel = ChannelModels.objects.get(channelName=target)
 		msgsObjs = MessageModels.objects.filter(receiver=channel.channelName)
 		channelMessages = []
 		channelUsers = []
-			
+
 		for msg in msgsObjs:
 			channelMessages.append({
 				'id': msg.id,
@@ -382,12 +406,12 @@ class chatSocket(WebsocketConsumer):
 				})
 
 		self.send(text_data=json.dumps({ 
-			'type': 'get_channel_data',
-			'name': channel.channelName,
-			'description': channel.description,
-			'users': channelUsers,
-			'conversation': channelMessages
-			}))
+								  'type': 'get_channel_data',
+								  'name': channel.channelName,
+								  'description': channel.description,
+								  'users': channelUsers,
+								  'conversation': channelMessages
+								  }))
 
 	def getAllChannels(self):
 		tab = self.UserModel.channels
@@ -395,7 +419,7 @@ class chatSocket(WebsocketConsumer):
 			self.send(text_data=json.dumps({
 				'type': 'all_channels_data',
 				'data': 'no_channels'
-			}))
+				}))
 		else:
 			for chan in tab:
 				chanModel = ChannelModels.objects.get(channelName=chan)
@@ -404,7 +428,7 @@ class chatSocket(WebsocketConsumer):
 					'type': 'all_channels_data',
 					'channel_name': chanModel.channelName,
 					'description': chanModel.description
-				}))
+					}))
 
 	def getHistoryChat(self, chatTarget, msgId):
 		if userModels.User.objects.filter(username=chatTarget).exists() is False:
@@ -422,13 +446,13 @@ class chatSocket(WebsocketConsumer):
 		elif msgId == -1:
 			type = 'chat_history'		
 			messages = MessageModels.objects.filter(
-				(Q(sender=str(self.userIdentification)) & Q(receiver=modelChatTarget.username)) |
-				(Q(receiver=str(self.userIdentification)) & Q(sender=modelChatTarget.username))).order_by('-id')[:10]
+					(Q(sender=str(self.userIdentification)) & Q(receiver=modelChatTarget.username)) |
+					(Q(receiver=str(self.userIdentification)) & Q(sender=modelChatTarget.username))).order_by('-id')[:10]
 		else:
 			type = 'actualize_chat_history'
 			messages = MessageModels.objects.filter(
-				(Q(sender=str(self.userIdentification)) & Q(receiver=modelChatTarget.username)) & Q(id__lt=int(msgId))  |
-				(Q(receiver=str(self.userIdentification)) & Q(sender=modelChatTarget.username) & Q(id__lt=int(msgId)))).order_by('-id')[:10]
+					(Q(sender=str(self.userIdentification)) & Q(receiver=modelChatTarget.username)) & Q(id__lt=int(msgId))  |
+					(Q(receiver=str(self.userIdentification)) & Q(sender=modelChatTarget.username) & Q(id__lt=int(msgId)))).order_by('-id')[:10]
 
 		response = []
 
@@ -441,19 +465,19 @@ class chatSocket(WebsocketConsumer):
 				contact = msg['sender']
 
 			response.append({
-                'id': msg['id'],
+				'id': msg['id'],
 				'time': str(msg['timeCreation']),
-                'contact': contact,
+				'contact': contact,
 				'received': received,
 				'message': msg['message']
-			})
+				})
 
 		print('response: ',response)
 		self.send(json.dumps({
 			'type': type,
 			'data': response
 			})
-		)
+			)
 
 	def getHistoryChannel(self, channelTarget, msgId):
 		if ChannelModels.objects.filter(channelName=channelTarget).exists() is False:
@@ -485,7 +509,7 @@ class chatSocket(WebsocketConsumer):
 					'sender': senderModel.nickname,
 					'senderID':  senderModel.username,
 					'message': msg['message']
-				})
+					})
 
 		self.send(json.dumps({
 			'type': type,
@@ -513,12 +537,12 @@ class chatSocket(WebsocketConsumer):
 			return
 
 		async_to_sync(self.channel_layer.group_send)(
-            'chat_' + receiver,
-            {
-                'type': 'receiveInvitationPong',
-				'sender': self.userIdentification
-            }
-        )
+				'chat_' + receiver,
+				{
+					'type': 'receiveInvitationPong',
+					'sender': self.userIdentification
+					}
+				)
 
 	def inviteBattleship(self, receiver):
 		if userModels.User.objects.filter(username=receiver).exists() is False:
@@ -540,12 +564,12 @@ class chatSocket(WebsocketConsumer):
 			return
 
 		async_to_sync(self.channel_layer.group_send)(
-            'chat_' + receiver,
-            {
-                'type': 'receiveInvitationBattleship',
-				'sender': self.userIdentification
-            }
-        )
+				'chat_' + receiver,
+				{
+					'type': 'receiveInvitationBattleship',
+					'sender': self.userIdentification
+					}
+				)
 
 	def acceptInvitationPong(self, sender):
 		senderModel = userModels.User.objects.get(username=sender)
@@ -556,20 +580,20 @@ class chatSocket(WebsocketConsumer):
 		pongManager.createGame(self.user, self.allUsers[sender], gameId, None)
 
 		async_to_sync(self.channel_layer.group_send)(
-            'chat_' + sender,
-            {
-                'type': 'startPong',
-				'gameId': gameId
-            }
-		)
+				'chat_' + sender,
+				{
+					'type': 'startPong',
+					'gameId': gameId
+					}
+				)
 
 		async_to_sync(self.channel_layer.group_send)(
-            self.chatId,
-            {
-                'type': 'startPong',
-				'gameId': gameId
-            }
-		)
+				self.chatId,
+				{
+					'type': 'startPong',
+					'gameId': gameId
+					}
+				)
 
 	def acceptInvitationBattleship(self, sender):
 		senderModel = userModels.User.objects.get(username=sender)
@@ -580,20 +604,20 @@ class chatSocket(WebsocketConsumer):
 		battleshipManager.CreateGame(battleshipManager, self.user, self.allUsers[sender], gameId, 0, None)
 
 		async_to_sync(self.channel_layer.group_send)(
-            'chat_' + sender,
-            {
-                'type': 'startBattleship',
-				'gameId': gameId
-            }
-		)
+				'chat_' + sender,
+				{
+					'type': 'startBattleship',
+					'gameId': gameId
+					}
+				)
 
 		async_to_sync(self.channel_layer.group_send)(
-            self.chatId,
-            {
-                'type': 'startBattleship',
-				'gameId': gameId
-            }
-		)
+				self.chatId,
+				{
+					'type': 'startBattleship',
+					'gameId': gameId
+					}
+				)
 
 	#CHANNEL LAYER FUNCTIONS
 	#GAMES INVITATION
@@ -601,13 +625,13 @@ class chatSocket(WebsocketConsumer):
 		self.send(text_data=json.dumps({
 			'type': 'start_pong_game',
 			'gameId': event['gameId']
-		}))
+			}))
 
 	def startBattleship(self, event):
 		self.send(text_data=json.dumps({
 			'type': 'start_battleship_game',
 			'gameId': event['gameId']
-		}))
+			}))
 
 	def receiveInvitationPong(self, event):
 		sender = event['sender']
@@ -623,7 +647,7 @@ class chatSocket(WebsocketConsumer):
 		self.send(text_data=json.dumps({
 			'type': 'receive_invitation_battleship',
 			'sender': sender
-		}))
+			}))
 
 	#CHAT RECEIVE
 	def chatPrivateMessage(self, event):
@@ -676,6 +700,7 @@ class chatSocket(WebsocketConsumer):
 						'users': self.allChannels[chan].ChanModel.users,
 						'description': self.allChannels[chan].ChanModel.description,
 						'member': member,
+						'privacy_status': self.allChannels[chan].ChanModel.privacyStatus,
 						'last_msg': msgs[0].message
 						})
 				else:
@@ -685,6 +710,7 @@ class chatSocket(WebsocketConsumer):
 						'users': self.allChannels[chan].ChanModel.users,
 						'description': self.allChannels[chan].ChanModel.description,
 						'member': member,
+						'privacy_status': self.allChannels[chan].ChanModel.privacyStatus,
 						'last_msg': "" })
 
 
@@ -716,12 +742,13 @@ class chatSocket(WebsocketConsumer):
 
 	def createChannel(self, channelName, channelDescription, privacyStatus, password, adminId):
 		if ChannelModels.objects.filter(channelName=channelName).exists() is False:
-			if (privacyStatus == 0):
+			if (privacyStatus == 1):
 				password = password
 			else:
 				password = None
+			print(channelName, channelDescription, privacyStatus, password,  adminId)	
 			self.allChannels[channelName] = ChannelChat(channelName, channelDescription, privacyStatus, password,  adminId)
-			joinChannel(channelName)
+			self.allChannels[channelName].joinChannel(self.UserModel)
 			self.send(json.dumps({
 				'type': 'channel_creation',
 				'state': 'success',

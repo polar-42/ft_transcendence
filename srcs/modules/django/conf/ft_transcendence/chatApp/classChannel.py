@@ -14,7 +14,7 @@ class ChannelChat():
 			self.channelName = self.ChanModel.channelName
 			self.channelId = self.ChanModel.id
 			self.privacyStatus = self.ChanModel.privacyStatus
-			self.password = make_password(password)
+			self.password = self.ChanModel.password
 			self.usersSocket = []
 			self.channel_layer = get_channel_layer()
 
@@ -26,9 +26,11 @@ class ChannelChat():
 
 			return
 
+		print('entered pwd:', password, ' hash: ', make_password(password))
 		self.channelName = name
 		self.description = description
 		self.privacyStatus = channelPrivacy(privacyStatus)
+		self.password = make_password(password)
 		self.channel_layer = get_channel_layer()
 		self.usersSocket = []
 
@@ -38,19 +40,20 @@ class ChannelChat():
 
 			print('admin: ',self.admin)
 			obj = ChannelModels.objects.create(
-				channelName=self.channelName,
-				privacyStatus = self.privacyStatus,
-                description = self.description,
-				users=[self.admin.username],
-			)
+					channelName=self.channelName,
+					privacyStatus = self.privacyStatus,
+					password = self.password,
+					description = self.description,
+					users=[self.admin.username],
+					)
 			print(self.admin.username, 'create channel', self.channelName)
 
 		else: #ONLY FOR GENERAL CHANNEL
 			self.admin = creator
 			obj = ChannelModels.objects.create(
-				channelName=self.channelName,
-				privacyStatus = channelPrivacy.Public,
-			)
+					channelName=self.channelName,
+					privacyStatus = channelPrivacy.Public,
+					)
 
 		obj.save()
 
@@ -101,19 +104,19 @@ class ChannelChat():
 
 	def sendMessageChannel(self, sender, message):
 		msg = MessageModels.objects.create(
-			message=message,
-			sender=sender.username,
-			receiver=self.channelName #TO CHANGE ???
-		)
+				message=message,
+				sender=sender.username,
+				receiver=self.channelName #TO CHANGE ???
+				)
 		msg.save()
 
 		async_to_sync(self.channel_layer.group_send)(
-            'channel_' + self.channelName,
-            {
-               'type': 'chatChannelMessage',
-				'channel': self.channelName,
-				'sender': sender.username,
-				'message': message,
-				'time': time.strftime("%Y-%m-%d %X")
-            }
-        )
+				'channel_' + self.channelName,
+				{
+					'type': 'chatChannelMessage',
+					'channel': self.channelName,
+					'sender': sender.username,
+					'message': message,
+					'time': time.strftime("%Y-%m-%d %X")
+					}
+				)

@@ -149,6 +149,9 @@ function onMessageChat(e)
     case 'chat_channel_message':
       receiveChanMsg(data)
       break	
+    case 'join_channel_response':
+      receiveJoinChanResponse(data)
+      break
  //      console.log(data);
 	// if (data.type == 'receive_invitation_pong')
 	// {
@@ -186,6 +189,7 @@ function displaySearchResult(data) {
   let member
 
   for (let i = 0; i < data.length; i++) {
+    console.log(data[i])
     if (data[i].connexion_status == 2) {
       isConnected = 'connected'
     } else if (data[i].connexion_status === 0) {  
@@ -198,11 +202,12 @@ function displaySearchResult(data) {
     } else {
       member = ''
     }
-    console.log(member)
+    let privacyStatus = ''
+    if (data[i].privacy_status !== undefined)
+      privacyStatus = 'privacyStatus="' + data[i].privacy_status +'"'
     let isNoticationActive = ''
-
     let item = 
-      '<li class="' + data[i].type + ' ' + member + '">' +
+      '<li class="' + data[i].type + ' ' + member + '" ' + privacyStatus +'>' +
         '<img src="../static/assets/logo/user.png" alt="converstion_picture">' +
         '<div class="conversation_text">' +
           '<div class="conversation_name">' +
@@ -226,7 +231,46 @@ function displaySearchResult(data) {
         goToChan(data[i].name)
       }
     })
+    resultWrapper.lastChild.querySelector(".join_btn").addEventListener("click", clickJoinChan)
+  }  
+}
+
+function clickJoinChan(event) {
+  let item = event.target.parentElement
+  let channelName = item.querySelector(".conversation_name p").textContent
+  let privacyStatus = item.getAttribute("privacyStatus")
+
+  if (privacyStatus === '0') {
+    joinChannel(channelName, false, '')
+    return
   }
+  let previousHtml = item.innerHTML
+  let html = 
+    '<div class="join_channel_box">' +
+      '<div class="join_pwd_wrapper">' +
+        '<label for="channel_password">Enter Channel Password</label>' +
+        '<div class="join_input_wrapper">' +
+          '<input name="channel_password" type="password" placeholder="Enter channel password">' +
+          '<img src="../static/assets/logo/send-solid-60.png" name="send arrow">'  +
+        '</div>' +
+        '<p class="feedback"></p>' +
+      '</div>' +
+      '<img src="../static/assets/logo/arrow-back-regular-60.png" name="back arrow">'  +
+    '</div>'
+
+  item.innerHTML = html
+  item.querySelector("input").addEventListener("keypress", (event) => {
+    if (event.key === "Enter") {
+      joinChannel(channelName,  true, item.querySelector("input").value)
+    }
+  })
+  item.querySelector("img[name='send arrow']").addEventListener("click", () => {
+    joinChannel(channelName,  true, item.querySelector("input").value)
+  })
+  item.querySelector("img[name='back arrow']").addEventListener("click", () => {
+    item.innerHTML = previousHtml
+    item.querySelector(".join_btn").addEventListener("click", clickJoinChan)
+  })
 }
 
 function displayChatHistory(data) {
@@ -377,7 +421,6 @@ async function displayChannelHistory(data) {
       received = ""
       sender = data[i].sender
     }
-    console.log(data)
 
     let item = 
       '<li class="message_item ' + received + '" msgId="' + data[i].id + '">' +
@@ -418,7 +461,6 @@ function goToChan(name) {
   cleanMainBox()
   mainBoxBody.classList.add("channel")
   mainBoxHeader.classList.add("channel")
-  console.log('target: ', name)
   chatSocket.send(JSON.stringify({
     'type': 'get_channel',
     'target': name,
@@ -558,21 +600,24 @@ function inviteToBattleshipGame()
 	channelName.value = "";
 }
 
-function joinChannel()
+function joinChannel(channelName, privacyStatus, password)
 {
-  let channelName = document.getElementById('target_user');
-
-  if (channelName.value.length <= 3)
-  {
-    console.log('Error: channel name too small');
-    return;
+  console.log('channelName:', channelName, ' privacyStatus:', privacyStatus, ' password:', password)
+  if (privacyStatus === false) {
+    chatSocket.send(JSON.stringify({
+      'type': 'channel_join',
+      'target': channelName,
+      'privacy_status': privacyStatus
+    }))
+  } else {
+    chatSocket.send(JSON.stringify({
+      'type': 'channel_join',
+      'target': channelName,
+      'privacy_status': privacyStatus,
+      'password': password
+    }))
   }
 
-  chatSocket.send(JSON.stringify({
-    'type': 'channel_join',
-    'target': channelName.value
-  }))
-  channelName.value = "";
 }
 
 
@@ -790,7 +835,6 @@ async function prvMsgOnTopScroll(contactId) {
 
 async function chanOnTopScroll(channelName) {
   let lastMsgId = parseInt(document.querySelector(".conversation > li").getAttribute('msgId'))
-  console.log(lastMsgId)
   getHistoryChannel(channelName, lastMsgId)
 }
 
@@ -799,7 +843,6 @@ function sleep (time) {
 }
 
 async function actualizeChatHistory(data) {
-  console.log(data)
   let conversation = document.querySelector(".conversation")
   if (data.length === 0) {
     if (conversation.firstChild.classList[0] !== 'top_point') {
@@ -971,7 +1014,7 @@ async function createChannel() {
     document.querySelector(".feedback").textContent = "Passwords do not match" 
     return
   }
-  let pwd = document.querySelector(".channel_password_wrapper input[name='password']")
+  let pwd = document.querySelector(".channel_password_wrapper input[name='password']").value
 
   let Response = await fetch(document.location.origin + '/authApp/getUserID/',
     {
@@ -993,6 +1036,7 @@ async function createChannel() {
       return
   }
 
+  console.log(pwd)
   chatSocket.send(JSON.stringify({
     'type': 'create_channel',
     'channel_name': channelName,
@@ -1020,4 +1064,12 @@ function receiveChanCreation(data) {
   } 
   cleanMainBox()
   goToChan(data.channel_name)
+}
+
+function receiveJoinChanResponse(data) {
+  if (data.state === 'success') 
+    goToChan(data.channel_name)
+  else {
+    document.querySelector(".join_channel_box .feedback").textContent = data.reason 
+  }
 }

@@ -143,8 +143,9 @@
   box-shadow: 2px 2px 4px var(--secondary);
   margin: 8px 11px 15px 8px;
   display: grid;
-  grid-template-columns: 1fr 5fr 1fr;
+  grid-template-columns: 1fr 5fr 1fr 1fr;
   grid-gap: 10px;
+  padding: 5px;
 }
 
 .main_box_body.homepage .conversation_list li:hover {
@@ -155,8 +156,9 @@
 
 .main_box_body.homepage .conversation_list img {
   width: 30px;
+  height: 30px;
   display: block;
-  margin: auto;
+  /* margin: auto; */
 }
 
 .main_box_body.homepage .conversation_list img.join_btn {
@@ -173,6 +175,37 @@
 .main_box_body.homepage .conversation_list .conversation_name {
   display: flex;
 }
+
+.main_box_body.homepage .conversation_list .join_channel_box {
+  grid-column: 1 / 5;
+  display: flex;
+  justify-content: space-between;
+
+  label {
+    font-size: 0.9em;
+  }
+
+  .join_input_wrapper {
+    display: flex;
+
+    input {
+      width: 85%;
+    }
+
+    img {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .feedback {
+    color: red;
+    font-weight: bolder;
+    font-size: 0.9em;
+  }
+}
+
+
 
 .connection_point {
   border-radius: 50%;
@@ -248,7 +281,7 @@
     width: 70%;
     margin-left: auto;
     margin-right: auto;
-		margin-bottom: 10px;
+    margin-bottom: 10px;
     text-align: center;
   }
 
@@ -265,10 +298,10 @@
     justify-content: space-evenly;
     margin-bottom: 5px;
 
-		div {
-			margin-bottom: 0;
-			width: 40%;
-		}
+    div {
+      margin-bottom: 0;
+      width: 40%;
+    }
   }
 
   .checkbox_wrapper input {
@@ -277,9 +310,9 @@
     margin-right: 5px;
   }
 
-	label {
-		font-size: 0.8em;
-	}
+  label {
+    font-size: 0.8em;
+  }
 
   button {
     width: 100px;
@@ -297,8 +330,8 @@
 
   button:hover {
     background: 
-      linear-gradient(135deg, rgba(0, 155, 217, 0.1), rgba(0, 155, 217, 0.4)),
-      white;
+    linear-gradient(135deg, rgba(0, 155, 217, 0.1), rgba(0, 155, 217, 0.4)),
+    white;
     color: var(--main-bg-color);
     cursor: pointer;
   }
