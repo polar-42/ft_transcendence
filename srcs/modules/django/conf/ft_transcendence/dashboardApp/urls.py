@@ -6,5 +6,6 @@ urlpatterns = [
     path('', views.dashboardView),
 	path('getPongClassicGameStats/', views.getPongClassicGameStats),
 	path('getPongTournamentStats/', views.getPongTournamentStats),
-	path('getWinratePongGames/', views.getWinratePongGames)
+	path('getWinratePongGames/', views.getWinratePongGames),
+	path('getBattlehipClassicGameStats/', views.getBattlehipClassicGameStats)
 ]

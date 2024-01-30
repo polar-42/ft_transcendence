@@ -6,7 +6,7 @@ class User():
 	def __init__(self, user):
 		self.BoatList = []
 		self.sock_user = user
-		self.Name = self.sock_user.username
+		self.Name = self.sock_user.nickname
 		self.ConnexionStatus = ConnexionState.NeverConnected
 		return
 

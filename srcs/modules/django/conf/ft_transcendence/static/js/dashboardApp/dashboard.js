@@ -40,7 +40,7 @@ function addPongClassicMatch()
             htmlMatch += element.player1 + ' vs ' + element.player2 + ' | ' + element.player1_score + ' ' + element.player2_score + ' | ' + element.date + '</li>'
         })
 
-        document.getElementById('dash_listPongClassicMatch').innerHTML = htmlMatch
+        document.getElementById('dash_listClassicMatch').innerHTML = htmlMatch
         let games = document.querySelectorAll('.dash_classicMatch');
 
         for (let i = 0; i < games.length; i++)
@@ -82,7 +82,7 @@ function addPongTournamentStat()
             htmlTournament += element.name + ' win by ' + element.winner + ' | ' + element.date + '</li>'
         })
 
-        document.getElementById('dash_listPongTournaments').innerHTML = htmlTournament
+        document.getElementById('dash_listTournaments').innerHTML = htmlTournament
         let games = document.querySelectorAll('.dash_tournament');
 
         for (let i = 0; i < games.length; i++)
@@ -128,8 +128,24 @@ function addPongGlobalStat()
     })
 }
 
-
 function getBattleshipStat()
 {
-    console.log('getBattleshipStat');
+    addBattleshipClassicMatch()
+    addBattleshipTournamentStat()
+    addBattleshipGlobalStat()
+}
+
+function addBattleshipClassicMatch()
+{
+
+}
+
+function addBattleshipTournamentStat()
+{
+
+}
+
+function addBattleshipGlobalStat()
+{
+
 }

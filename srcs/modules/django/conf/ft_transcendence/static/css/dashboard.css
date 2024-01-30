@@ -1,5 +1,5 @@
 .boxTwoGame {
-	border: 1px solid green;
+	border: 1px solid rgb(255, 255, 255);
 	text-align: center;
 	justify-content: center;
 	display: grid;
@@ -86,7 +86,7 @@
 	overflow-y: scroll;
 }
 
-.pongStat {
+.allStat {
 	display: grid;
 
 	grid-template-columns: 1fr 1fr;
