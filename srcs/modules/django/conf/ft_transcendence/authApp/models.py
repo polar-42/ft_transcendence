@@ -14,3 +14,5 @@ class User(AbstractUser):
     tfEnable = models.BooleanField(default=False)
     tfValidated = models.BooleanField(default=False)
     tfType = models.IntegerField(default=-1)
+    tfKey = models.CharField(default=None, null=True)
+    tfIsLoggin = models.BooleanField(default=False)

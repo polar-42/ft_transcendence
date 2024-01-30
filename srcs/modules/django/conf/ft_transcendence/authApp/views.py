@@ -5,13 +5,14 @@ from .models import User
 from django.contrib.auth.hashers import make_password, check_password
 from .management.commands.create_user import getRandString
 import json, re
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from authApp.models import User
 
 from ft_transcendence import ColorPrint
 from ft_transcendence.decorators import isValidLoading
 
 regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+
 @isValidLoading
 def logPage(request):
 	if (request.user.is_authenticated == True):
@@ -41,8 +42,14 @@ def UserConnexion(request):
 	else:
 		isPasswordValid = False
 	if isPasswordValid:
-		login(request, userModel)
-		return JsonResponse({'message': 'Connexion successfull'})
+		if userModel.tfValidated == True:
+			# TODO SEND JWD
+			userModel.tfIsLoggin = True #TMP
+			userModel.save() #TMP
+			return JsonResponse({'TFA' : 'request'})
+		else:
+			login(request, userModel)
+			return JsonResponse({'message': 'Connexion successfull'})
 	else:
 		return JsonResponse({'error': 'Email or Password is invalid'})
 
@@ -133,11 +140,15 @@ def Get2FaStatus(request):
 	usr = User.objects.get(id=request.user.id)
 	return JsonResponse({'status': True if (usr.tfEnable == True and usr.tfValidated == True) else False})
 
-def Start2FaActivation(request):
+def ShowPopUp(request):
 	if request.user.is_authenticated == False:
 		return render(request, 'index.html')
-	usr = User.objects.get(id=request.user.id)
 	return render(request, 'authApp/TFA/PopUp.html')
+
+def TFAChooseTypePage(request):
+	if request.user.is_authenticated == False:
+		return render(request, 'index.html')
+	return render(request, 'authApp/TFA/Choose2FA.html')
 
 def TFAConfirmPassPage(request):
 	if request.user.is_authenticated == False:
@@ -146,19 +157,31 @@ def TFAConfirmPassPage(request):
 
 def TFACheckPass(request):
 	if request.user.is_authenticated == False:
-		return HttpResponse('', content_type="text/plain")
+		return JsonResponse({'error': 'User not authenticated'})
+	if User.objects.filter(id=request.user.id).exists() is False:
+		return JsonResponse({'error': 'User not found.'})
 	userModel = User.objects.get(id=request.user.id)
-	ColorPrint.prGreen(userModel)
-	ColorPrint.prYellow(type(userModel))
 	data = json.loads(request.body)
 	if len(data.get('password')) == 0:
-		return HttpResponse('', content_type="text/plain")
+		return JsonResponse({'error': 'Invalid password.'})
 	if check_password(data.get('password'), userModel.password):
-		return render(request, 'authApp/TFA/Choose2FA.html')
-	return HttpResponse('', content_type="text/plain")
+		return JsonResponse({'Success': 'Success.'})
+	return JsonResponse({'error': 'Invalid password.'})
+
+def TFACheckPassDesactivation(request):
+	if request.user.is_authenticated == False:
+		return JsonResponse({'error': 'User not authenticated.'})
+	if User.objects.filter(id=request.user.id).exists() is False:
+		return JsonResponse({'error': 'User not found.'})
+	userModel = User.objects.get(id=request.user.id)
+	data = json.loads(request.body)
+	if len(data.get('password')) == 0:
+		return JsonResponse({'error': 'invalid password.'})
+	if check_password(data.get('password'), userModel.password):
+		return JsonResponse({'success': '2Fa disabled.'})
+	return JsonResponse({'error': 'invalid password.'})
 
 import pyotp
-import qrcode
 
 def TFASelected(request):
 	if request.user.is_authenticated == False:
@@ -172,10 +195,88 @@ def TFASelected(request):
 		
 def TFARequestQR(request):
 	if request.user.is_authenticated == False:
+		return HttpResponse('', content_type="text/plain")
+	if User.objects.filter(id=request.user.id).exists() is False:
 		return HttpResponse('', content_type="text/plain")	
 	userModel = User.objects.get(id=request.user.id)
 	k = pyotp.random_base32() #TODO Save To user model + check on connect + security
+	userModel.tfKey = k
+	userModel.save()
 	totp_auth = pyotp.totp.TOTP(k).provisioning_uri( name=userModel.email, issuer_name='ft_transcendenceServer')
-	qrcode_uri = "https://www.google.com/chart?chs=200x200&chld=M|0&cht=qr&chl={}".format(totp_auth)	
-	ColorPrint.prGreen("Key = {key}".format(key=k))
+	qrcode_uri = "https://www.google.com/chart?chs=100x100&chld=M|0&cht=qr&chl={}".format(totp_auth)	
 	return JsonResponse({'qr' : qrcode_uri})
+
+def TFASendCode(request):
+	if request.user.is_authenticated == False:
+		return JsonResponse({'error': 'User not authenticated.'})
+	if (request.method != "POST"):
+		return JsonResponse({'error': 'Invalid method.'})
+	if User.objects.filter(id=request.user.id).exists() is False:
+		return JsonResponse({'error': 'User not found.'})
+	userModel = User.objects.get(id=request.user.id)
+	if userModel.tfKey == None:
+		return JsonResponse({'error': 'User 2fa not initialized.'})
+	data = json.loads(request.body)
+	totp = pyotp.TOTP(userModel.tfKey)
+	code = data.get('TFACode')
+	ColorPrint.prGreen("totp = {tocode} code = {cdo}".format(tocode=totp.now(), cdo=code))
+	if totp.now() == code:
+		userModel.tfEnable = True
+		userModel.tfValidated = True
+		userModel.tfType = 0
+		userModel.save()
+		logout(request)
+		return JsonResponse({'success': '2fa successfully set. Please log in.'})
+	return JsonResponse({'error': 'Invalid code.'})
+	
+def TFADisable(request):
+	if request.user.is_authenticated == False:
+		return JsonResponse({'error': 'User not authenticated.'})
+	if (request.method != "GET"):
+		return JsonResponse({'error': 'Invalid method.'})
+	if User.objects.filter(id=request.user.id).exists() is False:
+		return JsonResponse({'error': 'User not found.'})
+	userModel = User.objects.get(id=request.user.id)
+	userModel.tfEnable = False
+	userModel.tfValidated = False
+	userModel.tfType = -1
+	userModel.tfKey = None
+	userModel.save()
+	return JsonResponse({'Success': '2FA Disabled.'})
+
+def TFALoginPage(request):
+	if request.user.is_authenticated == True:
+		ColorPrint.prGreen("1")
+		return HttpResponseForbidden('', content_type="text/plain")
+	data = json.loads(request.body)
+	email = data.get("email")
+	if User.objects.filter(email=email).exists() is False:
+		ColorPrint.prGreen("2")
+		return HttpResponseForbidden('', content_type="text/plain")
+	userModel = User.objects.get(email=email)
+	if userModel.tfIsLoggin == False:
+		ColorPrint.prGreen("3")
+		return HttpResponseForbidden('', content_type="text/plain")
+	return render(request, 'authApp/TFA/Enter2FACode.html')
+
+def LoginCheckTFA(request):
+	if request.user.is_authenticated == True:
+		ColorPrint.prGreen("1")
+		return JsonResponse({'error' : 'User already logged.'})
+	data = json.loads(request.body)
+	email = data.get("email")
+	if User.objects.filter(email=email).exists() is False:
+		ColorPrint.prGreen("2")
+		return JsonResponse({'error' : 'User not exist.'})
+	userModel = User.objects.get(email=email)
+	if userModel.tfIsLoggin == False:
+		ColorPrint.prGreen("3")
+		return JsonResponse({'error' : 'incorrect step.'})
+	if userModel.tfKey == None:
+		return JsonResponse({'error': 'User 2fa not initialized.'})
+	totp = pyotp.TOTP(userModel.tfKey)
+	code = data.get('TFACode')
+	if totp.now() == code:
+		login(request, userModel)
+		return JsonResponse({'message': 'User is connected.'})
+	return JsonResponse({'error': 'Invalid 2FA code.'})

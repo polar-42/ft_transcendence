@@ -1,0 +1,6 @@
+{% block Login_TFA_Auth %}
+{% csrf_token %}
+<div class="input-box">
+    <input type="text" id="Input_code" required placeholder="auth code"><br />
+</div>
+{% endblock Login_TFA_Auth %}

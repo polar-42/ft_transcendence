@@ -39,32 +39,32 @@ export function initUpdateAccount() {
 }
 
 function Handle2FaToggle(checkbox) {
-	if (checkbox.checked == true) {
-		fetch(window.location.origin + "/authApp/Start2FaActivation")
-			.then(Response => {
-				if (!Response.ok) {
-					throw new Error('Network response was not okay')
-				}
-				return Response.text()
-			})
-			.then(texted => {
-				document.querySelector("#app").lastElementChild.insertAdjacentHTML("afterend", texted)
-				const doc = document.querySelector("#app").lastElementChild
-				return doc
-			})
-			.then(doc => {
-				Effective2Fa(doc)
-			})
-			.catch(error => {
-				console.log(error)
-			})
-	}
-	else {
-
-	}
+	const TFARequestType = 1 ? checkbox.checked == true : 2
+	fetch(window.location.origin + "/authApp/Show2FAPopUp")
+	.then(Response => {
+		if (!Response.ok) {
+			throw new Error('Network response was not okay')
+		}
+		return Response.text()
+	})
+	.then(texted => {
+		if (document.querySelector('.TFA_PopUp_Container') != undefined)
+		{
+			document.querySelector('.TFA_PopUp_Container').remove()
+		}
+		document.querySelector("#app").lastElementChild.insertAdjacentHTML("afterend", texted)
+		const doc = document.querySelector("#app").lastElementChild
+		return doc
+	})
+	.then(doc => {
+		Effective2Fa(doc, TFARequestType)
+	})
+	.catch(error => {
+		console.log(error)
+	})
 }
 
-function Effective2Fa(doc) {
+function Effective2Fa(doc, TFARequestType) {
 	let content = doc.querySelector('.TFA_Content')
 	fetch(window.location.origin + "/authApp/TFAConfirmPass")
 		.then(Response => {
@@ -76,7 +76,7 @@ function Effective2Fa(doc) {
 		.then(texted => {
 			content.innerHTML = texted
 			content.querySelector('.submit_BTN').addEventListener('click', () => {
-				VerifyPass(content)
+				VerifyPass(content, TFARequestType)
 			})
 		})
 		.catch(error => {
@@ -84,9 +84,8 @@ function Effective2Fa(doc) {
 		})
 }
 
-function VerifyPass(content) {
+function VerifyPass(content, TFARequestType) {
 
-	console.log ("Toto")
 	const crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
 	var header = new Headers()
 	header.append('Content-Type', 'application/json')
@@ -104,17 +103,20 @@ function VerifyPass(content) {
 			{
 				throw new Error('Network response was not okay')
 			}
-			return Response.text()
+			return Response.json()
 		})
-		.then (texted => {
-			if (texted.length === 0)
+		.then (data => {
+			if (data.error != undefined)
 			{
-				content.querySelector('#messageError').text = "Invalid password"
+				content.querySelector('#messageError').textContent = "Invalid password"
 				content.querySelector('#Input_pwd').style.background =  "#fa6969"
 			}
 			else
 			{
-				Select2FA(content, texted)
+				if (TFARequestType == 1)
+					Select2FA(content)
+				else
+					Disable2FARequest(content)
 			}
 		})
 		.catch(error => {
@@ -124,20 +126,55 @@ function VerifyPass(content) {
 
 var selected = undefined
 
-function Select2FA(content, text)
+function Disable2FARequest(content, text)
+{
+	const crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
+	var header = new Headers()
+	header.append('Content-Type', 'application/json')
+	header.append('X-CSRFToken', crsf_token)
+	content.querySelector('#messageError').text = ""
+	fetch(document.location.origin + "/authApp/TFADisable",
+		{
+			method: 'GET',
+			headers: header,
+		})
+		.then(Response => {
+			if (!Response.ok)
+			{
+				throw new Error('Network response was not okay')
+			}
+			if (document.querySelector('.TFA_PopUp_Container') != undefined)
+			{
+				document.querySelector('.TFA_PopUp_Container').remove()
+			}
+		})
+}
+
+function Select2FA(content)
 {
 	content.querySelector('.submit_BTN').removeEventListener('click', VerifyPass)
-	content.innerHTML = text
-	selected = undefined
-	const list = content.querySelectorAll(".selector_button")
-	list.forEach(Element =>{
-		Element.addEventListener("click", () => {
-			console.log(Element)
-			SelectorButtonBehavior(list, Element, content)
+	fetch(window.location.origin + "/authApp/TFAChooseType")
+	.then(Response => {
+		if (!Response.ok) {
+			throw new Error('Network response was not okay')
+		}
+		return Response.text()
+	})
+	.then(texted => {
+		content.innerHTML = texted
+		selected = undefined
+		const list = content.querySelectorAll(".selector_button")
+		list.forEach(Element =>{
+			Element.addEventListener("click", () => {
+				SelectorButtonBehavior(list, Element, content)
+			})
+		})
+		content.querySelector('.submit_BTN').addEventListener('click', () => {
+			ChooseAuth(content)
 		})
 	})
-	content.querySelector('.submit_BTN').addEventListener('click', () => {
-		ChooseAuth(content)
+	.catch(error => {
+		console.error(error)
 	})
 }
 
@@ -184,17 +221,62 @@ function ChooseAuth(content)
 	})
 	.then(data => {
 		content.innerHTML = data
-		fetch(window.location.origin + "/authApp/TFARequestQR")
-		.then(Response => {
-			if (!Response.ok) {
-				throw new Error('Network response was not okay')
-			}
-			return Response.json()
+		if (selected == 0)
+		{
+			QrAuth(content)
+		}
+	})
+}
+
+function QrAuth(content)
+{
+	document.querySelector(".TFA_PopUp_Container .TFA_PopUp").classList.add("TFA_qrContent")
+	fetch(window.location.origin + "/authApp/TFARequestQR")
+	.then(Response => {
+		if (!Response.ok) {
+			throw new Error('Network response was not okay')
+		}
+		return Response.json()
+	})
+	.then(data => {
+		content.querySelector(".qrDisplayer").src = data.qr
+		content.querySelector(".submit_BTN").addEventListener("click", () => {
+			SendQrAnswer(content, content.querySelector("#Input_code"))
 		})
-		.then(data => {
-			console.log(data.qr)
-			content.querySelector(".qrDisplayer").src = data.qr
-		})
+	})
+}
+
+function SendQrAnswer(content, codeInput)
+{
+	if (selected == undefined)
+		return
+	const crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
+	var header = new Headers()
+	header.append('Content-Type', 'application/json')
+	header.append('X-CSRFToken', crsf_token)
+	const data = { TFACode : codeInput.value }
+	fetch(document.location.origin + "/authApp/TFASendCode",
+	{
+		method: 'POST',
+		headers: header,
+		body: JSON.stringify(data)
+	})
+	.then(Response => {
+		if (!Response.ok)
+		{
+			throw new Error('Network response was not okay')
+		}
+		return Response.json()
+	})
+	.then(data => {
+		if (data.error != undefined)
+			throw new Error(data.error)
+		content.querySelector('#messageError').textContent = data.success
+	})
+	.catch(error => {
+		console.log(content)
+		console.log(content.querySelector('#messageError'))
+		content.querySelector('#messageError').textContent = error
 	})
 }
 

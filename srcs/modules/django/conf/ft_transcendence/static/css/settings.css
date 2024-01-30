@@ -91,6 +91,11 @@
     width: 600px;
     top: calc(50% - (400px/2));
     left: calc(50% - (600px/2));
+    transition: .3s ease;
+  }
+
+  .TFA_PopUp_Container .TFA_PopUp.TFA_qrContent {
+    height: 550px;
   }
 
   .TFA_PopUp .TFA_Title
@@ -148,11 +153,11 @@
 
   .TFA_Content .button_selector {
     margin-top: 30px;
-	margin-left: calc(50% - 50px);
+	  margin-left: calc(50% - 50px);
   }
   .TFA_Content .button_selector .selector_button_div {
-	width: fit-content;
-	text-align: center;
+	  width: fit-content;
+	  text-align: center;
   }	
   .TFA_Content .button_selector p {
 	text-align: center;
@@ -165,4 +170,8 @@
   }
   .selector_button.selected_BTN {
     border: 1px solid var(--main-bg-color);
+  }
+
+  .code-box {
+    padding-left: calc(50% - 50px);
   }
