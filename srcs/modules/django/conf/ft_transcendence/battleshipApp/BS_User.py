@@ -4,6 +4,8 @@ from .BS_Boat import Boat
 
 class User():
 	def __init__(self, user):
+		self.BoatHit = 0
+		self.HitTry = 0
 		self.BoatList = []
 		self.sock_user = user
 		self.Name = self.sock_user.nickname

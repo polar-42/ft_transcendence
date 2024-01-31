@@ -4,6 +4,7 @@ from ..models import PongGameModels
 from channels.db import database_sync_to_async
 from asgiref.sync import async_to_sync, sync_to_async
 from . import pongThreadsIA
+from authApp.models import User
 
 
 class PongGameIASocket(WebsocketConsumer):
@@ -68,9 +69,14 @@ class PongGameIASocket(WebsocketConsumer):
 		n_ball_touch_player1 = event['number_ball_touch_player1']
 		n_ball_touch_player2 = event['number_ball_touch_player2']
 
+		if winner != 'AI':
+			winnerName = User.objects.get(id=int(winner)).nickname
+		else:
+			winnerName = 'AI'
+
 		self.send(text_data=json.dumps({
     			'type': 'game_ending',
-				'winner': str(winner),
+				'winner': winnerName,
 				'reason': 'score',
 				'playerone_score': str(playerone_score),
 				'playertwo_score': str(playertwo_score),

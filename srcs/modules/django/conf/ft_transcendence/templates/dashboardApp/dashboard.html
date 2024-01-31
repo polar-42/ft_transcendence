@@ -3,9 +3,9 @@
 <script type="module" src="{% static '/js/loading.js' %}"></script>
 {% block content %}
 <div class="boxTwoGame">
-	<button class="buttonGame" id="buttonGamePong">Pong</button>
+	<button class="buttonGame" id="buttonGamePong">PONG</button>
 
-	<button class="buttonGame" id="buttonGameBattleship">Battleship</button>
+	<button class="buttonGame" id="buttonGameBattleship">BATTLESHIP</button>
 </div>
 
 <div class="dashboardInformation">
@@ -31,22 +31,33 @@
 			Stats
 		</h4>
 		<div class="allStat">
-			<div class="piechartGame">
+			<div class="gameStats">
+				<div class="piechartGame">
 
-			</div>
-			<div class="piechartStatGame">
-				<p id="winGame">Win</p>
-				<p id="loseGame">Lose</p>
-			</div>
+				</div>
 
-			<div class="piechartTournament">
-
-			</div>
-			<div class="piechartStatTournament">
-				<p id="winTournament">Win</p>
-				<p id="loseTournament">Lose</p>
+				<div class="piechartStatGame">
+					<p id="classicGameStat">Classics Games</p>
+					<p id="winGame">Win</p>
+					<p id="loseGame">Lose</p>
+				</div>
 			</div>
 
+			<div class="tournamentStats">
+				<div class="piechartTournament">
+
+				</div>
+
+				<div class="piechartStatTournament">
+					<p id="classicTournamentStat">Tournaments</p>
+					<p id="winTournament">Win</p>
+					<p id="loseTournament">Lose</p>
+				</div>
+			</div>
+		</div>
+		<div class="otherStat">
+			<ul id="otherStatLine">
+			</ul>
 		</div>
 	</div>
 </div>

@@ -7,5 +7,9 @@ urlpatterns = [
 	path('getPongClassicGameStats/', views.getPongClassicGameStats),
 	path('getPongTournamentStats/', views.getPongTournamentStats),
 	path('getWinratePongGames/', views.getWinratePongGames),
-	path('getBattlehipClassicGameStats/', views.getBattlehipClassicGameStats)
+	path('getBattlehipClassicGameStats/', views.getBattlehipClassicGameStats),
+	path('getBattleshipTournamentStats/', views.getBattleshipTournamentStats),
+	path('getWinrateBattleshipGames/', views.getWinrateBattleshipGames),
+	path('getOtherPongStats/', views.getOtherPongStats),
+	path('getOtherBatlleshipStats/', views.getOtherBatlleshipStats)
 ]
