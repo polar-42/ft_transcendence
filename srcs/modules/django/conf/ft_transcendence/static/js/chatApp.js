@@ -70,7 +70,7 @@ function initHomepageBody() {
   mainBoxBody.innerHTML = html
 
   document.querySelector("button[name='create_channel']").addEventListener("click", initCreateChannel)
-  getLastChat()
+  getLastChats()
 }
 
 export function unsetChatbox() {
@@ -122,6 +122,9 @@ function onMessageChat(e)
     case 'search_conv':
       displaySearchResult(data.data) 
       break
+    case 'last_chats':
+      displayLastChats(data.data)
+      break
     case 'get_user_data':
       displayPrivMsg(data)
       break
@@ -172,6 +175,47 @@ function onMessageChat(e)
   }
 }
 
+function displayLastChats(data) {
+  let conversation_list = document.querySelector(".conversation_list")
+  for (let i = data.length - 1; i >= 0; i--) {
+    console.log(data[i])
+    let lastMsg
+    if (data[i].last_msg.msg !== '')
+      lastMsg = data[i].last_msg.sender + ': ' + data[i].last_msg.msg
+    else
+      lastMsg = ''
+    let isConnected
+    if (data[i].connexionStatus === undefined)
+      isConnected = ''
+    else if (data[i].connexionStatus === 0)
+      isConnected = 'disconnected'
+    else
+      isConnected = 'connected'
+    let item = 
+      '<li class="' + data[i].type + '">' +
+        '<img src="../static/assets/logo/user.png" alt="converstion_picture">' +
+        '<div class="conversation_text">' +
+          '<div class="conversation_name">' +
+            '<p>' + data[i].name + '</p>' +
+            '<div class="connection_point ' + isConnected + '"></div>' +
+          '</div>' +
+          '<p class="last_msg">' + lastMsg + '</p>' +
+        '</div>' +
+      '</li>'
+
+    if (conversation_list.children.length > 0) 
+      conversation_list.firstChild.insertAdjacentHTML("beforebegin", item)
+    else
+      conversation_list.innerHTML = item
+    conversation_list.firstChild.addEventListener("click", () => {
+      if (data[i].type === 'private')
+        goToConv(data[i].id)
+      else
+        goToChan(data[i].name)
+    })
+  }
+}
+
 function displaySearchResult(data) {
   let resultWrapper = document.querySelector(".conversation_list")
   if (document.querySelector(".main_box_header").children.length === 2) 
@@ -206,6 +250,13 @@ function displaySearchResult(data) {
     if (data[i].privacy_status !== undefined)
       privacyStatus = 'privacyStatus="' + data[i].privacy_status +'"'
     let isNoticationActive = ''
+    let lastMsg
+    if (data[i].type === 'channel')
+      lastMsg = data[i].description
+    else if (data[i].last_msg.message === undefined) 
+      lastMsg = ''
+    else
+      lastMsg = data[i].last_msg.sender + ': ' + data[i].last_msg.message
     let item = 
       '<li class="' + data[i].type + ' ' + member + '" ' + privacyStatus +'>' +
         '<img src="../static/assets/logo/user.png" alt="converstion_picture">' +
@@ -214,7 +265,7 @@ function displaySearchResult(data) {
             '<p>' + data[i].name + '</p>' +
             '<div class="connection_point ' + isConnected + '"></div>' +
           '</div>' +
-          '<p class="last_msg"></p>' +
+          '<p class="last_msg">' + lastMsg + '</p>' +
         '</div>' +
         '<div class="notification_wrapper ' + isNoticationActive + '"></div>' +
         '<img class="join_btn" src="../static/assets/logo/user-plus-regular-36.png" alt="join channel button">' +
@@ -309,6 +360,7 @@ function displayChannel(data) {
           '<p class="channel_name">' + data.name + '</p>' +
           '<p class="channel_description">' + data.description + '</p>' +
         '</div>' +
+        '<img src="" alt="leave channel button">' +
       '</div>' +
       '<img src="../static/assets/logo/arrow-back-regular-60.png" alt="return arrow button">'
 
@@ -672,10 +724,10 @@ function unblockUser()
   target.value = "";
 }
 
-function getLastChat()
+function getLastChats()
 {
   chatSocket.send(JSON.stringify({
-    'type': 'get_last_chat'
+    'type': 'get_last_chats'
   }))
 }
 

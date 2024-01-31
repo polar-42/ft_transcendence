@@ -1,4 +1,4 @@
-import json, time
+import json, time, datetime
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from .enumChat import connexionStatus, channelPrivacy
@@ -13,6 +13,7 @@ from battleshipApp.BS_MatchmakingManager import GameManager as battleshipManager
 
 
 def createGeneralChat(allChannels):
+	print('allo')
 	allChannels["General"] = ChannelChat("General", "General channel", channelPrivacy.Public, None, None)
 
 class chatSocket(WebsocketConsumer):
@@ -59,11 +60,13 @@ class chatSocket(WebsocketConsumer):
 		if tabChannels is not None:
 			for chan in tabChannels:
 				self.allChannels[chan].joinChannel(self)
-				# self.joinChannel(chan, False, None)
 		else:
+			tabChannels = []
 			self.allChannels['General'].joinChannel(self)
-			# self.joinChannel("General", False, None)
+			tabChannels.append('General')
 
+		self.UserModel.channels = tabChannels
+		self.UserModel.save()
 		#TO DEL
 		tab = self.UserModel.channels
 		if tab is not None:
@@ -75,7 +78,6 @@ class chatSocket(WebsocketConsumer):
 			print('All', self.user.nickname, 'blockedUser:')
 			for x in tab:
 				print(userModels.User.objects.get(username=x).nickname)
-		#TO DEL
 
 	def disconnect(self, code):
 		self.UserModel.connexionStatus = connexionStatus.Disconnected
@@ -107,7 +109,6 @@ class chatSocket(WebsocketConsumer):
 		elif data['type'] == 'create_channel':
 			self.createChannel(data['channel_name'], data['channel_description'], data['privacy_status'], data['password'], data['adminId'])
 		elif data['type'] == 'channel_join':
-			print(data)
 			if data['privacy_status'] is False:
 				self.joinChannel(data['target'], False, None)
 			else:
@@ -118,8 +119,8 @@ class chatSocket(WebsocketConsumer):
 			self.blockUser(data['target'])
 		elif data['type'] == 'unblock_user':
 			self.unblockUser(data['target'])
-		elif data['type'] == 'get_last_chat':
-			self.getLastChat()
+		elif data['type'] == 'get_last_chats':
+			self.getLastChats()
 		elif data['type'] == 'get_all_users':
 			self.getAllUsers()
 		elif data['type'] == 'get_user':
@@ -215,7 +216,8 @@ class chatSocket(WebsocketConsumer):
 		msg = MessageModels.objects.create(
 				message=message,
 				sender=self.userIdentification,
-				receiver=receiver
+				receiver=receiver,
+				type='P'
 				)
 		msg.save()
 
@@ -285,61 +287,69 @@ class chatSocket(WebsocketConsumer):
 
 		print(user, 'has been unblock by', self.user.nickname) #TO DEL
 
-	def getLastChat(self):
-		allMessageChannels = []
+	def getLastChats(self):
+
+		allConv = [] 
 		if self.UserModel.channels is not None:
 			for chan in self.UserModel.channels:
-				msgs = MessageModels.objects.filter(receiver=chan)
-				if msgs.count() > 0:
-					allMessageChannels.append(msgs.order_by('-id')[0])
+				chanMsgs = MessageModels.objects.filter(type='C').filter(Q(sender=chan) | Q(receiver=chan)).order_by('-id')
+				if chanMsgs.exists():
+					lastMsg = chanMsgs[0].message
+					lastMsgSender = chanMsgs[0].sender
+					timestamp = chanMsgs[0].timeCreation
+				else:
+					lastMsg = ''
+					lastMsgSender = ''
+					timestamp = datetime.datetime.min.replace(tzinfo=datetime.timezone.utc) 
 
-		allMessages = MessageModels.objects.filter(Q(sender=self.userIdentification) | Q(receiver=self.userIdentification))
-		allConv = allMessageChannels
-
-		blockedUser = self.UserModel.blockedUser
-
+				data = {
+					'type': 'channel',
+					'name': chan,
+					'last_msg': { 
+				  		'sender': lastMsgSender, 
+				  		'msg': lastMsg },
+					'timestamp': timestamp 
+					}
+				allConv.append(data)
+		
+		allMessages = MessageModels.objects.filter(type='P').filter(Q(sender=self.username) | Q(receiver=self.username)).order_by('-id').values()
+		contactList = []
 		for msg in allMessages:
-			x = 0
-			for conv in allConv:
-				if blockedUser is not None and (conv.receiver in blockedUser or conv.sender in blockedUser or msg.sender in blockedUser or msg.receiver in blockedUser):
-					x = -1
-					break
-				elif conv.receiver == msg.receiver and conv.sender == msg.sender:
-					x = -1
-					break
-				elif conv.receiver == msg.sender and conv.sender == msg.receiver:
-					x = -1
-					break
-				elif conv.receiver == msg.receiver:
-					x = -1
-					break
-				x += 1
+			if (msg['sender'] == self.username):
+				contact = msg['receiver']
+				msgSender = 'Me'
+			else:
+				contact = msg['sender']
+				msgSender = contact
+			if contact not in contactList:
+				contactList.append(contact)
+		print(contactList)
+		for contact in contactList:
+			msg = allMessages.filter(Q(sender=contactList[0]) | Q(receiver=contactList[0])).order_by('-id')[0]
+			connexionStatus = userModels.User.objects.get(username=contact).connexionStatus
+			allConv.append({
+				'type': 'private',
+				'name': userModels.User.objects.get(username=contact).nickname,
+				'id': userModels.User.objects.get(username=contact).username,
+				'connexionStatus': connexionStatus,
+				'last_msg': {
+					'msg': msg['message'],
+					'sender': msgSender },
+				'timestamp': msg['timeCreation']
+				})
 
-			if x == len(allConv) or x == 0:
-				allConv.append(msg)
+		def cmpTimeStamp(msg):
+			return msg['timestamp']
 
-		print('All conv of', self.user)
-		print(allConv)
+		allConv.sort(key = cmpTimeStamp, reverse = True)
 		for conv in allConv:
-			if userModels.User.objects.filter(username=conv.sender).exists():
-				senderModel = userModels.User.objects.get(username=conv.sender)
-				sender = senderModel.nickname + '-' + senderModel.username
-			else:
-				sender = conv.sender
+			conv['timestamp'] = str(conv['timestamp'])
 
-			if userModels.User.objects.filter(username=conv.receiver).exists():
-				receiverModel = userModels.User.objects.get(username=conv.receiver)
-				receiver = receiverModel.nickname + '-' + receiverModel.username
-			else:
-				receiver = conv.receiver
-
-			self.send(text_data=json.dumps({
-				'type': 'all_chat_history',
-				'message': conv.message,
-				'sender': sender,
-				'receiver': receiver,
-				'time': str(conv.timeCreation)
-				}))
+		self.send(text_data=json.dumps({
+			'type': 'last_chats',
+			'data': allConv
+			})
+		)
 
 	def isBlock(self, user):
 		if userModels.User.objects.filter(id=user.id).exists():
@@ -372,7 +382,6 @@ class chatSocket(WebsocketConsumer):
 
 	def getUser(self, target):
 		user = userModels.User.objects.get(username=target)
-		print(user)
 		self.send(text_data=json.dumps({
 			'type': 'get_user_data',
 			'name': user.nickname,
@@ -692,39 +701,36 @@ class chatSocket(WebsocketConsumer):
 					member =  True
 				else :
 					member = False
-				msgs = MessageModels.objects.filter(receiver=chan) 
-				if msgs.count() > 0:
-					response.append({
-						'type': 'channel',
-						'name': chan,
-						'users': self.allChannels[chan].ChanModel.users,
-						'description': self.allChannels[chan].ChanModel.description,
-						'member': member,
-						'privacy_status': self.allChannels[chan].ChanModel.privacyStatus,
-						'last_msg': msgs[0].message
-						})
-				else:
-					response.append({
-						'type': 'channel',
-						'name': chan,
-						'users': self.allChannels[chan].ChanModel.users,
-						'description': self.allChannels[chan].ChanModel.description,
-						'member': member,
-						'privacy_status': self.allChannels[chan].ChanModel.privacyStatus,
-						'last_msg': "" })
+				response.append({
+					'type': 'channel',
+					'name': chan,
+					'users': self.allChannels[chan].ChanModel.users,
+					'description': self.allChannels[chan].ChanModel.description,
+					'member': member,
+					'privacy_status': self.allChannels[chan].ChanModel.privacyStatus,
+					'last_msg': "" })
 
 
 		for user in allUsers:
 			if user.username.find(input) >= 0:
 				msgs = MessageModels.objects.filter(Q(receiver=user.username) | Q(sender=user.username))
+
 				connexionStatus = user.connexionStatus
 				if msgs.count() > 0:
+					if msgs[0].sender == self.UserModel.username:
+						sender = 'Me'
+					else:
+						sender = msgs[0].sender
 					response.append({
 						'type': 'private_message',
 						'name': user.nickname,
 						'identification': user.username,
 						'connexion_status': connexionStatus, 
-						'last_msg': msgs[0].message})
+						'last_msg': {
+							'message': msgs[0].message,
+							'sender': sender
+							}
+						})
 				else:
 					response.append({
 						'type': 'private_message',
