@@ -88,8 +88,8 @@ class Player:
 class GameState:
     def __init__(self, players):
         self.ball = Ball()
-        self.playerOne = Player(-4., 0, players[0])
-        self.playerTwo = Player(4., 0, players[1])
+        self.playerOne = Player(-5., 0, players[0])
+        self.playerTwo = Player(5., 0, players[1])
 
     def move_players(self):
         self.playerOne.change_pos(self.playerOne.dy)

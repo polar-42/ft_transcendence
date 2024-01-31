@@ -52,9 +52,7 @@ class pongGameLoop(threading.Thread):
                 ball_pos_x, ball_pos_y = game.get_pos()
                 ball_dx, ball_dy = game.get_direction()
                 ball_speed = game.get_speed()
-                player1, player2 = self.game.get_players()
-                ball_effect = game.get_effect()
-                
+                player1, player2 = self.game.get_players()                
                 player1_pos_x, player1_pos_y = player1.get_pos()
                 player2_pos_x, player2_pos_y = player2.get_pos()
 
@@ -62,30 +60,26 @@ class pongGameLoop(threading.Thread):
                 player2_score = player2.get_score()
 
          	    #BALL CCOLISIONS WITH WALLS
-                if not( 3.8 >= ball_pos_y + ball_dy * ball_speed >= -3.8) :
+                if not( 3.8 - 0.15 >= ball_pos_y + ball_dy * ball_speed >= -3.8 + 0.15) :
                     ball_dy *= -1
-                    ball_effect *= 0.8
 
                 #BALL COLLISION WITH PLAYER2
-                elif (player2_pos_y + 1.07 >= ball_pos_y >= player2_pos_y - 1.07 and ball_pos_x >= player2_pos_x - 0.17) :
+                elif (player2_pos_y + 1.07 >= ball_pos_y >= player2_pos_y - 1.07 and ball_pos_x >= player2_pos_x - 0.25) :
                     ball_dx *= -1
                     ball_dy = ball_pos_y - player2_pos_y
-                    ball_effect = -0.02 * (ball_pos_y - player2_pos_y) * (1 + ball_speed)
                     ball_pos_x = player2_pos_x - 0.17
-                    ball_speed *= 1.04
+                    ball_speed *= 1.08
 
                 #BALL COLLISION WITH PLAYER1
-                elif (player1_pos_y + 1.07 >= ball_pos_y >= player1_pos_y - 1.07     and ball_pos_x <= player1_pos_x + 0.17) :
+                elif (player1_pos_y + 1.07 >= ball_pos_y >= player1_pos_y - 1.07     and ball_pos_x <= player1_pos_x + 0.25) :
                     ball_dx *= -1
                     ball_dy = ball_pos_y - player1_pos_y
-                    ball_effect = -0.02 * (ball_pos_y - player1_pos_y) * (1 + ball_speed)
                     ball_pos_x = player1_pos_x + 0.17
-                    ball_speed *= 1.04 
+                    ball_speed *= 1.08
 
                 #UPDATE SCORE PLAYER1
                 elif (ball_pos_x >= player2_pos_x) :
                     player1_score = player1_score + 1
-                    ball_effect = 0
                     ball_pos_x = 0
                     ball_pos_y = 0
                     ball_speed = 0.1
@@ -97,7 +91,6 @@ class pongGameLoop(threading.Thread):
                 #UPDATE SCORE PLAYER2
                 elif (ball_pos_x <= player1_pos_x) :
                     player2_score = player2_score + 1
-                    ball_effect = 0
                     ball_pos_x = 0
                     ball_pos_y = 0
                     ball_speed = 0.1
@@ -109,8 +102,7 @@ class pongGameLoop(threading.Thread):
 
                 ball_pos_y += ball_dy * ball_speed
                 ball_pos_x += ball_dx * ball_speed
-                self.game.update_ball_effect(ball_effect)
-                self.game.update_ball_direction(ball_dx, ball_dy + ball_effect)
+                self.game.update_ball_direction(ball_dx, ball_dy)
                 self.game.update_ball_pos(ball_pos_x, ball_pos_y)
                 self.game.update_ball_speed(ball_speed)
                 send_data_async(self.pong, self.game)
