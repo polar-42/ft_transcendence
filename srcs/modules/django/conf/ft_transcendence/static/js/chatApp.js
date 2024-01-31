@@ -353,14 +353,22 @@ function displayChannel(data) {
   initChanBody(data)
 
   function initChanHeader(data) {
+    let general
+    if (data.name === 'General')
+      general = 'general'
+    else
+      general = ''
     let html = 
-      '<div class="contact_wrapper">' +
+      '<div class="contact_wrapper ' + general + ' ">' +
         '<img src="../static/assets/logo/user.png" alt="channel picture">' +
         '<div class="contact_name_wrapper">' +
           '<p class="channel_name">' + data.name + '</p>' +
-          '<p class="channel_description">' + data.description + '</p>' +
+          '<div class="description_wrapper">' +
+            '<p class="channel_description">' + data.description + '</p>' +
+            '<img class="edit_description" src="../static/assets/logo/edit-regular-36.png" alt="leave channel button">' +
+          '</div>' +
         '</div>' +
-        '<img src="" alt="leave channel button">' +
+        '<img class="leave_channel" src="../static/assets/logo/red_cross.png" alt="leave channel button">' +
       '</div>' +
       '<img src="../static/assets/logo/arrow-back-regular-60.png" alt="return arrow button">'
 
@@ -372,6 +380,25 @@ function displayChannel(data) {
       cleanMainBox()
       initChatHomepage()
     })
+    document.querySelector(".leave_channel").addEventListener("click", () => {
+      leaveChannel(data.name)
+    })
+    document.querySelector(".edit_description").addEventListener("click", initEditDescription)
+
+    function initEditDescription() {
+      let box = 
+        '<div class="edit_description_box">' +
+          '<div class="edit_main_wrapper">' + 
+            '<label for="description">New description</label>' +
+            '<div class="input_wrapper">' +
+              '<input name="description" type="text" placeholder="Enter new description">' +
+              '<img src="../static/assets/logo/send-solid-60.png" alt="send arrow">' +
+            '</div>' +
+          '</div>' +
+          '<img src="../static/assets/logo/arrow-back-regular-60.png" alt="return arrow button">'
+        '</div>'
+      document.querySelector(".main_box_header.channel").insertAdjacentHTML("afterend", box)
+    }
   }
 
   function initChanBody(data) {
@@ -673,21 +700,13 @@ function joinChannel(channelName, privacyStatus, password)
 }
 
 
-function leaveChannel()
+function leaveChannel(channelName)
 {
-  let channelName = document.getElementById('target_user');
-
-  if (channelName.value.length <= 3)
-  {
-    console.log('Error: channel name too small');
-    return;
-  }
-
   chatSocket.send(JSON.stringify({
     'type': 'channel_leave',
-    'target': channelName.value
+    'target': channelName
   }))
-  channelName.value = "";
+  initChatHomepage()
 }
 
 function blockUser()
@@ -990,7 +1009,7 @@ function initCreateChannel() {
         '<p>Channel description:</p>' +
         '<input type="text" name="channel_description" placeholder="Enter channel description" required>' +
       '</div>' +
-      '<div class="privacy_setting>' +
+      '<div class="privacy_setting">' +
         '<p class="privacy_label">Privacy settings</p>' +
         '<div class="privacy_checkbox_wrapper">' +
           '<div class="checkbox_wrapper">' +
@@ -1062,6 +1081,11 @@ function initCreateChannel() {
 async function createChannel() {
   let channelName = document.querySelector(".channel_creation_box input[name='channel_name']").value
   let channelDescription = document.querySelector(".channel_creation_box input[name='channel_description']").value
+  let checkboxes = document.querySelectorAll(".privacy_setting input[type='checkbox']")
+  if (checkboxes[0].checked === false && checkboxes[1].checked === false) {
+    document.querySelector(".feedback").textContent = "No privacy setting selected" 
+    return
+  }
   if (checkChannelPassword() === false) {
     document.querySelector(".feedback").textContent = "Passwords do not match" 
     return
@@ -1076,7 +1100,6 @@ async function createChannel() {
     throw new Error('Error when fetching user datas')
   }
   let adminData = await Response.json()
-  let checkboxes = document.querySelectorAll(".privacy_checkbox_wrapper input")
   let privacyStatus
   if (checkboxes[0].checked === true)
     privacyStatus = 0

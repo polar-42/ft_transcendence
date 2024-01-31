@@ -165,6 +165,7 @@ class chatSocket(WebsocketConsumer):
 			if channelName not in tab:
 				tab.append(channelName)
 				self.UserModel.channels = tab
+				print(self.UserModel.channels)
 				self.UserModel.save()
 
 			print(self)
@@ -291,6 +292,7 @@ class chatSocket(WebsocketConsumer):
 
 		allConv = [] 
 		if self.UserModel.channels is not None:
+			print(self.UserModel.channels)
 			for chan in self.UserModel.channels:
 				chanMsgs = MessageModels.objects.filter(type='C').filter(Q(sender=chan) | Q(receiver=chan)).order_by('-id')
 				if chanMsgs.exists():
@@ -323,7 +325,6 @@ class chatSocket(WebsocketConsumer):
 				msgSender = contact
 			if contact not in contactList:
 				contactList.append(contact)
-		print(contactList)
 		for contact in contactList:
 			msg = allMessages.filter(Q(sender=contactList[0]) | Q(receiver=contactList[0])).order_by('-id')[0]
 			connexionStatus = userModels.User.objects.get(username=contact).connexionStatus
@@ -341,6 +342,7 @@ class chatSocket(WebsocketConsumer):
 		def cmpTimeStamp(msg):
 			return msg['timestamp']
 
+		print(allConv)
 		allConv.sort(key = cmpTimeStamp, reverse = True)
 		for conv in allConv:
 			conv['timestamp'] = str(conv['timestamp'])
@@ -349,7 +351,7 @@ class chatSocket(WebsocketConsumer):
 			'type': 'last_chats',
 			'data': allConv
 			})
-		)
+			)
 
 	def isBlock(self, user):
 		if userModels.User.objects.filter(id=user.id).exists():
@@ -755,6 +757,7 @@ class chatSocket(WebsocketConsumer):
 			print(channelName, channelDescription, privacyStatus, password,  adminId)	
 			self.allChannels[channelName] = ChannelChat(channelName, channelDescription, privacyStatus, password,  adminId)
 			self.allChannels[channelName].joinChannel(self.UserModel)
+			self.joinChannel(channelName, False, None)
 			self.send(json.dumps({
 				'type': 'channel_creation',
 				'state': 'success',
