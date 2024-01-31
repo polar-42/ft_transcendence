@@ -7,8 +7,7 @@ from . import ColorPrint
 def isValidLoading(function):
 	@wraps(function)
 	def wrap(request, *args, **kwargs):
-
-		if request.GET.get('Erroneus') != 'True':
+		if request.GET.get('Valid') == 'true':
 			ColorPrint.prRed(request)
 			return function(request, *args, **kwargs)
 		else:

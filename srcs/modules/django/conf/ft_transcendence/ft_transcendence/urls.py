@@ -20,12 +20,12 @@ from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('homepage', views.homepage_view),
-	path('404', views.PNF_view),
-	path('needlog', views.NeedLog_view),
+    path('homepage/', views.homepage_view),
+	path('404/', views.PNF_view),
+	path('needlog/', views.NeedLog_view),
     path('authApp/', include('authApp.urls')),
-    path('games', views.games_view),
-    path('battleship', include('battleshipApp.urls')),
+    path('games/', views.games_view),
+    path('battleship/', include('battleshipApp.urls')),
     path('pongGame/', include('pongGameApp.urls')),
     path('tournaments/', include('tournamentsApp.urls')),
 	re_path(r"^userManagement/?", include('userManagementApp.urls')),

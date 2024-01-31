@@ -19,7 +19,7 @@ class Command(BaseCommand):
         password = make_password('123456789')
 
         # Check if the user already exists
-        if not User.objects.filter(username=username).exists():
+        if not User.objects.filter(email=email).exists():
             User.objects.create(
                 username=getRandString(),
                 customUsername=username,
@@ -34,7 +34,7 @@ class Command(BaseCommand):
         email = 'chromeprivate@chromeprivate.com'
 
         # Check if the user already exists
-        if not User.objects.filter(username=username).exists():
+        if not User.objects.filter(email=email).exists():
             User.objects.create_user(
                 customUsername=username,
                 email=email,
@@ -48,7 +48,7 @@ class Command(BaseCommand):
         email = 'brave@brave.com'
         password = make_password('123456789')
         # Check if the user already exists
-        if not User.objects.filter(username=username).exists():
+        if not User.objects.filter(email=email).exists():
             User.objects.create_user(
                 customUsername=username,
                 email=email,
@@ -63,7 +63,7 @@ class Command(BaseCommand):
         password = '123456789'
 
         # Check if the user already exists
-        if not User.objects.filter(username=username).exists():
+        if not User.objects.filter(email=email).exists():
             User.objects.create_user(
                 customUsername=username,
                 email=email,
@@ -77,7 +77,7 @@ class Command(BaseCommand):
         email = 'IA@test.com'
 
         # Check if the user already exists
-        if not User.objects.filter(username=username).exists():
+        if not User.objects.filter(email=email).exists():
             User.objects.create_user(
                 customUsername=username,
                 email=email,

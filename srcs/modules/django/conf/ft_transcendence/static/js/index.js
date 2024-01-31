@@ -81,11 +81,6 @@ let Prev_match = undefined
 
 const router = async (arg) =>
 {
-  if (location.href.endsWith("/?Erroneus=True"))
-  {
-    // console.log("dois pas passer ici")
-    navigateTo(document.location.origin + location.pathname.slice(0, -1))
-  }
 	let match = getRoute(document.location.origin + location.pathname)
 	/* define 404 error page */
 	if (!match)
@@ -105,7 +100,7 @@ const router = async (arg) =>
 		actualRoute = match.route.path
 	if (Prev_match != undefined && Prev_match.route.unload != null)
 		Prev_match.route.unload()
-	fetch(actualRoute)
+	fetch(actualRoute + '/?Valid=true')
 	.then(Response => {
 		document.title = match.route.title
 		return Response.text()

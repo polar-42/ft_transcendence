@@ -172,13 +172,10 @@ function TFALogin() {
 	var headers = new Headers()
 	headers.append('Content-Type', 'application/json')
 	headers.append('X-CSRFToken', crsf_token)
-	const data = { email: "chrome@chrome.com" } // TODO Change this by jwt
 	fetch(document.location.origin + '/authApp/LoginTFA',
-		{
-			method: 'POST',
-			headers: headers,
-			body: JSON.stringify(data),
-		})
+	{
+		method: 'GET',
+	})
 		.then(Response => {
 			if (!Response.ok) {
 				throw new Error('Network response was not okay')
@@ -202,7 +199,7 @@ function sendTFACode(container) {
 	var headers = new Headers()
 	headers.append('Content-Type', 'application/json')
 	headers.append('X-CSRFToken', crsf_token)
-	const data = { email: "chrome@chrome.com", TFACode: container.querySelector("#Input_code").value } // TODO Change email by jwt
+	const data = {TFACode: container.querySelector("#Input_code").value } // TODO Change email by jwt
 	fetch(document.location.origin + '/authApp/LoginCheckTFA',
 		{
 			method: 'POST',
