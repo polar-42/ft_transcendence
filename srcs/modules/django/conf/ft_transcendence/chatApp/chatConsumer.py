@@ -13,7 +13,6 @@ from battleshipApp.BS_MatchmakingManager import GameManager as battleshipManager
 
 
 def createGeneralChat(allChannels):
-	print('allo')
 	allChannels["General"] = ChannelChat("General", "General channel", channelPrivacy.Public, None, None)
 
 class chatSocket(WebsocketConsumer):
@@ -33,7 +32,6 @@ class chatSocket(WebsocketConsumer):
 		if len(self.allChannels) <= 0:
 			createGeneralChat(self.allChannels)
 
-		print(self.scope['user'])
 		self.user = self.scope['user']
 		self.identification = self.scope['user'].identification
 
@@ -59,11 +57,24 @@ class chatSocket(WebsocketConsumer):
 
 		if tabChannels is not None:
 			for chan in tabChannels:
-				self.allChannels[chan].joinChannel(self)
+				privacyStatus = ChannelModels.objects.get(channelName=chan).privacyStatus
+				password = ChannelModels.objects.get(channelName=chan).password
+				self.joinChannel(chan, privacyStatus, password, 0)
+				# self.allChannels[chan].joinChannel(self)
+				# async_to_sync(self.channel_layer.group_add)(
+				# 		'channel_' + chan,
+				# 		chan
+				# 		)
+
 		else:
 			tabChannels = []
-			self.allChannels['General'].joinChannel(self)
-			tabChannels.append('General')
+			self.joinChannel('General', 0, None, 0)
+			# self.allChannels['General'].joinChannel(self)
+			# async_to_sync(self.channel_layer.group_add)(
+			# 		'channel_General',
+			# 		'General'
+			# 		)
+			# tabChannels.append('General')
 
 		self.UserModel.channels = tabChannels
 		self.UserModel.save()
@@ -110,9 +121,9 @@ class chatSocket(WebsocketConsumer):
 			self.createChannel(data['channel_name'], data['channel_description'], data['privacy_status'], data['password'], data['adminId'])
 		elif data['type'] == 'channel_join':
 			if data['privacy_status'] is False:
-				self.joinChannel(data['target'], False, None)
+				self.joinChannel(data['target'], False, None, 1)
 			else:
-				self.joinChannel(data['target'], data['privacy_status'], data['password'])
+				self.joinChannel(data['target'], data['privacy_status'], data['password'], 1)
 		elif data['type'] == 'channel_leave':
 			self.leaveChannel(data['target'])
 		elif data['type'] == 'block_user':
@@ -147,7 +158,7 @@ class chatSocket(WebsocketConsumer):
 		elif data['type'] == 'accept_invitation_battleship':
 			self.acceptInvitationBattleship(data['target'])
 
-	def joinChannel(self, channelName, privacyStatus, password):
+	def joinChannel(self, channelName, privacyStatus, password, atConnection):
 		if self.allChannels[channelName] is None:
 			return
 		else:
@@ -174,12 +185,13 @@ class chatSocket(WebsocketConsumer):
 
 			print(self)
 
-			self.send(json.dumps({
-				'type': 'join_channel_response',
-				'channel_name': channelName,
-				'state': 'success'
-				})
-			 )
+			if (atConnection == 1):
+				self.send(json.dumps({
+					'type': 'join_channel_response',
+					'channel_name': channelName,
+					'state': 'success'
+					})
+				 )
 
 			async_to_sync(self.channel_layer.group_add)(
 					'channel_' + channelName,
@@ -226,6 +238,7 @@ class chatSocket(WebsocketConsumer):
 				)
 		msg.save()
 
+		print(msg.sender, ' send ', msg.message, ' to ', msg.receiver)
 		async_to_sync(self.channel_layer.group_send)(
 				'chat_' + receiver,
 				{
@@ -685,6 +698,7 @@ class chatSocket(WebsocketConsumer):
 		message = event['message']
 		channel = event['channel']
 
+		print('yoo')
 		senderModel = userModels.User.objects.get(identification=sender)
 		if self.isBlock(senderModel):
 			print(sender, 'try to send a message on channel', channel, 'to', self.user.identification, 'but he block him') #TO DEL
@@ -810,4 +824,4 @@ class chatSocket(WebsocketConsumer):
 		channel.users.remove(userId)
 
 		channel.save()
-				
+

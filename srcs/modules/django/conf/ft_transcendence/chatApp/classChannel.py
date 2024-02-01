@@ -17,7 +17,6 @@ class ChannelChat():
 			self.password = self.ChanModel.password
 			self.usersSocket = []
 			self.channel_layer = get_channel_layer()
-
 			if self.ChanModel.admin != '0':
 				self.admin = self.ChanModel.admin
 				self.usersSocket.append(creator)
@@ -41,7 +40,7 @@ class ChannelChat():
 			print('admin: ',self.admin)
 			obj = ChannelModels.objects.create(
 					channelName=self.channelName,
-                    admin=self.admin.identification,
+					admin=self.admin.identification,
 					privacyStatus = self.privacyStatus,
 					password = self.password,
 					description = self.description,
@@ -79,7 +78,7 @@ class ChannelChat():
 			tab = []
 			tab.append(user.userIdentification)
 
-		elif user.identification in self.ChanModel.users:
+		elif user.identification not in self.ChanModel.users:
 			tab.append(user.userIdentification)
 
 		self.ChanModel.users = tab
@@ -108,8 +107,9 @@ class ChannelChat():
 				message=message,
 				sender=sender.identification,
 				receiver=self.channelName,
-                type='C'
+				type='C'
 				)
+
 		msg.save()
 
 		async_to_sync(self.channel_layer.group_send)(
