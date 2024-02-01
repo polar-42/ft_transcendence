@@ -27,7 +27,7 @@ class chatSocket(WebsocketConsumer):
 			channelName = item.channelName
 			allChannelsDict[channelName] = ChannelChat(channelName, item.description, item.privacyStatus, item.password, item.admin)
 
-	
+
 	initAllChannels(allChannels)
 	def connect(self):
 		if len(self.allChannels) <= 0:
@@ -51,9 +51,9 @@ class chatSocket(WebsocketConsumer):
 
 
 		async_to_sync(self.channel_layer.group_add)(
-			self.chatId,
-			self.channel_name
-		)
+				self.chatId,
+				self.channel_name
+				)
 
 		self.accept()
 
@@ -84,14 +84,14 @@ class chatSocket(WebsocketConsumer):
 		self.UserModel.save()
 
 		async_to_sync(self.channel_layer.group_discard)(
-			self.chatId,
-			self.channel_name
-		)
+				self.chatId,
+				self.channel_name
+				)
 
 		async_to_sync(self.channel_layer.group_discard)(
-			"generalChat",
-			self.channel_name
-		)
+				"generalChat",
+				self.channel_name
+				)
 
 		self.allUsers.pop(self.userIdentification)
 
@@ -133,6 +133,8 @@ class chatSocket(WebsocketConsumer):
 			self.getHistoryChannel(data['target'], data['msgId'])
 		elif data['type'] == 'search_conv':
 			self.searchConv(data['input'])
+		elif data['type']  == 'edit_description':
+			self.editDescription(data['channel_name'], data['description'])
 		#GAMES INVITATION
 		elif data['type'] == 'invite_pong':
 			self.inviteToPong(data['target'])
@@ -154,7 +156,7 @@ class chatSocket(WebsocketConsumer):
 					'state': 'failed',
 					'reason': 'Wrong password'
 					})
-				)
+			  )
 				return
 
 			self.allChannels[channelName].joinChannel(self)
@@ -175,7 +177,7 @@ class chatSocket(WebsocketConsumer):
 				'channel_name': channelName,
 				'state': 'success'
 				})
-			)
+			 )
 
 			async_to_sync(self.channel_layer.group_add)(
 					'channel_' + channelName,
@@ -305,15 +307,15 @@ class chatSocket(WebsocketConsumer):
 					timestamp = datetime.datetime.min.replace(tzinfo=datetime.timezone.utc) 
 
 				data = {
-					'type': 'channel',
-					'name': chan,
-					'last_msg': { 
-				  		'sender': lastMsgSender, 
-				  		'msg': lastMsg },
-					'timestamp': timestamp 
-					}
+						'type': 'channel',
+						'name': chan,
+						'last_msg': { 
+				   'sender': lastMsgSender, 
+				   'msg': lastMsg },
+						'timestamp': timestamp 
+						}
 				allConv.append(data)
-		
+
 		allMessages = MessageModels.objects.filter(type='P').filter(Q(sender=self.username) | Q(receiver=self.username)).order_by('-id').values()
 		contactList = []
 		for msg in allMessages:
@@ -398,7 +400,7 @@ class chatSocket(WebsocketConsumer):
 		msgsObjs = MessageModels.objects.filter(receiver=channel.channelName)
 		channelMessages = []
 		channelUsers = []
-
+		print(channel.description)
 		for msg in msgsObjs:
 			channelMessages.append({
 				'id': msg.id,
@@ -771,3 +773,23 @@ class chatSocket(WebsocketConsumer):
 				'reason': 'Channel already exists'
 				})
 			 )
+
+	def editDescription(self, channelName, newDescription):
+		if ChannelModels.objects.filter(channelName=channelName).exists() is False:
+			self.send(json.dumps({
+				'type': 'edit_description',
+				'channel_name': channelName,
+				'state': 'failed'
+				}))
+		
+		channel = ChannelModels.objects.get(channelName=channelName)
+		channel.description = newDescription
+		print(channel)
+		channel.save()
+		self.send(json.dumps({
+			'type': 'edit_description',
+			'channel_name': channelName,
+			'state': 'success'
+			}))
+
+

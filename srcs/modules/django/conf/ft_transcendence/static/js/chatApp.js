@@ -155,6 +155,9 @@ function onMessageChat(e)
     case 'join_channel_response':
       receiveJoinChanResponse(data)
       break
+    case 'edit_description':
+      receiveDescriptionEdit(data)
+      break
  //      console.log(data);
 	// if (data.type == 'receive_invitation_pong')
 	// {
@@ -395,11 +398,37 @@ function displayChannel(data) {
               '<img src="../static/assets/logo/send-solid-60.png" alt="send arrow">' +
             '</div>' +
           '</div>' +
-          '<img src="../static/assets/logo/arrow-back-regular-60.png" alt="return arrow button">'
+          '<img class="back_arrow" src="../static/assets/logo/arrow-back-regular-60.png" alt="return arrow button">'
         '</div>'
       document.querySelector(".main_box_header.channel").insertAdjacentHTML("afterend", box)
+      document.querySelector(".back_arrow").addEventListener("click", () => {
+        document.querySelector(".edit_description_box").remove()
+      })
+
+      document.querySelector(".edit_description_box .input_wrapper input").addEventListener("keypress", (e) => {
+        if (e.key === "Enter")
+          editChanDescription()
+      })
+      document.querySelector(".edit_description_box .input_wrapper img").addEventListener("click", editChanDescription()) 
+      document.querySelector(".edit_description_box .input_wrapper input").focus()
+    }
+
+    function editChanDescription() {
+      let description = document.querySelector(".edit_description_box .input_wrapper input").value
+      if (description === '') 
+        return
+      let channelName =  document.querySelector(".main_box_header.channel .channel_name").textContent
+
+      chatSocket.send(JSON.stringify({
+        'type': 'edit_description',
+        'channel_name': channelName, 
+        'description': description
+      })
+      )
     }
   }
+
+  
 
   function initChanBody(data) {
     let html = 
@@ -1147,4 +1176,11 @@ function receiveJoinChanResponse(data) {
   else {
     document.querySelector(".join_channel_box .feedback").textContent = data.reason 
   }
+}
+
+function receiveDescriptionEdit(data) {
+  if (data['state'] === 'failed')
+    return
+  document.querySelector(".edit_description_box").remove()
+  goToChan(data['channel_name'])
 }

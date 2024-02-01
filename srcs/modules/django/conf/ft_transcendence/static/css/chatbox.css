@@ -431,6 +431,7 @@
   justify-content: space-between;
   z-index: 3;
   padding: 5px;
+  transition: height .3s ease;
 
   input {
     width: 250px;
@@ -445,6 +446,7 @@
   img {
     width: 30px;
     height: 30px;
+    cursor: pointer;
   }
 
   .input_wrapper img {
@@ -453,6 +455,7 @@
     height: auto;
     vertical-align: middle;
   }
+
 }
 
 .main_box_body.private_message .conversation_body,
