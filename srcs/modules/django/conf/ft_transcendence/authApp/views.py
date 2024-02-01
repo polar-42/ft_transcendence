@@ -156,8 +156,6 @@ def TFAChooseTypePage(request):
 		return render(request, 'index.html')
 	return render(request, 'authApp/TFA/Choose2FA.html')
 
-
-@isValidLoading
 def TFAConfirmPassPage(request):
 	if request.user.is_authenticated == False:
 		return render(request, 'index.html')
@@ -194,7 +192,6 @@ def TFACheckPassDesactivation(request):
 
 import pyotp
 
-@isValidLoading
 def TFASelected(request):
 	if request.user.is_authenticated == False:
 		return HttpResponse('', content_type="text/plain")
@@ -275,9 +272,7 @@ def TFADisable(request):
 	if User.objects.filter(id=request.user.id).exists() is False:
 		return JsonResponse({'error': 'User not found.'})
 	userModel = User.objects.get(id=request.user.id)
-	userModel.tfEnable = False
 	userModel.tfValidated = False
-	userModel.tfType = -1
 	userModel.tfKey = None
 	userModel.save()
 	return JsonResponse({'Success': '2FA Disabled.'})

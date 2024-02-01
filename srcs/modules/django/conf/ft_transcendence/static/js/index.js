@@ -30,7 +30,7 @@ const navigateTo = url =>
 function getRoute(RoutePath)
 {
 	//Chat function
-	initChat();
+	// initChat();
 
   const routes = [
     { path: "/404", init: null, unload: null, title:"404", LogStatus: 2},
