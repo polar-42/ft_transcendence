@@ -7,7 +7,7 @@ function checkConnexion() {
         headers.append('Content-Type', 'application/json');
         headers.append('X-CSRFToken', crsf_token);
 
-        fetch('/transcendence/check_connexion/')
+        fetch('/transcendence/check_connexion')
                 .then(response => response.json())
                 .then(data => {
                         document.getElementById('checkConnexionText').innerHTML = data.message;
@@ -24,7 +24,7 @@ function checkDisconnexion() {
         headers.append('Content-Type', 'application/json');
         headers.append('X-CSRFToken', crsf_token);
 
-        fetch('/transcendence/check_disconnexion/')
+        fetch('/transcendence/check_disconnexion')
                 .then(response => response.json())
                 .then(data => {
                         document.getElementById('checkDisconnexionText').innerHTML = data.message;

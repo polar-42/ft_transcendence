@@ -20,7 +20,7 @@ COPY ft_transcendence.sh .
 COPY gunicornConf.py .
 
 RUN pip install --upgrade pip
-RUN pip install "uvicorn[standard]" daphne gunicorn psycopg2-binary Django==4.2.6 requests channels==4.0.0 web3 Pillow
+RUN pip install --no-cache-dir pyotp qrcode "uvicorn[standard]" daphne gunicorn psycopg2-binary Django==4.2.6 requests channels==4.0.0 web3 Pillow pyjwt
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=TRUE

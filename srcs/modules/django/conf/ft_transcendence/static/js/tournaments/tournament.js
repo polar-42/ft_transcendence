@@ -89,7 +89,7 @@ function LoadGame(data)
 {
 	if (data.gameType == 'ship')
 	{
-		navto("/battleship", data.gameId)
+		navto("/battleship	", data.gameId)
 	}
 	else if (data.gameType == 'pong')
 	{

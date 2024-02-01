@@ -95,12 +95,12 @@ const router = async (arg) =>
 		match = getRoute(document.location.origin + "/")
 	var actualRoute
 	if (match.route.path == "/")
-		actualRoute = match.route.path + "homepage/?valid=True"
+		actualRoute = match.route.path + "homepage"
 	else
-		actualRoute = match.route.path + "/?valid=True"
+		actualRoute = match.route.path
 	if (Prev_match != undefined && Prev_match.route.unload != null)
 		Prev_match.route.unload()
-	fetch(actualRoute)
+	fetch(actualRoute + '/?Valid=true')
 	.then(Response => {
 		document.title = match.route.title
 		return Response.text()
@@ -135,6 +135,7 @@ document.addEventListener("DOMContentLoaded", () =>
     router()
   })
 
+  
 function clickLogout(e) {
   let profileDropDowns = document.querySelectorAll(".profile_menu");
   profileDropDowns.forEach((menu) => menu.classList.remove("open"));
@@ -171,7 +172,6 @@ for (let i = 0; i < 2; i++)
 {
   profileButton[i].addEventListener("click", async () => {
     let isOpen = profileDropDown[i].classList.contains('open');
-    console.log(isOpen)
     let logStatus = await checkConnexion();
     if (logStatus == true)
     {

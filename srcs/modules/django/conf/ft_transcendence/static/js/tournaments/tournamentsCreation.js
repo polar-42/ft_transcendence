@@ -23,7 +23,7 @@ function createTournaments()
     headers.append('Content-Type', 'application/json')
 	headers.append('X-CSRFToken', crsf_token)
 
-	fetch(document.location.origin + '/tournaments/create_tournaments/', {
+	fetch(document.location.origin + '/tournaments/create_tournaments', {
 		method: 'POST',
 		headers: headers,
 		body: JSON.stringify(tournamentsData),
