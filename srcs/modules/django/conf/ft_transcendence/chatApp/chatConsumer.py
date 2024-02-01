@@ -693,6 +693,7 @@ class chatSocket(WebsocketConsumer):
 			'time': time.strftime("%Y-%m-%d %X")
 			}))
 
+
 	def searchConv(self, input):
 		allUsers = userModels.User.objects.exclude(Q(username='IA') | Q(username='admin') | Q(username = self.UserModel.username)) 
 		response = []
@@ -742,8 +743,11 @@ class chatSocket(WebsocketConsumer):
 						'identification': user.username,
 						'connexion_status': connexionStatus,
 						'last_msg': '' })
+	
+		def getConvName(conv):
+			return(conv['name'].lower())
 
-
+		response.sort(key = getConvName)
 		print(response)
 		self.send(json.dumps({
 			'type': 'search_conv',
@@ -781,7 +785,7 @@ class chatSocket(WebsocketConsumer):
 				'channel_name': channelName,
 				'state': 'failed'
 				}))
-		
+
 		channel = ChannelModels.objects.get(channelName=channelName)
 		channel.description = newDescription
 		print(channel)
