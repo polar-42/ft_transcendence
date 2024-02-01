@@ -27,17 +27,17 @@ form {
   justify-content: space-between;
 }
 
-form .input-box {
+.input-box {
   margin: 20px 0 20px 0;
   width: calc(100% / 2 - 20px);
 }
 
-form .input-box label {
+.input-box label {
   font-weight: 700;
   margin-bottom: 5px;
 }
 
-form .input-box input {
+.input-box input {
   height: 45px;
   width: 100%;
   outline: none;
@@ -49,7 +49,7 @@ form .input-box input {
   transition: all .2s;
 }
 
-form .input-box input:focus {
+.input-box input:focus {
   border-color: var(--secondary); 
 }
 

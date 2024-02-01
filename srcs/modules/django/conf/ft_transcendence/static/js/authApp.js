@@ -199,7 +199,7 @@ function sendTFACode(container) {
 	var headers = new Headers()
 	headers.append('Content-Type', 'application/json')
 	headers.append('X-CSRFToken', crsf_token)
-	const data = {TFACode: container.querySelector("#Input_code").value } // TODO Change email by jwt
+	const data = {TFACode: container.querySelector("#Input_code").value }
 	fetch(document.location.origin + '/authApp/LoginCheckTFA',
 		{
 			method: 'POST',
