@@ -592,4 +592,12 @@
     top: 0;
     right: 0;
   }
+
+	.kick_cross {
+		position: relative;
+		bottom: 50px;
+		left: 20px;
+		width: 8px;
+		cursor: pointer;
+	}
 }

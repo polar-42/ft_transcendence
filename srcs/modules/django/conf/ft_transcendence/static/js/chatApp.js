@@ -8,13 +8,13 @@ let chatSocket = undefined;
 
 export async function initChat()
 {
-	let logStatus = await checkConnexion();
-	if (logStatus == true && chatSocket == undefined)
-	{
+  let logStatus = await checkConnexion();
+  if (logStatus == true && chatSocket == undefined)
+  {
     chatHeader.classList.add('connected')
     chatHeader.addEventListener("click", openChatbox)
-		startChatConnexion();
-	}
+    startChatConnexion();
+  }
 }
 
 function openChatbox() {
@@ -63,10 +63,10 @@ function initHomepageBody() {
   let html = '<h2>Discussions</h2>' +
     '<ul class="conversation_list"></ul>' +
     '<div class="chatbox_homepage_navbar">' +
-      '<button name="discussions">Discussions</button>' +
-      '<button name="friends">Friends</button>' +
-      '<button name="create_channel">Create a channel</button>' +
-	  '</div>'
+    '<button name="discussions">Discussions</button>' +
+    '<button name="friends">Friends</button>' +
+    '<button name="create_channel">Create a channel</button>' +
+    '</div>'
   mainBoxBody.innerHTML = html
 
   document.querySelector("button[name='create_channel']").addEventListener("click", initCreateChannel)
@@ -104,8 +104,8 @@ function startChatConnexion()
   chatSocket.onopen = initChatHomepage
   chatSocket.onclose = closeChatSocket;
   chatSocket.onmessage = e => onMessageChat(e);
-	chatSocket.onclose = closeChatSocket;
-	chatSocket.onmessage = e => onMessageChat(e);
+  chatSocket.onclose = closeChatSocket;
+  chatSocket.onmessage = e => onMessageChat(e);
 }
 
 function closeChatSocket()
@@ -158,23 +158,23 @@ function onMessageChat(e)
     case 'edit_description':
       receiveDescriptionEdit(data)
       break
- //      console.log(data);
-	// if (data.type == 'receive_invitation_pong')
-	// {
-	// 	receivePongInvitation(data)
-	// }
-	// if (data.type == 'receive_invitation_battleship')
-	// {
-	// 	receiveBattleshipInvitation(data)
-	// }
-	// else if (data.type == 'start_pong_game')
-	// {
-	// 	startPongGame(data)
-	// }
-	// else if (data.type == 'start_battleship_game')
-	// {
-	// 	startBattleshipGame(data)
-	// }
+      //      console.log(data);
+      // if (data.type == 'receive_invitation_pong')
+      // {
+      // 	receivePongInvitation(data)
+      // }
+      // if (data.type == 'receive_invitation_battleship')
+      // {
+      // 	receiveBattleshipInvitation(data)
+      // }
+      // else if (data.type == 'start_pong_game')
+      // {
+      // 	startPongGame(data)
+      // }
+      // else if (data.type == 'start_battleship_game')
+      // {
+      // 	startBattleshipGame(data)
+      // }
   }
 }
 
@@ -196,14 +196,14 @@ function displayLastChats(data) {
       isConnected = 'connected'
     let item = 
       '<li class="' + data[i].type + '">' +
-        '<img src="../static/assets/logo/user.png" alt="converstion_picture">' +
-        '<div class="conversation_text">' +
-          '<div class="conversation_name">' +
-            '<p>' + data[i].name + '</p>' +
-            '<div class="connection_point ' + isConnected + '"></div>' +
-          '</div>' +
-          '<p class="last_msg">' + lastMsg + '</p>' +
-        '</div>' +
+      '<img src="../static/assets/logo/user.png" alt="converstion_picture">' +
+      '<div class="conversation_text">' +
+      '<div class="conversation_name">' +
+      '<p>' + data[i].name + '</p>' +
+      '<div class="connection_point ' + isConnected + '"></div>' +
+      '</div>' +
+      '<p class="last_msg">' + lastMsg + '</p>' +
+      '</div>' +
       '</li>'
 
     if (conversation_list.children.length > 0) 
@@ -262,16 +262,16 @@ function displaySearchResult(data) {
       lastMsg = data[i].last_msg.sender + ': ' + data[i].last_msg.message
     let item = 
       '<li class="' + data[i].type + ' ' + member + '" ' + privacyStatus +'>' +
-        '<img src="../static/assets/logo/user.png" alt="converstion_picture">' +
-        '<div class="conversation_text">' +
-          '<div class="conversation_name">' +
-            '<p>' + data[i].name + '</p>' +
-            '<div class="connection_point ' + isConnected + '"></div>' +
-          '</div>' +
-          '<p class="last_msg">' + lastMsg + '</p>' +
-        '</div>' +
-        '<div class="notification_wrapper ' + isNoticationActive + '"></div>' +
-        '<img class="join_btn" src="../static/assets/logo/user-plus-regular-36.png" alt="join channel button">' +
+      '<img src="../static/assets/logo/user.png" alt="converstion_picture">' +
+      '<div class="conversation_text">' +
+      '<div class="conversation_name">' +
+      '<p>' + data[i].name + '</p>' +
+      '<div class="connection_point ' + isConnected + '"></div>' +
+      '</div>' +
+      '<p class="last_msg">' + lastMsg + '</p>' +
+      '</div>' +
+      '<div class="notification_wrapper ' + isNoticationActive + '"></div>' +
+      '<img class="join_btn" src="../static/assets/logo/user-plus-regular-36.png" alt="join channel button">' +
       '</li>'
     if (resultWrapper.children.length > 0) {
       resultWrapper.lastChild.insertAdjacentHTML("afterend", item)
@@ -301,15 +301,15 @@ function clickJoinChan(event) {
   let previousHtml = item.innerHTML
   let html = 
     '<div class="join_channel_box">' +
-      '<div class="join_pwd_wrapper">' +
-        '<label for="channel_password">Enter Channel Password</label>' +
-        '<div class="join_input_wrapper">' +
-          '<input name="channel_password" type="password" placeholder="Enter channel password">' +
-          '<img src="../static/assets/logo/send-solid-60.png" name="send arrow">'  +
-        '</div>' +
-        '<p class="feedback"></p>' +
-      '</div>' +
-      '<img src="../static/assets/logo/arrow-back-regular-60.png" name="back arrow">'  +
+    '<div class="join_pwd_wrapper">' +
+    '<label for="channel_password">Enter Channel Password</label>' +
+    '<div class="join_input_wrapper">' +
+    '<input name="channel_password" type="password" placeholder="Enter channel password">' +
+    '<img src="../static/assets/logo/send-solid-60.png" name="send arrow">'  +
+    '</div>' +
+    '<p class="feedback"></p>' +
+    '</div>' +
+    '<img src="../static/assets/logo/arrow-back-regular-60.png" name="back arrow">'  +
     '</div>'
 
   item.innerHTML = html
@@ -338,10 +338,10 @@ function displayChatHistory(data) {
     }
 
     let item = 
-						'<li class="message_item ' + sender + '" msgid=' + data[i].id + '>' +
-							'<p class="message">' + data[i].message + '</p>' +
-							'<p class="timestamp">' + data[i].time.substring(0, 19) + '</p>' +
-						'</li>'
+      '<li class="message_item ' + sender + '" msgid=' + data[i].id + '>' +
+      '<p class="message">' + data[i].message + '</p>' +
+      '<p class="timestamp">' + data[i].time.substring(0, 19) + '</p>' +
+      '</li>'
     if (conversation.children.length === 0) {
       conversation.innerHTML = item
     } else {
@@ -363,15 +363,15 @@ function displayChannel(data) {
       general = ''
     let html = 
       '<div class="contact_wrapper ' + general + ' ">' +
-        '<img src="../static/assets/logo/user.png" alt="channel picture">' +
-        '<div class="contact_name_wrapper">' +
-          '<p class="channel_name">' + data.name + '</p>' +
-          '<div class="description_wrapper">' +
-            '<p class="channel_description">' + data.description + '</p>' +
-            '<img class="edit_description" src="../static/assets/logo/edit-regular-36.png" alt="leave channel button">' +
-          '</div>' +
-        '</div>' +
-        '<img class="leave_channel" src="../static/assets/logo/red_cross.png" alt="leave channel button">' +
+      '<img src="../static/assets/logo/user.png" alt="channel picture">' +
+      '<div class="contact_name_wrapper">' +
+      '<p class="channel_name">' + data.name + '</p>' +
+      '<div class="description_wrapper">' +
+      '<p class="channel_description">' + data.description + '</p>' +
+      '<img class="edit_description" src="../static/assets/logo/edit-regular-36.png" alt="leave channel button">' +
+      '</div>' +
+      '</div>' +
+      '<img class="leave_channel" src="../static/assets/logo/red_cross.png" alt="leave channel button">' +
       '</div>' +
       '<img src="../static/assets/logo/arrow-back-regular-60.png" alt="return arrow button">'
 
@@ -387,19 +387,21 @@ function displayChannel(data) {
       leaveChannel(data.name)
     })
     document.querySelector(".edit_description").addEventListener("click", initEditDescription)
+    if (data.admin === false) 
+      document.querySelector(".edit_description").style.display = 'none'
 
     function initEditDescription() {
       let box = 
         '<div class="edit_description_box">' +
-          '<div class="edit_main_wrapper">' + 
-            '<label for="description">New description</label>' +
-            '<div class="input_wrapper">' +
-              '<input name="description" type="text" placeholder="Enter new description">' +
-              '<img src="../static/assets/logo/send-solid-60.png" alt="send arrow">' +
-            '</div>' +
-          '</div>' +
-          '<img class="back_arrow" src="../static/assets/logo/arrow-back-regular-60.png" alt="return arrow button">'
-        '</div>'
+        '<div class="edit_main_wrapper">' + 
+        '<label for="description">New description</label>' +
+        '<div class="input_wrapper">' +
+        '<input name="description" type="text" placeholder="Enter new description">' +
+        '<img src="../static/assets/logo/send-solid-60.png" alt="send arrow">' +
+        '</div>' +
+        '</div>' +
+        '<img class="back_arrow" src="../static/assets/logo/arrow-back-regular-60.png" alt="return arrow button">'
+      '</div>'
       document.querySelector(".main_box_header.channel").insertAdjacentHTML("afterend", box)
       document.querySelector(".back_arrow").addEventListener("click", () => {
         document.querySelector(".edit_description_box").remove()
@@ -428,17 +430,17 @@ function displayChannel(data) {
     }
   }
 
-  
+
 
   function initChanBody(data) {
     let html = 
       '<div class="conversation_body">' +
-        '<div class="sidebar"></div>' +
-        '<div class="conversation"></div>' +
+      '<div class="sidebar"></div>' +
+      '<div class="conversation"></div>' +
       '</div>' +
       '<div class="sendbox">' +
-        '<input type="text" placeholder="Enter your message">' +
-        '<img src="../static/assets/logo/send-solid-60.png" alt="send arrow">' +
+      '<input type="text" placeholder="Enter your message">' +
+      '<img src="../static/assets/logo/send-solid-60.png" alt="send arrow">' +
       '</div>'
 
     document.querySelector(".main_box_body").innerHTML = html
@@ -493,6 +495,7 @@ function displayChannel(data) {
             '<div class="connection_point ' + isConnected + '"></div>' +
             '<img src="../static/assets/logo/user.png" alt="channel member profile picture">' +
             '<p class="username">' + users[i].name + '</p>' +
+            '<img class="kick_cross" src="../static/assets/logo/red_cross.png" alt="kick user button">' + 
             '</div>'
 
           if (sidebar.children.length > 0) {
@@ -500,6 +503,13 @@ function displayChannel(data) {
           } else {
             sidebar.innerHTML = item
           }
+          let kick = sidebar.lastChild.querySelector(".kick_cross")
+          if (data.admin === false)
+            kick.style.display = 'none'
+          else 
+            kick.addEventListener("click", () => {
+              kickUser(data.name, users[i].id)
+            })
         }
       }
     }
@@ -533,8 +543,8 @@ async function displayChannelHistory(data) {
     let item = 
       '<li class="message_item ' + received + '" msgId="' + data[i].id + '">' +
       '<div class="sender">' +
-        '<img src="../static/assets/logo/user.png" alt="sender profile picture">' +
-        '<p>' + sender + '</p>' +
+      '<img src="../static/assets/logo/user.png" alt="sender profile picture">' +
+      '<p>' + sender + '</p>' +
       '</div>' +
       '<div class="message_wrapper">' +
       '<p class="message">' + data[i].message + '</p>' +
@@ -592,44 +602,44 @@ function cleanMainBox() {
 
 function startPongGame(data)
 {
-	navto("/pongGame/Remote", data.gameId);
+  navto("/pongGame/Remote", data.gameId);
 }
 
 function startBattleshipGame(data)
 {
-	navto("/battleship", data.gameId)
+  navto("/battleship", data.gameId)
 }
 
 function receivePongInvitation(data)
 {
-	if (confirm('Your received an invitation to pong game by ' + data.sender))
-	{
-		console.log('lets go');
-		chatSocket.send(JSON.stringify({
-			'type': 'accept_invitation_pong',
-			'target': data.sender
-		}))
-	}
-	else
-	{
-		console.log('pas go');
-	}
+  if (confirm('Your received an invitation to pong game by ' + data.sender))
+  {
+    console.log('lets go');
+    chatSocket.send(JSON.stringify({
+      'type': 'accept_invitation_pong',
+      'target': data.sender
+    }))
+  }
+  else
+  {
+    console.log('pas go');
+  }
 }
 
 function receiveBattleshipInvitation(data)
 {
-	if (confirm('Your received an invitation to battleship game by ' + data.sender))
-	{
-		console.log('lets go');
-		chatSocket.send(JSON.stringify({
-			'type': 'accept_invitation_battleship',
-			'target': data.sender
-		}))
-	}
-	else
-	{
-		console.log('pas go');
-	}
+  if (confirm('Your received an invitation to battleship game by ' + data.sender))
+  {
+    console.log('lets go');
+    chatSocket.send(JSON.stringify({
+      'type': 'accept_invitation_battleship',
+      'target': data.sender
+    }))
+  }
+  else
+  {
+    console.log('pas go');
+  }
 }
 
 function sendMessage(message, targetUser)
@@ -693,19 +703,19 @@ function inviteToPongGame()
 
 function inviteToBattleshipGame()
 {
-    let channelName = document.getElementById('target_user');
+  let channelName = document.getElementById('target_user');
 
-	if (channelName.value.length <= 3)
-	{
-		console.log('Error: One field too small');
-		return;
-	}
+  if (channelName.value.length <= 3)
+  {
+    console.log('Error: One field too small');
+    return;
+  }
 
-	chatSocket.send(JSON.stringify({
-		'type': 'invite_battleship',
-        'target': channelName.value
-    }))
-	channelName.value = "";
+  chatSocket.send(JSON.stringify({
+    'type': 'invite_battleship',
+    'target': channelName.value
+  }))
+  channelName.value = "";
 }
 
 function joinChannel(channelName, privacyStatus, password)
@@ -911,8 +921,8 @@ async function receiveChanMsg(data) {
   let item =
     '<li class="message_item ' + received + '">' +
     '<div class="sender">' +
-      '<img src="../static/assets/logo/user.png" alt="sender profile picture">' +
-      '<p>' + sender + '<p>' +
+    '<img src="../static/assets/logo/user.png" alt="sender profile picture">' +
+    '<p>' + sender + '<p>' +
     '</div>' +
     '<div class="messGage_wrapper">' +
     '<p class="message">' + data.message + '</p>' +
@@ -1008,15 +1018,15 @@ async function actualizeChannelHistory(data) {
       let item = 
         '<li class="message_item ' + received + '" msgid="' + data[i].id + '">' +
         '<div class="sender">' +
-          '<img src="../static/assets/logo/user.png" alt="sender profile picture">' +
-          '<p>' + sender + '<p>' +
+        '<img src="../static/assets/logo/user.png" alt="sender profile picture">' +
+        '<p>' + sender + '<p>' +
         '</div>' +
         '<div class="messGage_wrapper">' +
         '<p class="message">' + data[i].message + '</p>' +
         '<p class="timestamp">' + data[i].time.substring(0, 19) + '</p>' +
         '</div>' +
         '</li>'
-        html += item
+      html += item
     }
     conversation.firstChild.insertAdjacentHTML("afterend", html)
     conversation.firstChild.remove()
@@ -1029,37 +1039,37 @@ function initCreateChannel() {
 
   let html = 
     '<div class="channel_creation_box">' +
-      '<h2>Create a new channel</h2>' +
-      '<div class="channel_name_wrapper">' +
-        '<p>Channel name:</p>' +
-        '<input type="text" name="channel_name" placeholder="Enter channel name" required>' +
-      '</div>' +
-      '<div class="channel_description_wrapper">' +
-        '<p>Channel description:</p>' +
-        '<input type="text" name="channel_description" placeholder="Enter channel description" required>' +
-      '</div>' +
-      '<div class="privacy_setting">' +
-        '<p class="privacy_label">Privacy settings</p>' +
-        '<div class="privacy_checkbox_wrapper">' +
-          '<div class="checkbox_wrapper">' +
-            '<input type="checkbox" name="Public"/>' +
-            '<label for="Public">Public</label>' + 
-          '</div>' +
-          '<div class="checkbox_wrapper">' +
-            '<input type="checkbox" name="Private"/>' +
-            '<label for="Private">Private</label>' + 
-          '</div>' +
-        '</div>' +
-        '<div class="channel_password_wrapper">' +    
-          '<label for="password">Channel password</label>' +
-          '<input name="password" type="password" placeholder="Enter channel password" disabled="" required>' +
-          '<label for="confirm_password">Confirm channel password</label>' +
-          '<input name="confirm_password" type="password" placeholder="Confirm channel password" disabled="" required>' +
-        '</div>' +
-      '</div>' +
-      '<div class="submit_wrapper">' +
-        '<button class="creation_BTN">Create</button>' +
-        '<p class="feedback"></p>'+
+    '<h2>Create a new channel</h2>' +
+    '<div class="channel_name_wrapper">' +
+    '<p>Channel name:</p>' +
+    '<input type="text" name="channel_name" placeholder="Enter channel name" required>' +
+    '</div>' +
+    '<div class="channel_description_wrapper">' +
+    '<p>Channel description:</p>' +
+    '<input type="text" name="channel_description" placeholder="Enter channel description" required>' +
+    '</div>' +
+    '<div class="privacy_setting">' +
+    '<p class="privacy_label">Privacy settings</p>' +
+    '<div class="privacy_checkbox_wrapper">' +
+    '<div class="checkbox_wrapper">' +
+    '<input type="checkbox" name="Public"/>' +
+    '<label for="Public">Public</label>' + 
+    '</div>' +
+    '<div class="checkbox_wrapper">' +
+    '<input type="checkbox" name="Private"/>' +
+    '<label for="Private">Private</label>' + 
+    '</div>' +
+    '</div>' +
+    '<div class="channel_password_wrapper">' +    
+    '<label for="password">Channel password</label>' +
+    '<input name="password" type="password" placeholder="Enter channel password" disabled="" required>' +
+    '<label for="confirm_password">Confirm channel password</label>' +
+    '<input name="confirm_password" type="password" placeholder="Confirm channel password" disabled="" required>' +
+    '</div>' +
+    '</div>' +
+    '<div class="submit_wrapper">' +
+    '<button class="creation_BTN">Create</button>' +
+    '<p class="feedback"></p>'+
     '</div>'
 
   navbar.insertAdjacentHTML("afterend", html)
@@ -1075,26 +1085,26 @@ function initCreateChannel() {
   let publicCheckbox = document.querySelector("input[name='Public']")
   let privateCheckbox = document.querySelector("input[name='Private']")
   publicCheckbox.addEventListener("change", () => {
-        if (privateCheckbox.checked === true) 
-          privateCheckbox.checked = false
-        document.querySelectorAll(".channel_password_wrapper input").forEach((input) => {
-          if (input.hasAttribute("disabled") === false)
-            input.setAttribute("disabled", "")
-        })
+    if (privateCheckbox.checked === true) 
+      privateCheckbox.checked = false
+    document.querySelectorAll(".channel_password_wrapper input").forEach((input) => {
+      if (input.hasAttribute("disabled") === false)
+        input.setAttribute("disabled", "")
+    })
   })
   privateCheckbox.addEventListener("change", () => {
-      if (publicCheckbox.checked === true) 
-        publicCheckbox.checked = false
-      if (privateCheckbox.checked === true) {
-        document.querySelectorAll(".channel_password_wrapper input").forEach((checkbox) => {
-          checkbox.removeAttribute("disabled") 
-        })
-      } else {
-        document.querySelectorAll(".channel_password_wrapper input").forEach((checkbox) => {
-          checkbox.setAttribute("disabled", "") 
-          checkbox.value = ""
-        })
-      }
+    if (publicCheckbox.checked === true) 
+      publicCheckbox.checked = false
+    if (privateCheckbox.checked === true) {
+      document.querySelectorAll(".channel_password_wrapper input").forEach((checkbox) => {
+        checkbox.removeAttribute("disabled") 
+      })
+    } else {
+      document.querySelectorAll(".channel_password_wrapper input").forEach((checkbox) => {
+        checkbox.setAttribute("disabled", "") 
+        checkbox.value = ""
+      })
+    }
   })
 
   document.querySelector(".channel_creation_box input").focus()
@@ -1135,9 +1145,9 @@ async function createChannel() {
   else
     privacyStatus = 1
   if (channelName.length === 0 || channelDescription.length === 0) {
-      let html = '<p class="feedback">Empty field</p>'
-      document.querySelector(".channel_creation_box button").insertAdjacentHTML("afterend", html)
-      return
+    let html = '<p class="feedback">Empty field</p>'
+    document.querySelector(".channel_creation_box button").insertAdjacentHTML("afterend", html)
+    return
   }
 
   console.log(pwd)
@@ -1183,4 +1193,14 @@ function receiveDescriptionEdit(data) {
     return
   document.querySelector(".edit_description_box").remove()
   goToChan(data['channel_name'])
+}
+
+function kickUser(channelName, username) {
+  chatSocket.send(JSON.stringify({
+    'type': 'kick_user',
+    'channel': channelName,
+    'user': username
+  })
+  )
+  goToChan(channelName)
 }

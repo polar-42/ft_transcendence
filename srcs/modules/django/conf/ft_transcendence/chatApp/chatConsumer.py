@@ -135,6 +135,8 @@ class chatSocket(WebsocketConsumer):
 			self.searchConv(data['input'])
 		elif data['type']  == 'edit_description':
 			self.editDescription(data['channel_name'], data['description'])
+		elif data['type'] == 'kick_user':
+			self.kickUser(data['channel'], data['user'])
 		#GAMES INVITATION
 		elif data['type'] == 'invite_pong':
 			self.inviteToPong(data['target'])
@@ -398,6 +400,10 @@ class chatSocket(WebsocketConsumer):
 	def getChannel(self, target):
 		channel = ChannelModels.objects.get(channelName=target)
 		msgsObjs = MessageModels.objects.filter(receiver=channel.channelName)
+		if channel.admin == self.UserModel.username:
+			admin = True
+		else:
+			admin = False
 		channelMessages = []
 		channelUsers = []
 		print(channel.description)
@@ -421,6 +427,7 @@ class chatSocket(WebsocketConsumer):
 		self.send(text_data=json.dumps({ 
 								  'type': 'get_channel_data',
 								  'name': channel.channelName,
+								  'admin': admin,
 								  'description': channel.description,
 								  'users': channelUsers,
 								  'conversation': channelMessages
@@ -743,7 +750,7 @@ class chatSocket(WebsocketConsumer):
 						'identification': user.username,
 						'connexion_status': connexionStatus,
 						'last_msg': '' })
-	
+
 		def getConvName(conv):
 			return(conv['name'].lower())
 
@@ -796,4 +803,12 @@ class chatSocket(WebsocketConsumer):
 			'state': 'success'
 			}))
 
+	def kickUser(self, channelName, userId):
+		channel = ChannelModels.objects.get(channelName=channelName)
 
+		if userId not in channel.users:
+			return
+		channel.users.remove(userId)
+
+		channel.save()
+				

@@ -41,6 +41,7 @@ class ChannelChat():
 			print('admin: ',self.admin)
 			obj = ChannelModels.objects.create(
 					channelName=self.channelName,
+                    admin=self.admin.username,
 					privacyStatus = self.privacyStatus,
 					password = self.password,
 					description = self.description,
