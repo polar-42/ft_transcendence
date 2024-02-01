@@ -6,9 +6,9 @@ class BattleShipGameManager():
 
 	def JoinGame(self, gameId, user, socket):
 		if (gameId not in self._MatchList.keys()):
-			ColorPrint.prRed("Error ! User {name} try to join non existing game : {game}.".format(name=user.username, game=gameId))
+			ColorPrint.prRed("Error ! User {name} try to join non existing game : {game}.".format(name=user.nickname, game=gameId))
 			return None
-		ColorPrint.prRed("Error ! User {name} Socket : {Msocket}.".format(name=user.username, Msocket=socket))
+		ColorPrint.prRed("Error ! User {name} Socket : {Msocket}.".format(name=user.nickname, Msocket=socket))
 		self._MatchList[gameId].ConnectUser(user, socket)
 		return self._MatchList[gameId]
 

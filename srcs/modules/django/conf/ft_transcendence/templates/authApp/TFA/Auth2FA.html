@@ -1,0 +1,14 @@
+{% block TFA_Auth %}
+<h3 class="TFA_Content_Title">Please scan the following QR</h3>
+<div class="code-box">
+    <img src="" alt="" class="qrDisplayer">
+</div>
+<div class="input-box">
+    <input type="text" id="Input_code" required placeholder="auth code"><br />
+</div>
+<p id="messageError"></p>
+<div class="button_wrapper">
+    <button class="cancel_BTN">Cancel</button>
+    <button class="submit_BTN">Submit</button>
+</div>
+{% endblock TFA_Auth %}

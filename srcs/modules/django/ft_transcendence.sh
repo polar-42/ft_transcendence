@@ -90,7 +90,7 @@ cd $SITE_NAME
 # fi
 
 # tail -f /dev/null/
-echo "python mysite/manage.py runserver";
+#echo "python mysite/manage.py runserver";
 python manage.py makemigrations
 python manage.py migrate
 # python manage.py createsuperuser

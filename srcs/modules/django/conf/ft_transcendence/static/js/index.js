@@ -29,7 +29,6 @@ const navigateTo = url =>
 
 function getRoute(RoutePath)
 {
-  //Chat function
   initChat();
 
   const routes = [
@@ -81,40 +80,40 @@ let Prev_match = undefined
 
 const router = async (arg) =>
 {
-  let match = getRoute(document.location.origin + location.pathname)
-  /* define 404 error page */
-  if (!match)
-  {
-    match = getRoute(document.location.origin + "/404")
-  }
-  else if (match.route.LogStatus == 1 && await checkConnexion() == false)
-  {
-    match = getRoute(document.location.origin + "/needlog")
-  }
-  else if (match.route.LogStatus == 0 && await checkConnexion() == true)
-    match = getRoute(document.location.origin + "/")
-  var actualRoute
-  if (match.route.path == "/")
-    actualRoute = match.route.path + "homepage/?valid=True"
-  else
-    actualRoute = match.route.path + "/?valid=True"
-  if (Prev_match != undefined && Prev_match.route.unload != null)
-    Prev_match.route.unload()
-  fetch(actualRoute)
-    .then(Response => {
-      document.title = match.route.title
-      return Response.text()
-    })
-    .then(html => {
-      document.querySelector("#app").innerHTML = html
-    })
-    .then(value =>
-      {
-        if (match.route.init != null)
-          match.route.init(arg)
-        Prev_match = match
-        // OnLogChange()
-      })
+	let match = getRoute(document.location.origin + location.pathname)
+	/* define 404 error page */
+	if (!match)
+	{
+		match = getRoute(document.location.origin + "/404")
+	}
+	else if (match.route.LogStatus == 1 && await checkConnexion() == false)
+	{
+		match = getRoute(document.location.origin + "/needlog")
+	}
+	else if (match.route.LogStatus == 0 && await checkConnexion() == true)
+		match = getRoute(document.location.origin + "/")
+	var actualRoute
+	if (match.route.path == "/")
+		actualRoute = match.route.path + "homepage"
+	else
+		actualRoute = match.route.path
+	if (Prev_match != undefined && Prev_match.route.unload != null)
+		Prev_match.route.unload()
+	fetch(actualRoute + '/?Valid=true')
+	.then(Response => {
+		document.title = match.route.title
+		return Response.text()
+	})
+	.then(html => {
+		document.querySelector("#app").innerHTML = html
+	})
+	.then(value =>
+	{
+		if (match.route.init != null)
+			match.route.init(arg)
+		Prev_match = match
+		// OnLogChange()
+	})
 }
 
 const menuBtn = document.querySelector(".menu_btn")
@@ -135,13 +134,13 @@ document.addEventListener("DOMContentLoaded", () =>
     router()
   })
 
-async function clickLogout(e) {
+function clickLogout(e) {
   let profileDropDowns = document.querySelectorAll(".profile_menu");
   profileDropDowns.forEach((menu) => menu.classList.remove("active"));
   dropDownMenu.classList.remove('open')
   menuBtn.src = '../static/assets/logo/hamburger.png'
   unsetChatbox()
-  await logout(e);
+  logout(e);
   navto("/");
 }
 

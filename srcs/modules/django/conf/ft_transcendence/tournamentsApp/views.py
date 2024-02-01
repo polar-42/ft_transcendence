@@ -6,15 +6,19 @@ from . import T_Manager
 
 from .T_Enum import TournamentState, UserState
 
+from ft_transcendence.decorators import isValidLoading
+
 # Create your views here.
+@isValidLoading
 def Home_view(request):
-	if (request.method == "GET" and request.GET["valid"] == "True"):
+	if (request.method == "GET"):
 		return render(request, 'tournaments/tournamentsHome.html')
 	else:
 		return render(request, 'index.html')
 
+@isValidLoading
 def CreationViews(request):
-	if (request.method == "GET" and request.GET["valid"] == "True"):
+	if (request.method == "GET"):
 		return render(request, 'tournaments/tournamentsCreation.html')
 	else:
 		return render(request, 'index.html')
@@ -67,8 +71,9 @@ def get_tournaments_html(request):
 
 	return render(request, 'tournaments/templateTournaments.html', {'games': dictionnary})
 
+@isValidLoading
 def TournamentSpectateView(request):
-	if (request.method == "GET" and request.GET["valid"] == "True"):
+	if (request.method == "GET"):
 		return render(request, 'tournaments/tournamentView.html')
 	else:
 		return render(request, 'index.html')
@@ -120,14 +125,16 @@ def join_tournaments(request):
 		# return JsonResponse({'error': messageAddUser, 'canJoin': True})
 	return JsonResponse({'message': "", 'canJoin': True})
 
+@isValidLoading
 def view_JoinPage(request):
-	if (request.method == "GET" and request.GET["valid"] == "True"):
+	if (request.method == "GET"):
 		return render(request, 'tournaments/tournamentsListPage.html')
 	else:
 		return render(request, 'index.html')
 
+@isValidLoading
 def Tournament_view(request):
-	if (request.method == "GET" and request.GET["valid"] == "True"):
+	if (request.method == "GET"):
 		return render(request, 'tournaments/tournament.html')
 	else:
 		return render(request, 'index.html')

@@ -20,7 +20,7 @@ from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    re_path('homepage/', views.homepage_view),
+    path('homepage/', views.homepage_view),
 	path('404/', views.PNF_view),
 	path('needlog/', views.NeedLog_view),
     path('authApp/', include('authApp.urls')),
@@ -28,7 +28,7 @@ urlpatterns = [
     path('battleship/', include('battleshipApp.urls')),
     path('pongGame/', include('pongGameApp.urls')),
     path('tournaments/', include('tournamentsApp.urls')),
-	path('userManagement/', include('userManagementApp.urls')),
+	re_path(r"^userManagement/?", include('userManagementApp.urls')),
     path('', views.index_view),
 	re_path(r'^.*/?$', views.index_view),
 ]

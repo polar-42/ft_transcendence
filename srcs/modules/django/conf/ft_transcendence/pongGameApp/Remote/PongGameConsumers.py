@@ -52,31 +52,6 @@ class PongGameSocket(WebsocketConsumer):
 		if message == 'input':
 			self.pongGame.inputGame(data['input'], self)
 
-	def end_game(self, event):
-
-		print('end_game is', str(self.user))
-
-		async_to_sync(self.channel_layer.group_discard)(
-			self.pongGameId,
-			self.channel_name
-		)
-
-		player1 = event['playerone']
-		player2 = event['playertwo']
-
-		if self.isTournament is False:
-			self.send(text_data=json.dumps({
-    				'type': 'game_ending',
-					'winner': str(self.user),
-					'reason': 'disconnexion',
-					'playerone_score': 3,
-					'playertwo_score': 0,
-					'playerone_username': player1,
-					'playertwo_username': player2,
-    		}))
-
-		self.close()
-
 	def end_game_by_score(self, event):
 
 		winner = event['winner']

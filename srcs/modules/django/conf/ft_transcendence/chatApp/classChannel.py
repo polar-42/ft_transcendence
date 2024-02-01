@@ -108,7 +108,7 @@ class ChannelChat():
 				message=message,
 				sender=sender.username,
 				receiver=self.channelName,
-                type='C'#TO CHANGE ???
+                type='C'
 				)
 		msg.save()
 

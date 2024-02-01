@@ -10,12 +10,17 @@
     <link rel="stylesheet" href="{% static '/css/login.css' %}">
     <link rel="stylesheet" href="{% static '/css/register.css' %}">
     <link rel="stylesheet" href="{% static '/css/games.css' %}">
+    <link rel="stylesheet" href="{% static '/css/settings.css' %}">
     <meta name="ft_transcendence" content="width=device-width, initial-scale=1.0">
     <title>ft_transcendence</title>
+    <script>
+      /*to prevent Firefox FOUC, this must be here*/
+      let FF_FOUC_FIX;
+    </script>
   </head>
   <header>
     <a href="/" class="nav__link home_btn" data-link>ft_transcendence</a>
-    <nav>
+   <nav>
       <a href="/dashboard" class="nav__link" data-link>Dashboard</a>
       <a href="/games" class="nav__link" data-link>Play</a>
       <div class="profile_dropdown">

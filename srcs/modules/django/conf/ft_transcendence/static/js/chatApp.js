@@ -97,6 +97,19 @@ export function unsetChatbox() {
 }
 
 
+export function closeChat()
+{
+	if (chatSocket != undefined)
+	{
+		if (chatSocket.readyState === chatSocket.OPEN)
+		{
+			console.log('close')
+			chatSocket.close();
+			chatSocket = undefined
+		}
+	}
+}
+
 function startChatConnexion()
 {
   chatSocket = new WebSocket("ws://" + window.location.host + '/chat/');

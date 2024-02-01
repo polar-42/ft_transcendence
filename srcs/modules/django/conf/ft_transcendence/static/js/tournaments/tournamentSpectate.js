@@ -16,7 +16,7 @@ function GetData()
     var headers = new Headers()
     headers.append('Content-Type', 'application/json')
     headers.append('X-CSRFToken', crsf_token)
-    fetch(document.location.origin + "/tournaments/GetTournamentData/",
+    fetch(document.location.origin + "/tournaments/GetTournamentData",
 	{
 		method: 'POST',
         headers: headers,
