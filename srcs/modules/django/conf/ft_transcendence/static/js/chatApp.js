@@ -529,10 +529,9 @@ function displayChannel(data) {
   }
 }
 
-
 async function displayChannelHistory(data) {
   let conversation = document.querySelector(".conversation")
-  let Response = await fetch(document.location.origin + '/authApp/getUserID/',
+  let Response = await fetch(document.location.origin + '/authApp/getUserID',
     {
       method: 'GET'
     })
@@ -540,6 +539,7 @@ async function displayChannelHistory(data) {
     throw new Error('Error when fetching user datas')
   }
   let userData = await Response.json()
+  console.log(userData)
 
   for (let i =  data.length - 1; i >= 0; i--) {
 

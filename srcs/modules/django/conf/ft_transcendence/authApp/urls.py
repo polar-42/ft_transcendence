@@ -13,6 +13,7 @@ urlpatterns = [
     path('check_connexion', views.check_connexion),
     path('testSocket', views.socket),
     path('getUserName', views.getUserName),
+    path('getUserID', views.getUserID),
     path('get_avatar_image', views.getAvatarImage),
     path('Get2FaStatus', views.Get2FaStatus),
     path('Show2FAPopUp', views.ShowPopUp),

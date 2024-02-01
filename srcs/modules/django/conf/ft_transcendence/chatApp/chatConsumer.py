@@ -35,9 +35,9 @@ class chatSocket(WebsocketConsumer):
 
 		print(self.scope['user'])
 		self.user = self.scope['user']
-		self.username = self.scope['user'].username
+		self.identification = self.scope['user'].identification
 
-		self.UserModel = userModels.User.objects.get(username=self.username)
+		self.UserModel = userModels.User.objects.get(identification=self.identification)
 		self.UserModel.connexionStatus = connexionStatus.Connected
 		self.UserModel.save()
 
@@ -77,7 +77,7 @@ class chatSocket(WebsocketConsumer):
 		if tab is not None:
 			print('All', self.user.identification, 'blockedUser:')
 			for x in tab:
-				print(userModels.User.objects.get(username=x).nickname)
+				print(userModels.User.objects.get(identification=x).nickname)
 
 	def disconnect(self, code):
 		self.UserModel.connexionStatus = connexionStatus.Disconnected
@@ -318,10 +318,10 @@ class chatSocket(WebsocketConsumer):
 						}
 				allConv.append(data)
 
-		allMessages = MessageModels.objects.filter(type='P').filter(Q(sender=self.username) | Q(receiver=self.username)).order_by('-id').values()
+		allMessages = MessageModels.objects.filter(type='P').filter(Q(sender=self.identification) | Q(receiver=self.identification)).order_by('-id').values()
 		contactList = []
 		for msg in allMessages:
-			if (msg['sender'] == self.username):
+			if (msg['sender'] == self.identification):
 				contact = msg['receiver']
 				msgSender = 'Me'
 			else:
@@ -331,11 +331,11 @@ class chatSocket(WebsocketConsumer):
 				contactList.append(contact)
 		for contact in contactList:
 			msg = allMessages.filter(Q(sender=contactList[0]) | Q(receiver=contactList[0])).order_by('-id')[0]
-			connexionStatus = userModels.User.objects.get(username=contact).connexionStatus
+			connexionStatus = userModels.User.objects.get(identification=contact).connexionStatus
 			allConv.append({
 				'type': 'private',
-				'name': userModels.User.objects.get(username=contact).nickname,
-				'id': userModels.User.objects.get(username=contact).username,
+				'name': userModels.User.objects.get(identification=contact).nickname,
+				'id': userModels.User.objects.get(identification=contact).identification,
 				'connexionStatus': connexionStatus,
 				'last_msg': {
 					'msg': msg['message'],
@@ -386,11 +386,11 @@ class chatSocket(WebsocketConsumer):
 				}))
 
 	def getUser(self, target):
-		user = userModels.User.objects.get(username=target)
+		user = userModels.User.objects.get(identification=target)
 		self.send(text_data=json.dumps({
 			'type': 'get_user_data',
 			'name': user.nickname,
-			'identification':  user.username,
+			'identification':  user.identification,
 			'connexion_status': user.connexionStatus,
 			'conversation': user.allPrivateTalks
 			})
@@ -399,7 +399,7 @@ class chatSocket(WebsocketConsumer):
 	def getChannel(self, target):
 		channel = ChannelModels.objects.get(channelName=target)
 		msgsObjs = MessageModels.objects.filter(receiver=channel.channelName)
-		if channel.admin == self.UserModel.username:
+		if channel.admin == self.UserModel.identification:
 			admin = True
 		else:
 			admin = False
@@ -416,10 +416,10 @@ class chatSocket(WebsocketConsumer):
 				})
 
 		for userName in channel.users:
-			user = userModels.User.objects.get(username=userName)
+			user = userModels.User.objects.get(identification=userName)
 			channelUsers.append({
 				'name': user.nickname,
-				'id': user.username,
+				'id': user.identification,
 				'connexion_status': user.connexionStatus
 				})
 
@@ -450,11 +450,11 @@ class chatSocket(WebsocketConsumer):
 					}))
 
 	def getHistoryChat(self, chatTarget, msgId):
-		if userModels.User.objects.filter(username=chatTarget).exists() is False:
+		if userModels.User.objects.filter(identification=chatTarget).exists() is False:
 			return
 
 		print('conv between ', self.userIdentification, ' and ', chatTarget)
-		modelChatTarget = userModels.User.objects.get(username=chatTarget)
+		modelChatTarget = userModels.User.objects.get(identification=chatTarget)
 		if msgId == 0:
 			self.send(json.dumps({
 				'type': 'actualize_chat_history',
@@ -465,13 +465,13 @@ class chatSocket(WebsocketConsumer):
 		elif msgId == -1:
 			type = 'chat_history'		
 			messages = MessageModels.objects.filter(
-					(Q(sender=str(self.userIdentification)) & Q(receiver=modelChatTarget.username)) |
-					(Q(receiver=str(self.userIdentification)) & Q(sender=modelChatTarget.username))).order_by('-id')[:10]
+					(Q(sender=str(self.userIdentification)) & Q(receiver=modelChatTarget.identification)) |
+					(Q(receiver=str(self.userIdentification)) & Q(sender=modelChatTarget.identification))).order_by('-id')[:10]
 		else:
 			type = 'actualize_chat_history'
 			messages = MessageModels.objects.filter(
-					(Q(sender=str(self.userIdentification)) & Q(receiver=modelChatTarget.username)) & Q(id__lt=int(msgId))  |
-					(Q(receiver=str(self.userIdentification)) & Q(sender=modelChatTarget.username) & Q(id__lt=int(msgId)))).order_by('-id')[:10]
+					(Q(sender=str(self.userIdentification)) & Q(receiver=modelChatTarget.identification)) & Q(id__lt=int(msgId))  |
+					(Q(receiver=str(self.userIdentification)) & Q(sender=modelChatTarget.identification) & Q(id__lt=int(msgId)))).order_by('-id')[:10]
 
 		response = []
 		for msg in messages.values():
@@ -526,7 +526,7 @@ class chatSocket(WebsocketConsumer):
 					'id': msg['id'],
 					'time': str(msg['timeCreation']),
 					'sender': senderModel.nickname,
-					'senderID':  senderModel.username,
+					'senderID':  senderModel.identification,
 					'message': msg['message']
 					})
 
@@ -694,21 +694,21 @@ class chatSocket(WebsocketConsumer):
 			'type': 'chat_channel_message',
 			'channel': channel,
 			'sender': senderModel.nickname, 
-			'senderID':  senderModel.username,
+			'senderID':  senderModel.identification,
 			'message': message,
 			'time': time.strftime("%Y-%m-%d %X")
 			}))
 
 
 	def searchConv(self, input):
-		allUsers = userModels.User.objects.exclude(Q(username='IA') | Q(username='admin') | Q(username = self.UserModel.username)) 
+		allUsers = userModels.User.objects.exclude(Q(identification='IA') | Q(identification='admin') | Q(identification = self.UserModel.identification)) 
 		response = []
 
 		for chan in self.allChannels.keys():
 			print('channel: ', self.allChannels[chan])
 			if chan.find(input) >= 0:
-				print('user:', self.username, 'chan users:', self.allChannels[chan].ChanModel.users)
-				if self.username in self.allChannels[chan].ChanModel.users:
+				print('user:', self.identification, 'chan users:', self.allChannels[chan].ChanModel.users)
+				if self.identification in self.allChannels[chan].ChanModel.users:
 					member =  True
 				else :
 					member = False
@@ -723,19 +723,19 @@ class chatSocket(WebsocketConsumer):
 
 
 		for user in allUsers:
-			if user.username.find(input) >= 0:
-				msgs = MessageModels.objects.filter(Q(receiver=user.username) | Q(sender=user.username))
+			if user.identification.find(input) >= 0:
+				msgs = MessageModels.objects.filter(Q(receiver=user.identification) | Q(sender=user.identification))
 
 				connexionStatus = user.connexionStatus
 				if msgs.count() > 0:
-					if msgs[0].sender == self.UserModel.username:
+					if msgs[0].sender == self.UserModel.identification:
 						sender = 'Me'
 					else:
 						sender = msgs[0].sender
 					response.append({
 						'type': 'private_message',
 						'name': user.nickname,
-						'identification': user.username,
+						'identification': user.identification,
 						'connexion_status': connexionStatus, 
 						'last_msg': {
 							'message': msgs[0].message,
@@ -746,7 +746,7 @@ class chatSocket(WebsocketConsumer):
 					response.append({
 						'type': 'private_message',
 						'name': user.nickname,
-						'identification': user.username,
+						'identification': user.identification,
 						'connexion_status': connexionStatus,
 						'last_msg': '' })
 

@@ -35,19 +35,19 @@ class ChannelChat():
 		self.usersSocket = []
 
 		if creator != None:
-			self.admin = userModels.User.objects.get(username=creator)
+			self.admin = userModels.User.objects.get(identification=creator)
 			self.usersSocket.append(creator)
 
 			print('admin: ',self.admin)
 			obj = ChannelModels.objects.create(
 					channelName=self.channelName,
-                    admin=self.admin.username,
+                    admin=self.admin.identification,
 					privacyStatus = self.privacyStatus,
 					password = self.password,
 					description = self.description,
-					users=[self.admin.username],
+					users=[self.admin.identification],
 					)
-			print(self.admin.username, 'create channel', self.channelName)
+			print(self.admin.identification, 'create channel', self.channelName)
 
 		else: #ONLY FOR GENERAL CHANNEL
 			self.admin = creator
@@ -79,13 +79,13 @@ class ChannelChat():
 			tab = []
 			tab.append(user.userIdentification)
 
-		elif user.username not in self.ChanModel.users:
+		elif user.identification in self.ChanModel.users:
 			tab.append(user.userIdentification)
 
 		self.ChanModel.users = tab
 		self.ChanModel.save()
 
-		print(user.username, 'join channel', self.channelName, 'with', self.ChanModel.users)
+		print(user.identification, 'join channel', self.channelName, 'with', self.ChanModel.users)
 
 	def leaveChannel(self, user):
 		if user is None or user not in self.usersSocket:
@@ -101,12 +101,12 @@ class ChannelChat():
 				self.ChanModel.users = tab
 				self.ChanModel.save()
 
-		print(user.username, 'leave channel', self.channelName, 'with', self.ChanModel.users) #TO DEL
+		print(user.identification, 'leave channel', self.channelName, 'with', self.ChanModel.users) #TO DEL
 
 	def sendMessageChannel(self, sender, message):
 		msg = MessageModels.objects.create(
 				message=message,
-				sender=sender.username,
+				sender=sender.identification,
 				receiver=self.channelName,
                 type='C'
 				)
@@ -117,7 +117,7 @@ class ChannelChat():
 				{
 					'type': 'chatChannelMessage',
 					'channel': self.channelName,
-					'sender': sender.username,
+					'sender': sender.identification,
 					'message': message,
 					'time': time.strftime("%Y-%m-%d %X")
 					}
