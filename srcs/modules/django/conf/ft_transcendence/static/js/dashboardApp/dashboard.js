@@ -1,3 +1,4 @@
+import { navto } from "../index.js"
 
 export function initDashboard()
 {
@@ -35,7 +36,7 @@ function addPongClassicMatch()
         let htmlMatch = "";
 
         matchs.forEach(element => {
-            htmlMatch += '<li class="dash_classicMatch">'
+            htmlMatch += '<li class="dash_classicMatch" id="gameId_' + element.id + '">'
             if (element.win == true)
                 htmlMatch += '🏆 '
             else
@@ -48,10 +49,22 @@ function addPongClassicMatch()
 
         for (let i = 0; i < games.length; i++)
         {
+            let gameId = 'gameId_' + matchs[i].id
+            document.getElementById('gameId_' + matchs[i].id).addEventListener('click', function() {
+                popUpGameStat(gameId);
+            })
             if (matchs[i].win == true)
             {
                 games[i].style.background = 'linear-gradient(rgb(0, 255, 38) 0%, black 65%)';
             }
+            else
+            {
+                games[i].style.background = 'linear-gradient(rgb(255, 0, 0) 0%, black 65%)';
+            }
+        }
+        if (matchs.length == 0)
+        {
+            document.getElementById('dash_listClassicMatch').innerHTML = '<li>No Data</li>'
         }
     })
     .catch(error =>
@@ -96,6 +109,15 @@ function addPongTournamentStat()
             {
                 games[i].style.background = 'linear-gradient(rgb(0, 255, 38) 0%, black 65%)';
             }
+            else
+            {
+                games[i].style.background = 'linear-gradient(rgb(255, 0, 0) 0%, black 65%)';
+            }
+        }
+
+        if (tournament.length == 0)
+        {
+            document.getElementById('dash_listTournaments').innerHTML = '<li>No Data</li>'
         }
     })
     .catch(error =>
@@ -124,12 +146,14 @@ function addPongGlobalStat()
         if (data.matchs != null)
         {
             document.getElementsByClassName('piechartGame')[0].style.backgroundImage = 'conic-gradient(green ' + (data.matchs * 3.6) + 'deg, red 0 ' + (360 - (data.matchs * 3.6)) +'deg)';
+            document.getElementsByClassName('piechartGame')[0].style.border = '';
             document.getElementById('winGame').innerHTML =  '🏆 Win (' + (Math.round(data.matchs * 10) / 10) + '%)'
             document.getElementById('loseGame').innerHTML =  '❌ Lose (' + (100 - Math.round(data.matchs * 10) / 10) + '%)'
         }
         else
         {
-            document.getElementsByClassName('piechartGame')[0].style.backgroundImage = 'conic-gradient(blue 360deg, red 0deg)';
+            document.getElementsByClassName('piechartGame')[0].style.backgroundImage = 'conic-gradient(transparent 360deg, red 0deg)';
+            document.getElementsByClassName('piechartGame')[0].style.border = '1px dashed var(--fourth)';
             document.getElementById('winGame').innerHTML =  '🏆 Win (0%)'
             document.getElementById('loseGame').innerHTML =  '❌ Lose (0%)'
         }
@@ -137,12 +161,14 @@ function addPongGlobalStat()
         if (data.tournament != null)
         {
             document.getElementsByClassName('piechartTournament')[0].style.backgroundImage = 'conic-gradient(green ' + (data.tournament * 3.6) + 'deg, red 0 ' + (360 - (data.tournament * 3.6)) +'deg)';
+            document.getElementsByClassName('piechartGame')[0].style.border = '';
             document.getElementById('winTournament').innerHTML =  '🏆 Win (' + (Math.round(data.tournament * 10) / 10) + '%)'
             document.getElementById('loseTournament').innerHTML =  '❌ Lose (' + (100 - Math.round(data.tournament * 10) / 10) + '%)'
         }
         else
         {
-            document.getElementsByClassName('piechartTournament')[0].style.backgroundImage = 'conic-gradient(blue 360deg, red 0deg)';
+            document.getElementsByClassName('piechartTournament')[0].style.backgroundImage = 'conic-gradient(transparent 360deg, red 0deg)';
+            document.getElementsByClassName('piechartTournament')[0].style.border = '1px dashed var(--fourth)';
             document.getElementById('winTournament').innerHTML =  '🏆 Win (0%)'
             document.getElementById('loseTournament').innerHTML =  '❌ Lose (0%)'
         }
@@ -234,6 +260,15 @@ function addBattleshipClassicMatch()
             {
                 games[i].style.background = 'linear-gradient(rgb(0, 255, 38) 0%, black 65%)';
             }
+            else
+            {
+                games[i].style.background = 'linear-gradient(rgb(255, 0, 0) 0%, black 65%)';
+            }
+        }
+
+        if (matchs.length == 0)
+        {
+            document.getElementById('dash_listClassicMatch').innerHTML = '<li>No Data</li>'
         }
     })
     .catch(error =>
@@ -278,6 +313,15 @@ function addBattleshipTournamentStat()
             {
                 games[i].style.background = 'linear-gradient(rgb(0, 255, 38) 0%, black 65%)';
             }
+            else
+            {
+                games[i].style.background = 'linear-gradient(rgb(255, 0, 0) 0%, black 65%)';
+            }
+        }
+
+        if (tournament.length == 0)
+        {
+            document.getElementById('dash_listTournaments').innerHTML = '<li>No Data</li>'
         }
     })
     .catch(error =>
@@ -305,12 +349,14 @@ function addBattleshipGlobalStat()
         if (data.matchs != null)
         {
             document.getElementsByClassName('piechartGame')[0].style.backgroundImage = 'conic-gradient(green ' + (data.matchs * 3.6) + 'deg, red 0 ' + (360 - (data.matchs * 3.6)) +'deg)';
+            document.getElementsByClassName('piechartGame')[0].style.border = '';
             document.getElementById('winGame').innerHTML =  '🏆 Win (' + (Math.round(data.matchs * 10) / 10) + '%)'
             document.getElementById('loseGame').innerHTML =  '❌ Lose (' + (100 - Math.round(data.matchs * 10) / 10) + '%)'
         }
         else
         {
-            document.getElementsByClassName('piechartGame')[0].style.backgroundImage = 'conic-gradient(blue 360deg, red 0deg)';
+            document.getElementsByClassName('piechartGame')[0].style.backgroundImage = 'conic-gradient(transparent 360deg, red 0deg)';
+            document.getElementsByClassName('piechartGame')[0].style.border = '1px dashed var(--fourth)';
             document.getElementById('winGame').innerHTML =  '🏆 Win (0%)'
             document.getElementById('loseGame').innerHTML =  '❌ Lose (0%)'
         }
@@ -318,12 +364,14 @@ function addBattleshipGlobalStat()
         if (data.tournament != null)
         {
             document.getElementsByClassName('piechartTournament')[0].style.backgroundImage = 'conic-gradient(green ' + (data.tournament * 3.6) + 'deg, red 0 ' + (360 - (data.tournament * 3.6)) +'deg)';
+            document.getElementsByClassName('piechartGame')[0].style.border = '';
             document.getElementById('winTournament').innerHTML =  '🏆 Win (' + (Math.round(data.tournament * 10) / 10) + '%)'
             document.getElementById('loseTournament').innerHTML =  '❌ Lose (' + (100 - Math.round(data.tournament * 10) / 10) + '%)'
         }
         else
         {
-            document.getElementsByClassName('piechartTournament')[0].style.backgroundImage = 'conic-gradient(blue 360deg, red 0deg)';
+            document.getElementsByClassName('piechartTournament')[0].style.backgroundImage = 'conic-gradient(transparent 360deg, red 0deg)';
+            document.getElementsByClassName('piechartTournament')[0].style.border = '1px dashed var(--fourth)';
             document.getElementById('winTournament').innerHTML =  '🏆 Win (0%)'
             document.getElementById('loseTournament').innerHTML =  '❌ Lose (0%)'
         }
@@ -367,5 +415,52 @@ function addOtherBattleshipStat()
     .catch(error =>
     {
         console.error('Error:', error)
+    })
+}
+
+function popUpGameStat(gameId)
+{
+    document.querySelectorAll('.PopUp_wrapper')[0].style.display = 'block';
+    document.querySelectorAll('.GameStatPopUp')[0].style.display = 'block';
+
+    document.getElementById('closePopUp').addEventListener('click', function() {
+        document.querySelectorAll('.PopUp_wrapper')[0].style.display = 'none';
+        document.querySelectorAll('.GameStatPopUp')[0].style.display = 'none';
+    })
+
+    let gameIdForm = new FormData();
+    gameIdForm.append('gameId', gameId);
+
+    var crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
+    let feedback = document.querySelector('.feedback')
+    var headers = new Headers()
+    headers.append('X-CSRFToken', crsf_token)
+
+    fetch(document.location.origin + '/dashboard/getPongSpecificGame/', {
+        method: 'POST',
+        headers: headers,
+        body: gameIdForm,
+    })
+    .then(Response =>
+    {
+        if (!Response.ok)
+        {
+            throw new Error('Network response was not okay')
+        }
+        return Response.text()
+    })
+    .then(data =>
+    {
+        data = JSON.parse(data)
+
+        document.getElementById('boxTime').innerText = 'Date: ' + data.date
+        document.getElementById('playerVs').innerText = data.player1 + ' vs ' + data.player2
+        document.getElementById('boxScore').innerText = 'Score: ' + data.player1_score + ' | ' + data.player2_score
+        document.getElementById('ballTouch').innerText = 'Ball touch: ' + data.player1_number_ball_touch + ' vs ' + data.player2_number_ball_touch
+    })
+    .catch(error =>
+    {
+        console.error('Error:', error)
+        //navto("/")
     })
 }

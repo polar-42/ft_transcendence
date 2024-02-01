@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from authApp.models import User
 from pongGameApp.models import PongGameModels
 from django.db.models import Q
@@ -20,6 +20,8 @@ def getPongClassicGameStats(request):
 
     classicMatchs = []
     for game in allPongGames:
+        gameId = game.id
+        print('game.id =', gameId)
         if game.player1 == request.user.id:
             player1 = request.user.nickname
         elif game.player1 != 'AI':
@@ -42,6 +44,7 @@ def getPongClassicGameStats(request):
         dateGame = dateGameTab[0] + ' ' + dateGameTab[1][:5]
 
         classicMatchs.append({
+            'id': str(gameId),
             'player1': player1,
             'player2': player2,
             'win': win,
@@ -136,6 +139,8 @@ def getOtherPongStats(request):
     for games in allPongGames:
         if games.winner == str(request.user.id) and str(games.tournamentId) == '-1':
             tmpStreak += 1
+            if tmpStreak > longestWinStreak:
+                longestWinStreak = tmpStreak
         else:
             if tmpStreak > longestWinStreak:
                 longestWinStreak = tmpStreak
@@ -146,6 +151,8 @@ def getOtherPongStats(request):
     for games in allPongGames:
         if games.winner != str(request.user.id) and str(games.tournamentId) == '-1':
             tmpStreak += 1
+            if tmpStreak > longestLoseStreak:
+                longestLoseStreak = tmpStreak
         else:
             if tmpStreak > longestLoseStreak:
                 longestLoseStreak = tmpStreak
@@ -167,7 +174,9 @@ def getOtherPongStats(request):
             totalPointTaken += games.score_player1
             totalBallHitByOpponent += games.number_ball_touch_player1
 
-    percentageBallHit = (totalBallHit / (totalBallHitByOpponent + totalBallHit)) * 100
+    percentageBallHit = 0
+    if totalBallHitByOpponent + totalBallHit != 0:
+        percentageBallHit = (totalBallHit / (totalBallHitByOpponent + totalBallHit)) * 100
 
     return JsonResponse({'currentStreak': currentStreak,
                          'longestWinStreak': longestWinStreak,
@@ -307,6 +316,8 @@ def getOtherBatlleshipStats(request):
     for games in allBattleshipGames:
         if games.winner != str(request.user.id) and str(games.tournamentId) == '-1':
             tmpStreak += 1
+            if tmpStreak > longestLoseStreak:
+                longestLoseStreak = tmpStreak
         else:
             if tmpStreak > longestLoseStreak:
                 longestLoseStreak = tmpStreak
@@ -335,3 +346,44 @@ def getOtherBatlleshipStats(request):
                          'totalBoatHit': totalBoatHit,
                          'totalHitTaken': totalHitTaken,
                          'precision': precision})
+
+def getPongSpecificGame(request):
+    if (request.method == "GET" and request.GET["valid"] == "True") or (request.method == "POST"):
+        if request.method == "POST":
+            gameId = request.POST.get('gameId')
+            print(gameId)
+
+            game = PongGameModels.objects.get(id=int(gameId[7:]))
+            player1 = User.objects.get(id=int(game.player1))
+            player2 = User.objects.get(id=int(game.player2))
+            winner = User.objects.get(id=int(game.winner))
+            player1_score = game.score_player1
+            player2_score = game.score_player2
+            player1_number_ball_touch = game.number_ball_touch_player1
+            player2_number_ball_touch = game.number_ball_touch_player2
+
+            dateGameTab = str(game.time).split(' ')
+            dateGame = dateGameTab[0] + ' ' + dateGameTab[1][:5]
+
+            return JsonResponse({
+                'player1': player1.nickname,
+                'player2': player2.nickname,
+                'winner': winner.nickname,
+                'player1_score': player1_score,
+                'player2_score': player2_score,
+                'player1_number_ball_touch': player1_number_ball_touch,
+                'player2_number_ball_touch': player2_number_ball_touch,
+                'date': dateGame
+            })
+    else:
+        return JsonResponse({'null': None})
+
+def getPlayerImage(request):
+    if request.user.is_authenticated is False or request.method != 'GET':
+        return render(request, 'index.html')
+
+    player1_avatar = User.objects.get(id=request.user.id)
+    player2_avatar = User.objects.get(id=request.user.id)
+    return HttpResponse(usr.avatarImage, content_type='image/png')
+
+

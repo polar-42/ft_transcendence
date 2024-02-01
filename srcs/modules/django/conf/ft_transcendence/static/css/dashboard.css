@@ -15,6 +15,11 @@
 	margin-bottom: 10px;
 }
 
+::-webkit-scrollbar {
+	color: red;
+	width: 1em;
+}
+
 .buttonGame {
 	background-color: transparent;
 	border: solid var(--fourth) 1px;
@@ -25,9 +30,11 @@
 	width: 95%;
 	margin: auto;
 	border-radius: 10px;
+	cursor: pointer;
 }
 
 .buttonGame:hover {
+	font-weight: bold;
 	background-color: var(--fourth);
 }
 
@@ -73,12 +80,13 @@
 }
 
 .dash_classicMatch {
-	background: linear-gradient(rgb(255, 0, 0) 0%, black 65%);
+	background: linear-gradient(rgb(255, 255, 255) 0%, var(--main-bg-color) 65%);
 	border-radius: 5px;
 	margin-top: 1%;
 	margin-bottom: 1%;
 	margin-left: 1%;
 	margin-right: 1%;
+	cursor: pointer;
 }
 
 .dash_tournaments {
@@ -239,7 +247,75 @@
 	margin-right: 1%;
 }
 
-@media (min-width: 1173px) {
+.PopUp_wrapper {
+	display: none;
+	backdrop-filter: blur(5px);
+    position: absolute;
+    top: 0px;
+    height: 100%;
+    width: 100%;
+}
+
+.GameStatPopUp {
+	display: none;
+	position: absolute;
+	top: 15%;
+	left: 25%;
+	justify-content: center;
+	align-items: center;
+	width: 50%;
+	height: 50%;
+	background-color: var(--third);
+	border-radius: 5px;
+}
+
+.specificGameStat {
+	display: grid;
+	grid-template-areas:
+				'a a a'
+				'b b b'
+				'c c c'
+				'd d d';
+	justify-content: center;
+	align-items: center;
+	height: 90%;
+}
+
+#boxTime {
+	grid-area: a;
+	margin-top: 30%;
+	text-align: center;
+}
+
+#playerVs {
+	grid-area: b;
+	margin-top: 30%;
+	text-align: center;
+}
+
+#boxScore {
+	grid-area: c;
+	margin-top: 30%;
+	text-align: center;
+}
+
+#ballTouch {
+	grid-area: d;
+	margin-top: 30%;
+	text-align: center;
+}
+
+#closePopUp {
+	position: absolute;
+	top: 0px;
+	right: -10px;
+	width: 40px;
+	height: 40px;
+	font-size: 40px;
+	cursor: pointer;
+}
+
+@media (min-width: 1286px) {
 	.otherStat {
 		margin-top: 35px;
 		font-size: 115%;

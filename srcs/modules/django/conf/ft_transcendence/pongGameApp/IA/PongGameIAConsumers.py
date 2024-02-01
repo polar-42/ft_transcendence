@@ -35,7 +35,10 @@ class PongGameIASocket(WebsocketConsumer):
 
 		self.pongGameThread.quitGame(self)
 
-		addToDb(self.id, 'AI', 0, 3, 'AI', 0, 3, 'disconnexion')
+
+		AI_id = User.objects.get(nickname='AI').id
+
+		addToDb(self.id, AI_id, 0, 3, AI_id, 0, 3, 'disconnexion')
 
 		self.close()
 
@@ -69,10 +72,13 @@ class PongGameIASocket(WebsocketConsumer):
 		n_ball_touch_player1 = event['number_ball_touch_player1']
 		n_ball_touch_player2 = event['number_ball_touch_player2']
 
+		AI_id = User.objects.get(nickname='AI').id
+
 		if winner != 'AI':
 			winnerName = User.objects.get(id=int(winner)).nickname
 		else:
 			winnerName = 'AI'
+			winner = AI_id
 
 		self.send(text_data=json.dumps({
     			'type': 'game_ending',
@@ -84,7 +90,8 @@ class PongGameIASocket(WebsocketConsumer):
 				'playertwo_username': 'AI',
     	}))
 
-		addToDb(self.id, 'AI', playerone_score, playertwo_score, winner, n_ball_touch_player1, n_ball_touch_player2, 'score')
+
+		addToDb(self.id, AI_id, playerone_score, playertwo_score, winner, n_ball_touch_player1, n_ball_touch_player2, 'score')
 		self.pongGameThread = None
 
 		self.close()

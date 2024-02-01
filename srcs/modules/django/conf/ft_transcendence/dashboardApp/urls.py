@@ -11,5 +11,6 @@ urlpatterns = [
 	path('getBattleshipTournamentStats/', views.getBattleshipTournamentStats),
 	path('getWinrateBattleshipGames/', views.getWinrateBattleshipGames),
 	path('getOtherPongStats/', views.getOtherPongStats),
-	path('getOtherBatlleshipStats/', views.getOtherBatlleshipStats)
+	path('getOtherBatlleshipStats/', views.getOtherBatlleshipStats),
+	path('getPongSpecificGame/', views.getPongSpecificGame)
 ]

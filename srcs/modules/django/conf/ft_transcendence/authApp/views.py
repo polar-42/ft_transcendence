@@ -10,6 +10,7 @@ from django.conf import settings
 from django.http import HttpResponse
 from django.db import models
 from authApp.models import User
+from PIL import Image
 
 regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
 
@@ -56,8 +57,16 @@ def register(request):
 
 			if request.FILES.get('avatar') != None:
 				avatarImage = request.FILES.get('avatar')
+				print('type(avatarImage) =', type(avatarImage))
+				print('type(avatarImage.read()) =', type(avatarImage.read()))
 			else:
-				avatarImage = None
+				import io
+				img = Image.open("./static/assets/pictures/studs/mjuin.jpg")
+				new_img = img.resize((300, 300))
+				img_buff = io.BytesIO()
+				new_img.save(img_buff, format='JPEG')
+				img_buff.seek(0)
+				avatarImage = img_buff
 
 			if len(username) == 0 or len(email) == 0 or len(password) == 0 or len(passwordConfirmation) == 0:
 				return JsonResponse({'error': 'One of the field is empty'})
