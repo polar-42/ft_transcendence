@@ -166,10 +166,10 @@ function FP_Timer()
 function FP_Init()
 {
 	BoatList = [
-		// { name : 'Carrier', x : 0, y : 0, startX : 700, startY : 150, ArrayX : -1, ArrayY : -1, size : 5, horizontal : true, isDragging : false },
-		// { name : 'BattleShip', x : 0, y : 0, startX : 700, startY : 250, ArrayX : -1, ArrayY : -1, size : 4, horizontal : true, isDragging : false },
-		// { name : 'Destroyer', x : 0, y : 0, startX : 700, startY : 350, ArrayX : -1, ArrayY : -1, size : 3, horizontal : true, isDragging : false },
-		// { name : 'Submarine', x : 0, y : 0, startX : 700, startY : 450, ArrayX : -1, ArrayY : -1, size : 3, horizontal : true, isDragging : false },
+		{ name : 'Carrier', x : 0, y : 0, startX : 700, startY : 150, ArrayX : 7, ArrayY : 0, size : 5, horizontal : true, isDragging : false },
+		{ name : 'BattleShip', x : 0, y : 0, startX : 700, startY : 250, ArrayX : 8, ArrayY : 0, size : 4, horizontal : true, isDragging : false },
+		{ name : 'Destroyer', x : 0, y : 0, startX : 700, startY : 350, ArrayX : 10, ArrayY : 0, size : 3, horizontal : true, isDragging : false },
+		{ name : 'Submarine', x : 0, y : 0, startX : 700, startY : 450, ArrayX : 11, ArrayY : 0, size : 3, horizontal : true, isDragging : false },
 		{ name : 'PatrolBoat', x : 0, y : 0, startX : 700, startY : 550, ArrayX : 9, ArrayY : 0, size : 2, horizontal : false, isDragging : false },
 	]
 	for (let y = 0; y < gridSizeY; y++)
@@ -599,10 +599,10 @@ function SP_Load()
 {
 	curInterval = setInterval(SP_Timer, 1000)
 	BoatList = [
-		// { name : 'Carrier', x : 700, y : 100, size : 5, status : true},
-		// { name : 'BattleShip', x : 700, y : 200, size : 4, status : true},
-		// { name : 'Destroyer', x : 700, y : 300, size : 3, status : true},
-		// { name : 'Submarine', x : 700, y : 400, size : 3, status : true},
+		{ name : 'Carrier', x : 700, y : 100, size : 5, status : true},
+		{ name : 'BattleShip', x : 700, y : 200, size : 4, status : true},
+		{ name : 'Destroyer', x : 700, y : 300, size : 3, status : true},
+		{ name : 'Submarine', x : 700, y : 400, size : 3, status : true},
 		{ name : 'PatrolBoat', x : 700, y : 500, size : 2, status : true},
 	]
 	SP_drawEnemyBoats()
