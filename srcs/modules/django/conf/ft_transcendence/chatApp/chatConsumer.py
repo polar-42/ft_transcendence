@@ -99,7 +99,7 @@ class chatSocket(WebsocketConsumer):
 		self.close()
 
 	def receive(self, text_data):
-		# self.UserModel = userModels.User.objects.get(identification=self.identification)
+		self.UserModel = userModels.User.objects.get(identification=self.identification)
 		data = json.loads(text_data)
 
 		print(data) #TO DEL

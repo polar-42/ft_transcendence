@@ -212,11 +212,11 @@ class Tournament():
 			return False
 		if (len(self.PlayersList) == self.PlayerAmount):
 			return False
-		usr = TournamentUser(socket, user, user.username, user.id)
+		usr = TournamentUser(socket, user, user.nickname, user.id)
 		if (usr.UserId == self.Administrator):
 			self.Administrator = usr
 		self.PlayersList.append(usr)
-		ColorPrint.prGreen("Tournament {tournamentId} : User {username} Created.".format(tournamentId=self.TournamentId, username=user.username))
+		ColorPrint.prGreen("Tournament {tournamentId} : User {username} Created.".format(tournamentId=self.TournamentId, username=user.nickname))
 		self.SendUsers(None)
 		if (len(self.PlayersList) == self.PlayerAmount):
 			self.StartTournament()

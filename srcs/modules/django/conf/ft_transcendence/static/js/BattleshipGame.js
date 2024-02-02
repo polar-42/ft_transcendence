@@ -37,9 +37,14 @@ var curInterval = undefined
 
 export function initGame()
 {
-	if (arguments[0] == undefined)
+	if (arguments[0] == undefined || battleshipSocket != undefined && battleshipSocket.readyState != WebSocket.CLOSED)
 	{
-		navto('/battleship/matchmake')
+		if (battleshipSocket != null)
+		{
+			battleshipSocket.close()
+			battleshipSocket = undefined
+		}
+		navto('/games')
 		return
 	}
 	gameId = arguments[0]
