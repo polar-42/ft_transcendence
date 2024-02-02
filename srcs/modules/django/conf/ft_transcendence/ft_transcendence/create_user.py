@@ -1,7 +1,8 @@
 from django.core.management.base import BaseCommand
 from authApp.models import User
 from django.contrib.auth.hashers import make_password
-import random, string
+import random, string, io
+from PIL import Image
 
 def getRandString():
 	s = string.ascii_letters + string.digits
@@ -13,6 +14,12 @@ class Command(BaseCommand):
     help = 'Create a new user'
 
     def handle(self, *args, **options):
+        img = Image.open("./static/assets/pictures/studs/mjuin.jpg")
+        new_img = img.resize((300, 300))
+        img_buff = io.BytesIO()
+        new_img.save(img_buff, format='JPEG')
+        img_buff.seek(0)
+        avatarImage = img_buff
         # Your logic to create a user
         username = 'chrome'
         email = 'chrome@test.fr'
@@ -24,7 +31,8 @@ class Command(BaseCommand):
                 nickname=username,
                 email=email,
                 password=password,
-                identification=getRandString()
+                identification=getRandString(),
+                avatarImage=avatarImage.read()
             )
             print('User created successfully')
         else:
@@ -33,6 +41,12 @@ class Command(BaseCommand):
         username = 'chromeprivate'
         email = 'chromeprivate@test.fr'
         password = make_password('123456789')
+        img = Image.open("./static/assets/pictures/studs/mjuin.jpg")
+        new_img = img.resize((300, 300))
+        img_buff = io.BytesIO()
+        new_img.save(img_buff, format='JPEG')
+        img_buff.seek(0)
+        avatarImage = img_buff
 
         # Check if the user already exists
         if not User.objects.filter(email=email).exists():
@@ -40,7 +54,8 @@ class Command(BaseCommand):
                 nickname=username,
                 email=email,
                 password=password,
-                identification=getRandString()
+                identification=getRandString(),
+                avatarImage=avatarImage.read()
             )
             print('User created successfully')
         else:
@@ -49,6 +64,12 @@ class Command(BaseCommand):
         username = 'brave'
         email = 'brave@test.fr'
         password = make_password('123456789')
+        img = Image.open("./static/assets/pictures/studs/mjuin.jpg")
+        new_img = img.resize((300, 300))
+        img_buff = io.BytesIO()
+        new_img.save(img_buff, format='JPEG')
+        img_buff.seek(0)
+        avatarImage = img_buff
 
         # Check if the user already exists
         if not User.objects.filter(email=email).exists():
@@ -56,7 +77,8 @@ class Command(BaseCommand):
                 nickname=username,
                 email=email,
                 password=password,
-                identification=getRandString()
+                identification=getRandString(),
+                avatarImage=avatarImage.read()
             )
             print('User created successfully')
         else:
@@ -72,7 +94,8 @@ class Command(BaseCommand):
                 nickname=username,
                 email=email,
                 password=password,
-                identification=getRandString()
+                identification=getRandString(),
+                avatarImage=avatarImage.read()
             )
             print('User created successfully')
         else:
@@ -81,6 +104,12 @@ class Command(BaseCommand):
         username = 'AI'
         email = 'AI@test.com'
         password = make_password('123456789')
+        img = Image.open("./static/assets/pictures/studs/mjuin.jpg")
+        new_img = img.resize((300, 300))
+        img_buff = io.BytesIO()
+        new_img.save(img_buff, format='JPEG')
+        img_buff.seek(0)
+        avatarImage = img_buff
 
         # Check if the user already exists
         if not User.objects.filter(email=email).exists():
@@ -88,7 +117,8 @@ class Command(BaseCommand):
                 nickname=username,
                 email=email,
                 password=password,
-                identification='AI'
+                identification='AI',
+                avatarImage=avatarImage.read()
             )
             print('User created successfully')
         else:

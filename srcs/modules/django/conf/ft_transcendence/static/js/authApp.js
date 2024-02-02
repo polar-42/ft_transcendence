@@ -278,7 +278,7 @@ async function initProfileButton (connected) {
           img.style.borderRadius = '50%';
         })
       }
-	  }
+	    }
   }
   else {
     profiles.forEach((button) => {

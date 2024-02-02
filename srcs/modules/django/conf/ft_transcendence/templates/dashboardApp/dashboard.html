@@ -71,13 +71,33 @@
 				Today
 			</div>
 			<div id="playerVs">
-				PLAYER1 VS PLAYER2
+				<div id="tooltip_player1">PLAYER1</div>
+				<img id="player_1_avatar" src="" alt="PLAYER1_image">
+				VS
+				<div id="tooltip_player2">PLAYER2</div>
+				<img id="player_2_avatar" src="" alt="PLAYER2_image">
 			</div>
 			<div id="boxScore">
 				1 - 3
 			</div>
 			<div id="ballTouch">
 				1 - 2
+			</div>
+		</div>
+	</div>
+	<div class="TournamentStatPopUp">
+		{% csrf_token %}
+		<div class="specificTournamentStat">
+			<a id="closeTournamentPopUp">x</a>
+			<div id="boxTimeTournament">
+				DATE
+			</div>
+			<div id="winnerTextTournament">
+				Winner
+			</div>
+			<div id="winnerImageTournament">
+				<div id="tooltip_winnerTournament">PLAYER1</div>
+				<img id="winnerTournamentImage" src="" alt="WINNER_image">
 			</div>
 		</div>
 	</div>

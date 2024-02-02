@@ -36,7 +36,7 @@ function addPongClassicMatch()
         let htmlMatch = "";
 
         matchs.forEach(element => {
-            htmlMatch += '<li class="dash_classicMatch" id="gameId_' + element.id + '">'
+            htmlMatch += '<li class="dash_classicMatch" id="pongId_' + element.id + '">'
             if (element.win == true)
                 htmlMatch += '🏆 '
             else
@@ -49,9 +49,9 @@ function addPongClassicMatch()
 
         for (let i = 0; i < games.length; i++)
         {
-            let gameId = 'gameId_' + matchs[i].id
-            document.getElementById('gameId_' + matchs[i].id).addEventListener('click', function() {
-                popUpGameStat(gameId);
+            let gameId = 'pongId_' + matchs[i].id
+            document.getElementById('pongId_' + matchs[i].id).addEventListener('click', function() {
+                popUpPongGameStat(gameId);
             })
             if (matchs[i].win == true)
             {
@@ -92,7 +92,7 @@ function addPongTournamentStat()
         let htmlTournament = "";
 
         tournament.forEach(element => {
-            htmlTournament += '<li class="dash_tournament">'
+            htmlTournament += '<li class="dash_tournament" id="tournamentId_' + element.id + '">'
             if (element.win == true)
                 htmlTournament += '🏆 '
             else
@@ -105,6 +105,10 @@ function addPongTournamentStat()
 
         for (let i = 0; i < games.length; i++)
         {
+            let tournamentId = 'tournamentId_' + tournament[i].id
+            document.getElementById('tournamentId_' + tournament[i].id).addEventListener('click', function() {
+                popUpTournamentStat(tournamentId);
+            })
             if (tournament[i].win == true)
             {
                 games[i].style.background = 'linear-gradient(rgb(0, 255, 38) 0%, black 65%)';
@@ -243,7 +247,7 @@ function addBattleshipClassicMatch()
         let htmlMatch = "";
 
         matchs.forEach(element => {
-            htmlMatch += '<li class="dash_classicMatch">'
+            htmlMatch += '<li class="dash_classicMatch" id="battleshipId_' + element.id + '">'
             if (element.win == true)
                 htmlMatch += '🏆 '
             else
@@ -254,8 +258,14 @@ function addBattleshipClassicMatch()
         document.getElementById('dash_listClassicMatch').innerHTML = htmlMatch
         let games = document.querySelectorAll('.dash_classicMatch');
 
+
         for (let i = 0; i < games.length; i++)
         {
+            let gameId = 'battleshipId_' + matchs[i].id
+            document.getElementById('battleshipId_' + matchs[i].id).addEventListener('click', function() {
+                popUpBattleshipGameStat(gameId);
+            })
+
             if (matchs[i].win == true)
             {
                 games[i].style.background = 'linear-gradient(rgb(0, 255, 38) 0%, black 65%)';
@@ -296,7 +306,7 @@ function addBattleshipTournamentStat()
         let htmlTournament = "";
 
         tournament.forEach(element => {
-            htmlTournament += '<li class="dash_tournament">'
+            htmlTournament += '<li class="dash_tournament" id="tournamentId_' + element.id + '">'
             if (element.win == true)
                 htmlTournament += '🏆 '
             else
@@ -309,6 +319,10 @@ function addBattleshipTournamentStat()
 
         for (let i = 0; i < games.length; i++)
         {
+            let tournamentId = 'tournamentId_' + tournament[i].id
+            document.getElementById('tournamentId_' + tournament[i].id).addEventListener('click', function() {
+                popUpTournamentStat(tournamentId);
+            })
             if (tournament[i].win == true)
             {
                 games[i].style.background = 'linear-gradient(rgb(0, 255, 38) 0%, black 65%)';
@@ -418,7 +432,7 @@ function addOtherBattleshipStat()
     })
 }
 
-function popUpGameStat(gameId)
+async function popUpPongGameStat(gameId)
 {
     document.querySelectorAll('.PopUp_wrapper')[0].style.display = 'block';
     document.querySelectorAll('.GameStatPopUp')[0].style.display = 'block';
@@ -436,6 +450,9 @@ function popUpGameStat(gameId)
     var headers = new Headers()
     headers.append('X-CSRFToken', crsf_token)
 
+    let player1 = "";
+    let player2 = "";
+
     fetch(document.location.origin + '/dashboard/getPongSpecificGame/', {
         method: 'POST',
         headers: headers,
@@ -452,9 +469,10 @@ function popUpGameStat(gameId)
     .then(data =>
     {
         data = JSON.parse(data)
+        player1 = data.player1
+        player2 = data.player2
 
         document.getElementById('boxTime').innerText = 'Date: ' + data.date
-        document.getElementById('playerVs').innerText = data.player1 + ' vs ' + data.player2
         document.getElementById('boxScore').innerText = 'Score: ' + data.player1_score + ' | ' + data.player2_score
         document.getElementById('ballTouch').innerText = 'Ball touch: ' + data.player1_number_ball_touch + ' vs ' + data.player2_number_ball_touch
     })
@@ -463,4 +481,263 @@ function popUpGameStat(gameId)
         console.error('Error:', error)
         //navto("/")
     })
+
+    gameIdForm.append('player', '1')
+    gameIdForm.append('typeGame', '0')
+    let res = await fetch(document.location.origin + '/dashboard/getPlayerImage/', {
+        method: 'POST',
+        headers: headers,
+        body: gameIdForm,
+    })
+    if (res.ok)
+    {
+        var vari = await res.blob()
+	    if (vari.type == "image/png")
+        {
+            console.log
+            let img = document.getElementById('player_1_avatar')
+            img.src = URL.createObjectURL(vari)
+            img.style.borderRadius = '50%'
+            img.style.width = '35px'
+            img.style.height = '35px'
+            img.addEventListener('mouseover', function(e) {
+                displayPlayerNickname(e, player1, 1, true)
+            })
+            img.addEventListener('mouseout', function(e) {
+                displayPlayerNickname(e, player1, 1, false)
+            })
+        }
+    }
+
+    gameIdForm['player'] = '2'
+    res = await fetch(document.location.origin + '/dashboard/getPlayerImage/', {
+        method: 'POST',
+        headers: headers,
+        body: gameIdForm,
+    })
+    if (res.ok)
+    {
+        var vari = await res.blob()
+	    if (vari.type == "image/png")
+        {
+            let img = document.getElementById('player_2_avatar')
+            img.src = URL.createObjectURL(vari)
+            img.style.borderRadius = '50%'
+            img.style.width = '35px'
+            img.style.height = '35px'
+            img.addEventListener('mouseover', function(e) {
+                displayPlayerNickname(e, player2, 2, true)
+            })
+            img.addEventListener('mouseout', function(e) {
+                displayPlayerNickname(e, player2, 2, false)
+            })
+        }
+    }
+}
+
+async function popUpBattleshipGameStat(gameId)
+{
+    document.querySelectorAll('.PopUp_wrapper')[0].style.display = 'block';
+    document.querySelectorAll('.GameStatPopUp')[0].style.display = 'block';
+
+    document.getElementById('closePopUp').addEventListener('click', function() {
+        document.querySelectorAll('.PopUp_wrapper')[0].style.display = 'none';
+        document.querySelectorAll('.GameStatPopUp')[0].style.display = 'none';
+    })
+
+
+    let gameIdForm = new FormData();
+    gameIdForm.append('gameId', gameId);
+
+    var crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
+    let feedback = document.querySelector('.feedback')
+    var headers = new Headers()
+    headers.append('X-CSRFToken', crsf_token)
+
+    let player1 = "";
+    let player2 = "";
+
+    fetch(document.location.origin + '/dashboard/getBattleshipSpecificGame/', {
+        method: 'POST',
+        headers: headers,
+        body: gameIdForm,
+    })
+    .then(Response =>
+    {
+        if (!Response.ok)
+        {
+            throw new Error('Network response was not okay')
+        }
+        return Response.text()
+    })
+    .then(data =>
+    {
+        data = JSON.parse(data)
+        player1 = data.player1
+        player2 = data.player2
+
+        document.getElementById('boxTime').innerText = 'Date: ' + data.date
+        document.getElementById('boxScore').innerText = 'Number hit: ' + data.player1_score + ' | ' + data.player2_score
+        document.getElementById('ballTouch').innerText = '????: ' + data.player1_number_ball_touch + ' vs ' + data.player2_number_ball_touch
+    })
+    .catch(error =>
+    {
+        console.error('Error:', error)
+        //navto("/")
+    })
+
+    gameIdForm.append('player', '1')
+    gameIdForm.append('typeGame', '1')
+    let res = await fetch(document.location.origin + '/dashboard/getPlayerImage/', {
+        method: 'POST',
+        headers: headers,
+        body: gameIdForm,
+    })
+    if (res.ok)
+    {
+        var vari = await res.blob()
+	    if (vari.type == "image/png")
+        {
+            let img = document.getElementById('player_1_avatar')
+            img.src = URL.createObjectURL(vari)
+            img.style.borderRadius = '50%'
+            img.style.width = '35px'
+            img.style.height = '35px'
+            img.addEventListener('mouseover', function(e) {
+                displayPlayerNickname(e, player1, 1, true)
+            })
+            img.addEventListener('mouseout', function(e) {
+                displayPlayerNickname(e, player1, 1, false)
+            })
+        }
+    }
+
+    gameIdForm['player'] = '2'
+    res = await fetch(document.location.origin + '/dashboard/getPlayerImage/', {
+        method: 'POST',
+        headers: headers,
+        body: gameIdForm,
+    })
+    if (res.ok)
+    {
+        var vari = await res.blob()
+	    if (vari.type == "image/png")
+        {
+            let img = document.getElementById('player_2_avatar')
+            img.src = URL.createObjectURL(vari)
+            img.style.borderRadius = '50%'
+            img.style.width = '35px'
+            img.style.height = '35px'
+            img.addEventListener('mouseover', function(e) {
+                displayPlayerNickname(e, player2, 2, true)
+            })
+            img.addEventListener('mouseout', function(e) {
+                displayPlayerNickname(e, player2, 2, false)
+            })
+        }
+    }
+}
+
+function displayPlayerNickname(e, playerNickname, num, value)
+{
+    if (value == true)
+    {
+        if (num == 1)
+        {
+            //console.log(e)
+            let tooltip = document.getElementById('tooltip_player1')
+            tooltip.style.display = 'block'
+            tooltip.innerText = playerNickname
+        }
+        else if (num == 2)
+        {
+            document.getElementById('tooltip_player2').style.display = 'block'
+            document.getElementById('tooltip_player2').innerText = playerNickname
+        }
+        else
+        {
+            document.getElementById('tooltip_winnerTournament').style.display = 'block'
+            document.getElementById('tooltip_winnerTournament').innerText = playerNickname
+        }
+    }
+    else
+    {
+            document.getElementById('tooltip_player1').style.display = 'none'
+            document.getElementById('tooltip_player2').style.display = 'none'
+            document.getElementById('tooltip_winnerTournament').style.display = 'none'
+    }
+}
+
+async function popUpTournamentStat(tournamentId) {
+
+    document.querySelectorAll('.PopUp_wrapper')[0].style.display = 'block';
+    document.querySelectorAll('.TournamentStatPopUp')[0].style.display = 'block';
+
+    document.getElementById('closeTournamentPopUp').addEventListener('click', function() {
+        document.querySelectorAll('.PopUp_wrapper')[0].style.display = 'none';
+        document.querySelectorAll('.TournamentStatPopUp')[0].style.display = 'none';
+    })
+
+    let tournamentIdForm = new FormData();
+    tournamentIdForm.append('tournamentId', tournamentId);
+
+    var crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
+    let feedback = document.querySelector('.feedback')
+    var headers = new Headers()
+    headers.append('X-CSRFToken', crsf_token)
+
+    let winner = ""
+
+    fetch(document.location.origin + '/dashboard/getTournamentStat/', {
+        method: 'POST',
+        headers: headers,
+        body: tournamentIdForm,
+    })
+    .then(Response =>
+    {
+        if (!Response.ok)
+        {
+            throw new Error('Network response was not okay')
+        }
+        return Response.text()
+    })
+    .then(data =>
+    {
+        data = JSON.parse(data)
+        winner = data.winner
+
+        document.getElementById('boxTimeTournament').innerText = 'Date: ' + data.date
+        document.getElementById('winnerTextTournament').innerText = 'Winner: ' + data.winner
+    })
+    .catch(error =>
+    {
+        console.error('Error:', error)
+        //navto("/")
+    })
+
+    tournamentIdForm.append('typeGame', '2')
+    tournamentIdForm.append('tournamentId', tournamentId)
+    let res = await fetch(document.location.origin + '/dashboard/getPlayerImage/', {
+        method: 'POST',
+        headers: headers,
+        body: tournamentIdForm,
+    })
+    if (res.ok)
+    {
+        var vari = await res.blob()
+	    if (vari.type == "image/png")
+        {
+            let img = document.getElementById('winnerTournamentImage')
+            img.src = URL.createObjectURL(vari)
+            img.style.borderRadius = '50%'
+            img.style.width = '100px'
+            img.style.height = '100px'
+            img.addEventListener('mouseover', function(e) {
+                displayPlayerNickname(e, winner, 3, true)
+            })
+            img.addEventListener('mouseout', function(e) {
+                displayPlayerNickname(e, winner, 3, false)
+            })
+        }
+    }
 }

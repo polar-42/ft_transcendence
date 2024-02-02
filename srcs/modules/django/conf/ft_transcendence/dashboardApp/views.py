@@ -6,6 +6,8 @@ from django.db.models import Q
 from authApp.models import User
 from tournamentsApp.models import TournamentsModels
 from battleshipApp.models import BattleshipGameModels
+from web3 import Web3
+import os, json
 
 def dashboardView(request):
     if request.user.is_authenticated:
@@ -62,22 +64,32 @@ def getPongTournamentStats(request):
     allPongTournament = TournamentsModels.objects.filter(tournamentType=0).order_by('-id')
     allTournamentInvolve = []
     for tournament in allPongTournament:
-        if str(request.user.id) in tournament.playersId:
+        if tournament.playersId is not None and str(request.user.id) in tournament.playersId:
             allTournamentInvolve.append(tournament)
 
     tournamentTab = []
     for tournament in allTournamentInvolve:
+
+        #w3 = Web3(Web3.HTTPProvider('http://' + os.environ.get('IP_NODE') + ':8545'))
+        #file = open('/var/blockchain/TranscendenceTournamentHistory.json')
+        #jsonFile = json.load(file)
+        #abi = jsonFile['abi']
+
+        #contract_address = os.environ.get('CONTRACT_ADDRESS')
+        #contract = w3.eth.contract(address=contract_address, abi=abi)
+
+        #winnerId = contract.functions.getWinnerTournament(str(tournament.id)).call()
+
         winner = User.objects.get(id=tournament.winner)
         win = False
         if winner.id == request.user.id:
             win = True
 
-        #BLOCKCHAIN TO DO
-
         dateTab = str(tournament.creationTime).split(' ')
         date = dateTab[0] + ' ' + dateTab[1][:5]
 
         tournamentTab.append({
+            'id': str(tournament.id),
             'name': tournament.tournamentsName,
             'winner': winner.nickname,
             'win': win,
@@ -104,7 +116,7 @@ def getWinratePongGames(request):
     allPongTournament = TournamentsModels.objects.filter(tournamentType=0).order_by('-id')
     allTournamentInvolve = []
     for tournament in allPongTournament:
-        if str(request.user.id) in tournament.playersId:
+        if tournament.playersId is not None and str(request.user.id) in tournament.playersId:
             allTournamentInvolve.append(tournament)
     win = 0
     for tournament in allTournamentInvolve:
@@ -194,6 +206,7 @@ def getBattlehipClassicGameStats(request):
 
     classicMatchs = []
     for game in allBattleshipGames:
+        gameId = game.id
         if game.player1 == request.user.id:
             player1 = request.user.nickname
         else:
@@ -212,6 +225,7 @@ def getBattlehipClassicGameStats(request):
         dateGame = dateGameTab[0] + ' ' + dateGameTab[1][:5]
 
         classicMatchs.append({
+            'id': str(gameId),
             'player1': player1,
             'player2': player2,
             'win': win,
@@ -232,7 +246,18 @@ def getBattleshipTournamentStats(request):
 
     tournamentTab = []
     for tournament in allTournamentInvolve:
-        winner = User.objects.get(id=tournament.winner)
+
+        #w3 = Web3(Web3.HTTPProvider('http://' + os.environ.get('IP_NODE') + ':8545'))
+        #file = open('/var/blockchain/TranscendenceTournamentHistory.json')
+        #jsonFile = json.load(file)
+        #abi = jsonFile['abi']
+
+        #contract_address = os.environ.get('CONTRACT_ADDRESS')
+        #contract = w3.eth.contract(address=contract_address, abi=abi)
+
+        #winnerId = contract.functions.getWinnerTournament(str(tournament.id)).call()
+
+        winner = User.objects.get(id=int(tournament.winner))
         win = False
         if winner.id == request.user.id:
             win = True
@@ -240,9 +265,8 @@ def getBattleshipTournamentStats(request):
         dateTab = str(tournament.creationTime).split(' ')
         date = dateTab[0] + ' ' + dateTab[1][:5]
 
-        #BLOCKCHAIN
-
         tournamentTab.append({
+            'id': str(tournament.id),
             'name': tournament.tournamentsName,
             'winner': winner.nickname,
             'win': win,
@@ -351,7 +375,6 @@ def getPongSpecificGame(request):
     if (request.method == "GET" and request.GET["valid"] == "True") or (request.method == "POST"):
         if request.method == "POST":
             gameId = request.POST.get('gameId')
-            print(gameId)
 
             game = PongGameModels.objects.get(id=int(gameId[7:]))
             player1 = User.objects.get(id=int(game.player1))
@@ -378,12 +401,83 @@ def getPongSpecificGame(request):
     else:
         return JsonResponse({'null': None})
 
+
+
+def getBattleshipSpecificGame(request):
+    if (request.method == "GET" and request.GET["valid"] == "True") or (request.method == "POST"):
+        if request.method == "POST":
+            gameId = request.POST.get('gameId')
+
+            print(gameId)
+
+            game = BattleshipGameModels.objects.get(id=int(gameId[13:]))
+            player1 = User.objects.get(id=int(game.player1))
+            player2 = User.objects.get(id=int(game.player2))
+            winner = User.objects.get(id=int(game.winner))
+            player1_score = game.player1_hit
+            player2_score = game.player2_hit
+            #player1_number_ball_touch = game.number_ball_touch_player1
+            #player2_number_ball_touch = game.number_ball_touch_player2
+
+            dateGameTab = str(game.time).split(' ')
+            dateGame = dateGameTab[0] + ' ' + dateGameTab[1][:5]
+
+            return JsonResponse({
+                'player1': player1.nickname,
+                'player2': player2.nickname,
+                'winner': winner.nickname,
+                'player1_score': player1_score,
+                'player2_score': player2_score,
+                'player1_number_ball_touch': "0",
+                'player2_number_ball_touch': "0",
+                'date': dateGame
+            })
+    else:
+        return JsonResponse({'null': None})
+
+
 def getPlayerImage(request):
-    if request.user.is_authenticated is False or request.method != 'GET':
-        return render(request, 'index.html')
+    if (request.method == "GET" and request.GET["valid"] == "True") or (request.method == "POST"):
+        if request.method == "POST":
 
-    player1_avatar = User.objects.get(id=request.user.id)
-    player2_avatar = User.objects.get(id=request.user.id)
-    return HttpResponse(usr.avatarImage, content_type='image/png')
+            gameId = request.POST.get('gameId')
+            playerNumber = request.POST.get('player')
+            typeGame = request.POST.get('typeGame')
 
+            if typeGame == '0':
+                game = PongGameModels.objects.get(id=int(gameId[7:]))
+            elif typeGame == '1':
+                game = BattleshipGameModels.objects.get(id=int(gameId[13:]))
+            else:
+                tournamentId = request.POST.get('tournamentId')
+                winnerId = TournamentsModels.objects.get(id=int(tournamentId[13:])).winner
+                avatar = User.objects.get(id=int(winnerId))
+                return HttpResponse(avatar.avatarImage, content_type='image/png')
 
+            if playerNumber == 1:
+                avatar = User.objects.get(id=int(game.player1))
+            else:
+                avatar = User.objects.get(id=int(game.player2))
+            return HttpResponse(avatar.avatarImage, content_type='image/png')
+    else:
+        return JsonResponse({'null': None})
+
+def getTournamentStat(request):
+    if (request.method == "GET" and request.GET["valid"] == "True") or (request.method == "POST"):
+        if request.method == "POST":
+            tournamentId = request.POST.get('tournamentId')
+
+            print(tournamentId)
+
+            game = TournamentsModels.objects.get(id=int(tournamentId[13:]))
+            winner = User.objects.get(id=int(game.winner))
+
+            dateGameTab = str(game.creationTime).split(' ')
+            dateGame = dateGameTab[0] + ' ' + dateGameTab[1][:5]
+
+            return JsonResponse({
+                'winner': winner.nickname,
+                'date': dateGame
+            })
+    else:
+        return JsonResponse({'null': None})

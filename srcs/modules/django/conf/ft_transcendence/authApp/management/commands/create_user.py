@@ -41,6 +41,12 @@ class Command(BaseCommand):
         username = 'chromeprivate'
         email = 'chromeprivate@test.fr'
         password = make_password('123456789')
+        img = Image.open("./static/assets/pictures/studs/mjuin.jpg")
+        new_img = img.resize((300, 300))
+        img_buff = io.BytesIO()
+        new_img.save(img_buff, format='JPEG')
+        img_buff.seek(0)
+        avatarImage = img_buff
 
         # Check if the user already exists
         if not User.objects.filter(email=email).exists():
@@ -58,6 +64,12 @@ class Command(BaseCommand):
         username = 'brave'
         email = 'brave@test.fr'
         password = make_password('123456789')
+        img = Image.open("./static/assets/pictures/studs/mjuin.jpg")
+        new_img = img.resize((300, 300))
+        img_buff = io.BytesIO()
+        new_img.save(img_buff, format='JPEG')
+        img_buff.seek(0)
+        avatarImage = img_buff
 
         # Check if the user already exists
         if not User.objects.filter(email=email).exists():
@@ -75,6 +87,12 @@ class Command(BaseCommand):
         username = 'braveprivate'
         email = 'braveprivate@test.fr'
         password = make_password('123456789')
+        img = Image.open("./static/assets/pictures/studs/mjuin.jpg")
+        new_img = img.resize((300, 300))
+        img_buff = io.BytesIO()
+        new_img.save(img_buff, format='JPEG')
+        img_buff.seek(0)
+        avatarImage = img_buff
 
         # Check if the user already exists
         if not User.objects.filter(email=email).exists():
@@ -92,6 +110,12 @@ class Command(BaseCommand):
         username = 'AI'
         email = 'AI@test.com'
         password = make_password('123456789')
+        img = Image.open("./static/assets/pictures/studs/mjuin.jpg")
+        new_img = img.resize((300, 300))
+        img_buff = io.BytesIO()
+        new_img.save(img_buff, format='JPEG')
+        img_buff.seek(0)
+        avatarImage = img_buff
 
         # Check if the user already exists
         if not User.objects.filter(email=email).exists():

@@ -22,6 +22,7 @@ class BattleShipGameManager():
 		if gameId not in self._MatchList.keys():
 			return
 
+		#CHECK IF WINNER OR GAME CANCELLED
 		addToDb(self._MatchList[gameId])
 
 		self._MatchList.pop(gameId)
