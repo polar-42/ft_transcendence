@@ -27,10 +27,10 @@ const navigateTo = url =>
   router(null)
 }
 
+initChat();
+
 function getRoute(RoutePath)
 {
-  initChat();
-
   const routes = [
     { path: "/404", init: null, unload: null, title:"404", LogStatus: 2},
     { path: "/needlog", init: null, unload: null, title:"Login required", LogStatus: 0},
