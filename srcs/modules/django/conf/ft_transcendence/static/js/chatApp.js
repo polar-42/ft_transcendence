@@ -114,7 +114,7 @@ function startChatConnexion()
 {
   chatSocket = new WebSocket("ws://" + window.location.host + '/chat/');
 
-  chatSocket.onopen = initChatHomepage
+	chatSocket.onopen = initChatHomepage
   chatSocket.onclose = closeChatSocket;
   chatSocket.onmessage = e => onMessageChat(e);
   chatSocket.onclose = closeChatSocket;

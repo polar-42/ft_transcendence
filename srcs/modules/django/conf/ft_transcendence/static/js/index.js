@@ -4,7 +4,7 @@ import { initGames } from "./games.js"
 import { initMatchmakingPong, unLoadMatchmakingPong } from "./pongGameApp.js"
 import { initLocalGamePong } from "./pongGameLocal.js"
 import { initGamePongIA, unloadGamePongIA } from './pongGameIA.js'
-import { initDashboard } from "./dashboard.js"
+import { initDashboard } from "./dashboardApp/dashboard.js"
 import { initHomePage} from "./homepage.js"
 import { CP_Unload, initGame } from "./BattleshipGame.js"
 import { initGamePong, unLoadGamePong } from "./pongGameRemote.js"
