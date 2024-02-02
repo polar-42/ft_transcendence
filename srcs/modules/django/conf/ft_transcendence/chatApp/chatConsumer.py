@@ -60,21 +60,11 @@ class chatSocket(WebsocketConsumer):
 				privacyStatus = ChannelModels.objects.get(channelName=chan).privacyStatus
 				password = ChannelModels.objects.get(channelName=chan).password
 				self.joinChannel(chan, privacyStatus, password, 0)
-				# self.allChannels[chan].joinChannel(self)
-				# async_to_sync(self.channel_layer.group_add)(
-				# 		'channel_' + chan,
-				# 		chan
-				# 		)
 
 		else:
 			tabChannels = []
 			self.joinChannel('General', 0, None, 0)
-			# self.allChannels['General'].joinChannel(self)
-			# async_to_sync(self.channel_layer.group_add)(
-			# 		'channel_General',
-			# 		'General'
-			# 		)
-			# tabChannels.append('General')
+			tabChannels.append('General')
 
 		self.UserModel.channels = tabChannels
 		self.UserModel.save()
@@ -314,7 +304,7 @@ class chatSocket(WebsocketConsumer):
 				chanMsgs = MessageModels.objects.filter(type='C').filter(Q(sender=chan) | Q(receiver=chan)).order_by('-id')
 				if chanMsgs.exists():
 					lastMsg = chanMsgs[0].message
-					lastMsgSender = chanMsgs[0].sender
+					lastMsgSender = userModels.User.objects.get(identification=chanMsgs[0].sender).nickname
 					timestamp = chanMsgs[0].timeCreation
 				else:
 					lastMsg = ''
@@ -351,8 +341,9 @@ class chatSocket(WebsocketConsumer):
 				'id': userModels.User.objects.get(identification=contact).identification,
 				'connexionStatus': connexionStatus,
 				'last_msg': {
-					'msg': msg['message'],
-					'sender': msgSender },
+                    'msg': msg['message'],
+                    'sender': userModels.User.objects.get(identification=msg['sender']).nickname
+                    },
 				'timestamp': msg['timeCreation']
 				})
 
@@ -715,7 +706,8 @@ class chatSocket(WebsocketConsumer):
 
 
 	def searchConv(self, input):
-		allUsers = userModels.User.objects.exclude(Q(identification='IA') | Q(identification='admin') | Q(identification = self.UserModel.identification)) 
+		allUsers = userModels.User.objects.exclude(Q(identification='AI') | Q(identification='admin') | Q(identification = self.UserModel.identification)) 
+		print('allUsers: ', allUsers)
 		response = []
 
 		for chan in self.allChannels.keys():
@@ -749,7 +741,7 @@ class chatSocket(WebsocketConsumer):
 					response.append({
 						'type': 'private_message',
 						'name': user.nickname,
-						'identification': user.identification,
+						'id': user.identification,
 						'connexion_status': connexionStatus, 
 						'last_msg': {
 							'message': msgs[0].message,
@@ -760,7 +752,7 @@ class chatSocket(WebsocketConsumer):
 					response.append({
 						'type': 'private_message',
 						'name': user.nickname,
-						'identification': user.identification,
+						'id': user.identification,
 						'connexion_status': connexionStatus,
 						'last_msg': '' })
 

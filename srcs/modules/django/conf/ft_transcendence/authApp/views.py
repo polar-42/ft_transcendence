@@ -7,6 +7,7 @@ from .management.commands.create_user import getRandString
 import json, re
 from django.http import HttpResponse, HttpResponseForbidden
 from authApp.models import User
+from chatApp.models import ChannelModels
 
 from ft_transcendence import ColorPrint
 from ft_transcendence.decorators import isValidLoading
@@ -135,18 +136,33 @@ def getUserName(request):
     return JsonResponse({'userName': request.user.username})
 
 def getUserID(request):
-    print(request)
-    print(request.user.identification)
-    return JsonResponse({'userID': request.user.identification})
+	print(request)
+	print(request.user.identification)
+	return JsonResponse({'userID': request.user.identification})
 
 def getAvatarImage(request):
-    if request.user.is_authenticated:
-        usr = User.objects.get(id=request.user.id)
-        if usr.avatarImage is None:
-            return HttpResponse(None, content_type='image/null')
-        return HttpResponse(usr.avatarImage, content_type='image/png')
+	type = request.GET.get('type')
+	if type is None:
+		if request.user.is_authenticated:
+			usr = User.objects.get(id=request.user.id)
+			if usr.avatarImage is None:
+				return HttpResponse(None, content_type='image/null')
+			return HttpResponse(usr.avatarImage, content_type='image/png')
+	elif type == 'user':
+		userId = request.GET.get('userId')
+		user = User.objects.get(identification=userId)
+		if user.avatarImage is None:
+			return HttpResponse(None, content_type='image/null')
+		return HttpResponse(user.avatarImage, content_type='image/png')
+	else:
+		channelName = request.GET.get('name')
+		channel = ChannelModels.objects.get(channelName=channelName)
+		if channel.channelPicture is None:
+			return HttpResponse(None, content_type='image/null')
+		return HttpResponse(channel.channelPicture, content_type='image/png')
 
 def Get2FaStatus(request):
+	print(request.content_type)
 	if request.user.is_authenticated == False:
 		return JsonResponse({'error': 'User not authenticated'})
 	usr = User.objects.get(id=request.user.id)
@@ -209,13 +225,13 @@ def TFASelected(request):
 			return render(request, 'authApp/TFA/Auth2FA.html')
 		case _:
 			return HttpResponse('', content_type="text/plain")
-		
+
 def TFARequestQR(request):
 	if request.user.is_authenticated == False:
 		return HttpResponse('', content_type="text/plain")
 	if User.objects.filter(id=request.user.id).exists() is False:
 		return HttpResponse('', content_type="text/plain")
-	
+
 	cookie = request.COOKIES.get('2FACookie')
 	if (cookie == None):
 		return HttpResponse('404', content_type="text/plain")
@@ -223,7 +239,7 @@ def TFARequestQR(request):
 	userModel = User.objects.get(id=request.user.id)
 	if userModel.email != cookie.get('email') or cookie.get('status') != '2FA register':
 		return HttpResponse('404', content_type="text/plain")
-	
+
 	k = pyotp.random_base32()
 	userModel.tfKey = k
 	userModel.save()
@@ -249,18 +265,18 @@ def TFASendCode(request):
 	if (cookie == None):
 		return JsonResponse({'error': 'User 2fa not initialized.'})
 	cookie = jwt.decode(cookie, os.environ.get('DJANGO_KEY'), algorithms="HS256")
-	
+
 	if userModel.email != cookie.get('email') or cookie.get('status') != '2FA register QR':
 		return JsonResponse({'error': 'Invalid 2FA cookie.'})
-	
+
 	if userModel.tfKey == None:
 		return JsonResponse({'error': 'User 2fa not initialized.'})
 	data = json.loads(request.body)
 	totp = pyotp.TOTP(userModel.tfKey)
 	code = data.get('TFACode')
 
-	
-	
+
+
 	if totp.now() == code:
 		userModel.tfValidated = True
 		userModel.save()
@@ -269,7 +285,7 @@ def TFASendCode(request):
 		response.delete_cookie('2FACookie')
 		return response
 	return JsonResponse({'error': 'Invalid code.'})
-	
+
 def TFADisable(request):
 	if request.user.is_authenticated == False:
 		return JsonResponse({'error': 'User not authenticated.'})

@@ -11,6 +11,7 @@ class ChannelModels(models.Model):
     privacyStatus = models.IntegerField(default=channelPrivacy.Public)
     password = models.CharField(blank=True)
     description = models.CharField(max_length=255, default="PAS2DESCRIPTION")
+    channelPicture = models.BinaryField(blank=True, default=None, null=True)
     timeCreation = models.DateTimeField(auto_now=True)
 
 class MessageModels(models.Model):
