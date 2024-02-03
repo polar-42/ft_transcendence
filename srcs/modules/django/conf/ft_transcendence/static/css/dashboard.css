@@ -8,7 +8,8 @@
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	grid-gap: 10px;
-	width: 500px;
+	max-width: 500px;
+	width: 100%;
 	height: 75px;
 	margin: auto;
 	margin-top: 10px;
@@ -49,9 +50,8 @@
 
 .dashboardInformation {
 	justify-content: center;
-	margin-left: 3%;
-	margin-right: 3%;
-	margin-bottom: 5%;
+	margin-left: 10vw;
+	margin-right: 10vw;
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
 	gap: 10px;
@@ -75,8 +75,7 @@
 	margin-top: 3%;
 	margin-left: 3%;
 	overflow-y: scroll;
-	max-height: 12em;
-	min-height: 12em;
+	height: 14em;
 }
 
 .dash_classicMatch {
@@ -89,6 +88,12 @@
 	cursor: pointer;
 }
 
+.dash_classicMatch:hover,
+.dash_tournament:hover {
+	border: 1px solid var(--fourth);
+
+}
+
 .dash_tournaments {
 	border: 1px solid var(--fourth);
 	background:
@@ -99,7 +104,7 @@
 	margin-left: 3%;
 	margin-bottom: 3%;
 	overflow-y: scroll;
-	height: 12em;
+	height: 14em;
 }
 
 .dash_tournament {
@@ -124,6 +129,7 @@
 	margin-top: 3%;
 	margin-right: 3%;
 	margin-bottom: 3%;
+	max-height: calc();
 }
 
 .allStat {
@@ -165,6 +171,7 @@
 	justify-content: center;
 	align-content: center;
 	text-align: center;
+	font-size: 1em;
 }
 
 #classicGameStat {
@@ -213,6 +220,7 @@
 	justify-content: center;
 	align-content: center;
 	text-align: center;
+	font-size: 1em;
 }
 
 #classicTournamentStat {
@@ -238,7 +246,12 @@
 	max-height: 10em;
 	min-height: 10em;
 	text-align: center;
-	font-size: 85%;
+}
+
+#otherStatLine {
+	font-size: 1.85vw;
+	display: grid;
+	gap: 0%;
 }
 
 #otherStatRow {
@@ -279,71 +292,58 @@
 				'd d d';
 	justify-content: center;
 	align-items: center;
-	height: 90%;
+	height: 100%;
 }
 
 #boxTime {
 	grid-area: a;
-	margin-top: 30%;
 	text-align: center;
 }
 
 #playerVs {
 	grid-area: b;
-	margin-top: 30%;
 	text-align: center;
+	display: grid;
+	grid-template-areas: 'a b c';
+	justify-content: center;
+	align-items: center;
+	gap: 10%;
 }
 
-#player_1_avatar:hover {
-	border: 1px solid var(--fourth);
+#player_1_avatar {
+	grid-area: a;
 }
 
-#player_2_avatar:hover {
-	border: 1px solid var(--fourth);
+#playerVsText {
+	grid-area: b;
 }
 
-#tooltip_player1 {
+#player_2_avatar {
+	grid-area: c;
+}
+
+#tooltip_player1, #tooltip_player2 {
 	display: none;
+	position: absolute;
 	width: auto;
 	min-width: 75px;
 	background-color: var(--fourth);
 	color: #fff;
 	border-radius: 6px;
-	position: absolute;
-	z-index: 1;
-	justify-content: right;
-	margin-top: -24px;
-	justify-content: center;
-	align-items: center;
 	text-align: center;
-}
-
-#tooltip_player2 {
-	display: none;
-	width: auto;
-	min-width: 75px;
-	background-color: var(--fourth);
-	color: #fff;
-	text-align: left;
-	border-radius: 6px;
-	position: absolute;
-	z-index: 1;
-	margin-top: -64px;
-	margin-left: 117px;
-	justify-content: center;
-	align-items: center;
-	text-align: center;
+	pointer-events: none;
+	padding: 1px;
+    margin-top: -25px;
+    margin-left: 10px;
 }
 
 #boxScore {
 	grid-area: c;
-	margin-top: 30%;
 	text-align: center;
 }
 
 #ballTouch {
 	grid-area: d;
-	margin-top: 30%;
 	text-align: center;
 }
 
@@ -376,36 +376,52 @@
 	grid-template-areas:
 				'a a a'
 				'b b b'
-				'c c c';
+				'c c c'
+				'd d d';
 	justify-content: center;
 	align-items: center;
 	height: 90%;
 }
 
+#boxTimeTournament,
+#tournamentDescription,
+#winnerTextTournament,
+#winnerImageTournament {
+	text-align: center;
+}
+
 #boxTimeTournament {
 	grid-area: a;
-	margin-top: 30%;
-	text-align: center;
+}
+
+#tournamentDescription {
+	grid-area: b;
 }
 
 #winnerTextTournament {
-	grid-area: b;
-	margin-top: 30%;
-	text-align: center;
+	grid-area: c;
 }
 
 #winnerImageTournament {
-	grid-area: c;
-	margin-top: 30%;
-	text-align: center;
+	grid-area: d;
+	display: grid;
+	justify-content: center;
+	grid-template-areas:	'a'
+							'b';
+	row-gap: 5px;
 }
 
-#player_1_avatar:hover {
-	border: 1px solid var(--fourth);
+#winnerName {
+	grid-area: a;
 }
 
-#player_2_avatar:hover {
-	border: 1px solid var(--fourth);
+#winnerTournamentImage {
+	grid-area: b;
+	align-items: center;
+}
+
+#tournamentWinner {
+	justify-content: center;
 }
 
 #tooltip_winnerTournament {
@@ -417,12 +433,9 @@
 	border-radius: 6px;
 	position: absolute;
 	z-index: 1;
-	justify-content: right;
-	margin-top: -24px;
-	margin-left: 52px;
 	justify-content: center;
-	align-items: center;
-	text-align: center;
+	margin-left: 38px;
+	margin-top: -180px;
 }
 
 #closeTournamentPopUp {
@@ -435,23 +448,56 @@
 	cursor: pointer;
 }
 
-@media (min-width: 1286px) {
-	.otherStat {
-		margin-top: 35px;
-		font-size: 115%;
+@media (min-width: 1285px) {
+	#otherStatLine {
+		font-size: 1.9vh;
+		gap: 0.5%;
 	}
 }
 
-@media (max-width: 840px) {
+@media (max-width: 1285px) {
 	.piechartStatGame,
 	.piechartStatTournament {
-		font-size: 80%;
+		font-size: 1em;
+	}
+	#otherStatLine {
+		font-size: 1.9vh;
+		gap: 0.5%;
 	}
 }
 
-@media (max-width: 480px) {
+@media (max-width: 900px) {
 	.piechartStatGame,
 	.piechartStatTournament {
-		font-size: 60%;
+		font-size: 0.9em;
+	}
+	#otherStatLine {
+		font-size: 2.2vh;
+		gap: 0.5%;
+	}
+}
+
+@media (max-width: 800px) {
+	.piechartStatGame,
+	.piechartStatTournament {
+		font-size: 0.9em;
+	}
+}
+
+@media (max-width: 700px) {
+	.piechartStatGame,
+	.piechartStatTournament {
+		font-size: 2.5vw;
+	}
+	#otherStatLine {
+		font-size: 1.7vh;
+		gap: 7%;
+	}
+}
+
+@media (max-width: 530px) {
+	#otherStatLine {
+		font-size: 1.7vh;
+		gap: 6%;
 	}
 }

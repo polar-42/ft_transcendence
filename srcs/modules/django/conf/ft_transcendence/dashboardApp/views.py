@@ -23,7 +23,6 @@ def getPongClassicGameStats(request):
     classicMatchs = []
     for game in allPongGames:
         gameId = game.id
-        print('game.id =', gameId)
         if game.player1 == request.user.id:
             player1 = request.user.nickname
         elif game.player1 != 'AI':
@@ -408,8 +407,6 @@ def getBattleshipSpecificGame(request):
         if request.method == "POST":
             gameId = request.POST.get('gameId')
 
-            print(gameId)
-
             game = BattleshipGameModels.objects.get(id=int(gameId[13:]))
             player1 = User.objects.get(id=int(game.player1))
             player2 = User.objects.get(id=int(game.player2))
@@ -444,6 +441,7 @@ def getPlayerImage(request):
             playerNumber = request.POST.get('player')
             typeGame = request.POST.get('typeGame')
 
+
             if typeGame == '0':
                 game = PongGameModels.objects.get(id=int(gameId[7:]))
             elif typeGame == '1':
@@ -454,7 +452,7 @@ def getPlayerImage(request):
                 avatar = User.objects.get(id=int(winnerId))
                 return HttpResponse(avatar.avatarImage, content_type='image/png')
 
-            if playerNumber == 1:
+            if playerNumber == '1':
                 avatar = User.objects.get(id=int(game.player1))
             else:
                 avatar = User.objects.get(id=int(game.player2))
@@ -467,15 +465,20 @@ def getTournamentStat(request):
         if request.method == "POST":
             tournamentId = request.POST.get('tournamentId')
 
-            print(tournamentId)
-
             game = TournamentsModels.objects.get(id=int(tournamentId[13:]))
             winner = User.objects.get(id=int(game.winner))
+            playersId = game.playersId
+            players = []
+
+            for player in playersId:
+                players.append(User.objects.get(id=int(player)).nickname)
 
             dateGameTab = str(game.creationTime).split(' ')
             dateGame = dateGameTab[0] + ' ' + dateGameTab[1][:5]
 
             return JsonResponse({
+                'players': players,
+                'description': game.description,
                 'winner': winner.nickname,
                 'date': dateGame
             })

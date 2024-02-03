@@ -498,8 +498,8 @@ async function popUpPongGameStat(gameId)
             let img = document.getElementById('player_1_avatar')
             img.src = URL.createObjectURL(vari)
             img.style.borderRadius = '50%'
-            img.style.width = '35px'
-            img.style.height = '35px'
+            img.style.width = '100px'
+            img.style.height = '100px'
             img.addEventListener('mouseover', function(e) {
                 displayPlayerNickname(e, player1, 1, true)
             })
@@ -509,7 +509,7 @@ async function popUpPongGameStat(gameId)
         }
     }
 
-    gameIdForm['player'] = '2'
+    gameIdForm.set('player', '2')
     res = await fetch(document.location.origin + '/dashboard/getPlayerImage/', {
         method: 'POST',
         headers: headers,
@@ -523,8 +523,8 @@ async function popUpPongGameStat(gameId)
             let img = document.getElementById('player_2_avatar')
             img.src = URL.createObjectURL(vari)
             img.style.borderRadius = '50%'
-            img.style.width = '35px'
-            img.style.height = '35px'
+            img.style.width = '100px'
+            img.style.height = '100px'
             img.addEventListener('mouseover', function(e) {
                 displayPlayerNickname(e, player2, 2, true)
             })
@@ -601,8 +601,8 @@ async function popUpBattleshipGameStat(gameId)
             let img = document.getElementById('player_1_avatar')
             img.src = URL.createObjectURL(vari)
             img.style.borderRadius = '50%'
-            img.style.width = '35px'
-            img.style.height = '35px'
+            img.style.width = '100px'
+            img.style.height = '100px'
             img.addEventListener('mouseover', function(e) {
                 displayPlayerNickname(e, player1, 1, true)
             })
@@ -612,7 +612,7 @@ async function popUpBattleshipGameStat(gameId)
         }
     }
 
-    gameIdForm['player'] = '2'
+    gameIdForm.set('player', '2')
     res = await fetch(document.location.origin + '/dashboard/getPlayerImage/', {
         method: 'POST',
         headers: headers,
@@ -626,8 +626,8 @@ async function popUpBattleshipGameStat(gameId)
             let img = document.getElementById('player_2_avatar')
             img.src = URL.createObjectURL(vari)
             img.style.borderRadius = '50%'
-            img.style.width = '35px'
-            img.style.height = '35px'
+            img.style.width = '100px'
+            img.style.height = '100px'
             img.addEventListener('mouseover', function(e) {
                 displayPlayerNickname(e, player2, 2, true)
             })
@@ -644,7 +644,6 @@ function displayPlayerNickname(e, playerNickname, num, value)
     {
         if (num == 1)
         {
-            //console.log(e)
             let tooltip = document.getElementById('tooltip_player1')
             tooltip.style.display = 'block'
             tooltip.innerText = playerNickname
@@ -706,8 +705,21 @@ async function popUpTournamentStat(tournamentId) {
         data = JSON.parse(data)
         winner = data.winner
 
+        let players = "";
+        let i = 0;
+
+        data.players.forEach(element => {
+            players += element;
+            if (i + 2 < data.players.length)
+                players += ", ";
+            else if (i + 1 < data.players.length)
+                players += " and ";
+            i++;
+        })
+
         document.getElementById('boxTimeTournament').innerText = 'Date: ' + data.date
-        document.getElementById('winnerTextTournament').innerText = 'Winner: ' + data.winner
+        document.getElementById('tournamentDescription').innerText = 'Decription: ' + data.description
+        document.getElementById('winnerTextTournament').innerText = 'Participants: ' + players
     })
     .catch(error =>
     {
@@ -730,8 +742,8 @@ async function popUpTournamentStat(tournamentId) {
             let img = document.getElementById('winnerTournamentImage')
             img.src = URL.createObjectURL(vari)
             img.style.borderRadius = '50%'
-            img.style.width = '100px'
-            img.style.height = '100px'
+            img.style.width = '150px'
+            img.style.height = '150px'
             img.addEventListener('mouseover', function(e) {
                 displayPlayerNickname(e, winner, 3, true)
             })
