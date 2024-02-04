@@ -93,11 +93,9 @@ def register(request):
 				nickname=username,
 				email=email,
 				password=passwordHash,
-				identification=getRandString()
+				identification=getRandString(),
+				avatarImage=avatarImage.read()
 			)
-
-			if avatarImage != None:
-				new_obj.avatarImage = avatarImage.read()
 
 			new_obj.save()
 

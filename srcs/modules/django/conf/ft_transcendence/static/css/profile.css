@@ -1,0 +1,35 @@
+
+.userInformation {
+	display: flex;
+	justify-content: space-around;
+	margin: 5%;
+	border: solid var(--fourth) 1px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	border-radius: 10px;
+}
+
+#userName {
+	justify-content: center;
+	height: 100px;
+	width: 100px;
+	display: grid;
+    align-items: center;
+	text-align: center;
+}
+#userAvatar {
+	justify-content: center;
+	height: 100px;
+	width: 100px;
+	display: grid;
+    align-items: center;
+	text-align: center;
+}
+#userStatus {
+	justify-content: center;
+	height: 100px;
+	width: 100px;
+	display: grid;
+    align-items: center;
+	text-align: center;
+}

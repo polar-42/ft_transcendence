@@ -18,19 +18,25 @@ def getPongClassicGameStats(request):
     if request.user.is_authenticated is False or request.method != 'GET':
         return render(request, 'index.html')
 
-    allPongGames = PongGameModels.objects.filter(tournamentId='-1').filter(Q(player1=request.user.id) | Q(player2=request.user.id)).order_by('-id')
+    params = request.GET.get('userIdentification', None)
+    if params != None and User.objects.filter(identification=params).exists():
+        userId = User.objects.get(identification=str(params)).id
+    else:
+        userId = request.user.id
+
+    allPongGames = PongGameModels.objects.filter(tournamentId='-1').filter(Q(player1=userId) | Q(player2=userId)).order_by('-id')
 
     classicMatchs = []
     for game in allPongGames:
         gameId = game.id
-        if game.player1 == request.user.id:
+        if game.player1 == userId:
             player1 = request.user.nickname
         elif game.player1 != 'AI':
             player1 = User.objects.get(id=game.player1).nickname
         else:
             player1 = 'AI'
 
-        if game.player2 == request.user.id:
+        if game.player2 == userId:
             player2 = request.user.nickname
         elif game.player2 != 'AI':
             player2 = User.objects.get(id=game.player2).nickname
@@ -38,7 +44,7 @@ def getPongClassicGameStats(request):
             player2 = 'AI'
 
         win = False
-        if game.winner == str(request.user.id):
+        if game.winner == str(userId):
             win = True
 
         dateGameTab = str(game.time).split(' ')
@@ -60,10 +66,17 @@ def getPongTournamentStats(request):
     if request.user.is_authenticated is False or request.method != 'GET':
         return render(request, 'index.html')
 
+
+    params = request.GET.get('userIdentification', None)
+    if params != None and User.objects.filter(identification=params).exists():
+        userId = User.objects.get(identification=str(params)).id
+    else:
+        userId = request.user.id
+
     allPongTournament = TournamentsModels.objects.filter(tournamentType=0).order_by('-id')
     allTournamentInvolve = []
     for tournament in allPongTournament:
-        if tournament.playersId is not None and str(request.user.id) in tournament.playersId:
+        if tournament.playersId is not None and str(userId) in tournament.playersId:
             allTournamentInvolve.append(tournament)
 
     tournamentTab = []
@@ -81,7 +94,7 @@ def getPongTournamentStats(request):
 
         winner = User.objects.get(id=tournament.winner)
         win = False
-        if winner.id == request.user.id:
+        if winner.id == userId:
             win = True
 
         dateTab = str(tournament.creationTime).split(' ')
@@ -101,10 +114,17 @@ def getWinratePongGames(request):
     if request.user.is_authenticated is False or request.method != 'GET':
         return render(request, 'index.html')
 
-    allPongGames = PongGameModels.objects.filter(tournamentId='-1').filter(Q(player1=request.user.id) | Q(player2=request.user.id)).order_by('-id')
+
+    params = request.GET.get('userIdentification', None)
+    if params != None and User.objects.filter(identification=params).exists():
+        userId = User.objects.get(identification=str(params)).id
+    else:
+        userId = request.user.id
+
+    allPongGames = PongGameModels.objects.filter(tournamentId='-1').filter(Q(player1=userId) | Q(player2=userId)).order_by('-id')
     win = 0
     for games in allPongGames:
-        if games.winner == str(request.user.id) and str(games.tournamentId) == '-1':
+        if games.winner == str(userId) and str(games.tournamentId) == '-1':
             win += 1
     winrateGame = None
     if win != 0:
@@ -115,11 +135,11 @@ def getWinratePongGames(request):
     allPongTournament = TournamentsModels.objects.filter(tournamentType=0).order_by('-id')
     allTournamentInvolve = []
     for tournament in allPongTournament:
-        if tournament.playersId is not None and str(request.user.id) in tournament.playersId:
+        if tournament.playersId is not None and str(userId) in tournament.playersId:
             allTournamentInvolve.append(tournament)
     win = 0
     for tournament in allTournamentInvolve:
-        if tournament.winner == str(request.user.id):
+        if tournament.winner == str(userId):
             win += 1
     winrateTournament = None
     if win != 0:
@@ -133,14 +153,21 @@ def getOtherPongStats(request):
     if request.user.is_authenticated is False or request.method != 'GET':
         return render(request, 'index.html')
 
-    allPongGames = PongGameModels.objects.filter(tournamentId='-1').filter(Q(player1=request.user.id) | Q(player2=request.user.id)).order_by('-id')
+
+    params = request.GET.get('userIdentification', None)
+    if params != None and User.objects.filter(identification=params).exists():
+        userId = User.objects.get(identification=str(params)).id
+    else:
+        userId = request.user.id
+
+    allPongGames = PongGameModels.objects.filter(tournamentId='-1').filter(Q(player1=userId) | Q(player2=userId)).order_by('-id')
     currentStreak = 0
     for games in allPongGames:
-        if games.winner == str(request.user.id) and str(games.tournamentId) == '-1':
+        if games.winner == str(userId) and str(games.tournamentId) == '-1':
             if currentStreak != 0 and currentStreak <= 0:
                 break
             currentStreak += 1
-        elif games.winner != str(request.user.id) and str(games.tournamentId) == '-1':
+        elif games.winner != str(userId) and str(games.tournamentId) == '-1':
             if currentStreak != 0 and currentStreak >= 0:
                 break
             currentStreak -= 1
@@ -148,7 +175,7 @@ def getOtherPongStats(request):
     longestWinStreak = 0
     tmpStreak = 0
     for games in allPongGames:
-        if games.winner == str(request.user.id) and str(games.tournamentId) == '-1':
+        if games.winner == str(userId) and str(games.tournamentId) == '-1':
             tmpStreak += 1
             if tmpStreak > longestWinStreak:
                 longestWinStreak = tmpStreak
@@ -160,7 +187,7 @@ def getOtherPongStats(request):
     longestLoseStreak = 0
     tmpStreak = 0
     for games in allPongGames:
-        if games.winner != str(request.user.id) and str(games.tournamentId) == '-1':
+        if games.winner != str(userId) and str(games.tournamentId) == '-1':
             tmpStreak += 1
             if tmpStreak > longestLoseStreak:
                 longestLoseStreak = tmpStreak
@@ -174,7 +201,7 @@ def getOtherPongStats(request):
     totalBallHit = 0
     totalBallHitByOpponent = 0
     for games in allPongGames:
-        if games.player1 == str(request.user.id):
+        if games.player1 == str(userId):
             totalBallHit += games.number_ball_touch_player1
             totalPointSet += games.score_player1
             totalPointTaken += games.score_player2
@@ -201,23 +228,30 @@ def getBattlehipClassicGameStats(request):
     if request.user.is_authenticated is False or request.method != 'GET':
         return render(request, 'index.html')
 
-    allBattleshipGames = BattleshipGameModels.objects.filter(tournamentId='-1').filter(Q(player1=request.user.id) | Q(player2=request.user.id)).order_by('-id')
+
+    params = request.GET.get('userIdentification', None)
+    if params != None and User.objects.filter(identification=params).exists():
+        userId = User.objects.get(identification=str(params)).id
+    else:
+        userId = request.user.id
+
+    allBattleshipGames = BattleshipGameModels.objects.filter(tournamentId='-1').filter(Q(player1=userId) | Q(player2=userId)).order_by('-id')
 
     classicMatchs = []
     for game in allBattleshipGames:
         gameId = game.id
-        if game.player1 == request.user.id:
+        if game.player1 == userId:
             player1 = request.user.nickname
         else:
             player1 = User.objects.get(id=game.player1).nickname
 
-        if game.player2 == request.user.id:
+        if game.player2 == userId:
             player2 = request.user.nickname
         else:
             player2 = User.objects.get(id=game.player2).nickname
 
         win = False
-        if game.winner == str(request.user.id):
+        if game.winner == str(userId):
             win = True
 
         dateGameTab = str(game.time).split(' ')
@@ -237,10 +271,17 @@ def getBattleshipTournamentStats(request):
     if request.user.is_authenticated is False or request.method != 'GET':
         return render(request, 'index.html')
 
+
+    params = request.GET.get('userIdentification', None)
+    if params != None and User.objects.filter(identification=params).exists():
+        userId = User.objects.get(identification=str(params)).id
+    else:
+        userId = request.user.id
+
     allBattleshipTournament = TournamentsModels.objects.filter(tournamentType=1).order_by('-id')
     allTournamentInvolve = []
     for tournament in allBattleshipTournament:
-        if str(request.user.id) in tournament.playersId:
+        if str(userId) in tournament.playersId:
             allTournamentInvolve.append(tournament)
 
     tournamentTab = []
@@ -258,7 +299,7 @@ def getBattleshipTournamentStats(request):
 
         winner = User.objects.get(id=int(tournament.winner))
         win = False
-        if winner.id == request.user.id:
+        if winner.id == userId:
             win = True
 
         dateTab = str(tournament.creationTime).split(' ')
@@ -278,10 +319,17 @@ def getWinrateBattleshipGames(request):
     if request.user.is_authenticated is False or request.method != 'GET':
         return render(request, 'index.html')
 
-    allBattleshipGames = BattleshipGameModels.objects.filter(tournamentId='-1').filter(Q(player1=request.user.id) | Q(player2=request.user.id)).order_by('-id')
+
+    params = request.GET.get('userIdentification', None)
+    if params != None and User.objects.filter(identification=params).exists():
+        userId = User.objects.get(identification=str(params)).id
+    else:
+        userId = request.user.id
+
+    allBattleshipGames = BattleshipGameModels.objects.filter(tournamentId='-1').filter(Q(player1=userId) | Q(player2=userId)).order_by('-id')
     win = 0
     for games in allBattleshipGames:
-        if games.winner == str(request.user.id) and games.tournamentId == '-1':
+        if games.winner == str(userId) and games.tournamentId == '-1':
             win += 1
     winrateGame = None
     if win != 0:
@@ -292,11 +340,11 @@ def getWinrateBattleshipGames(request):
     allBattleshipTournament = TournamentsModels.objects.filter(tournamentType=1).order_by('-id')
     allTournamentInvolve = []
     for tournament in allBattleshipTournament:
-        if str(request.user.id) in tournament.playersId:
+        if str(userId) in tournament.playersId:
             allTournamentInvolve.append(tournament)
     win = 0
     for tournament in allTournamentInvolve:
-        if tournament.winner == str(request.user.id):
+        if tournament.winner == str(userId):
             win += 1
     winrateTournament = None
     if win != 0:
@@ -310,14 +358,21 @@ def getOtherBatlleshipStats(request):
     if request.user.is_authenticated is False or request.method != 'GET':
         return render(request, 'index.html')
 
-    allBattleshipGames = BattleshipGameModels.objects.filter(tournamentId='-1').filter(Q(player1=request.user.id) | Q(player2=request.user.id)).order_by('-id')
+
+    params = request.GET.get('userIdentification', None)
+    if params != None and User.objects.filter(identification=params).exists():
+        userId = User.objects.get(identification=str(params)).id
+    else:
+        userId = request.user.id
+
+    allBattleshipGames = BattleshipGameModels.objects.filter(tournamentId='-1').filter(Q(player1=userId) | Q(player2=userId)).order_by('-id')
     currentStreak = 0
     for games in allBattleshipGames:
-        if games.winner == str(request.user.id) and str(games.tournamentId) == '-1':
+        if games.winner == str(userId) and str(games.tournamentId) == '-1':
             if currentStreak != 0 and currentStreak <= 0:
                 break
             currentStreak += 1
-        elif games.winner != str(request.user.id) and str(games.tournamentId) == '-1':
+        elif games.winner != str(userId) and str(games.tournamentId) == '-1':
             if currentStreak != 0 and currentStreak >= 0:
                 break
             currentStreak -= 1
@@ -325,7 +380,7 @@ def getOtherBatlleshipStats(request):
     longestWinStreak = 0
     tmpStreak = 0
     for games in allBattleshipGames:
-        if games.winner == str(request.user.id) and str(games.tournamentId) == '-1':
+        if games.winner == str(userId) and str(games.tournamentId) == '-1':
             tmpStreak += 1
             if tmpStreak > longestWinStreak:
                 longestWinStreak = tmpStreak
@@ -337,7 +392,7 @@ def getOtherBatlleshipStats(request):
     longestLoseStreak = 0
     tmpStreak = 0
     for games in allBattleshipGames:
-        if games.winner != str(request.user.id) and str(games.tournamentId) == '-1':
+        if games.winner != str(userId) and str(games.tournamentId) == '-1':
             tmpStreak += 1
             if tmpStreak > longestLoseStreak:
                 longestLoseStreak = tmpStreak
@@ -350,7 +405,7 @@ def getOtherBatlleshipStats(request):
     totalBoatHit = 0
     totalHitTaken = 0
     for games in allBattleshipGames:
-        if games.player1 == str(request.user.id):
+        if games.player1 == str(userId):
             totalHit == games.player1_try
             totalBoatHit += games.player1_hit
             totalHitTaken += games.player2_hit
@@ -436,7 +491,6 @@ def getBattleshipSpecificGame(request):
     else:
         return JsonResponse({'null': None})
 
-
 def getPlayerImage(request):
     if (request.method == "GET" and request.GET["valid"] == "True") or (request.method == "POST"):
         if request.method == "POST":
@@ -444,7 +498,6 @@ def getPlayerImage(request):
             gameId = request.POST.get('gameId')
             playerNumber = request.POST.get('player')
             typeGame = request.POST.get('typeGame')
-
 
             if typeGame == '0':
                 game = PongGameModels.objects.get(id=int(gameId[7:]))

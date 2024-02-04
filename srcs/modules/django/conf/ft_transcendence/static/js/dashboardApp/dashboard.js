@@ -27,9 +27,15 @@ function getBattleshipStat()
     addOtherBattleshipStat()
 }
 
-function addPongClassicMatch()
+export function addPongClassicMatch()
 {
-    fetch(document.location.origin + '/dashboard/getPongClassicGameStats/', {
+    let url = new URL(document.location.origin + '/dashboard/getPongClassicGameStats/')
+	if (arguments[0] != undefined)
+	{
+        url.searchParams.append('userIdentification', arguments[0]);
+	}
+
+    fetch(url, {
         method: 'GET'
     })
     .then(Response =>
@@ -83,9 +89,15 @@ function addPongClassicMatch()
     })
 }
 
-function addPongTournamentStat()
+export function addPongTournamentStat()
 {
-    fetch(document.location.origin + '/dashboard/getPongTournamentStats/', {
+    let url = new URL(document.location.origin + '/dashboard/getPongTournamentStats/')
+	if (arguments[0] != undefined)
+	{
+        url.searchParams.append('userIdentification', arguments[0]);
+	}
+
+    fetch(url, {
         method: 'GET'
     })
     .then(Response =>
@@ -140,9 +152,15 @@ function addPongTournamentStat()
     })
 }
 
-function addPongGlobalStat()
+export function addPongGlobalStat()
 {
-    fetch(document.location.origin + '/dashboard/getWinratePongGames/', {
+    let url = new URL(document.location.origin + '/dashboard/getWinratePongGames/')
+	if (arguments[0] != undefined)
+	{
+        url.searchParams.append('userIdentification', arguments[0]);
+	}
+
+    fetch(url, {
         method: 'GET'
     })
     .then(Response =>
@@ -161,8 +179,8 @@ function addPongGlobalStat()
         {
             document.getElementsByClassName('piechartGame')[0].style.backgroundImage = 'conic-gradient(green ' + (data.matchs * 3.6) + 'deg, red 0 ' + (360 - (data.matchs * 3.6)) +'deg)';
             document.getElementsByClassName('piechartGame')[0].style.border = '';
-            document.getElementById('winGame').innerHTML =  '🏆 Win (' + (Math.round(data.matchs * 10) / 10) + '%)'
-            document.getElementById('loseGame').innerHTML =  '❌ Lose (' + (100 - Math.round(data.matchs * 10) / 10) + '%)'
+            document.getElementById('winGame').innerHTML =  '🏆 Win (' + Number(Math.round(data.matchs * 10) / 10).toFixed(2) + '%)'
+            document.getElementById('loseGame').innerHTML =  '❌ Lose (' + Number(100 - Math.round(data.matchs * 10) / 10).toFixed(2) + '%)'
         }
         else
         {
@@ -176,8 +194,8 @@ function addPongGlobalStat()
         {
             document.getElementsByClassName('piechartTournament')[0].style.backgroundImage = 'conic-gradient(green ' + (data.tournament * 3.6) + 'deg, red 0 ' + (360 - (data.tournament * 3.6)) +'deg)';
             document.getElementsByClassName('piechartTournament')[0].style.border = '';
-            document.getElementById('winTournament').innerHTML =  '🏆 Win (' + (Math.round(data.tournament * 10) / 10) + '%)'
-            document.getElementById('loseTournament').innerHTML =  '❌ Lose (' + (100 - Math.round(data.tournament * 10) / 10) + '%)'
+            document.getElementById('winTournament').innerHTML =  '🏆 Win (' + Number(Math.round(data.tournament * 10) / 10).toFixed(2) + '%)'
+            document.getElementById('loseTournament').innerHTML =  '❌ Lose (' + Number(100 - Math.round(data.tournament * 10) / 10).toFixed(2) + '%)'
         }
         else
         {
@@ -193,9 +211,15 @@ function addPongGlobalStat()
     })
 }
 
-function addOtherPongStat()
+export function addOtherPongStat()
 {
-    fetch(document.location.origin + '/dashboard/getOtherPongStats/', {
+    let url = new URL(document.location.origin + '/dashboard/getOtherPongStats/')
+	if (arguments[0] != undefined)
+	{
+        url.searchParams.append('userIdentification', arguments[0]);
+	}
+
+    fetch(url, {
         method: 'GET'
     })
     .then(Response =>
@@ -228,9 +252,15 @@ function addOtherPongStat()
     })
 }
 
-function addBattleshipClassicMatch()
+export function addBattleshipClassicMatch()
 {
-    fetch(document.location.origin + '/dashboard/getBattlehipClassicGameStats/', {
+    let url = new URL(document.location.origin + '/dashboard/getBattlehipClassicGameStats/')
+	if (arguments[0] != undefined)
+	{
+        url.searchParams.append('userIdentification', arguments[0]);
+	}
+
+    fetch(url, {
         method: 'GET'
     })
     .then(Response =>
@@ -287,9 +317,15 @@ function addBattleshipClassicMatch()
     })
 }
 
-function addBattleshipTournamentStat()
+export function addBattleshipTournamentStat()
 {
-    fetch(document.location.origin + '/dashboard/getBattleshipTournamentStats/', {
+    let url = new URL(document.location.origin + '/dashboard/getBattleshipTournamentStats/')
+	if (arguments[0] != undefined)
+	{
+        url.searchParams.append('userIdentification', arguments[0]);
+	}
+
+    fetch(url, {
         method: 'GET'
     })
     .then(Response =>
@@ -344,9 +380,15 @@ function addBattleshipTournamentStat()
     })
 }
 
-function addBattleshipGlobalStat()
+export function addBattleshipGlobalStat()
 {
-    fetch(document.location.origin + '/dashboard/getWinrateBattleshipGames/', {
+    let url = new URL(document.location.origin + '/dashboard/getWinrateBattleshipGames/')
+	if (arguments[0] != undefined)
+	{
+        url.searchParams.append('userIdentification', arguments[0]);
+	}
+
+    fetch(url, {
         method: 'GET'
     })
     .then(Response =>
@@ -364,8 +406,8 @@ function addBattleshipGlobalStat()
         {
             document.getElementsByClassName('piechartGame')[0].style.backgroundImage = 'conic-gradient(green ' + (data.matchs * 3.6) + 'deg, red 0 ' + (360 - (data.matchs * 3.6)) +'deg)';
             document.getElementsByClassName('piechartGame')[0].style.border = '';
-            document.getElementById('winGame').innerHTML =  '🏆 Win (' + (Math.round(data.matchs * 10) / 10) + '%)'
-            document.getElementById('loseGame').innerHTML =  '❌ Lose (' + (100 - Math.round(data.matchs * 10) / 10) + '%)'
+            document.getElementById('winGame').innerHTML =  '🏆 Win (' + Number(Math.round(data.matchs * 10) / 10).toFixed(2) + '%)'
+            document.getElementById('loseGame').innerHTML =  '❌ Lose (' + Number(100 - Math.round(data.matchs * 10) / 10).toFixed(2) + '%)'
         }
         else
         {
@@ -379,8 +421,8 @@ function addBattleshipGlobalStat()
         {
             document.getElementsByClassName('piechartTournament')[0].style.backgroundImage = 'conic-gradient(green ' + (data.tournament * 3.6) + 'deg, red 0 ' + (360 - (data.tournament * 3.6)) +'deg)';
             document.getElementsByClassName('piechartGame')[0].style.border = '';
-            document.getElementById('winTournament').innerHTML =  '🏆 Win (' + (Math.round(data.tournament * 10) / 10) + '%)'
-            document.getElementById('loseTournament').innerHTML =  '❌ Lose (' + (100 - Math.round(data.tournament * 10) / 10) + '%)'
+            document.getElementById('winTournament').innerHTML =  '🏆 Win (' + Number(Math.round(data.tournament * 10) / 10).toFixed(2) + '%)'
+            document.getElementById('loseTournament').innerHTML =  '❌ Lose (' + Number(100 - Math.round(data.tournament * 10) / 10).toFixed(2) + '%)'
         }
         else
         {
@@ -398,9 +440,15 @@ function addBattleshipGlobalStat()
 }
 
 
-function addOtherBattleshipStat()
+export function addOtherBattleshipStat()
 {
-    fetch(document.location.origin + '/dashboard/getOtherBatlleshipStats/', {
+    let url = new URL(document.location.origin + '/dashboard/getOtherBatlleshipStats/')
+	if (arguments[0] != undefined)
+	{
+        url.searchParams.append('userIdentification', arguments[0]);
+	}
+
+    fetch(url, {
         method: 'GET'
     })
     .then(Response =>
@@ -432,7 +480,7 @@ function addOtherBattleshipStat()
     })
 }
 
-async function popUpPongGameStat(gameId)
+export async function popUpPongGameStat(gameId)
 {
     document.querySelectorAll('.PopUp_wrapper')[0].style.display = 'block';
     document.querySelectorAll('.GameStatPopUp')[0].style.display = 'block';
@@ -498,7 +546,6 @@ async function popUpPongGameStat(gameId)
         var vari = await res.blob()
 	    if (vari.type == "image/png")
         {
-            console.log
             let img = document.getElementById('player_1_avatar')
             img.src = URL.createObjectURL(vari)
             img.style.borderRadius = '50%'
@@ -547,7 +594,7 @@ async function popUpPongGameStat(gameId)
     }
 }
 
-async function popUpBattleshipGameStat(gameId)
+export async function popUpBattleshipGameStat(gameId)
 {
     document.querySelectorAll('.PopUp_wrapper')[0].style.display = 'block';
     document.querySelectorAll('.GameStatPopUp')[0].style.display = 'block';
@@ -662,7 +709,7 @@ async function popUpBattleshipGameStat(gameId)
     }
 }
 
-function displayPlayerNickname(e, playerNickname, num, value)
+export function displayPlayerNickname(e, playerNickname, num, value)
 {
     if (value == true)
     {
@@ -691,7 +738,7 @@ function displayPlayerNickname(e, playerNickname, num, value)
     }
 }
 
-async function popUpTournamentStat(tournamentId) {
+export async function popUpTournamentStat(tournamentId) {
 
     document.querySelectorAll('.PopUp_wrapper')[0].style.display = 'block';
     document.querySelectorAll('.TournamentStatPopUp')[0].style.display = 'block';

@@ -4,4 +4,6 @@ from . import views
 
 urlpatterns = [
     path('', views.profileView),
+	path('getUserInformation/', views.getUserInformation),
+	path('getPlayerImage/', views.getPlayerImage)
 ]

@@ -447,13 +447,6 @@
 	cursor: pointer;
 }
 
-/*@media (min-width: 1285px) {
-	#otherStatLine {
-		font-size: 1.9vh;
-		gap: 0.5%;
-	}
-}*/
-
 @media (max-width: 1285px) {
 	.piechartStatGame,
 	.piechartStatTournament {
