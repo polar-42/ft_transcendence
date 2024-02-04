@@ -17,6 +17,16 @@ function getPongStat()
     addOtherPongStat();
 }
 
+function getBattleshipStat()
+{
+    document.getElementById('buttonGameBattleship').style.background = 'var(--fourth)'
+    document.getElementById('buttonGamePong').style.background = 'transparent'
+    addBattleshipClassicMatch()
+    addBattleshipTournamentStat()
+    addBattleshipGlobalStat()
+    addOtherBattleshipStat()
+}
+
 function addPongClassicMatch()
 {
     fetch(document.location.origin + '/dashboard/getPongClassicGameStats/', {
@@ -165,7 +175,7 @@ function addPongGlobalStat()
         if (data.tournament != null)
         {
             document.getElementsByClassName('piechartTournament')[0].style.backgroundImage = 'conic-gradient(green ' + (data.tournament * 3.6) + 'deg, red 0 ' + (360 - (data.tournament * 3.6)) +'deg)';
-            document.getElementsByClassName('piechartGame')[0].style.border = '';
+            document.getElementsByClassName('piechartTournament')[0].style.border = '';
             document.getElementById('winTournament').innerHTML =  '🏆 Win (' + (Math.round(data.tournament * 10) / 10) + '%)'
             document.getElementById('loseTournament').innerHTML =  '❌ Lose (' + (100 - Math.round(data.tournament * 10) / 10) + '%)'
         }
@@ -216,16 +226,6 @@ function addOtherPongStat()
     {
         console.error('Error:', error)
     })
-}
-
-function getBattleshipStat()
-{
-    document.getElementById('buttonGameBattleship').style.background = 'var(--fourth)'
-    document.getElementById('buttonGamePong').style.background = 'transparent'
-    addBattleshipClassicMatch()
-    addBattleshipTournamentStat()
-    addBattleshipGlobalStat()
-    addOtherBattleshipStat()
 }
 
 function addBattleshipClassicMatch()
@@ -452,6 +452,8 @@ async function popUpPongGameStat(gameId)
 
     let player1 = "";
     let player2 = "";
+    let player1_identification = "";
+    let player2_identification = "";
 
     fetch(document.location.origin + '/dashboard/getPongSpecificGame/', {
         method: 'POST',
@@ -471,6 +473,8 @@ async function popUpPongGameStat(gameId)
         data = JSON.parse(data)
         player1 = data.player1
         player2 = data.player2
+        player1_identification = data.player1_identification
+        player2_identification = data.player2_identification
 
         document.getElementById('boxTime').innerText = 'Date: ' + data.date
         document.getElementById('boxScore').innerText = 'Score: ' + data.player1_score + ' | ' + data.player2_score
@@ -498,6 +502,7 @@ async function popUpPongGameStat(gameId)
             let img = document.getElementById('player_1_avatar')
             img.src = URL.createObjectURL(vari)
             img.style.borderRadius = '50%'
+            img.style.cursor = 'pointer'
             img.style.width = '100px'
             img.style.height = '100px'
             img.addEventListener('mouseover', function(e) {
@@ -505,6 +510,9 @@ async function popUpPongGameStat(gameId)
             })
             img.addEventListener('mouseout', function(e) {
                 displayPlayerNickname(e, player1, 1, false)
+            })
+            img.addEventListener('click', function(e) {
+                navto("/profile", player1_identification)
             })
         }
     }
@@ -523,6 +531,7 @@ async function popUpPongGameStat(gameId)
             let img = document.getElementById('player_2_avatar')
             img.src = URL.createObjectURL(vari)
             img.style.borderRadius = '50%'
+            img.style.cursor = 'pointer'
             img.style.width = '100px'
             img.style.height = '100px'
             img.addEventListener('mouseover', function(e) {
@@ -530,6 +539,9 @@ async function popUpPongGameStat(gameId)
             })
             img.addEventListener('mouseout', function(e) {
                 displayPlayerNickname(e, player2, 2, false)
+            })
+            img.addEventListener('click', function(e) {
+                navto("/profile", player2_identification)
             })
         }
     }
@@ -556,6 +568,8 @@ async function popUpBattleshipGameStat(gameId)
 
     let player1 = "";
     let player2 = "";
+    let player1_identification = "";
+    let player2_identification = "";
 
     fetch(document.location.origin + '/dashboard/getBattleshipSpecificGame/', {
         method: 'POST',
@@ -575,6 +589,8 @@ async function popUpBattleshipGameStat(gameId)
         data = JSON.parse(data)
         player1 = data.player1
         player2 = data.player2
+        player1_identification = data.player1_identification
+        player2_identification = data.player2_identification
 
         document.getElementById('boxTime').innerText = 'Date: ' + data.date
         document.getElementById('boxScore').innerText = 'Number hit: ' + data.player1_score + ' | ' + data.player2_score
@@ -601,6 +617,7 @@ async function popUpBattleshipGameStat(gameId)
             let img = document.getElementById('player_1_avatar')
             img.src = URL.createObjectURL(vari)
             img.style.borderRadius = '50%'
+            img.style.cursor = 'pointer'
             img.style.width = '100px'
             img.style.height = '100px'
             img.addEventListener('mouseover', function(e) {
@@ -608,6 +625,9 @@ async function popUpBattleshipGameStat(gameId)
             })
             img.addEventListener('mouseout', function(e) {
                 displayPlayerNickname(e, player1, 1, false)
+            })
+            img.addEventListener('click', function(e) {
+                navto("/profile", player1_identification)
             })
         }
     }
@@ -626,6 +646,7 @@ async function popUpBattleshipGameStat(gameId)
             let img = document.getElementById('player_2_avatar')
             img.src = URL.createObjectURL(vari)
             img.style.borderRadius = '50%'
+            img.style.cursor = 'pointer'
             img.style.width = '100px'
             img.style.height = '100px'
             img.addEventListener('mouseover', function(e) {
@@ -633,6 +654,9 @@ async function popUpBattleshipGameStat(gameId)
             })
             img.addEventListener('mouseout', function(e) {
                 displayPlayerNickname(e, player2, 2, false)
+            })
+            img.addEventListener('click', function(e) {
+                navto("/profile", player2_identification)
             })
         }
     }
@@ -645,12 +669,12 @@ function displayPlayerNickname(e, playerNickname, num, value)
         if (num == 1)
         {
             let tooltip = document.getElementById('tooltip_player1')
-            tooltip.style.display = 'block'
+            tooltip.style.display = 'inline-block'
             tooltip.innerText = playerNickname
         }
         else if (num == 2)
         {
-            document.getElementById('tooltip_player2').style.display = 'block'
+            document.getElementById('tooltip_player2').style.display = 'inline-block'
             document.getElementById('tooltip_player2').innerText = playerNickname
         }
         else
@@ -685,7 +709,8 @@ async function popUpTournamentStat(tournamentId) {
     var headers = new Headers()
     headers.append('X-CSRFToken', crsf_token)
 
-    let winner = ""
+    let winner = "";
+    let winner_identification = "";
 
     fetch(document.location.origin + '/dashboard/getTournamentStat/', {
         method: 'POST',
@@ -704,6 +729,7 @@ async function popUpTournamentStat(tournamentId) {
     {
         data = JSON.parse(data)
         winner = data.winner
+        winner_identification = data.winner_identification
 
         let players = "";
         let i = 0;
@@ -742,6 +768,7 @@ async function popUpTournamentStat(tournamentId) {
             let img = document.getElementById('winnerTournamentImage')
             img.src = URL.createObjectURL(vari)
             img.style.borderRadius = '50%'
+            img.style.cursor = 'pointer'
             img.style.width = '150px'
             img.style.height = '150px'
             img.addEventListener('mouseover', function(e) {
@@ -749,6 +776,9 @@ async function popUpTournamentStat(tournamentId) {
             })
             img.addEventListener('mouseout', function(e) {
                 displayPlayerNickname(e, winner, 3, false)
+            })
+            img.addEventListener('click', function(e) {
+                navto("/profile", winner_identification)
             })
         }
     }

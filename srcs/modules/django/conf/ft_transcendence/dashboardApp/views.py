@@ -390,6 +390,8 @@ def getPongSpecificGame(request):
             return JsonResponse({
                 'player1': player1.nickname,
                 'player2': player2.nickname,
+                'player1_identification': player1.identification,
+                'player2_identification': player2.identification,
                 'winner': winner.nickname,
                 'player1_score': player1_score,
                 'player2_score': player2_score,
@@ -422,6 +424,8 @@ def getBattleshipSpecificGame(request):
             return JsonResponse({
                 'player1': player1.nickname,
                 'player2': player2.nickname,
+                'player1_identification': player1.identification,
+                'player2_identification': player2.identification,
                 'winner': winner.nickname,
                 'player1_score': player1_score,
                 'player2_score': player2_score,
@@ -480,6 +484,7 @@ def getTournamentStat(request):
                 'players': players,
                 'description': game.description,
                 'winner': winner.nickname,
+                'winner_identification': winner.identification,
                 'date': dateGame
             })
     else:
