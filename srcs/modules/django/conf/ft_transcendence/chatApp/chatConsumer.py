@@ -11,6 +11,7 @@ from django.contrib.auth.hashers import check_password
 from pongGameApp.Remote.pongGameManager import Manager as pongManager
 from battleshipApp.BS_MatchmakingManager import GameManager as battleshipManager
 
+from ft_transcendence import ColorPrint
 
 def createGeneralChat(allChannels):
 	allChannels["General"] = ChannelChat("General", "General channel", channelPrivacy.Public, None, None)
@@ -39,9 +40,9 @@ class chatSocket(WebsocketConsumer):
 		self.UserModel.connexionStatus = connexionStatus.Connected
 		self.UserModel.save()
 
-		self.userIdentification = self.UserModel.identification
-		self.allUsers[self.userIdentification] = self.user
-		self.chatId = 'chat_' + self.userIdentification
+		self.identification = self.UserModel.identification
+		self.allUsers[self.identification] = self.user
+		self.chatId = 'chat_' + self.identification
 
 		print(self.user.identification, 'is connected to chat socket with chatId =', self.chatId) #TO DEL
 
@@ -105,7 +106,7 @@ class chatSocket(WebsocketConsumer):
 				self.channel_name
 				)
 
-		self.allUsers.pop(self.userIdentification)
+		self.allUsers.pop(self.identification)
 
 		self.close()
 
@@ -113,52 +114,55 @@ class chatSocket(WebsocketConsumer):
 		self.UserModel = userModels.User.objects.get(identification=self.identification)
 		data = json.loads(text_data)
 
-		print(data) #TO DEL
-
-		if data['type'] == 'chat_message':
-			self.sendPrivateMessage(data['target'], data['message'])
-		elif data['type'] == 'channel_message':
-			self.sendChannelMessage(data['target'], data['message'])
-		elif data['type'] == 'create_channel':
-			self.createChannel(data['channel_name'], data['channel_description'], data['privacy_status'], data['password'], data['adminId'])
-		elif data['type'] == 'channel_join':
-			if data['privacy_status'] is False:
-				self.joinChannel(data['target'], False, None, 1)
-			else:
-				self.joinChannel(data['target'], data['privacy_status'], data['password'], 1)
-		elif data['type'] == 'channel_leave':
-			self.leaveChannel(data['target'])
-		elif data['type'] == 'block_user':
-			self.blockUser(data['target'])
-		elif data['type'] == 'unblock_user':
-			self.unblockUser(data['target'])
-		elif data['type'] == 'get_last_chats':
-			self.getLastChats()
-		elif data['type'] == 'get_all_users':
-			self.getAllUsers()
-		elif data['type'] == 'get_user':
-			self.getUser(data['target'])
-		elif data['type'] == 'get_channel':
-			self.getChannel(data['target'])
-		elif data['type'] == 'get_history_chat':
-			self.getHistoryChat(data['target'], data['msgId'])
-		elif data['type'] == 'get_history_channel':
-			self.getHistoryChannel(data['target'], data['msgId'])
-		elif data['type'] == 'search_conv':
-			self.searchConv(data['input'])
-		elif data['type']  == 'edit_description':
-			self.editDescription(data['channel_name'], data['description'])
-		elif data['type'] == 'kick_user':
-			self.kickUser(data['channel'], data['user'])
-		#GAMES INVITATION
-		elif data['type'] == 'invite_pong':
-			self.inviteToPong(data['target'])
-		elif data['type'] == 'invite_battleship':
-			self.inviteBattleship(data['target'])
-		elif data['type'] == 'accept_invitation_pong':
-			self.acceptInvitationPong(data['target'])
-		elif data['type'] == 'accept_invitation_battleship':
-			self.acceptInvitationBattleship(data['target'])
+		match(data['type']):
+			case 'chat_message':
+				self.sendPrivateMessage(data['target'], data['message'])
+			case 'channel_message':
+				self.sendChannelMessage(data['target'], data['message'])
+			case 'create_channel':
+				self.createChannel(data['channel_name'], data['channel_description'], data['privacy_status'], data['password'], data['adminId'])
+			case 'channel_join':
+				if data['privacy_status'] is False:
+					self.joinChannel(data['target'], False, None, 1)
+				else:
+					self.joinChannel(data['target'], data['privacy_status'], data['password'], 1)
+			case 'channel_leave':
+				self.leaveChannel(data['target'])
+			case 'block_user':
+				self.blockUser(data['target'])
+			case 'unblock_user':
+				self.unblockUser(data['target'])
+			case 'get_last_chats':
+				self.getLastChats()
+			case 'get_all_users':
+				self.getAllUsers()
+			case 'get_user':
+				self.getUser(data['target'])
+			case 'get_channel':
+				self.getChannel(data['target'])
+			case 'get_history_chat':
+				self.getHistoryChat(data['target'], data['msgId'])
+			case 'get_history_channel':
+				self.getHistoryChannel(data['target'], data['msgId'])
+			case 'search_conv':
+				self.searchConv(data['input'])
+			case 'edit_description':
+				self.editDescription(data['channel_name'], data['description'])
+			case 'kick_user':
+				self.kickUser(data['channel'], data['user'])
+			#GAMES INVITATION
+			case 'invite_pong':
+				self.inviteToPong(data['target'])
+			case 'invite_battleship':
+				self.inviteBattleship(data['target'])
+			case 'accept_invitation_pong':
+				self.acceptInvitationPong(data['target'])
+			case 'accept_invitation_battleship':
+				self.acceptInvitationBattleship(data['target'])
+			case 'invit_to_friend':
+				self.invit_to_friend(data['target'])
+			case 'receiveFriendInvitation':
+				self.receiveFriendInvitation(data['sender'])
 
 	def joinChannel(self, channelName, privacyStatus, password, atConnection):
 		if self.allChannels[channelName] is None:
@@ -218,7 +222,7 @@ class chatSocket(WebsocketConsumer):
 				)
 
 	def sendPrivateMessage(self, receiver, message):
-		if userModels.User.objects.filter(identification=receiver).exists() is False or receiver == self.userIdentification:
+		if userModels.User.objects.filter(identification=receiver).exists() is False or receiver == self.identification:
 			print(self.user.identification, 'try to send a message to', receiver, 'but he dont exist') #TO DEL
 			return
 
@@ -234,7 +238,7 @@ class chatSocket(WebsocketConsumer):
 
 		msg = MessageModels.objects.create(
 				message=message,
-				sender=self.userIdentification,
+				sender=self.identification,
 				receiver=receiver,
 				type='P'
 				)
@@ -245,7 +249,7 @@ class chatSocket(WebsocketConsumer):
 				'chat_' + receiver,
 				{
 					'type': 'chatPrivateMessage',
-					'sender': self.userIdentification,
+					'sender': self.identification,
 					'message': message
 					}
 				)
@@ -308,7 +312,6 @@ class chatSocket(WebsocketConsumer):
 		print(user, 'has been unblock by', self.user.identification) #TO DEL
 
 	def getLastChats(self):
-
 		allConv = [] 
 		if self.UserModel.channels is not None:
 			print(self.UserModel.channels)
@@ -371,6 +374,7 @@ class chatSocket(WebsocketConsumer):
 			'data': allConv
 			})
 			)
+	
 	def isBlock(self, user):
 		if userModels.User.objects.filter(id=user.id).exists():
 			blockedUser = self.UserModel.blockedUser
@@ -384,7 +388,7 @@ class chatSocket(WebsocketConsumer):
 		if userModels.User.objects.filter(id=user.id).exists():
 			blockedUser = userModels.User.objects.get(identification=user.identification).blockedUser
 
-			if blockedUser is not None and self.userIdentification in blockedUser:
+			if blockedUser is not None and self.identification in blockedUser:
 				return True
 
 		return False
@@ -468,7 +472,7 @@ class chatSocket(WebsocketConsumer):
 		if userModels.User.objects.filter(identification=chatTarget).exists() is False:
 			return
 
-		print('conv between ', self.userIdentification, ' and ', chatTarget)
+		print('conv between ', self.identification, ' and ', chatTarget)
 		modelChatTarget = userModels.User.objects.get(identification=chatTarget)
 		if msgId == 0:
 			self.send(json.dumps({
@@ -480,19 +484,19 @@ class chatSocket(WebsocketConsumer):
 		elif msgId == -1:
 			type = 'chat_history'		
 			messages = MessageModels.objects.filter(
-					(Q(sender=str(self.userIdentification)) & Q(receiver=modelChatTarget.identification)) |
-					(Q(receiver=str(self.userIdentification)) & Q(sender=modelChatTarget.identification))).order_by('-id')[:10]
+					(Q(sender=str(self.identification)) & Q(receiver=modelChatTarget.identification)) |
+					(Q(receiver=str(self.identification)) & Q(sender=modelChatTarget.identification))).order_by('-id')[:10]
 		else:
 			type = 'actualize_chat_history'
 			messages = MessageModels.objects.filter(
-					(Q(sender=str(self.userIdentification)) & Q(receiver=modelChatTarget.identification)) & Q(id__lt=int(msgId))  |
-					(Q(receiver=str(self.userIdentification)) & Q(sender=modelChatTarget.identification) & Q(id__lt=int(msgId)))).order_by('-id')[:10]
+					(Q(sender=str(self.identification)) & Q(receiver=modelChatTarget.identification)) & Q(id__lt=int(msgId))  |
+					(Q(receiver=str(self.identification)) & Q(sender=modelChatTarget.identification) & Q(id__lt=int(msgId)))).order_by('-id')[:10]
 
 		response = []
 		for msg in messages.values():
-			if msg['sender'] == self.userIdentification:
+			if msg['sender'] == self.identification:
 				received = False
-				contact = self.userIdentification
+				contact = self.identification
 			else:
 				received = True
 				contact = msg['sender']
@@ -552,7 +556,7 @@ class chatSocket(WebsocketConsumer):
 			)
 
 	def inviteToPong(self, receiver):
-		if userModels.User.objects.filter(identification=receiver).exists() is False or receiver == self.userIdentification:
+		if userModels.User.objects.filter(identification=receiver).exists() is False or receiver == self.identification:
 			print(self.user.identification, 'try to invite', receiver, 'but he dont exist') #TO DEL
 			return
 
@@ -574,7 +578,7 @@ class chatSocket(WebsocketConsumer):
 				'chat_' + receiver,
 				{
 					'type': 'receiveInvitationPong',
-					'sender': self.userIdentification
+					'sender': self.identification
 					}
 				)
 
@@ -601,7 +605,7 @@ class chatSocket(WebsocketConsumer):
 				'chat_' + receiver,
 				{
 					'type': 'receiveInvitationBattleship',
-					'sender': self.userIdentification
+					'sender': self.identification
 					}
 				)
 
@@ -610,7 +614,7 @@ class chatSocket(WebsocketConsumer):
 		if senderModel is None:
 			return
 
-		gameId = 'privatePong' + self.userIdentification + '_' + sender
+		gameId = 'privatePong' + self.identification + '_' + sender
 		pongManager.createGame(self.user, self.allUsers[sender], gameId, None)
 
 		async_to_sync(self.channel_layer.group_send)(
@@ -634,7 +638,7 @@ class chatSocket(WebsocketConsumer):
 		if senderModel is None:
 			return
 
-		gameId = 'privateBattleship' + self.userIdentification + '_' + sender
+		gameId = 'privateBattleship' + self.identification + '_' + sender
 		battleshipManager.CreateGame(battleshipManager, self.user, self.allUsers[sender], gameId, 0, None)
 
 		async_to_sync(self.channel_layer.group_send)(
@@ -714,7 +718,6 @@ class chatSocket(WebsocketConsumer):
 			'message': message,
 			'time': time.strftime("%Y-%m-%d %X")
 			}))
-
 
 	def searchConv(self, input):
 		allUsers = userModels.User.objects.exclude(Q(identification='IA') | Q(identification='admin') | Q(identification = self.UserModel.identification)) 
@@ -827,3 +830,95 @@ class chatSocket(WebsocketConsumer):
 
 		channel.save()
 
+	def invit_to_friend(self, target):
+		if userModels.User.objects.filter(identification=target).exists() is False or target == self.identification:
+			ColorPrint.prYellow("{usrID} try sending a friendship request to {targetID} but he doesn't exist.".format(self.user.identification, target))
+			return
+
+		if target in self.UserModel.Friends:
+			ColorPrint.prYellow("{usrID} try sending a friendship request to {targetID} but they was already friend.".format(self.user.identification, target))
+			return
+
+		targetModel = userModels.User.objects.get(identification=target)
+
+		if self.identification in targetModel.PendingInvite:
+			ColorPrint.prYellow("{usrID} try sending a friendship request to {targetID} but he already have a pending request.".format(self.user.identification, target))
+			return
+	
+		if self.isBlock(targetModel):
+			ColorPrint.prYellow("{usrID} try sending a friendship request to {targetID} but he block him.".format(self.user.identification, target))
+			return
+
+		if self.isBlockBy(targetModel):
+			ColorPrint.prYellow("{usrID} try sending a friendship request to {targetID} who block him.".format(self.user.identification, target))
+			return
+		
+		async_to_sync(self.channel_layer.group_send)(
+		'chat_' + target,
+		{
+			'type': 'receiveFriendInvitation',
+			'sender': self.identification
+			}
+		)
+	
+	def receiveFriendInvitation(self, sender):
+		if userModels.User.objects.filter(identification=sender).exists() is False or sender == self.identification:
+			ColorPrint.prYellow("{usrID} receive friendship request from {targetID} but he dont exist.".format(self.user.identification, sender))
+			return
+		
+		if sender in self.UserModel.Friends:
+			ColorPrint.prYellow("{usrID} receive friendship request from {targetID} but they was already friend.".format(self.user.identification, sender))
+			return
+
+		if sender in self.UserModel.PendingInvite:
+			ColorPrint.prYellow("{usrID} try sending a friendship request to {targetID} but he already have a pending request.".format(self.user.identification, target))
+			return
+
+		if self.isBlock(sender):
+			ColorPrint.prYellow("{usrID} receive friendship request from {targetID} but he block him.".format(self.user.identification, sender))
+			return
+
+		if self.isBlockBy(sender):
+			ColorPrint.prYellow("{usrID} receive friendship request from {targetID} who block him.".format(self.user.identification, sender))
+			return
+
+		self.UserModel.PendingInvite.append(sender)
+		self.UserModel.save()
+
+		self.send(text_data=json.dumps({
+			'type': 'receive_friendship_invitation',
+			'sender': sender
+			}))
+
+	def friendshipRequestResponse(self, result, sender):
+		if userModels.User.objects.filter(identification=sender).exists() is False or sender == self.identification:
+			ColorPrint.prYellow("{usrID} answer friendship request from {targetID} but he dont exist.".format(self.user.identification, sender))
+			return
+		
+		if sender in self.UserModel.Friends:
+			ColorPrint.prYellow("{usrID} answer friendship request from {targetID} but they was already friend.".format(self.user.identification, sender))
+			return
+
+		if sender not in self.UserModel.PendingInvite:
+			ColorPrint.prYellow("{usrID} try answering a friendship request from {targetID} but invite not exisiting.".format(self.user.identification, sender))
+			return
+
+		if self.isBlock(sender):
+			ColorPrint.prYellow("{usrID} answer friendship request from {targetID} but he block him.".format(self.user.identification, sender))
+			result = False
+
+		if self.isBlockBy(sender):
+			ColorPrint.prYellow("{usrID} answer friendship request from {targetID} who block him.".format(self.user.identification, sender))
+			result = False
+		
+		if result == True:
+			self.UserModel.PendingInvite.remove(sender)
+			self.UserModel.Friends.append(sender)
+			self.UserModel.save()
+			TargetModel = userModels.User.objects.get(identification=sender)
+			TargetModel.Friends.append(self.identification)
+			TargetModel.save()
+		if result == False:
+			self.UserModel.PendingInvite.remove(sender)
+			self.UserModel.save()
+			return
