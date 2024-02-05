@@ -160,6 +160,8 @@ def getOtherPongStats(request):
     else:
         userId = request.user.id
 
+    userModel = User.objects.get(id=int(userId))
+
     allPongGames = PongGameModels.objects.filter(tournamentId='-1').filter(Q(player1=userId) | Q(player2=userId)).order_by('-id')
     currentStreak = 0
     for games in allPongGames:
@@ -196,25 +198,25 @@ def getOtherPongStats(request):
                 longestLoseStreak = tmpStreak
             tmpStreak = 0
 
-    totalPointSet = 0
-    totalPointTaken = 0
-    totalBallHit = 0
-    totalBallHitByOpponent = 0
-    for games in allPongGames:
-        if games.player1 == str(userId):
-            totalBallHit += games.number_ball_touch_player1
-            totalPointSet += games.score_player1
-            totalPointTaken += games.score_player2
-            totalBallHitByOpponent += games.number_ball_touch_player2
-        else:
-            totalBallHit += games.number_ball_touch_player2
-            totalPointSet += games.score_player2
-            totalPointTaken += games.score_player1
-            totalBallHitByOpponent += games.number_ball_touch_player1
+    totalPointSet = userModel.Pong_Point
+    totalPointTaken = userModel.Pong_PointTaken
+    totalBallHit = userModel.Pong_BallHit
+    totalBallHitByOpponent = userModel.Pong_BallHitByOpponent
+    totalWin = userModel.Pong_Win
+    totalLose = userModel.Pong_Lose
+    totalGame = userModel.Pong_Game
+    vsAI = int(userModel.Pong_Versus_AI)
+
+    if vsAI > 0:
+        statusAI = "Yes"
+    elif vsAI < 0:
+        statusAI = "No"
+    else:
+        statusAI = "It depends"
 
     percentageBallHit = 0
-    if totalBallHitByOpponent + totalBallHit != 0:
-        percentageBallHit = (totalBallHit / (totalBallHitByOpponent + totalBallHit)) * 100
+    if totalPointTaken + totalBallHit != 0:
+        percentageBallHit = (totalBallHit / (totalBallHit + totalPointTaken)) * 100
 
     return JsonResponse({'currentStreak': currentStreak,
                          'longestWinStreak': longestWinStreak,
@@ -222,6 +224,11 @@ def getOtherPongStats(request):
                          'totalPointSet': totalPointSet,
                          'totalPointTaken': totalPointTaken,
                          'totalBallHit': totalBallHit,
+                         'totalBallHitByOpponent': totalBallHitByOpponent,
+                         'totalWin': totalWin,
+                         'totalLose': totalLose,
+                         'totalGame': totalGame,
+                         'statusAI': statusAI,
                          'percentageBallHit': percentageBallHit})
 
 def getBattlehipClassicGameStats(request):
@@ -365,6 +372,8 @@ def getOtherBatlleshipStats(request):
     else:
         userId = request.user.id
 
+    userModel = User.objects.get(id=int(userId))
+
     allBattleshipGames = BattleshipGameModels.objects.filter(tournamentId='-1').filter(Q(player1=userId) | Q(player2=userId)).order_by('-id')
     currentStreak = 0
     for games in allBattleshipGames:
@@ -401,29 +410,30 @@ def getOtherBatlleshipStats(request):
                 longestLoseStreak = tmpStreak
             tmpStreak = 0
 
-    totalHit = 0
-    totalBoatHit = 0
-    totalHitTaken = 0
-    for games in allBattleshipGames:
-        if games.player1 == str(userId):
-            totalHit == games.player1_try
-            totalBoatHit += games.player1_hit
-            totalHitTaken += games.player2_hit
-        else:
-            totalHit == games.player2_try
-            totalBoatHit += games.player2_hit
-            totalHitTaken += games.player1_hit
+    totalShoot = userModel.BS_Bullets
+    totalMiss = userModel.BS_E_Miss
+    totalHitGive = userModel.BS_E_Hit
+    totalHitTake = userModel.BS_P_Hit
+    totalBoatDestroy = userModel.BS_E_BoatsDestroyed
+    totalBoatGetDestroy = userModel.BS_P_BoatsDestroyed
+    totalGame = userModel.BS_GameCount
 
     precision = 0
-    if totalHit != 0:
-        precision = (totalBoatHit / (totalHit)) * 100
+    if totalShoot != 0:
+        precision = (totalHitGive / (totalShoot)) * 100
 
     return JsonResponse({'currentStreak': currentStreak,
                          'longestWinStreak': longestWinStreak,
                          'longestLoseStreak': longestLoseStreak,
-                         'totalBoatHit': totalBoatHit,
-                         'totalHitTaken': totalHitTaken,
-                         'precision': precision})
+                         'totalShoot': totalShoot,
+                         'totalMiss': totalMiss,
+                         'totalHitGive': totalHitGive,
+                         'totalHitTake': totalHitTake,
+                         'totalBoatDestroy': totalBoatDestroy,
+                         'totalBoatGetDestroy': totalBoatGetDestroy,
+                         'totalGame': totalGame,
+                         'precision': precision,
+                         })
 
 def getPongSpecificGame(request):
     if (request.method == "GET" and request.GET["valid"] == "True") or (request.method == "POST"):

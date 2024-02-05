@@ -239,12 +239,16 @@ export function addOtherPongStat()
             document.getElementById('otherStatLine').innerHTML += '<li id="otherStatRow">🏆 Current Streak = ' + data.currentStreak + ' Win</li>'
         else
             document.getElementById('otherStatLine').innerHTML += '<li id="otherStatRow">❌ Current Streak = ' + (data.currentStreak * -1) + ' Lose</li>'
+
         document.getElementById('otherStatLine').innerHTML += '<li id="otherStatRow">🏆 Longest Win Streak = ' + data.longestWinStreak + ' Win</li>'
         document.getElementById('otherStatLine').innerHTML += '<li id="otherStatRow">❌ Longest Lose Steak = ' + data.longestLoseStreak + ' Lose</li>'
-        document.getElementById('otherStatLine').innerHTML += '<li id="otherStatRow">🏆 Total Point Set = ' + data.totalPointSet + ' pts</li>'
-        document.getElementById('otherStatLine').innerHTML += '<li id="otherStatRow">❌ Total Point Taken = ' + data.totalPointTaken + ' pts</li>'
-        document.getElementById('otherStatLine').innerHTML += '<li id="otherStatRow">👊 Total Ball Hit = ' + data.totalBallHit + ' hits</li>'
-        document.getElementById('otherStatLine').innerHTML += '<li id="otherStatRow">📈 Percentage Ball Hit = ' + (Math.round(data.percentageBallHit * 10) / 10) + '%</li>'
+        document.getElementById('otherStatLine').innerHTML += '<li id="otherStatRow">🏆 Point Set = ' + data.totalPointSet + '</li>'
+        document.getElementById('otherStatLine').innerHTML += '<li id="otherStatRow">❌ Point Taken = ' + data.totalPointTaken + '</li>'
+        document.getElementById('otherStatLine').innerHTML += '<li id="otherStatRow">👊 Ball Hit = ' + data.totalBallHit + '</li>'
+        document.getElementById('otherStatLine').innerHTML += '<li id="otherStatRow">❌ Ball Hit By Opponents = ' + data.totalBallHitByOpponent + '</li>'
+        document.getElementById('otherStatLine').innerHTML += '<li id="otherStatRow">🎮 Total Games Played = ' + data.totalGame + '</li>'
+        document.getElementById('otherStatLine').innerHTML += '<li id="otherStatRow">🤖 Is AI better than you = ' + data.statusAI + '</li>'
+        document.getElementById('otherStatLine').innerHTML += '<li id="otherStatRow">📈 Percentage Ball Hit = ' + Number(Math.round(data.percentageBallHit * 10) / 10).toFixed(2) + '%</li>'
     })
     .catch(error =>
     {
@@ -470,9 +474,14 @@ export function addOtherBattleshipStat()
             document.getElementById('otherStatLine').innerHTML += '<li id="otherStatRow">❌ Current Streak = ' + (data.currentStreak * -1) + ' Lose</li>'
         document.getElementById('otherStatLine').innerHTML += '<li id="otherStatRow">🏆 Longest Win Streak = ' + data.longestWinStreak + ' Win</li>'
         document.getElementById('otherStatLine').innerHTML += '<li id="otherStatRow">❌ Longest Lose Steak = ' + data.longestLoseStreak + ' Lose</li>'
-        document.getElementById('otherStatLine').innerHTML += '<li id="otherStatRow">🏆 Total Boat Hit = ' + data.totalBoatHit + ' hit</li>'
-        document.getElementById('otherStatLine').innerHTML += '<li id="otherStatRow">❌ Total Hit Taken = ' + data.totalHitTaken + ' hit</li>'
-        document.getElementById('otherStatLine').innerHTML += '<li id="otherStatRow">📈 Precision = ' + (Math.round(data.precision * 10) / 10) + '%</li>'
+
+        document.getElementById('otherStatLine').innerHTML += '<li id="otherStatRow">🏹 Total Hit = ' + data.totalShoot + '</li>'
+        document.getElementById('otherStatLine').innerHTML += '<li id="otherStatRow">❌ Total Miss = ' + data.totalMiss + '</li>'
+        document.getElementById('otherStatLine').innerHTML += '<li id="otherStatRow">✅ Total Boat Shoot = ' + data.totalHitGive + '</li>'
+        document.getElementById('otherStatLine').innerHTML += '<li id="otherStatRow">⛴️ Total Boat Destroy = ' + data.totalBoatDestroy + '</li>'
+        document.getElementById('otherStatLine').innerHTML += '<li id="otherStatRow">💀 Total Boat Get Destroy = ' + data.totalBoatDestroy + '</li>'
+        document.getElementById('otherStatLine').innerHTML += '<li id="otherStatRow">🎮 Total Game Played = ' + data.totalGame + '</li>'
+        document.getElementById('otherStatLine').innerHTML += '<li id="otherStatRow">📈 Precision = ' + Number(Math.round(data.precision * 10) / 10).toFixed(2) + '%</li>'
     })
     .catch(error =>
     {
