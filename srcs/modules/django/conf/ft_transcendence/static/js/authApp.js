@@ -104,7 +104,7 @@ export async function logout(event) {
 }
 
 export async function checkConnexion() {
-	const Response = await fetch(document.location.origin + '/authApp/check_connexion',
+	const Response = await fetch(document.location.origin + '/authApp/GET/connexionStatus',
 		{
 			method: 'GET'
 		})
@@ -172,7 +172,7 @@ function TFALogin() {
 	var headers = new Headers()
 	headers.append('Content-Type', 'application/json')
 	headers.append('X-CSRFToken', crsf_token)
-	fetch(document.location.origin + '/authApp/LoginTFA',
+	fetch(document.location.origin + '/authApp/TFA/Login',
 	{
 		method: 'GET',
 	})
@@ -200,7 +200,7 @@ function sendTFACode(container) {
 	headers.append('Content-Type', 'application/json')
 	headers.append('X-CSRFToken', crsf_token)
 	const data = {TFACode: container.querySelector("#Input_code").value }
-	fetch(document.location.origin + '/authApp/LoginCheckTFA',
+	fetch(document.location.origin + '/authApp/TFA/LoginCheck',
 		{
 			method: 'POST',
 			headers: headers,
@@ -291,7 +291,7 @@ async function initProfileButton(connected) {
 	let profiles = document.querySelectorAll(".profile_button")
 	if (connected === true) {
 		let profiles = document.querySelectorAll(".profile_button")
-		let Response = await fetch(document.location.origin + '/authApp/getUserName',
+		let Response = await fetch(document.location.origin + '/authApp/GET/userName',
 			{
 				method: 'GET'
 			})
@@ -305,7 +305,7 @@ async function initProfileButton(connected) {
 		})
 
 		let profileImage = document.querySelectorAll('img.user_logo')
-		Response = await fetch(document.location.origin + '/authApp/get_avatar_image',
+		Response = await fetch(document.location.origin + '/authApp/GET/avatarImage',
 			{
 				method: 'GET'
 			})

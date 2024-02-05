@@ -16,7 +16,7 @@ export function initUpdateAccount() {
 		})
 	})
 	inputArray[1].focus()
-	fetch(window.location.origin + "/authApp/Get2FaStatus")
+	fetch(window.location.origin + "/authApp/GET/2FaStatus")
 		.then(Response => {
 			if (!Response.ok) {
 				throw new Error('Network response was not okay')
@@ -41,7 +41,7 @@ export function initUpdateAccount() {
 
 function Handle2FaToggle(checkbox) {
 	const TFARequestType = 1 ? checkbox.checked == true : 2
-	fetch(window.location.origin + "/authApp/Show2FAPopUp")
+	fetch(window.location.origin + "/authApp/TFA/ShowPopUp")
 	.then(Response => {
 		if (!Response.ok) {
 			throw new Error('Network response was not okay')
@@ -67,7 +67,7 @@ function Handle2FaToggle(checkbox) {
 
 function Effective2Fa(doc, TFARequestType) {
 	let content = doc.querySelector('.TFA_Content')
-	fetch(window.location.origin + "/authApp/TFAConfirmPass")
+	fetch(window.location.origin + "/authApp/TFA/ConfirmPass")
 		.then(Response => {
 			if (!Response.ok) {
 				throw new Error('Network response was not okay')
@@ -93,7 +93,7 @@ function VerifyPass(content, TFARequestType) {
 	header.append('X-CSRFToken', crsf_token)
 	const data = { password: content.querySelector('#Input_pwd').value }
 	content.querySelector('#messageError').text = ""
-	fetch(document.location.origin + "/authApp/TFACheckPass",
+	fetch(document.location.origin + "/authApp/TFA/CheckPass",
 		{
 			method: 'POST',
 			headers: header,
@@ -134,7 +134,7 @@ function Disable2FARequest(content, text)
 	header.append('Content-Type', 'application/json')
 	header.append('X-CSRFToken', crsf_token)
 	content.querySelector('#messageError').text = ""
-	fetch(document.location.origin + "/authApp/TFADisable",
+	fetch(document.location.origin + "/authApp/TFA/Disable",
 		{
 			method: 'GET',
 			headers: header,
@@ -154,7 +154,7 @@ function Disable2FARequest(content, text)
 function Select2FA(content)
 {
 	content.querySelector('.submit_BTN').removeEventListener('click', VerifyPass)
-	fetch(window.location.origin + "/authApp/TFAChooseType")
+	fetch(window.location.origin + "/authApp/TFA/ChooseType")
 	.then(Response => {
 		if (!Response.ok) {
 			throw new Error('Network response was not okay')
@@ -207,7 +207,7 @@ function ChooseAuth(content)
 	header.append('Content-Type', 'application/json')
 	header.append('X-CSRFToken', crsf_token)
 	const data = { selectedAuth: selected }
-	fetch(document.location.origin + "/authApp/TFASelected",
+	fetch(document.location.origin + "/authApp/TFA/Selected",
 	{
 		method: 'POST',
 		headers: header,
@@ -232,7 +232,7 @@ function ChooseAuth(content)
 function QrAuth(content)
 {
 	document.querySelector(".TFA_PopUp_Container .TFA_PopUp").classList.add("TFA_qrContent")
-	fetch(window.location.origin + "/authApp/TFARequestQR")
+	fetch(window.location.origin + "/authApp/TFA/RequestQR")
 	.then(Response => {
 		if (!Response.ok) {
 			throw new Error('Network response was not okay')
@@ -256,7 +256,7 @@ function SendQrAnswer(content, codeInput)
 	header.append('Content-Type', 'application/json')
 	header.append('X-CSRFToken', crsf_token)
 	const data = { TFACode : codeInput.value }
-	fetch(document.location.origin + "/authApp/TFASendCode",
+	fetch(document.location.origin + "/authApp/TFA/SendCode",
 	{
 		method: 'POST',
 		headers: header,

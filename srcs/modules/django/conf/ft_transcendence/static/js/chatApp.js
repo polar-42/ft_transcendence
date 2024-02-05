@@ -531,7 +531,7 @@ function displayChannel(data) {
 
 async function displayChannelHistory(data) {
   let conversation = document.querySelector(".conversation")
-  let Response = await fetch(document.location.origin + '/authApp/getUserID',
+  let Response = await fetch(document.location.origin + '/authApp/GET/userID',
     {
       method: 'GET'
     })
@@ -914,7 +914,7 @@ function receiveMsg(data) {
 
 async function receiveChanMsg(data) {
   let conversation = document.querySelector(".conversation")
-  let Response = await fetch(document.location.origin + '/authApp/getUserID',
+  let Response = await fetch(document.location.origin + '/authApp/GET/userID',
     {
       method: 'GET'
     })
@@ -1010,7 +1010,7 @@ async function actualizeChannelHistory(data) {
     await sleep(300)
     let html = ''
     for (let i = data.length - 1; i >= 0; i--) {
-      let Response = await fetch(document.location.origin + '/authApp/getUserID',
+      let Response = await fetch(document.location.origin + '/authApp/GET/userID',
         {
           method: 'GET'
         })
@@ -1144,7 +1144,7 @@ async function createChannel() {
   }
   let pwd = document.querySelector(".channel_password_wrapper input[name='password']").value
 
-  let Response = await fetch(document.location.origin + '/authApp/getUserID',
+  let Response = await fetch(document.location.origin + '/authApp/GET/userID',
     {
       method: 'GET'
     })
