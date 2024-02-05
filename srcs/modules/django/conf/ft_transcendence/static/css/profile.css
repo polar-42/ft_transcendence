@@ -1,12 +1,17 @@
 
 .userInformation {
-	display: flex;
-	justify-content: space-around;
-	margin: 5%;
-	border: solid var(--fourth) 1px;
-	padding-top: 10px;
-	padding-bottom: 10px;
-	border-radius: 10px;
+	display: grid;
+    grid-template-areas: 'a b c';
+    text-align: center;
+    justify-content: space-evenly;
+    margin-top: 5%;
+    margin-bottom: 3%;
+    margin-left: 15%;
+    margin-right: 15%;
+    border: solid var(--fourth) 1px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 10px;
 }
 
 #userName {
