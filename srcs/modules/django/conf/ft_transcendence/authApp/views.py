@@ -7,7 +7,6 @@ from .management.commands.create_user import getRandString
 import json, re
 from django.http import HttpResponse, HttpResponseForbidden
 from authApp.models import User
-from PIL import Image
 
 from ft_transcendence import ColorPrint
 from ft_transcendence.decorators import isValidLoading
@@ -16,6 +15,7 @@ import jwt
 import time
 import os
 from django.core.management.utils import get_random_secret_key
+from PIL import Image
 
 regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
 

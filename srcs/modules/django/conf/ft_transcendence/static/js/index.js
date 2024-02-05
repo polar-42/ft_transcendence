@@ -28,10 +28,10 @@ const navigateTo = url =>
   router(null)
 }
 
+initChat();
+
 function getRoute(RoutePath)
 {
-  initChat();
-
   const routes = [
     { path: "/404", init: null, unload: null, title:"404", LogStatus: 2},
     { path: "/needlog", init: null, unload: null, title:"Login required", LogStatus: 0},
@@ -39,12 +39,9 @@ function getRoute(RoutePath)
     { path: "/dashboard", init: initDashboard, unload: null, title:"Home", LogStatus: 1},
     { path: "/games", init: initGames, unload: null, title:"Games", LogStatus: 1},
     { path: "/battleship", init: initGame, unload: CP_Unload, title:"Battleship", LogStatus: 1},
-    { path: "/battleship/matchmake", init: initMatchmaking, unload: null, title:"Battleship", LogStatus: 1},
     { path: "/pongGame/Remote", init: initGamePong, unload: unLoadGamePong, title:"pongGame", LogStatus: 1},
-    { path: "/pongGame/Home", init: initMatchmakingPong, unload: unLoadMatchmakingPong, title:"pongGame", LogStatus: 1},
     { path: "/pongGame/Local", init: initLocalGamePong, unload: null, title:"pongGame", LogStatus: 1},
     { path: "/pongGame/IA", init: initGamePongIA, unload: unloadGamePongIA, title:"pongGame", LogStatus: 1},
-    { path: "/tournaments/Home", init: null, unload: null, title:"initTournaments", LogStatus: 1},
     { path: "/tournaments/Create", init: initTournamentsCreation, unload: null, title:"initTournaments", LogStatus: 1},
     { path: "/tournaments/Join", init: initTournamentsJoinPage, unload: null, title:"Join Tournaments", LogStatus: 1},
     { path: "/tournaments/Play", init: initTournaments, unload: null, title:"Tournament", LogStatus: 1},

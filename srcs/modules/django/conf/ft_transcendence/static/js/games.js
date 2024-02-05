@@ -74,6 +74,8 @@ export function initGames() {
     cancelBtn.addEventListener("click", () => {
       leaveQueue(type)
     })
+	document.querySelector('button[name="join_tournament"]').setAttribute("disabled", '')
+	document.querySelector('button[name="create_tournament"]').setAttribute("disabled", '')
     if (type === 'pong') {
       document.querySelector(".pong").classList.add("inqueue")
       PongJoinMatchmaking()
@@ -90,6 +92,8 @@ export function initGames() {
     for( let i = 0; i < labelArray.length; i++) {
       labelArray[i].addEventListener("click", labelOnClick)
     }
+	document.querySelector('button[name="join_tournament"]').removeAttribute("disabled")
+	document.querySelector('button[name="create_tournament"]').removeAttribute("disabled")
     if (type === 'pong') {
       document.querySelector(".pong").classList.remove("inqueue")
       PongLeaveMatchmaking()

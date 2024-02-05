@@ -169,7 +169,8 @@ class BattleshipMatch():
 		usr.HitTry += 1
 		if Result > 0:
 			usr.BoatHit += 1
-
+		if Result > 1:
+			usr.DestroyedBoat += 1
 		msg = json.dumps({
 			'function': "HitResult",
 			'case' : case,

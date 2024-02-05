@@ -91,6 +91,7 @@ class chatSocket(WebsocketConsumer):
 				print(userModels.User.objects.get(identification=x).nickname)
 
 	def disconnect(self, code):
+		self.UserModel = userModels.User.objects.get(identification=self.identification)
 		self.UserModel.connexionStatus = connexionStatus.Disconnected
 		self.UserModel.save()
 
@@ -109,6 +110,7 @@ class chatSocket(WebsocketConsumer):
 		self.close()
 
 	def receive(self, text_data):
+		self.UserModel = userModels.User.objects.get(identification=self.identification)
 		data = json.loads(text_data)
 
 		print(data) #TO DEL

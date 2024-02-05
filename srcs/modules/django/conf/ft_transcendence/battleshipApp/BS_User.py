@@ -6,6 +6,8 @@ class User():
 	def __init__(self, user):
 		self.BoatHit = 0
 		self.HitTry = 0
+		self.DestroyedBoat = 0
+		self.HitTaken = 0
 		self.BoatList = []
 		self.sock_user = user
 		self.Name = self.sock_user.nickname
@@ -41,6 +43,7 @@ class User():
 		for boat in self.BoatList:
 			result = boat.Hit(case['ArrayPosX'], case['ArrayPosY'])
 			if (result > 0):
+				self.HitTaken += 1
 				return result if result == 1 else result + pos
 			pos += 1
 		return False
