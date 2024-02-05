@@ -4,21 +4,21 @@ pragma solidity ^0.8.21;
 
 contract TranscendenceTournamentHistory {
     address public owner;
-    uint public numberPlayers;
+    uint public numberTournament;
 
     //Each player profile
-    struct Player {
-        string _userName;
-        uint _numberVictory;
+    struct Tournament {
+        string _winnerId;
+        string _tournamentId;
     }
 
     //Tab to store all the players informations
-    Player[] public players;
+    Tournament[] public tournaments;
 
     //Contructor to construct the contrat and store the contract owner
     constructor() {
         owner = msg.sender;
-        numberPlayers = 0;
+        numberTournament = 0;
     }
 
     ///////////////////
@@ -26,24 +26,12 @@ contract TranscendenceTournamentHistory {
     ///////////////////
 
     //Function to add a player to the players tab
-    function addPlayer(string memory userName) private {
+    function addTournament(string memory winnerId, string memory tournamentId) public {
         require(msg.sender == owner, "You're not the contract owner");
 
-        if (isPlayerExist(userName) == false) {
-            players.push(Player(userName, 0));
-            numberPlayers++;
-        }
-    }
-
-    //Function to add a victory to a user
-    function addVictory(string memory userName) public {
-        require(msg.sender == owner, "You're not the contract owner");
-
-        if (isPlayerExist(userName) == true) {
-            players[getPlayerIndex(userName)]._numberVictory++;
-        } else {
-            addPlayer(userName);
-            players[getPlayerIndex(userName)]._numberVictory++;
+        if (isTournamentAlreadyStore(tournamentId) == false) {
+            tournaments.push(Tournament(winnerId, tournamentId));
+            numberTournament++;
         }
     }
 
@@ -52,25 +40,29 @@ contract TranscendenceTournamentHistory {
     ////////////////////
 
     //Function to get the total player
-    function getNumberPlayer() public view returns (uint) {
-        return numberPlayers;
+    function getNumberTournament() public view returns (uint) {
+        return numberTournament;
     }
 
-    function getNumberVictoryPlayer(string memory userName) public view returns (uint) {
-        if (isPlayerExist(userName) == true) {
-            return (players[getPlayerIndex(userName)]._numberVictory);
-        }
-        return (0);
-    }
-
-    //Function that return the tab index of of a player
-    function getPlayerIndex(string memory userName) public view returns (uint) {
-        for (uint index = 0; index < numberPlayers; index++) {
-            if (stringComparaison(players[index]._userName, userName)) {
-                return (index);
+    //Function to get total victory in tournament for userId
+    function getNumberVictoryPlayer(string memory userId) public view returns (uint) {
+        uint numberVictory = 0;
+        for (uint index = 0; index < numberTournament; index++) {
+            if (stringComparaison(tournaments[index]._winnerId, userId) == true) {
+                numberVictory++;
             }
         }
-        return (0);
+        return (numberVictory);
+    }
+
+    //Function that return the winnerId of the tournamentId
+    function getWinnerTournament(string memory tournamentId) public view returns (string memory) {
+        for (uint index = 0; index < numberTournament; index++) {
+            if (stringComparaison(tournaments[index]._tournamentId, tournamentId) == true) {
+                return (tournaments[index]._tournamentId);
+            }
+        }
+        return ("NULL");
     }
 
     ///////////////////
@@ -78,9 +70,9 @@ contract TranscendenceTournamentHistory {
     ///////////////////
 
     //Function that return true if the player exist
-    function isPlayerExist(string memory userName) public view returns (bool) {
-        for (uint i = 0; i < numberPlayers; i++) {
-            if (stringComparaison(players[i]._userName, userName)) {
+    function isTournamentAlreadyStore(string memory tournamentId) public view returns (bool) {
+        for (uint index = 0; index < numberTournament; index++) {
+            if (stringComparaison(tournaments[index]._tournamentId, tournamentId) == true) {
                 return (true);
             }
         }

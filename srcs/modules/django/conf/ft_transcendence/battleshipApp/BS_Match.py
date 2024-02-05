@@ -166,6 +166,9 @@ class BattleshipMatch():
 			return
 		Target = self.Users[0] if usr is self.Users[1] else self.Users[1]
 		Result = Target.Hit(case)
+		usr.HitTry += 1
+		if Result > 0:
+			usr.BoatHit += 1
 
 		msg = json.dumps({
 			'function': "HitResult",

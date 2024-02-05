@@ -1,0 +1,40 @@
+
+.userInformation {
+	display: grid;
+    grid-template-areas: 'a b c';
+    text-align: center;
+    justify-content: space-evenly;
+    margin-top: 5%;
+    margin-bottom: 3%;
+    margin-left: 15%;
+    margin-right: 15%;
+    border: solid var(--fourth) 1px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 10px;
+}
+
+#userName {
+	justify-content: center;
+	height: 100px;
+	width: 100px;
+	display: grid;
+    align-items: center;
+	text-align: center;
+}
+#userAvatar {
+	justify-content: center;
+	height: 100px;
+	width: 100px;
+	display: grid;
+    align-items: center;
+	text-align: center;
+}
+#userStatus {
+	justify-content: center;
+	height: 100px;
+	width: 100px;
+	display: grid;
+    align-items: center;
+	text-align: center;
+}

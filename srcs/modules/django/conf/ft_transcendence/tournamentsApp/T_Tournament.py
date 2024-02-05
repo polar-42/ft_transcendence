@@ -98,7 +98,7 @@ class Tournament():
 
 		self.obj.playersId = tabId
 		self.obj.winner = self.Winner.UserId
-		self.obj.save
+		self.obj.save()
 
 		print('Tournament', self.obj.tournamentsName, ', id =', self.obj.id, ', winnerid =', self.obj.winner, 'is add to DB')
 		#self.addToBlockchain()
@@ -114,7 +114,7 @@ class Tournament():
 
 		contract_address = os.environ.get('CONTRACT_ADDRESS')
 		contract = w3.eth.contract(address=contract_address, abi=abi)
-		tx = contract.functions.addVictory(str(self.Winner.UserId)).build_transaction({
+		tx = contract.functions.addTournament(str(self.Winner.UserId), str(self.obj.id)).build_transaction({
 			'from': os.environ.get('PUBLIC_KEY'),
 			'nonce': w3.eth.get_transaction_count(os.environ.get('PUBLIC_KEY'))
 		})

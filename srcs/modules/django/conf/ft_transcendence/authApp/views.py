@@ -7,6 +7,7 @@ from .management.commands.create_user import getRandString
 import json, re
 from django.http import HttpResponse, HttpResponseForbidden
 from authApp.models import User
+from PIL import Image
 
 from ft_transcendence import ColorPrint
 from ft_transcendence.decorators import isValidLoading
@@ -63,49 +64,63 @@ def UserConnexion(request):
 def registerPage(request):
 	if (request.user.is_authenticated == True):
 		return render(request, 'index.html')
-	else:
-		return render(request, 'authApp/register.html')
 
-def UserRegistration(request):
-	if (request.method != "POST"):
-		ColorPrint.prRed("Error! Invalid request type")
-		return JsonResponse({'error': 'Invalid request type.'})
-	if (request.user.is_authenticated == True):
-		ColorPrint.prYellow("Warning! User Already Connected")
-		return JsonResponse({'error': 'Already connected.'})
-	username = request.POST.get('username')
-	email = request.POST.get('email')
-	password = request.POST.get('password')
-	passwordConfirmation = request.POST.get('passwordConfirmation')
-	if request.FILES.get('avatar') != None:
-		avatarImage = request.FILES.get('avatar')
+def register(request):
+	if (request.method == "GET" and request.GET["valid"] == "True") or (request.method == "POST"):
+		if request.method == "POST":
+
+			username = request.POST.get('username')
+			email = request.POST.get('email')
+			password = request.POST.get('password')
+			passwordConfirmation = request.POST.get('passwordConfirmation')
+
+			if request.FILES.get('avatar') != None:
+				avatarImage = request.FILES.get('avatar')
+			else:
+				import io
+				img = Image.open("./static/assets/pictures/studs/mjuin.jpg")
+				new_img = img.resize((300, 300))
+				img_buff = io.BytesIO()
+				new_img.save(img_buff, format='JPEG')
+				img_buff.seek(0)
+				avatarImage = img_buff
+
+			if len(username) == 0 or len(email) == 0 or len(password) == 0 or len(passwordConfirmation) == 0:
+				return JsonResponse({'error': 'One of the field is empty'})
+
+			if password != passwordConfirmation:
+				return JsonResponse({'error': 'Password do not match'})
+
+			if len(username) < 3:
+				return JsonResponse({'error': 'Username length is too small'})
+			elif len(username) > 16:
+				return JsonResponse({'error': 'Username length is too big'})
+
+			if len(password) < 6:
+				return JsonResponse({'error': 'Password length is too small'})
+
+			if re.fullmatch(regex, email) is None:
+				return JsonResponse({'error': 'Email is invalid'})
+
+			if User.objects.filter(email=email).exists():
+				return JsonResponse({'error': 'Email is already taken'})
+
+			passwordHash = make_password(password)
+			new_obj = User.objects.create(
+				nickname=username,
+				email=email,
+				password=passwordHash,
+				identification=getRandString(),
+				avatarImage=avatarImage.read()
+			)
+
+			new_obj.save()
+
+			return JsonResponse({'message': 'You registered successfully'})
+		else:
+			return render(request, 'authApp/register.html')
 	else:
-		avatarImage = None
-	if len(username) == 0 or len(email) == 0 or len(password) == 0 or len(passwordConfirmation) == 0:
-		return JsonResponse({'error': 'One of the field is empty'})
-	if password != passwordConfirmation:
-			return JsonResponse({'error': 'Password do not match'})
-	if len(username) < 3:
-		return JsonResponse({'error': 'Username length is too small'})
-	elif len(username) > 16:
-		return JsonResponse({'error': 'Username length is too big'})
-	if len(password) < 6:
-		return JsonResponse({'error': 'Password length is too small'})
-	if re.fullmatch(regex, email) is None:
-		return JsonResponse({'error': 'Email is invalid'})
-	if User.objects.filter(email=email).exists():
-		return JsonResponse({'error': 'Email is already taken'})
-	passwordHash = make_password(password)
-	new_obj = User.objects.create(
-		nickname=username,
-		email=email,
-		password=passwordHash,
-		identification=getRandString()
-	)
-	if avatarImage != None:
-		new_obj.avatarImage = avatarImage.read()
-	new_obj.save()
-	return JsonResponse({'message': 'You registered successfully'})
+		return render(request, 'index.html',)
 
 def socket(request):
 	if (request.method == "GET"):
@@ -209,13 +224,13 @@ def TFASelected(request):
 			return render(request, 'authApp/TFA/Auth2FA.html')
 		case _:
 			return HttpResponse('', content_type="text/plain")
-		
+
 def TFARequestQR(request):
 	if request.user.is_authenticated == False:
 		return HttpResponse('', content_type="text/plain")
 	if User.objects.filter(id=request.user.id).exists() is False:
 		return HttpResponse('', content_type="text/plain")
-	
+
 	cookie = request.COOKIES.get('2FACookie')
 	if (cookie == None):
 		return HttpResponse('404', content_type="text/plain")
@@ -223,12 +238,12 @@ def TFARequestQR(request):
 	userModel = User.objects.get(id=request.user.id)
 	if userModel.email != cookie.get('email') or cookie.get('status') != '2FA register':
 		return HttpResponse('404', content_type="text/plain")
-	
+
 	k = pyotp.random_base32()
 	userModel.tfKey = k
 	userModel.save()
 	totp_auth = pyotp.totp.TOTP(k).provisioning_uri( name=userModel.email, issuer_name='ft_transcendenceServer')
-	qrcode_uri = "https://www.google.com/chart?chs=100x100&chld=M|0&cht=qr&chl={}".format(totp_auth)	
+	qrcode_uri = "https://www.google.com/chart?chs=100x100&chld=M|0&cht=qr&chl={}".format(totp_auth)
 	response = JsonResponse({'qr' : qrcode_uri})
 	response.delete_cookie('2FACookie')
 	token = jwt.encode({"email" : userModel.email, "status" : "2FA register QR"}, os.environ.get('DJANGO_KEY'), algorithm='HS256')
@@ -249,18 +264,18 @@ def TFASendCode(request):
 	if (cookie == None):
 		return JsonResponse({'error': 'User 2fa not initialized.'})
 	cookie = jwt.decode(cookie, os.environ.get('DJANGO_KEY'), algorithms="HS256")
-	
+
 	if userModel.email != cookie.get('email') or cookie.get('status') != '2FA register QR':
 		return JsonResponse({'error': 'Invalid 2FA cookie.'})
-	
+
 	if userModel.tfKey == None:
 		return JsonResponse({'error': 'User 2fa not initialized.'})
 	data = json.loads(request.body)
 	totp = pyotp.TOTP(userModel.tfKey)
 	code = data.get('TFACode')
 
-	
-	
+
+
 	if totp.now() == code:
 		userModel.tfValidated = True
 		userModel.save()
@@ -269,7 +284,7 @@ def TFASendCode(request):
 		response.delete_cookie('2FACookie')
 		return response
 	return JsonResponse({'error': 'Invalid code.'})
-	
+
 def TFADisable(request):
 	if request.user.is_authenticated == False:
 		return JsonResponse({'error': 'User not authenticated.'})

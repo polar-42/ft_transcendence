@@ -36,13 +36,13 @@ class PongGameManager():
 
 Manager = PongGameManager()
 
-def addToDb(playerone_username, playertwo_username, playerone_score, playertwo_score, winner, n_ball_touch_player1, n_ball_touch_player2, reason_end, tournamentId=-1):
+def addToDb(player1_id, player2_id, player1_score, player2_score, winner, n_ball_touch_player1, n_ball_touch_player2, reason_end, tournamentId=-1):
 
 	obj = PongGameModels.objects.create(
-			player1=str(playerone_username),
-			player2=str(playertwo_username),
-			score_player1=str(playerone_score),
-			score_player2=str(playertwo_score),
+			player1=str(player1_id),
+			player2=str(player2_id),
+			score_player1=str(player1_score),
+			score_player2=str(player2_score),
 			number_ball_touch_player1=str(n_ball_touch_player1),
 			number_ball_touch_player2=str(n_ball_touch_player2),
 			winner=str(winner),
@@ -52,4 +52,4 @@ def addToDb(playerone_username, playertwo_username, playerone_score, playertwo_s
 
 	obj.save
 
-	print('pongGame between playerId =', str(playerone_username), 'and playerId =', str(playertwo_username), 'is win by', str(winner), 'tournamentId =', tournamentId, 'and reason is', reason_end)
+	print('pongGame between playerId =', str(player1_id), 'and playerId =', str(player2_id), 'is win by', str(winner), 'tournamentId =', tournamentId, 'and reason is', reason_end)

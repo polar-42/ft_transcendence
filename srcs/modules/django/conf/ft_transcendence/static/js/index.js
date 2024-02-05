@@ -4,7 +4,7 @@ import { initGames } from "./games.js"
 import { initMatchmakingPong, unLoadMatchmakingPong } from "./pongGameApp.js"
 import { initLocalGamePong } from "./pongGameLocal.js"
 import { initGamePongIA, unloadGamePongIA } from './pongGameIA.js'
-import { initDashboard } from "./dashboard.js"
+import { initDashboard } from "./dashboardApp/dashboard.js"
 import { initHomePage} from "./homepage.js"
 import { CP_Unload, initGame } from "./BattleshipGame.js"
 import { initGamePong, unLoadGamePong } from "./pongGameRemote.js"
@@ -14,6 +14,7 @@ import { GoingAway, initTournaments } from "./tournaments/tournament.js"
 import { initChat, unsetChatbox } from "./chatApp.js"
 import { InitTournamentView } from "./tournaments/tournamentSpectate.js"
 import { initUpdateAccount } from "./userManagement/userManagement.js"
+import { initProfile } from "./userProfileApp/profile.js"
 
 export function navto(urlpath)
 {
@@ -51,6 +52,7 @@ function getRoute(RoutePath)
     { path: "/authApp/login", init: initLogin, unload: null, title:"Login", LogStatus: 0},
     { path: "/authApp/register", init: initRegister, unload: null, title:"Register", LogStatus: 0},
     { path: "/userManagement", init: initUpdateAccount, unload: null, title:"userManagement", LogStatus: 1},
+    { path: "/profile", init: initProfile, unload: null, title:"profile", LogStatus: 1},
   ]
 
   const Potentialroutes = routes.map(route =>

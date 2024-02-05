@@ -1,6 +1,6 @@
 h1 {
   text-align: center;
-  text-transform: uppercase; 
+  text-transform: uppercase;
   margin-bottom: 40px;
 }
 
@@ -16,12 +16,12 @@ h1 {
   text-align: center;
   margin-right: 50px;
   display: grid;
-  grid-template-areas: 
+  grid-template-areas:
           'a b'
           'c c';
   grid-gap: 50px;
   max-height: 440px;
-} 
+}
 
 .game_pres {
   height: 11ch;
@@ -42,14 +42,14 @@ h1 {
 .pong:hover .headers,
 .battleship:hover .headers,
 .tournaments:hover .headers {
-  background: 
+  background:
         radial-gradient(ellipse at bottom, var(--main-color), rgba(0, 0, 0, 0) 50%);
 }
 
 .pong.inqueue .headers,
 .battleship.inqueue .headers,
 .tournaments.inqueue .headers {
-  background: 
+  background:
         radial-gradient(ellipse at bottom, var(--main-color), rgba(0, 0, 0, 0) 50%);
 }
 
@@ -77,7 +77,7 @@ h1 {
 }
 
 .selection_wrapper ul {
-  text-align: center;  
+  text-align: center;
 }
 
 .selection_wrapper li {
@@ -92,7 +92,7 @@ h1 {
 
 .selection_wrapper input[type="checkbox"] {
   cursor: pointer;
-  transform: 
+  transform:
   rotate(45deg)
   translateY(4px);
   width: 1.5em;
@@ -120,7 +120,7 @@ h1 {
   border-radius: 50%;
   border: solid 1px white;
   background: white;
-  box-shadow: 
+  box-shadow:
   2px 2px 5px white,
   -2px -2px 5px white;
   cursor: pointer;
@@ -160,7 +160,7 @@ h3 {
 }
 
 .wrapper button:hover {
-  box-shadow: 
+  box-shadow:
   2px 2px 5px var(--main-color)
   -2px -2px 5px var(--main-color);
   background: var(--main-background);
@@ -168,7 +168,7 @@ h3 {
 
 .confirm_btn.inqueue {
   content: 'Searching a match';
-  background: 
+  background:
   linear-gradient(to bottom left, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, .4) 80%),
   linear-gradient(to bottom left, rgba(255, 255, 255, 0.4) 80%, rgba(255, 255, 255, 0) 100%),
   var(--main-color);
@@ -178,7 +178,7 @@ h3 {
 }
 
 .confirm_btn.inqueue:hover {
-  background: 
+  background:
   linear-gradient(to bottom left, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, .4) 80%),
   linear-gradient(to bottom left, rgba(255, 255, 255, 0.4) 80%, rgba(255, 255, 255, 0) 100%),
   var(--main-color);
@@ -190,7 +190,7 @@ h3 {
 
 .button_wrap {
   grid-area: c;
-} 
+}
 
 .confirm_btn {
   position: relative;
@@ -269,7 +269,7 @@ h3 {
 
   .tournaments,
   .games_selection {
-    width: 70vw; 
+    width: 70vw;
   }
 
   .tournaments {
@@ -324,7 +324,7 @@ h3 {
   }
 
   .button_wrap {
-    margin-top: 30px; 
+    margin-top: 30px;
   }
 
   .game_pres {
@@ -347,7 +347,7 @@ h3 {
 
   .tournaments .game_pres {
     height: auto;
-  } 
+  }
 }
 
 @media (max-width: 540px) {

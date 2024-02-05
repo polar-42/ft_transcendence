@@ -37,7 +37,7 @@ function initChatHomepage() {
 function initHomepageHeader() {
   let mainBoxHeader = document.querySelector(".main_box_header")
   mainBoxHeader.classList.add("homepage")
-  let html = 
+  let html =
     '<img src="../static/assets/logo/search-regular-24.png" alt="search icon">' +
     '<input type="text" name"searchbar">'
   mainBoxHeader.innerHTML = html
@@ -133,7 +133,7 @@ function onMessageChat(e)
   console.log(data)
   switch (data['type']) {
     case 'search_conv':
-      displaySearchResult(data.data) 
+      displaySearchResult(data.data)
       break
     case 'last_chats':
       displayLastChats(data.data)
@@ -164,7 +164,7 @@ function onMessageChat(e)
       break
     case 'chat_channel_message':
       receiveChanMsg(data)
-      break	
+      break
     case 'join_channel_response':
       receiveJoinChanResponse(data)
       break
@@ -207,7 +207,7 @@ function displayLastChats(data) {
       isConnected = 'disconnected'
     else
       isConnected = 'connected'
-    let item = 
+    let item =
       '<li class="' + data[i].type + '">' +
       '<img src="../static/assets/logo/user.png" alt="converstion_picture">' +
       '<div class="conversation_text">' +
@@ -219,7 +219,7 @@ function displayLastChats(data) {
       '</div>' +
       '</li>'
 
-    if (conversation_list.children.length > 0) 
+    if (conversation_list.children.length > 0)
       conversation_list.firstChild.insertAdjacentHTML("beforebegin", item)
     else
       conversation_list.innerHTML = item
@@ -234,7 +234,7 @@ function displayLastChats(data) {
 
 function displaySearchResult(data) {
   let resultWrapper = document.querySelector(".conversation_list")
-  if (document.querySelector(".main_box_header").children.length === 2) 
+  if (document.querySelector(".main_box_header").children.length === 2)
     document.querySelector(".main_box_header").insertAdjacentHTML("beforeend", '<img src="../static/assets/logo/arrow-back-regular-60.png" alt="return back button" class="back_arrow">')
   document.querySelector(".main_box_header img.back_arrow").addEventListener("click", () => {
     cleanMainBox()
@@ -252,7 +252,7 @@ function displaySearchResult(data) {
     console.log(data[i])
     if (data[i].connexion_status == 2) {
       isConnected = 'connected'
-    } else if (data[i].connexion_status === 0) {  
+    } else if (data[i].connexion_status === 0) {
       isConnected = 'disconnected'
     } else {
       isConnected = ''
@@ -269,11 +269,11 @@ function displaySearchResult(data) {
     let lastMsg
     if (data[i].type === 'channel')
       lastMsg = data[i].description
-    else if (data[i].last_msg.message === undefined) 
+    else if (data[i].last_msg.message === undefined)
       lastMsg = ''
     else
       lastMsg = data[i].last_msg.sender + ': ' + data[i].last_msg.message
-    let item = 
+    let item =
       '<li class="' + data[i].type + ' ' + member + '" ' + privacyStatus +'>' +
       '<img src="../static/assets/logo/user.png" alt="converstion_picture">' +
       '<div class="conversation_text">' +
@@ -292,14 +292,14 @@ function displaySearchResult(data) {
       resultWrapper.innerHTML = item
     }
     resultWrapper.lastChild.addEventListener("click", () => {
-      if (data[i].type === 'private_message') { 
+      if (data[i].type === 'private_message') {
         goToConv(data[i].identification)
       } else if (data[i].type === 'channel' && data[i].member === true) {
         goToChan(data[i].name)
       }
     })
     resultWrapper.lastChild.querySelector(".join_btn").addEventListener("click", clickJoinChan)
-  }  
+  }
 }
 
 function clickJoinChan(event) {
@@ -312,7 +312,7 @@ function clickJoinChan(event) {
     return
   }
   let previousHtml = item.innerHTML
-  let html = 
+  let html =
     '<div class="join_channel_box">' +
     '<div class="join_pwd_wrapper">' +
     '<label for="channel_password">Enter Channel Password</label>' +
@@ -343,14 +343,14 @@ function clickJoinChan(event) {
 function displayChatHistory(data) {
   let conversation = document.querySelector(".conversation")
   for (let i = 0 ; i < data.length; i++) {
-    let sender 
+    let sender
     if (data[i].received === true) {
       sender = ''
     } else {
       sender = 'own'
     }
 
-    let item = 
+    let item =
       '<li class="message_item ' + sender + '" msgid=' + data[i].id + '>' +
       '<p class="message">' + data[i].message + '</p>' +
       '<p class="timestamp">' + data[i].time.substring(0, 19) + '</p>' +
@@ -374,7 +374,7 @@ function displayChannel(data) {
       general = 'general'
     else
       general = ''
-    let html = 
+    let html =
       '<div class="contact_wrapper ' + general + ' ">' +
       '<img src="../static/assets/logo/user.png" alt="channel picture">' +
       '<div class="contact_name_wrapper">' +
@@ -400,13 +400,13 @@ function displayChannel(data) {
       leaveChannel(data.name)
     })
     document.querySelector(".edit_description").addEventListener("click", initEditDescription)
-    if (data.admin === false) 
+    if (data.admin === false)
       document.querySelector(".edit_description").style.display = 'none'
 
     function initEditDescription() {
-      let box = 
+      let box =
         '<div class="edit_description_box">' +
-        '<div class="edit_main_wrapper">' + 
+        '<div class="edit_main_wrapper">' +
         '<label for="description">New description</label>' +
         '<div class="input_wrapper">' +
         '<input name="description" type="text" placeholder="Enter new description">' +
@@ -424,19 +424,19 @@ function displayChannel(data) {
         if (e.key === "Enter")
           editChanDescription()
       })
-      document.querySelector(".edit_description_box .input_wrapper img").addEventListener("click", editChanDescription()) 
+      document.querySelector(".edit_description_box .input_wrapper img").addEventListener("click", editChanDescription())
       document.querySelector(".edit_description_box .input_wrapper input").focus()
     }
 
     function editChanDescription() {
       let description = document.querySelector(".edit_description_box .input_wrapper input").value
-      if (description === '') 
+      if (description === '')
         return
       let channelName =  document.querySelector(".main_box_header.channel .channel_name").textContent
 
       chatSocket.send(JSON.stringify({
         'type': 'edit_description',
-        'channel_name': channelName, 
+        'channel_name': channelName,
         'description': description
       })
       )
@@ -446,7 +446,7 @@ function displayChannel(data) {
 
 
   function initChanBody(data) {
-    let html = 
+    let html =
       '<div class="conversation_body">' +
       '<div class="sidebar"></div>' +
       '<div class="conversation"></div>' +
@@ -503,12 +503,12 @@ function displayChannel(data) {
         }
 
         if (users[i] !== self.username) {
-          let item = 
+          let item =
             '<div class="user_wrapper">' +
             '<div class="connection_point ' + isConnected + '"></div>' +
             '<img src="../static/assets/logo/user.png" alt="channel member profile picture">' +
             '<p class="username">' + users[i].name + '</p>' +
-            '<img class="kick_cross" src="../static/assets/logo/red_cross.png" alt="kick user button">' + 
+            '<img class="kick_cross" src="../static/assets/logo/red_cross.png" alt="kick user button">' +
             '</div>'
 
           if (sidebar.children.length > 0) {
@@ -519,7 +519,7 @@ function displayChannel(data) {
           let kick = sidebar.lastChild.querySelector(".kick_cross")
           if (data.admin === false)
             kick.style.display = 'none'
-          else 
+          else
             kick.addEventListener("click", () => {
               kickUser(data.name, users[i].id)
             })
@@ -543,7 +543,7 @@ async function displayChannelHistory(data) {
 
   for (let i =  data.length - 1; i >= 0; i--) {
 
-    let sender 
+    let sender
     let received
     if (data[i].senderID === userData.userID) {
       received = "own"
@@ -553,7 +553,7 @@ async function displayChannelHistory(data) {
       sender = data[i].sender
     }
 
-    let item = 
+    let item =
       '<li class="message_item ' + received + '" msgId="' + data[i].id + '">' +
       '<div class="sender">' +
       '<img src="../static/assets/logo/user.png" alt="sender profile picture">' +
@@ -582,7 +582,7 @@ function goToConv(id) {
   mainBoxHeader.classList.add("private_message")
   chatSocket.send(JSON.stringify({
     'type': 'get_user',
-    'target': id 
+    'target': id
   }))
 }
 
@@ -670,7 +670,7 @@ function sendMessage(message, targetUser)
     date.getSeconds()
   ]
   let timestamp = `${datevalues[0]}-${datevalues[1]}-${datevalues[2]} ${datevalues[3]}:${datevalues[4]}:${datevalues[5]}`
-  let html = 
+  let html =
     '<li class="message_item own">' +
     '<p class="message">' + message + '</p>' +
     '<p class="timestamp">' + timestamp + '</p>' +
@@ -837,13 +837,13 @@ function displayPrivMsg(data) {
   initPrvMsgBody(data.identification)
 
   function  initPrvMsgHeader(data) {
-    let isConnected 
+    let isConnected
     if (data.connexion_status === 2) {
       isConnected = 'connected'
     } else {
       isConnected = 'disconnected'
     }
-    let html = 
+    let html =
       '<div class="contact_wrapper" userID="' + data.identification + '">' +
       '<img src="../static/assets/logo/user.png" alt="contact profile picture">' +
       '<div class="contact_name_wrapper">' +
@@ -863,7 +863,7 @@ function displayPrivMsg(data) {
   }
 
   function initPrvMsgBody(id) {
-    let html = 
+    let html =
       '<div class="conversation_wrapper">' +
       '<ul class="conversation"></ul>' +
       '</div>' +
@@ -902,7 +902,7 @@ function receiveMsg(data) {
   console.log('page contact:', document.querySelector(".contact_wrapper").getAttribute('userID'), 'data sender:', data.sender)
   if (document.querySelector(".contact_wrapper").getAttribute('userID') === data.sender) {
     let conversation = document.querySelector(".conversation")
-    let msgItem = 
+    let msgItem =
       "<li class='message_item' msgid='" + data.id + "'>" +
       "<p class='message'>" + data.message + "</p>" +
       "<p class='timestamp'>" + data.time + "</p>" +
@@ -985,7 +985,7 @@ async function actualizeChatHistory(data) {
       } else {
         received = ''
       }
-      let item = 
+      let item =
         '<li class="message_item ' + received + '" msgId="' + data[i].id + '">' +
         '<p class="message">' + data[i].message + '</p>' +
         '<p class="timestamp">' + data[i].time.substring(0, 19) + '"</p>' +
@@ -1023,12 +1023,12 @@ async function actualizeChannelHistory(data) {
 
       if (data[i].senderID !== userData.userID) {
         received = 'own'
-        sender = '' 
+        sender = ''
       } else {
         received = ''
         sender = data[i].sender
       }
-      let item = 
+      let item =
         '<li class="message_item ' + received + '" msgid="' + data[i].id + '">' +
         '<div class="sender">' +
         '<img src="../static/assets/logo/user.png" alt="sender profile picture">' +
@@ -1050,7 +1050,7 @@ function initCreateChannel() {
   let navbar = document.querySelector(".chatbox_homepage_navbar")
   let navbarBTN = document.querySelector("button[name='create_channel']")
 
-  let html = 
+  let html =
     '<div class="channel_creation_box">' +
     '<h2>Create a new channel</h2>' +
     '<div class="channel_name_wrapper">' +
@@ -1066,14 +1066,14 @@ function initCreateChannel() {
     '<div class="privacy_checkbox_wrapper">' +
     '<div class="checkbox_wrapper">' +
     '<input type="checkbox" name="Public"/>' +
-    '<label for="Public">Public</label>' + 
+    '<label for="Public">Public</label>' +
     '</div>' +
     '<div class="checkbox_wrapper">' +
     '<input type="checkbox" name="Private"/>' +
-    '<label for="Private">Private</label>' + 
+    '<label for="Private">Private</label>' +
     '</div>' +
     '</div>' +
-    '<div class="channel_password_wrapper">' +    
+    '<div class="channel_password_wrapper">' +
     '<label for="password">Channel password</label>' +
     '<input name="password" type="password" placeholder="Enter channel password" disabled="" required>' +
     '<label for="confirm_password">Confirm channel password</label>' +
@@ -1091,14 +1091,14 @@ function initCreateChannel() {
   document.querySelector(".channel_creation_box button").addEventListener("click", createChannel)
   document.querySelectorAll(".channel_creation_box input").forEach((inputBox) => {
     inputBox.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") 
+      if (e.key === "Enter")
         createChannel()
     })
   })
   let publicCheckbox = document.querySelector("input[name='Public']")
   let privateCheckbox = document.querySelector("input[name='Private']")
   publicCheckbox.addEventListener("change", () => {
-    if (privateCheckbox.checked === true) 
+    if (privateCheckbox.checked === true)
       privateCheckbox.checked = false
     document.querySelectorAll(".channel_password_wrapper input").forEach((input) => {
       if (input.hasAttribute("disabled") === false)
@@ -1106,15 +1106,15 @@ function initCreateChannel() {
     })
   })
   privateCheckbox.addEventListener("change", () => {
-    if (publicCheckbox.checked === true) 
+    if (publicCheckbox.checked === true)
       publicCheckbox.checked = false
     if (privateCheckbox.checked === true) {
       document.querySelectorAll(".channel_password_wrapper input").forEach((checkbox) => {
-        checkbox.removeAttribute("disabled") 
+        checkbox.removeAttribute("disabled")
       })
     } else {
       document.querySelectorAll(".channel_password_wrapper input").forEach((checkbox) => {
-        checkbox.setAttribute("disabled", "") 
+        checkbox.setAttribute("disabled", "")
         checkbox.value = ""
       })
     }
@@ -1135,11 +1135,11 @@ async function createChannel() {
   let channelDescription = document.querySelector(".channel_creation_box input[name='channel_description']").value
   let checkboxes = document.querySelectorAll(".privacy_setting input[type='checkbox']")
   if (checkboxes[0].checked === false && checkboxes[1].checked === false) {
-    document.querySelector(".feedback").textContent = "No privacy setting selected" 
+    document.querySelector(".feedback").textContent = "No privacy setting selected"
     return
   }
   if (checkChannelPassword() === false) {
-    document.querySelector(".feedback").textContent = "Passwords do not match" 
+    document.querySelector(".feedback").textContent = "Passwords do not match"
     return
   }
   let pwd = document.querySelector(".channel_password_wrapper input[name='password']").value
@@ -1188,16 +1188,16 @@ function receiveChanCreation(data) {
   if (data.state === 'failed') {
     document.querySelector(".feedback").textContent = data.reason
     return
-  } 
+  }
   cleanMainBox()
   goToChan(data.channel_name)
 }
 
 function receiveJoinChanResponse(data) {
-  if (data.state === 'success') 
+  if (data.state === 'success')
     goToChan(data.channel_name)
   else {
-    document.querySelector(".join_channel_box .feedback").textContent = data.reason 
+    document.querySelector(".join_channel_box .feedback").textContent = data.reason
   }
 }
 

@@ -2,14 +2,14 @@ version: '3'
 
 services:
   # nginx:
-    # build: 
+    # build:
       # context: modules/nginx
       # dockerfile: Dockerfile
     # image: ft_transcendence_nginx:1.0
     # container_name: container_nginx
     # restart: on-failure
     # networks:
-      # - transcendence_network   
+      # - transcendence_network
     # volumes:
       # - static_v:/home/app/web/static
     # ports:
