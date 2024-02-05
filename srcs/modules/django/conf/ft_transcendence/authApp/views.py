@@ -65,62 +65,52 @@ def registerPage(request):
 	if (request.user.is_authenticated == True):
 		return render(request, 'index.html')
 
-def register(request):
-	if (request.method == "GET" and request.GET["valid"] == "True") or (request.method == "POST"):
-		if request.method == "POST":
-
-			username = request.POST.get('username')
-			email = request.POST.get('email')
-			password = request.POST.get('password')
-			passwordConfirmation = request.POST.get('passwordConfirmation')
-
-			if request.FILES.get('avatar') != None:
-				avatarImage = request.FILES.get('avatar')
-			else:
-				import io
-				img = Image.open("./static/assets/pictures/studs/mjuin.jpg")
-				new_img = img.resize((300, 300))
-				img_buff = io.BytesIO()
-				new_img.save(img_buff, format='JPEG')
-				img_buff.seek(0)
-				avatarImage = img_buff
-
-			if len(username) == 0 or len(email) == 0 or len(password) == 0 or len(passwordConfirmation) == 0:
-				return JsonResponse({'error': 'One of the field is empty'})
-
-			if password != passwordConfirmation:
-				return JsonResponse({'error': 'Password do not match'})
-
-			if len(username) < 3:
-				return JsonResponse({'error': 'Username length is too small'})
-			elif len(username) > 16:
-				return JsonResponse({'error': 'Username length is too big'})
-
-			if len(password) < 6:
-				return JsonResponse({'error': 'Password length is too small'})
-
-			if re.fullmatch(regex, email) is None:
-				return JsonResponse({'error': 'Email is invalid'})
-
-			if User.objects.filter(email=email).exists():
-				return JsonResponse({'error': 'Email is already taken'})
-
-			passwordHash = make_password(password)
-			new_obj = User.objects.create(
-				nickname=username,
-				email=email,
-				password=passwordHash,
-				identification=getRandString(),
-				avatarImage=avatarImage.read()
-			)
-
-			new_obj.save()
-
-			return JsonResponse({'message': 'You registered successfully'})
-		else:
-			return render(request, 'authApp/register.html')
+def UserRegistration(request):
+	if (request.method != "POST"):
+		ColorPrint.prRed("Error! Invalid request type")
+		return JsonResponse({'error': 'Invalid request type.'})
+	if (request.user.is_authenticated == True):
+		ColorPrint.prYellow("Warning! User Already Connected")
+		return JsonResponse({'error': 'Already connected.'})
+	username = request.POST.get('username')
+	email = request.POST.get('email')
+	password = request.POST.get('password')
+	passwordConfirmation = request.POST.get('passwordConfirmation')
+	if request.FILES.get('avatar') != None:
+		avatarImage = request.FILES.get('avatar')
 	else:
-		return render(request, 'index.html',)
+		import io
+		img = Image.open("./static/assets/pictures/studs/mjuin.jpg")
+		new_img = img.resize((300, 300))
+		img_buff = io.BytesIO()
+		new_img.save(img_buff, format='JPEG')
+		img_buff.seek(0)
+		avatarImage = img_buff
+	if len(username) == 0 or len(email) == 0 or len(password) == 0 or len(passwordConfirmation) == 0:
+		return JsonResponse({'error': 'One of the field is empty'})
+	if password != passwordConfirmation:
+			return JsonResponse({'error': 'Password do not match'})
+	if len(username) < 3:
+		return JsonResponse({'error': 'Username length is too small'})
+	elif len(username) > 16:
+		return JsonResponse({'error': 'Username length is too big'})
+	if len(password) < 6:
+		return JsonResponse({'error': 'Password length is too small'})
+	if re.fullmatch(regex, email) is None:
+		return JsonResponse({'error': 'Email is invalid'})
+	if User.objects.filter(email=email).exists():
+		return JsonResponse({'error': 'Email is already taken'})
+	passwordHash = make_password(password)
+	new_obj = User.objects.create(
+		nickname=username,
+		email=email,
+		password=passwordHash,
+		identification=getRandString(),
+		avatarImage = avatarImage.read()
+	)
+
+	new_obj.save()
+	return JsonResponse({'message': 'You registered successfully'})
 
 def socket(request):
 	if (request.method == "GET"):
