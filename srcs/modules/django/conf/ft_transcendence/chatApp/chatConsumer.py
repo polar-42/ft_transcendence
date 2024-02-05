@@ -147,6 +147,10 @@ class chatSocket(WebsocketConsumer):
 			self.acceptInvitationPong(data['target'])
 		elif data['type'] == 'accept_invitation_battleship':
 			self.acceptInvitationBattleship(data['target'])
+		elif data['type'] == 'refuse_invitation':
+			self.refuseInvitation(data['target'], data['sender'])
+		elif data['type'] == 'refused_invitation':
+			self.receiveRefusedInvitation(data)
 
 	def joinChannel(self, channelName, privacyStatus, password, atConnection):
 		if self.allChannels[channelName] is None:
@@ -181,7 +185,7 @@ class chatSocket(WebsocketConsumer):
 					'channel_name': channelName,
 					'state': 'success'
 					})
-				 )
+			  )
 
 			async_to_sync(self.channel_layer.group_add)(
 					'channel_' + channelName,
@@ -341,9 +345,9 @@ class chatSocket(WebsocketConsumer):
 				'id': userModels.User.objects.get(identification=contact).identification,
 				'connexionStatus': connexionStatus,
 				'last_msg': {
-                    'msg': msg['message'],
-                    'sender': userModels.User.objects.get(identification=msg['sender']).nickname
-                    },
+					'msg': msg['message'],
+					'sender': userModels.User.objects.get(identification=msg['sender']).nickname
+					},
 				'timestamp': msg['timeCreation']
 				})
 
@@ -563,7 +567,8 @@ class chatSocket(WebsocketConsumer):
 				'chat_' + receiver,
 				{
 					'type': 'receiveInvitationPong',
-					'sender': self.userIdentification
+					'sender': self.UserModel.nickname,
+					'sender_id': self.userIdentification
 					}
 				)
 
@@ -590,7 +595,8 @@ class chatSocket(WebsocketConsumer):
 				'chat_' + receiver,
 				{
 					'type': 'receiveInvitationBattleship',
-					'sender': self.userIdentification
+					'sender': self.UserModel.nickname,
+					'sender_id': self.UserModel.identification
 					}
 				)
 
@@ -641,6 +647,19 @@ class chatSocket(WebsocketConsumer):
 					'gameId': gameId
 					}
 				)
+	
+	def refuseInvitation(self, target, sender):
+		senderModel = userModels.User.objects.get(identification=sender)
+		if senderModel is None:
+			return
+
+		async_to_sync(self.channel_layer.group_send)(
+				'chat_' + target,
+				{
+					'type': 'refusedInvitation',
+					'userId': senderModel.identification,
+					'userName': senderModel.nickname
+				})
 
 	#CHANNEL LAYER FUNCTIONS
 	#GAMES INVITATION
@@ -657,11 +676,10 @@ class chatSocket(WebsocketConsumer):
 			}))
 
 	def receiveInvitationPong(self, event):
-		sender = event['sender']
-
 		self.send(text_data=json.dumps({
 			'type': 'receive_invitation_pong',
-			'sender': sender
+			'sender': event['sender'],
+			'sender_id': event['sender_id']
 			}))
 
 	def receiveInvitationBattleship(self, event):
@@ -669,7 +687,15 @@ class chatSocket(WebsocketConsumer):
 
 		self.send(text_data=json.dumps({
 			'type': 'receive_invitation_battleship',
-			'sender': sender
+			'sender': event['sender'],
+			'sender_id': event['sender_id']
+			}))
+
+	def refusedInvitation(self, event):
+		self.send(json.dumps({
+			'type': 'refused_invitation',
+			'sender_id': event['userId'],
+			'sender': event['userName']
 			}))
 
 	#CHAT RECEIVE
