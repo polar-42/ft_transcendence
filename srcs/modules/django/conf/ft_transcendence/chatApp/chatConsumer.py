@@ -61,21 +61,11 @@ class chatSocket(WebsocketConsumer):
 				privacyStatus = ChannelModels.objects.get(channelName=chan).privacyStatus
 				password = ChannelModels.objects.get(channelName=chan).password
 				self.joinChannel(chan, privacyStatus, password, 0)
-				# self.allChannels[chan].joinChannel(self)
-				# async_to_sync(self.channel_layer.group_add)(
-				# 		'channel_' + chan,
-				# 		chan
-				# 		)
 
 		else:
 			tabChannels = []
 			self.joinChannel('General', 0, None, 0)
-			# self.allChannels['General'].joinChannel(self)
-			# async_to_sync(self.channel_layer.group_add)(
-			# 		'channel_General',
-			# 		'General'
-			# 		)
-			# tabChannels.append('General')
+			tabChannels.append('General')
 
 		self.UserModel.channels = tabChannels
 		self.UserModel.save()
@@ -163,6 +153,10 @@ class chatSocket(WebsocketConsumer):
 				self.invit_to_friend(data['target'])
 			case 'receiveFriendInvitation':
 				self.receiveFriendInvitation(data['sender'])
+			case 'refuse_invitation':
+				self.refuseInvitation(data['target'], data['sender'])
+			case 'refused_invitation':
+				self.receiveRefusedInvitation(data)
 
 	def joinChannel(self, channelName, privacyStatus, password, atConnection):
 		if self.allChannels[channelName] is None:
@@ -197,7 +191,7 @@ class chatSocket(WebsocketConsumer):
 					'channel_name': channelName,
 					'state': 'success'
 					})
-				 )
+			  )
 
 			async_to_sync(self.channel_layer.group_add)(
 					'channel_' + channelName,
@@ -319,7 +313,7 @@ class chatSocket(WebsocketConsumer):
 				chanMsgs = MessageModels.objects.filter(type='C').filter(Q(sender=chan) | Q(receiver=chan)).order_by('-id')
 				if chanMsgs.exists():
 					lastMsg = chanMsgs[0].message
-					lastMsgSender = chanMsgs[0].sender
+					lastMsgSender = userModels.User.objects.get(identification=chanMsgs[0].sender).nickname
 					timestamp = chanMsgs[0].timeCreation
 				else:
 					lastMsg = ''
@@ -357,7 +351,8 @@ class chatSocket(WebsocketConsumer):
 				'connexionStatus': connexionStatus,
 				'last_msg': {
 					'msg': msg['message'],
-					'sender': msgSender },
+					'sender': userModels.User.objects.get(identification=msg['sender']).nickname
+					},
 				'timestamp': msg['timeCreation']
 				})
 
@@ -578,7 +573,8 @@ class chatSocket(WebsocketConsumer):
 				'chat_' + receiver,
 				{
 					'type': 'receiveInvitationPong',
-					'sender': self.identification
+					'sender': self.UserModel.nickname,
+					'sender_id': self.identification
 					}
 				)
 
@@ -605,7 +601,8 @@ class chatSocket(WebsocketConsumer):
 				'chat_' + receiver,
 				{
 					'type': 'receiveInvitationBattleship',
-					'sender': self.identification
+					'sender': self.UserModel.nickname,
+					'sender_id': self.identification
 					}
 				)
 
@@ -656,6 +653,19 @@ class chatSocket(WebsocketConsumer):
 					'gameId': gameId
 					}
 				)
+	
+	def refuseInvitation(self, target, sender):
+		senderModel = userModels.User.objects.get(identification=sender)
+		if senderModel is None:
+			return
+
+		async_to_sync(self.channel_layer.group_send)(
+				'chat_' + target,
+				{
+					'type': 'refusedInvitation',
+					'userId': senderModel.identification,
+					'userName': senderModel.nickname
+				})
 
 	#CHANNEL LAYER FUNCTIONS
 	#GAMES INVITATION
@@ -672,11 +682,10 @@ class chatSocket(WebsocketConsumer):
 			}))
 
 	def receiveInvitationPong(self, event):
-		sender = event['sender']
-
 		self.send(text_data=json.dumps({
 			'type': 'receive_invitation_pong',
-			'sender': sender
+			'sender': event['sender'],
+			'sender_id': event['sender_id']
 			}))
 
 	def receiveInvitationBattleship(self, event):
@@ -684,7 +693,15 @@ class chatSocket(WebsocketConsumer):
 
 		self.send(text_data=json.dumps({
 			'type': 'receive_invitation_battleship',
-			'sender': sender
+			'sender': event['sender'],
+			'sender_id': event['sender_id']
+			}))
+
+	def refusedInvitation(self, event):
+		self.send(json.dumps({
+			'type': 'refused_invitation',
+			'sender_id': event['userId'],
+			'sender': event['userName']
 			}))
 
 	#CHAT RECEIVE
@@ -720,7 +737,8 @@ class chatSocket(WebsocketConsumer):
 			}))
 
 	def searchConv(self, input):
-		allUsers = userModels.User.objects.exclude(Q(identification='IA') | Q(identification='admin') | Q(identification = self.UserModel.identification)) 
+		allUsers = userModels.User.objects.exclude(Q(identification='AI') | Q(identification='admin') | Q(identification = self.UserModel.identification)) 
+		print('allUsers: ', allUsers)
 		response = []
 
 		for chan in self.allChannels.keys():
@@ -754,7 +772,7 @@ class chatSocket(WebsocketConsumer):
 					response.append({
 						'type': 'private_message',
 						'name': user.nickname,
-						'identification': user.identification,
+						'id': user.identification,
 						'connexion_status': connexionStatus, 
 						'last_msg': {
 							'message': msgs[0].message,
@@ -765,7 +783,7 @@ class chatSocket(WebsocketConsumer):
 					response.append({
 						'type': 'private_message',
 						'name': user.nickname,
-						'identification': user.identification,
+						'id': user.identification,
 						'connexion_status': connexionStatus,
 						'last_msg': '' })
 

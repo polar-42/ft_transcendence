@@ -24,6 +24,7 @@ urlpatterns = [
 	path('404/', views.PNF_view),
 	path('needlog/', views.NeedLog_view),
     path('authApp/', include('authApp.urls')),
+    path('chatApp/', include('chatApp.urls')),
     path('games/', views.games_view),
     path('battleship/', include('battleshipApp.urls')),
     path('pongGame/', include('pongGameApp.urls')),

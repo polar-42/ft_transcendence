@@ -63,13 +63,14 @@ function initHomepageBody() {
   let html = '<h2>Discussions</h2>' +
     '<ul class="conversation_list"></ul>' +
     '<div class="chatbox_homepage_navbar">' +
-    '<button name="discussions">Discussions</button>' +
+    '<button name="invitations">Game Invitation</button>' +
     '<button name="friends">Friends</button>' +
     '<button name="create_channel">Create a channel</button>' +
     '</div>'
   mainBoxBody.innerHTML = html
 
   document.querySelector("button[name='create_channel']").addEventListener("click", initCreateChannel)
+  document.querySelector("button[name='invitations']").addEventListener("click", initGameInvitiation)
   getLastChats()
 }
 
@@ -171,27 +172,59 @@ function onMessageChat(e)
     case 'edit_description':
       receiveDescriptionEdit(data)
       break
-      //      console.log(data);
-      // if (data.type == 'receive_invitation_pong')
-      // {
-      // 	receivePongInvitation(data)
-      // }
-      // if (data.type == 'receive_invitation_battleship')
-      // {
-      // 	receiveBattleshipInvitation(data)
-      // }
-      // else if (data.type == 'start_pong_game')
-      // {
-      // 	startPongGame(data)
-      // }
-      // else if (data.type == 'start_battleship_game')
-      // {
-      // 	startBattleshipGame(data)
-      // }
+    case 'receive_invitation_pong':
+      receivePongInvitation(data)
+      break
+    case 'receive_invitation_battleship':
+      receiveBattleshipInvitation(data)
+      break
+    case 'refused_invitation':
+      receiveRefusedInvitation(data)
+      break
+    case 'start_pong_game':
+      startPongGame(data)
+      break
+    case 'start_battleship_game':
+      startBattleshipGame(data)
+      break 
   }
 }
 
-function displayLastChats(data) {
+async function getProfilePicture(data) { 
+  console.log(data)
+  if (data.type === 'channel') {
+    let channelName = data.name
+    Response = await fetch(document.location.origin + '/authApp/get_avatar_image/?'
+        + new URLSearchParams({
+            'type': 'channel',
+            'name': channelName}),
+        {
+          method: 'GET'
+        })
+      if (Response.ok) {
+        let picture = await Response.blob()
+        console.log(picture)
+        return picture
+      }
+
+  } else {
+    let userId = data.id
+    Response = await fetch(document.location.origin + '/authApp/get_avatar_image/?'
+        + new URLSearchParams({
+          type: 'user',
+          userId: userId
+        }), {
+          method: 'GET'
+        })
+      if (Response.ok) {
+        let picture = await Response.blob()
+        console.log(picture)
+        return picture
+      }
+  }
+}
+
+async function displayLastChats(data) {
   let conversation_list = document.querySelector(".conversation_list")
   for (let i = data.length - 1; i >= 0; i--) {
     console.log(data[i])
@@ -207,9 +240,15 @@ function displayLastChats(data) {
       isConnected = 'disconnected'
     else
       isConnected = 'connected'
+    let profilePicture = await getProfilePicture(data[i])
+    let ppUrl  
+    if (profilePicture.type == 'image/null')
+      ppUrl = "../static/assets/logo/user.png"
+    else 
+      ppUrl = URL.createObjectURL(profilePicture)
     let item =
       '<li class="' + data[i].type + '">' +
-      '<img src="../static/assets/logo/user.png" alt="converstion_picture">' +
+      '<img src=' + ppUrl + ' alt="converstion_picture">' +
       '<div class="conversation_text">' +
       '<div class="conversation_name">' +
       '<p>' + data[i].name + '</p>' +
@@ -232,7 +271,7 @@ function displayLastChats(data) {
   }
 }
 
-function displaySearchResult(data) {
+async function displaySearchResult(data) {
   let resultWrapper = document.querySelector(".conversation_list")
   if (document.querySelector(".main_box_header").children.length === 2)
     document.querySelector(".main_box_header").insertAdjacentHTML("beforeend", '<img src="../static/assets/logo/arrow-back-regular-60.png" alt="return back button" class="back_arrow">')
@@ -273,9 +312,15 @@ function displaySearchResult(data) {
       lastMsg = ''
     else
       lastMsg = data[i].last_msg.sender + ': ' + data[i].last_msg.message
-    let item =
+    let profilePicture = await getProfilePicture(data[i])
+    let ppUrl  
+    if (profilePicture.type == 'image/null')
+      ppUrl = "../static/assets/logo/user.png"
+    else 
+      ppUrl = URL.createObjectURL(profilePicture)
+    let item = 
       '<li class="' + data[i].type + ' ' + member + '" ' + privacyStatus +'>' +
-      '<img src="../static/assets/logo/user.png" alt="converstion_picture">' +
+      '<img src=' + ppUrl + ' alt="converstion_picture">' +
       '<div class="conversation_text">' +
       '<div class="conversation_name">' +
       '<p>' + data[i].name + '</p>' +
@@ -292,8 +337,8 @@ function displaySearchResult(data) {
       resultWrapper.innerHTML = item
     }
     resultWrapper.lastChild.addEventListener("click", () => {
-      if (data[i].type === 'private_message') {
-        goToConv(data[i].identification)
+      if (data[i].type === 'private_message') { 
+        goToConv(data[i].id)
       } else if (data[i].type === 'channel' && data[i].member === true) {
         goToChan(data[i].name)
       }
@@ -349,7 +394,6 @@ function displayChatHistory(data) {
     } else {
       sender = 'own'
     }
-
     let item =
       '<li class="message_item ' + sender + '" msgid=' + data[i].id + '>' +
       '<p class="message">' + data[i].message + '</p>' +
@@ -368,15 +412,21 @@ function displayChannel(data) {
   initChanHeader(data)
   initChanBody(data)
 
-  function initChanHeader(data) {
+  async function initChanHeader(data) {
     let general
     if (data.name === 'General')
       general = 'general'
     else
       general = ''
-    let html =
+    let profilePicture = await getProfilePicture({'type': 'channel', 'name':data.name})
+    let ppUrl
+    if (profilePicture.type === 'image/null')
+      ppUrl = "../static/assets/logo/user.png"
+    else 
+      ppUrl = URL.createObjectURL(profilePicture)
+    let html = 
       '<div class="contact_wrapper ' + general + ' ">' +
-      '<img src="../static/assets/logo/user.png" alt="channel picture">' +
+      '<img src=' + ppUrl + ' alt="channel picture">' +
       '<div class="contact_name_wrapper">' +
       '<p class="channel_name">' + data.name + '</p>' +
       '<div class="description_wrapper">' +
@@ -489,7 +539,7 @@ function displayChannel(data) {
       'msgId': -1
     }))
 
-    function loadChanUser(data) {
+    async function loadChanUser(data) {
       let users = data['users']
       let sidebar = document.querySelector(".sidebar")
       for (let i = 0; i < users.length; i++) {
@@ -501,12 +551,17 @@ function displayChannel(data) {
         } else {
           isConnected = ''
         }
-
+        let profilePicture = await getProfilePicture({ 'type': 'user', 'id': users[i].id})
+        let ppUrl  
+        if (profilePicture.type == 'image/null')
+          ppUrl = "../static/assets/logo/user.png"
+        else 
+          ppUrl = URL.createObjectURL(profilePicture)
         if (users[i] !== self.username) {
           let item =
             '<div class="user_wrapper">' +
             '<div class="connection_point ' + isConnected + '"></div>' +
-            '<img src="../static/assets/logo/user.png" alt="channel member profile picture">' +
+            '<img src=' + ppUrl + ' alt="channel member profile picture">' +
             '<p class="username">' + users[i].name + '</p>' +
             '<img class="kick_cross" src="../static/assets/logo/red_cross.png" alt="kick user button">' +
             '</div>'
@@ -539,11 +594,9 @@ async function displayChannelHistory(data) {
     throw new Error('Error when fetching user datas')
   }
   let userData = await Response.json()
-  console.log(userData)
-
-  for (let i =  data.length - 1; i >= 0; i--) {
-
-    let sender
+  let html = ''
+  for (let i = data.length - 1; i >= 0 ; i--) {
+    let sender 
     let received
     if (data[i].senderID === userData.userID) {
       received = "own"
@@ -552,11 +605,17 @@ async function displayChannelHistory(data) {
       received = ""
       sender = data[i].sender
     }
+    let profilePicture = await getProfilePicture({ 'type': 'user', 'id': data[i].senderID})
+    let ppUrl  
+    if (profilePicture.type == 'image/null')
+      ppUrl = "../static/assets/logo/user.png"
+    else 
+      ppUrl = URL.createObjectURL(profilePicture)
 
     let item =
       '<li class="message_item ' + received + '" msgId="' + data[i].id + '">' +
       '<div class="sender">' +
-      '<img src="../static/assets/logo/user.png" alt="sender profile picture">' +
+      '<img src=' + ppUrl + ' alt="sender profile picture">' +
       '<p>' + sender + '</p>' +
       '</div>' +
       '<div class="message_wrapper">' +
@@ -565,12 +624,9 @@ async function displayChannelHistory(data) {
       '</div>' +
       '</li>'
 
-    if (conversation.children.length === 0) {
-      conversation.innerHTML = item
-    } else {
-      conversation.lastChild.insertAdjacentHTML("afterend", item)
-    }
+    html += item
   }
+  conversation.innerHTML = html
   conversation.scrollTo(0, conversation.scrollHeight)
 }
 
@@ -623,36 +679,252 @@ function startBattleshipGame(data)
   navto("/battleship", data.gameId)
 }
 
-function receivePongInvitation(data)
-{
-  if (confirm('Your received an invitation to pong game by ' + data.sender))
-  {
-    console.log('lets go');
+async function initGameInvitiation() {
+  Response = await fetch(document.location.origin + '/chatApp/getAllUsers', {
+      method: 'GET'
+  })
+  if (!Response.ok) {
+    return 
+  }
+  let usrListJson = await Response.json()
+  let html =
+    '<div class="invitation_box">' +
+      '<h2>Games Invitation</h2>' +
+      '<div class="opponent_selection_box">' +
+        '<label for="opponent_selection">Choose your opponent</label>' +
+        '<input name="opponent_selection" type="text">' +
+        '<ul class="autocomplete-list">' +
+        '</ul>' +
+      '</div>' +
+      '<h3>Choose the game</h3>' +
+      '<div class="game_choice_box">' +
+        '<div class="input_box">' +
+          '<label for="pong">Pong</label>' +
+          '<input name="pong" type="checkbox">' +
+        '</div>' +
+        '<div class="input_box">' +
+          '<label for="battleship">Battleship</label>' +
+          '<input name="battleship" type="checkbox">' +
+        '</div>' +
+      '</div>' +
+      '<button class="submit_BTN">Submit</button>' +
+      '<p class="feedback"></p>' +
+    '</div>'
+
+  document.querySelector(".chatbox_homepage_navbar").lastChild.insertAdjacentHTML("afterend", html)
+  let invitationButton = document.querySelector("button[name='invitations']")
+  let inputBox = document.querySelector(".opponent_selection_box input")
+  let pongCheckbox = document.querySelector("input[name='pong']")
+  let battleshipCheckbox = document.querySelector("input[name='battleship']")
+  battleshipCheckbox.addEventListener("change", () => {
+    if (pongCheckbox.checked === true)
+      pongCheckbox.checked = false
+  })
+  pongCheckbox.addEventListener("change", () => {
+    if (battleshipCheckbox.checked === true)
+      battleshipCheckbox.checked = false
+  })
+  invitationButton.removeEventListener("click", initGameInvitiation)
+  invitationButton.addEventListener("click", closeInvitationBox)
+  inputBox.addEventListener("input", onInputChange)
+  inputBox.addEventListener("keypress", (e) => {
+    if (e.key === 'Enter') {
+      sendGameInvitation(usrListJson)
+    }
+  })
+  document.querySelector(".invitation_box .submit_BTN").addEventListener("click", sendGameInvitation.bind(null, usrListJson))
+
+  function onInputChange() {
+    let autocompleteList = document.querySelector(".autocomplete-list")
+    let inputBox = document.querySelector(".opponent_selection_box input")
+    let input = inputBox.value.toLowerCase()
+    let filterUsers = []
+    
+    autocompleteList.innerHTML = ''
+    usrListJson.forEach((usr) => {
+      if (usr.name.substr(0, input.length).toLowerCase() === input) 
+        filterUsers.push(usr)
+    })
+    if (input == '') {
+      return
+    }
+    for (let i = 0; i < filterUsers.length; i++) {
+      let item = document.createElement("li")
+      item.appendChild(document.createElement('button'))
+      item.firstChild.textContent = filterUsers[i].name 
+      item.firstChild.setAttribute("id", filterUsers[i].id)
+      item.addEventListener("click", onButtonClick)
+      autocompleteList.appendChild(item)  
+    }
+  }
+
+  function onButtonClick(e) {
+    e.preventDefault()
+    
+    const btn = e.target
+    let inputBox = document.querySelector(".opponent_selection_box input")
+    inputBox.value = btn.innerHTML
+    document.querySelector(".autocomplete-list").innerHTML = '' 
+  }
+
+  function closeInvitationBox() {
+    console.log('dsadsa')
+    document.querySelector(".invitation_box").remove()
+    invitationButton.addEventListener("click", initGameInvitiation)
+    invitationButton.removeEventListener("click", closeInvitationBox)
+  }
+}
+
+function sendGameInvitation(usrList) {
+  let userName = document.querySelector("input[name='opponent_selection']").value
+  let checkboxes = document.querySelectorAll(".game_choice_box input")
+  let feedback = document.querySelector(".invitation_box .feedback")
+  feedback.innerHTML = ''
+  
+  if (userName.value === '') {
+    feedback.innerHTML = "No user selected" 
+    return
+  }
+  let user = usrList.find((usr) => usr.name === userName)
+  if (checkboxes[0].checked === false && checkboxes[1].checked === false) {
+    feedback.innerHTML = "No game selected" 
+    return
+  } else if (checkboxes[0].checked === true) {
     chatSocket.send(JSON.stringify({
-      'type': 'accept_invitation_pong',
-      'target': data.sender
+      'type': 'invite_pong',
+      'target': user.id
+    }))
+  } else {
+    chatSocket.send(JSON.stringify({
+      'type': 'invite_battleship',
+      'target': user.id
     }))
   }
-  else
-  {
-    console.log('pas go');
+  goToConv(user.id)
+}
+
+function receivePongInvitation(data)
+{
+  if (data.sender_id !== document.querySelector(".main_box_header .contact_wrapper").getAttribute("userid")) 
+    return // notif
+
+  let conversation = document.querySelector(".conversation")
+  let item = document.createElement("li")
+  item.classList.add("message_item", "game_invitation")
+  item.innerHTML = 
+      '<p>' + data.sender + ' invite you to a Pong game</p>' +
+      '<div class="acceptation_wrapper">' +
+        '<button class="accept_btn">Accept</button>' + 
+        '<button class="refuse_btn">Refuse</button>' + 
+      '</div>' 
+
+  item.querySelector(".accept_btn").addEventListener("click", acceptPongInvitation.bind(null, data.sender, data.sender_id))
+  item.querySelector(".refuse_btn").addEventListener("click", refusePongInvitation.bind(null, data.sender, data.sender_id))
+  conversation.appendChild(item)
+}
+
+function acceptPongInvitation(senderName, senderId) {
+  let inviteElm = document.querySelector(".game_invitation")
+
+  inviteElm.lastChild.remove()
+  inviteElm.appendChild(document.createElement("p"))
+  inviteElm.lastChild.textContent = 'You accepted ' + senderName + ' invitation'
+  chatSocket.send(JSON.stringify({
+    'type': 'accept_invitation_pong',
+    'target': senderId
+  }))
+}
+
+async function refusePongInvitation(senderName, senderId) {
+  let inviteElm = document.querySelector(".game_invitation")
+  let userData
+  let Response = await fetch(document.location.origin + '/authApp/getUserID', 
+    {
+      method: 'GET'
+    })
+  if (Response.ok) {
+    userData = await Response.json()
   }
+  else
+    throw new Error('Error when fetching user datas')
+  inviteElm.lastChild.remove()
+  inviteElm.appendChild(document.createElement("p"))
+  inviteElm.lastChild.textContent = 'You refused ' + senderName + ' invitation'
+  chatSocket.send(JSON.stringify({
+    'type': 'refuse_invitation',
+    'target': senderId,
+    'sender': userData.userID
+  }))
 }
 
 function receiveBattleshipInvitation(data)
 {
-  if (confirm('Your received an invitation to battleship game by ' + data.sender))
-  {
-    console.log('lets go');
-    chatSocket.send(JSON.stringify({
-      'type': 'accept_invitation_battleship',
-      'target': data.sender
-    }))
+  if (data.sender_id !== document.querySelector(".main_box_header .contact_wrapper").getAttribute("userid")) 
+    return // notif
+
+  let conversation = document.querySelector(".conversation")
+  let item = document.createElement("li")
+  item.classList.add("message_item", "game_invitation")
+  item.innerHTML = 
+      '<p>' + data.sender + ' invite you to a Battleship game</p>' +
+      '<div class="acceptation_wrapper">' +
+        '<button class="accept_btn">Accept</button>' + 
+        '<button class="refuse_btn">Refuse</button>' + 
+      '</div>' 
+
+  item.querySelector(".accept_btn").addEventListener("click", acceptBattleshipInvitation.bind(null, data.sender, data.sender_id))
+  item.querySelector(".refuse_btn").addEventListener("click", refuseBattleshipInvitation.bind(null, data.sender, data.sender_id))
+  conversation.appendChild(item)
+}
+
+function acceptBattleshipInvitation(senderName, senderId) {
+  let inviteElm = document.querySelector(".game_invitation")
+
+  inviteElm.lastChild.remove()
+  inviteElm.appendChild(document.createElement("p"))
+  inviteElm.lastChild.textContent = 'You accepted ' + senderName + ' invitation'
+  chatSocket.send(JSON.stringify({
+    'type': 'accept_invitation_battleship',
+    'target': senderId
+  }))
+}
+
+async function refuseBattleshipInvitation(senderName, senderId) {
+  let inviteElm = document.querySelector(".game_invitation")
+  let userData
+  let Response = await fetch(document.location.origin + '/authApp/getUserID', 
+    {
+      method: 'GET'
+    })
+  if (Response.ok) {
+    userData = await Response.json()
   }
   else
-  {
-    console.log('pas go');
-  }
+    throw new Error('Error when fetching user datas')
+  inviteElm.lastChild.remove()
+  inviteElm.appendChild(document.createElement("p"))
+  inviteElm.lastChild.textContent = 'You refused ' + senderName + ' invitation'
+  chatSocket.send(JSON.stringify({
+    'type': 'refuse_invitation',
+    'target': senderId,
+    'sender': userData.userID
+  }))
+}
+
+
+
+function receiveRefusedInvitation(data) {
+  if (document.querySelector(".private_message .contact_wrapper").getAttribute("userid") !== data.sender_id)
+    return
+
+  let item = document.createElement("li")
+  item.classList.add("message_item", "game_invitation")
+  item.innerHTML = 
+    '<p>' + data.sender + ' refused your invitation</p>'
+  item.firstChild.style.fontStyle = "italic"
+  console.log(item)
+  document.querySelector(".conversation").appendChild(item)
+  
 }
 
 function sendMessage(message, targetUser)
@@ -836,16 +1108,22 @@ function displayPrivMsg(data) {
   initPrvMsgHeader(data)
   initPrvMsgBody(data.identification)
 
-  function  initPrvMsgHeader(data) {
-    let isConnected
+  async function  initPrvMsgHeader(data) {
+    let isConnected 
     if (data.connexion_status === 2) {
       isConnected = 'connected'
     } else {
       isConnected = 'disconnected'
     }
-    let html =
+    let profilePicture = await getProfilePicture({ 'type': 'user', 'id': data.identification})
+    let ppUrl  
+    if (profilePicture.type == 'image/null')
+      ppUrl = "../static/assets/logo/user.png"
+    else 
+      ppUrl = URL.createObjectURL(profilePicture)
+    let html = 
       '<div class="contact_wrapper" userID="' + data.identification + '">' +
-      '<img src="../static/assets/logo/user.png" alt="contact profile picture">' +
+      '<img src=' + ppUrl + ' alt="contact profile picture">' +
       '<div class="contact_name_wrapper">' +
       '<p>' + data.name + '</p>' +
       '<div class="connection_point ' + isConnected + '"></div>' +

@@ -6,6 +6,7 @@ from django.contrib.auth.hashers import make_password, check_password
 from .management.commands.create_user import getRandString
 import json, re
 from authApp.models import User
+from chatApp.models import ChannelModels
 
 from ft_transcendence import ColorPrint
 from ft_transcendence.decorators import isValidLoading

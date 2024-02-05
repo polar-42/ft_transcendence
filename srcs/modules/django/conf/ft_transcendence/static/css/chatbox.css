@@ -158,16 +158,17 @@
   width: 30px;
   height: 30px;
   display: block;
+  border-radius: 50%;
   /* margin: auto; */
 }
 
 .main_box_body.homepage .conversation_list img.join_btn {
-	display: none
+  display: none
 }
 
 .main_box_body.homepage .conversation_list .not_member img.join_btn {
-	display: inline-block;
-	cursor: pointer;
+  display: inline-block;
+  cursor: pointer;
 }
 
 
@@ -261,6 +262,107 @@
   background: var(--fourth);
   border: 1px solid var(--main-bg-color);
   color: var(--main-bg-color);
+}
+
+.main_box_body.homepage .invitation_box {
+  position: absolute;
+  bottom: 50px;
+  left: 10px;
+  width: 90%;
+  background: var(--fourth);
+  border-radius: 5px;
+  padding: 5px;
+
+  .feedback {
+    font-size: 0.7em;
+    color: red;
+    text-align: center;
+  }
+
+  h2 {
+    font-size: 1.4em
+  }
+
+  h3 {
+    margin: 10px auto 5px auto;
+  }
+
+  .game_choice_box {
+    display: flex;
+    justify-content: space-evenly;
+
+
+  }
+
+  .input_box {
+    margin-bottom: 10px;
+
+    input {
+      display: block;
+      margin: auto;
+    }
+  }
+
+  .opponent_selection_box {
+    width: 80%;
+    display: flex;
+    flex-direction: column;	
+    margin: auto;
+    text-align: center;
+    position: relative;
+
+  }
+
+  .autocomplete-list {
+    text-align: left;
+    position: absolute;
+    top: 42px;
+    width: 100%;
+    max-height: 140px;
+
+    li {
+      border: 1px solid var(--main-bg-color);
+      background: var(--secondary-bg-color);
+      border-top: unset;
+    }
+
+    button {
+      border: unset;
+      background: unset;
+      margin: 0;
+      padding: 2px;
+      width: 100%;
+      text-align: left;
+      font-size: 0.9em;
+    }
+
+    button:hover {
+      border: unset;
+      background: var(--main-bg-color);
+      color: white;
+      font-weight: bolder;
+    }
+  }
+
+  button {
+    display: block;
+    background: 
+    linear-gradient(135deg, var(--secondary-bg-color),  var(--main-bg-color)),
+    var(--main-bg-color);
+    color: white;
+    border: 1px solid var(--main-bg-color);
+    width: 70%;
+    margin: 10px auto 0 auto;
+    font-size: 1.3em;
+  }
+
+  button:hover {
+    background: 
+    linear-gradient(135deg, rgba(0, 155, 217, 0.1), rgba(0, 155, 217, 0.4)),
+    white;
+    color: var(--main-bg-color);
+    cursor: pointer;
+  }
 }
 
 .main_box_body.homepage .channel_creation_box {
@@ -386,6 +488,7 @@
   width: 40px;
   height: auto;
   margin-left: 10px;
+  border-radius: 50%;
 }
 
 .main_box_header.channel .contact_wrapper .leave_channel {
@@ -493,6 +596,7 @@
         width: 25px;
         height: auto;
         margin-right: 10px;
+        border-radius: 50%;
       }
 
       p {
@@ -524,6 +628,41 @@
   .loading {
     display: inline-block;
     margin-left: 152px;
+  }
+
+  .game_invitation {
+    width: 80%;
+    margin-left: 10%;
+    padding: 10px;
+
+    .acceptation_wrapper {
+      display: flex;
+      justify-content: space-evenly;
+
+      button {
+        display: block;
+        color: var(--main-bg-color);
+        border: none;
+        margin: 5px auto 0 auto;
+        padding: 2px 5px 2px 5px;
+        font-size: 0.9em;
+        transition: .3s ease;
+      }
+
+      .accept_btn {
+        background: #63AB24;
+      }
+
+      .refuse_btn {
+        background: #CF331F;
+      }
+
+      button:hover {
+        background: var(--main-bg-color);
+        color: var(--fourth);
+        cursor: pointer;
+      }
+    }
   }
 }
 
@@ -576,6 +715,7 @@
     width: 25px;
     height: auto;
     margin: auto;
+    border-radius: 50%;
   }
 
   .user_wrapper {
@@ -593,11 +733,13 @@
     right: 0;
   }
 
-	.kick_cross {
-		position: relative;
-		bottom: 50px;
-		left: 20px;
-		width: 8px;
-		cursor: pointer;
-	}
+  .kick_cross {
+    position: relative;
+    bottom: 50px;
+    left: 20px;
+    width: 8px;
+    cursor: pointer;
+  }
 }
+
+

@@ -271,7 +271,7 @@ function register(event) {
 		})
 		.catch(error => {
 			console.error('Error:', error)
-			feedback.innerHTML = data.message
+			feedback.innerHTML = error.message
 			return
 		})
 }
@@ -312,6 +312,7 @@ async function initProfileButton(connected) {
 		if (Response.ok) {
 			var vari = await Response.blob()
 			if (vari.type == "image/png") {
+        console.log(vari)
 				profileImage.forEach((img) => {
 					img.src = URL.createObjectURL(vari)
 					img.style.borderRadius = '50%';
