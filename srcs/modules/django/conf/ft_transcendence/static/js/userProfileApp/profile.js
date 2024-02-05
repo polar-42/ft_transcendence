@@ -44,6 +44,7 @@ function getUserInformation()
 
 		if (data.error == 'error')
 			navto('/dashboard')
+        document.querySelectorAll('.userInformation')[0].style.display = 'grid'
 		document.getElementById('userName').innerHTML = 'Nickname: ' + data.userName
 		document.getElementById('userStatus').innerHTML = 'Status: ' + data.userStatus
     })
