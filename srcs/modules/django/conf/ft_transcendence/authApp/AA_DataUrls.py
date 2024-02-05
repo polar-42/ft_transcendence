@@ -5,6 +5,6 @@ urlpatterns = [
 	path('connexionStatus', views.check_connexion),
     path('userName', views.getUserName),
     path('userID', views.getUserID),
-    path('avatarImage', views.getAvatarImage),
+    path('avatarImage/', views.getAvatarImage),
     path('2FaStatus', views.Get2FaStatus),
 ]

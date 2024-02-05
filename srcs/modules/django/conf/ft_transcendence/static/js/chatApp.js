@@ -194,7 +194,7 @@ async function getProfilePicture(data) {
   console.log(data)
   if (data.type === 'channel') {
     let channelName = data.name
-    Response = await fetch(document.location.origin + '/authApp/get_avatar_image/?'
+    Response = await fetch(document.location.origin + '/authApp/GET/avatarImage/?'
         + new URLSearchParams({
             'type': 'channel',
             'name': channelName}),
@@ -209,7 +209,7 @@ async function getProfilePicture(data) {
 
   } else {
     let userId = data.id
-    Response = await fetch(document.location.origin + '/authApp/get_avatar_image/?'
+    Response = await fetch(document.location.origin + '/authApp/GET/avatarImage/?'
         + new URLSearchParams({
           type: 'user',
           userId: userId
@@ -838,7 +838,7 @@ function acceptPongInvitation(senderName, senderId) {
 async function refusePongInvitation(senderName, senderId) {
   let inviteElm = document.querySelector(".game_invitation")
   let userData
-  let Response = await fetch(document.location.origin + '/authApp/getUserID', 
+  let Response = await fetch(document.location.origin + '/authApp/GET/userID', 
     {
       method: 'GET'
     })
@@ -892,7 +892,7 @@ function acceptBattleshipInvitation(senderName, senderId) {
 async function refuseBattleshipInvitation(senderName, senderId) {
   let inviteElm = document.querySelector(".game_invitation")
   let userData
-  let Response = await fetch(document.location.origin + '/authApp/getUserID', 
+  let Response = await fetch(document.location.origin + '/authApp/GET/userID', 
     {
       method: 'GET'
     })
