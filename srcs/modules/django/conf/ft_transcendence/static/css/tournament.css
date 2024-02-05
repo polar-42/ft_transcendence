@@ -1,0 +1,41 @@
+.tournament_creation {
+
+  font-size: 30px;
+
+  h2 {
+    text-align: center;
+    font-size: 1.5em;
+    margin-top: 50px;
+    margin-bottom: 30px;
+  }
+
+  form {
+    padding: 30px 30% 30px 30%;
+    background: var(--fourth);
+
+    input {
+      display: block;
+      height: 30px;
+      width: 100%;
+      margin-bottom: 30px;
+      margin-top: 10px;
+    }
+
+    .nb_players_selection_wrapper {
+      input {
+      margin-bottom: 5px;
+      }
+      .nb_players_input_wrapper .sliderticks {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 10px;
+      }
+    }
+
+    img {
+
+      width: 50px;
+      height: auto;
+    }
+  }
+}
