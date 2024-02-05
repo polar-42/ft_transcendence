@@ -65,6 +65,7 @@ def UserConnexion(request):
 def registerPage(request):
 	if (request.user.is_authenticated == True):
 		return render(request, 'index.html')
+	return render(request, 'authApp/register.html')
 
 def UserRegistration(request):
 	if (request.method != "POST"):
