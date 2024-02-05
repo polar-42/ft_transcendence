@@ -43,6 +43,7 @@ INSTALLED_APPS = [
 	'tournamentsApp',
 	'chatApp',
 	'userManagementApp',
+	'userProfileApp',
 ]
 
 MIDDLEWARE = [

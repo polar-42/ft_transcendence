@@ -1,12 +1,12 @@
 * {
-  /* border: solid 1px red; */
+  /*border: solid 1px red;*/
 }
 
 .hero {
   padding-top: 20px;
   padding-bottom: 50px;
   background:
-    linear-gradient(to bottom, var(--secondary-bg-color) 0%, var(--main-bg-color) 65%), 
+    linear-gradient(to bottom, var(--secondary-bg-color) 0%, var(--main-bg-color) 65%),
     var(--main-bg-color);
 }
 
@@ -60,14 +60,14 @@
 
 button[name="SignIn"] {
   background: var(--fourth);
-  border: 1px solid var(--fourth); 
+  border: 1px solid var(--fourth);
   color: var(--main-bg-color);
 }
 
 button[name="SignIn"]:hover {
   background: var(--main-bg-color);
   border: 2px solid var(--fourth);
-  box-shadow: 
+  box-shadow:
   2px 2px 10px var(--fourth),
   -2px -2px 8px var(--fourth);
   color: var(--fourth);
@@ -83,7 +83,7 @@ button[name="LogIn"] {
 button[name="LogIn"]:hover {
   background: var(--fourth);
   border: 5px solid var(--fourth);
-  box-shadow: 
+  box-shadow:
   2px 2px 10px var(--fourth),
   -2px -2px 8px var(--fourth);
   color: var(--main-bg-color);
@@ -98,8 +98,8 @@ button[name="LogIn"]:hover {
 
 .games {
   background: var(--fourth);
-  padding-top: 50px; 
-  padding-bottom: 20px; 
+  padding-top: 50px;
+  padding-bottom: 20px;
 }
 
 .games h1 {
@@ -138,7 +138,7 @@ button[name="LogIn"]:hover {
 
 
 .about {
-  background: 
+  background:
     var(--main-bg-color);
   padding: 20px 10% 40px 10%;
   font-size: 1.3em;
@@ -149,7 +149,7 @@ button[name="LogIn"]:hover {
 }
 
 .presentation p {
-  letter-spacing: .2em; 
+  letter-spacing: .2em;
   text-justify: auto;
   text-align: center;
   margin: 7%;
@@ -249,7 +249,7 @@ button[name="LogIn"]:hover {
 
   .about {
     grid-template:
-      "a" auto 
+      "a" auto
       "b" auto;
     grid-gap: 0;
   }

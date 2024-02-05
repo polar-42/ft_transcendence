@@ -4,6 +4,7 @@ from ..models import PongGameModels
 from channels.db import database_sync_to_async
 from asgiref.sync import async_to_sync, sync_to_async
 from . import pongThreadsIA
+from authApp.models import User
 
 
 class PongGameIASocket(WebsocketConsumer):
@@ -34,7 +35,10 @@ class PongGameIASocket(WebsocketConsumer):
 
 		self.pongGameThread.quitGame(self)
 
-		addToDb(self.id, 'IA', 0, 3, 'IA', 0, 3, 'disconnexion')
+
+		AI_id = User.objects.get(nickname='AI').id
+
+		addToDb(self.id, AI_id, 0, 3, AI_id, 0, 3, 'disconnexion')
 
 		self.close()
 
@@ -68,26 +72,35 @@ class PongGameIASocket(WebsocketConsumer):
 		n_ball_touch_player1 = event['number_ball_touch_player1']
 		n_ball_touch_player2 = event['number_ball_touch_player2']
 
+		AI_id = User.objects.get(nickname='AI').id
+
+		if winner != 'AI':
+			winnerName = User.objects.get(id=int(winner)).nickname
+		else:
+			winnerName = 'AI'
+			winner = AI_id
+
 		self.send(text_data=json.dumps({
     			'type': 'game_ending',
-				'winner': str(winner),
+				'winner': winnerName,
 				'reason': 'score',
 				'playerone_score': str(playerone_score),
 				'playertwo_score': str(playertwo_score),
 				'playerone_username': self.user.nickname,
-				'playertwo_username': 'IA',
+				'playertwo_username': 'AI',
     	}))
 
-		addToDb(self.id, 'IA', playerone_score, playertwo_score, winner, n_ball_touch_player1, n_ball_touch_player2, 'score')
+
+		addToDb(self.id, AI_id, playerone_score, playertwo_score, winner, n_ball_touch_player1, n_ball_touch_player2, 'score')
 		self.pongGameThread = None
 
 		self.close()
 
-def addToDb(playerone_username, playertwo_username, playerone_score, playertwo_score, winner, n_ball_touch_player1, n_ball_touch_player2, reason_end):
+def addToDb(player1_id, player2_id, playerone_score, playertwo_score, winner, n_ball_touch_player1, n_ball_touch_player2, reason_end):
 
 	obj = PongGameModels.objects.create(
-			player1=playerone_username,
-			player2=playertwo_username,
+			player1=player1_id,
+			player2=player2_id,
 			score_player1=str(playerone_score),
 			score_player2=str(playertwo_score),
 			number_ball_touch_player1=str(n_ball_touch_player1),
@@ -97,4 +110,4 @@ def addToDb(playerone_username, playertwo_username, playerone_score, playertwo_s
 	)
 
 	obj.save
-	print('pongGame between playerId =', str(playerone_username), 'and', str(playertwo_username), 'is win by', str(winner), 'and reason is', reason_end)
+	print('pongGame between playerId =', str(player1_id), 'and', str(player2_id), 'is win by', str(winner), 'and reason is', reason_end)

@@ -4,9 +4,13 @@ from .BS_Boat import Boat
 
 class User():
 	def __init__(self, user):
+		self.BoatHit = 0
+		self.HitTry = 0
+		self.DestroyedBoat = 0
+		self.HitTaken = 0
 		self.BoatList = []
 		self.sock_user = user
-		self.Name = self.sock_user.username
+		self.Name = self.sock_user.nickname
 		self.ConnexionStatus = ConnexionState.NeverConnected
 		return
 
@@ -39,6 +43,7 @@ class User():
 		for boat in self.BoatList:
 			result = boat.Hit(case['ArrayPosX'], case['ArrayPosY'])
 			if (result > 0):
+				self.HitTaken += 1
 				return result if result == 1 else result + pos
 			pos += 1
 		return False

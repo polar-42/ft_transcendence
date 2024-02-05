@@ -98,7 +98,7 @@ class Tournament():
 
 		self.obj.playersId = tabId
 		self.obj.winner = self.Winner.UserId
-		self.obj.save
+		self.obj.save()
 
 		print('Tournament', self.obj.tournamentsName, ', id =', self.obj.id, ', winnerid =', self.obj.winner, 'is add to DB')
 		#self.addToBlockchain()
@@ -114,7 +114,7 @@ class Tournament():
 
 		contract_address = os.environ.get('CONTRACT_ADDRESS')
 		contract = w3.eth.contract(address=contract_address, abi=abi)
-		tx = contract.functions.addVictory(str(self.Winner.UserId)).build_transaction({
+		tx = contract.functions.addTournament(str(self.Winner.UserId), str(self.obj.id)).build_transaction({
 			'from': os.environ.get('PUBLIC_KEY'),
 			'nonce': w3.eth.get_transaction_count(os.environ.get('PUBLIC_KEY'))
 		})
@@ -212,11 +212,11 @@ class Tournament():
 			return False
 		if (len(self.PlayersList) == self.PlayerAmount):
 			return False
-		usr = TournamentUser(socket, user, user.username, user.id)
+		usr = TournamentUser(socket, user, user.nickname, user.id)
 		if (usr.UserId == self.Administrator):
 			self.Administrator = usr
 		self.PlayersList.append(usr)
-		ColorPrint.prGreen("Tournament {tournamentId} : User {username} Created.".format(tournamentId=self.TournamentId, username=user.username))
+		ColorPrint.prGreen("Tournament {tournamentId} : User {username} Created.".format(tournamentId=self.TournamentId, username=user.nickname))
 		self.SendUsers(None)
 		if (len(self.PlayersList) == self.PlayerAmount):
 			self.StartTournament()

@@ -195,7 +195,7 @@ function TFALogin() {
 
 function sendTFACode(container) {
 	const crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
-	let feedback = document.querySelector('.feedback')	
+	let feedback = document.querySelector('.feedback')
 	var headers = new Headers()
 	headers.append('Content-Type', 'application/json')
 	headers.append('X-CSRFToken', crsf_token)

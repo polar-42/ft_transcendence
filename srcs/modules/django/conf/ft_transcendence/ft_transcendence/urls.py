@@ -30,6 +30,8 @@ urlpatterns = [
     path('pongGame/', include('pongGameApp.urls')),
     path('tournaments/', include('tournamentsApp.urls')),
 	re_path(r"^userManagement/?", include('userManagementApp.urls')),
+	path('dashboard/', include('dashboardApp.urls')),
+	path('profile/', include('userProfileApp.urls')),
     path('', views.index_view),
 	re_path(r'^.*/?$', views.index_view),
 ]

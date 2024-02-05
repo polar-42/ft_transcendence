@@ -16,6 +16,7 @@ import jwt
 import time
 import os
 from django.core.management.utils import get_random_secret_key
+from PIL import Image
 
 regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
 
@@ -64,8 +65,6 @@ def UserConnexion(request):
 def registerPage(request):
 	if (request.user.is_authenticated == True):
 		return render(request, 'index.html')
-	else:
-		return render(request, 'authApp/register.html')
 
 def UserRegistration(request):
 	if (request.method != "POST"):
@@ -81,7 +80,13 @@ def UserRegistration(request):
 	if request.FILES.get('avatar') != None:
 		avatarImage = request.FILES.get('avatar')
 	else:
-		avatarImage = None
+		import io
+		img = Image.open("./static/assets/pictures/studs/mjuin.jpg")
+		new_img = img.resize((300, 300))
+		img_buff = io.BytesIO()
+		new_img.save(img_buff, format='JPEG')
+		img_buff.seek(0)
+		avatarImage = img_buff
 	if len(username) == 0 or len(email) == 0 or len(password) == 0 or len(passwordConfirmation) == 0:
 		return JsonResponse({'error': 'One of the field is empty'})
 	if password != passwordConfirmation:
@@ -101,10 +106,10 @@ def UserRegistration(request):
 		nickname=username,
 		email=email,
 		password=passwordHash,
-		identification=getRandString()
+		identification=getRandString(),
+		avatarImage = avatarImage.read()
 	)
-	if avatarImage != None:
-		new_obj.avatarImage = avatarImage.read()
+
 	new_obj.save()
 	return JsonResponse({'message': 'You registered successfully'})
 
@@ -244,7 +249,7 @@ def TFARequestQR(request):
 	userModel.tfKey = k
 	userModel.save()
 	totp_auth = pyotp.totp.TOTP(k).provisioning_uri( name=userModel.email, issuer_name='ft_transcendenceServer')
-	qrcode_uri = "https://www.google.com/chart?chs=100x100&chld=M|0&cht=qr&chl={}".format(totp_auth)	
+	qrcode_uri = "https://www.google.com/chart?chs=100x100&chld=M|0&cht=qr&chl={}".format(totp_auth)
 	response = JsonResponse({'qr' : qrcode_uri})
 	response.delete_cookie('2FACookie')
 	token = jwt.encode({"email" : userModel.email, "status" : "2FA register QR"}, os.environ.get('DJANGO_KEY'), algorithm='HS256')
