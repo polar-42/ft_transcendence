@@ -1183,7 +1183,7 @@ function receiveMsg(data) {
   {
     console.log('NOTFICATIONS')
     console.log(data)
-    document.getElementById('conv_' + data.sender).style.background = 'red'
+    //document.getElementById('conv_' + data.sender).style.background = 'red'
   }
   else
   {
