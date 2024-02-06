@@ -251,6 +251,7 @@ async function displayLastChats(data) {
       convId = "conv_" + data[i].id
     else
       convId = "conv_" + data[i].name
+
     //console.log('displayLastChats', data[i])
 
     let item =
@@ -1210,7 +1211,7 @@ function displayPrivMsg(data) {
 function receiveMsg(data) {
   if (document.querySelector(".contact_wrapper") == null)
   {
-    //console.log(data)
+    console.log(data)
     let divConv = document.getElementById('conv_' + data.sender)
     divConv.querySelector('.pop_up_unread').style.display = 'block'
     divConv.querySelector('.conversation_text').querySelector('.last_msg').innerHTML = data.senderNickname + ': ' + data.message
@@ -1218,7 +1219,7 @@ function receiveMsg(data) {
   }
   else
   {
-    //console.log('page contact:', document.querySelector(".contact_wrapper").getAttribute('userID'), 'data sender:', data.sender)
+    console.log('test')
     if (document.querySelector(".contact_wrapper").getAttribute('userID') === data.sender) {
       let conversation = document.querySelector(".conversation")
       let msgItem =
@@ -1235,12 +1236,31 @@ function receiveMsg(data) {
         'sender': data.sender,
         'receiver': data.receiver
       }))
+    } else {
+      document.getElementById('pop_up_unread_chatbox').style.display = 'block'
     }
   }
 }
 
 async function receiveChanMsg(data) {
   let conversation = document.querySelector(".conversation")
+  //console.log(conversation.parentElement.parentElement.classList)
+
+  if (conversation == undefined || conversation.parentElement == undefined || conversation.parentElement.parentElement == undefined)
+  {
+    let divConv = document.getElementById('conv_' + data.channel)
+    divConv.querySelector('.pop_up_unread').style.display = 'block'
+    divConv.querySelector('.conversation_text').querySelector('.last_msg').innerHTML = data.sender + ': ' + data.message
+    document.getElementById('pop_up_unread_chatbox').style.display = 'block'
+    return
+  }
+
+  if (conversation.parentElement.parentElement.classList[1] == 'private_message')
+  {
+    document.getElementById('pop_up_unread_chatbox').style.display = 'block'
+    return
+  }
+
   let Response = await fetch(document.location.origin + '/authApp/getUserID',
     {
       method: 'GET'
@@ -1270,16 +1290,10 @@ async function receiveChanMsg(data) {
     '</div>' +
     '</li>'
 
-  if (conversation == undefined)
-  {
-    let divConv = document.getElementById('conv_' + data.channel)
-    divConv.querySelector('.pop_up_unread').style.display = 'block'
-    divConv.querySelector('.conversation_text').querySelector('.last_msg').innerHTML = data.sender + ': ' + data.message
-    document.getElementById('pop_up_unread_chatbox').style.display = 'block'
-  }
-  else
+  if (conversation != undefined)
   {
     if (conversation.children.length > 0) {
+      console.log('blabla')
       conversation.lastChild.insertAdjacentHTML("afterend", item)
     } else {
       conversation.innerHTML = item

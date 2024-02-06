@@ -243,7 +243,7 @@ class chatSocket(WebsocketConsumer):
 		if len(allMessages) > 1:
 			allMessages[1].isRead = True
 
-		print(msg.sender, ' send ', msg.message, ' to ', msg.receiver)
+		print(msg.sender, ' send', msg.message, 'to', msg.receiver)
 		async_to_sync(self.channel_layer.group_send)(
 				'chat_' + receiver,
 				{
@@ -322,6 +322,7 @@ class chatSocket(WebsocketConsumer):
 					lastMsg = chanMsgs[0].message
 					lastMsgSender = userModels.User.objects.get(identification=chanMsgs[0].sender).nickname
 					timestamp = chanMsgs[0].timeCreation
+
 					tabMsg = chanMsgs[0].readBy
 					if tabMsg is not None and self.identification not in tabMsg:
 						isRead = False
@@ -356,14 +357,19 @@ class chatSocket(WebsocketConsumer):
 				msgSender = contact
 			if contact not in contactList:
 				contactList.append(contact)
+
 		for contact in contactList:
 			msg = allMessages.filter(Q(sender=contactList[0]) | Q(receiver=contactList[0])).order_by('-id')[0]
 			connexionStatus = userModels.User.objects.get(identification=contact).connexionStatus
 
-			if msg['sender'] == self.identification:
+			lastMsg = MessageModels.objects.filter(
+					(Q(sender=str(self.userIdentification)) & Q(receiver=contact)) |
+					(Q(receiver=str(self.userIdentification)) & Q(sender=contact))).order_by('-id')[0]
+
+			if lastMsg.sender == self.identification:
 				isRead = True
 			else:
-				isRead = msg['isRead']
+				isRead = lastMsg.isRead
 
 			allConv.append({
 				'type': 'private',
@@ -371,12 +377,13 @@ class chatSocket(WebsocketConsumer):
 				'id': userModels.User.objects.get(identification=contact).identification,
 				'connexionStatus': connexionStatus,
 				'last_msg': {
-					'msg': msg['message'],
-					'sender': userModels.User.objects.get(identification=msg['sender']).nickname
+					'msg': lastMsg.message,
+					'sender': userModels.User.objects.get(identification=lastMsg.sender).nickname
 					},
 				'timestamp': msg['timeCreation'],
 				'isRead': isRead
 				})
+
 
 		def cmpTimeStamp(msg):
 			return msg['timestamp']
