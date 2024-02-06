@@ -7,6 +7,7 @@ export function initTournamentsCreation()
 
 function createTournaments()
 {
+  console.log('coucou')
 	let tournamentsName = document.getElementsByClassName('TournamentsName')[0].value
 	let numberOfPlayers = document.getElementsByClassName('NumberOfPlayer')[0].value
 	let typeGame = document.querySelector('input[name="TypeGame"]:checked').value

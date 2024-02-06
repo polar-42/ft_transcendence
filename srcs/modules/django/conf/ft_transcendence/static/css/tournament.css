@@ -1,41 +1,187 @@
 .tournament_creation {
-
   font-size: 30px;
+}
 
-  h2 {
-    text-align: center;
-    font-size: 1.5em;
-    margin-top: 50px;
-    margin-bottom: 30px;
-  }
+.tournament_creation h2 {
+  text-align: center;
+  font-size: 1.5em;
+  margin-top: 50px;
+  margin-bottom: 30px;
+}
 
-  form {
-    padding: 30px 30% 30px 30%;
-    background: var(--fourth);
+.tournament_creation .form_wrapper {
+  padding: 30px 30% 30px 30%;
+  background: var(--fourth);
+}
 
-    input {
-      display: block;
-      height: 30px;
-      width: 100%;
-      margin-bottom: 30px;
-      margin-top: 10px;
-    }
+.tournament_creation .form_wrapper label {
+  font-weight: bolder;
+  margin-bottom: 10px;
+}
 
-    .nb_players_selection_wrapper {
-      input {
-      margin-bottom: 5px;
-      }
-      .nb_players_input_wrapper .sliderticks {
-        display: flex;
-        justify-content: space-between;
-        padding: 0 10px;
-      }
-    }
+.tournament_creation .form_wrapper input {
+  display: block;
+  height: 30px;
+  width: 100%;
+  margin-bottom: 30px;
+  margin-top: 10px;
+  font-size: 0.8em;
+}
 
-    img {
+.tournament_creation .form_wrapper .tournament_description_wrapper textarea {
+  display: block;
+  height: 3.5em;
+  width: 100%;
+  margin-bottom: 30px;
+  margin-top: 10px;
+  font-size: 0.8em;
+  resize: none;
+}
 
-      width: 50px;
-      height: auto;
-    }
-  }
+.tournament_creation .form_wrapper .nb_players_selection_wrapper {
+  margin-bottom: 10px;
+}
+
+.tournament_creation .form_wrapper .nb_players_selection_wrapper input[type="range"] {
+  margin-bottom: 5px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.tournament_creation .form_wrapper .nb_players_selection_wrapper input[type="range"]::-webkit-slider-runnable-track {
+  background: white;
+  height: 0.5em;
+  border-radius: 15px;
+  outline: none;
+}
+
+.tournament_creation .form_wrapper .nb_players_selection_wrapper input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 1.2em;
+  width: 1.2em;
+  border-radius: 50%;
+  border: none;
+  background: var(--main-color);
+  box-shadow: 
+  2px 2px 5px var(--secondary),
+  -2px -2px 5px var(--secondary);
+  margin-top: -0.35em;
+}
+
+.tournament_creation .form_wrapper .nb_players_selection_wrapper input[type="range"]::-moz-range-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 1.2em;
+  width: 1.2em;
+  border-radius: 50%;
+  border: none;
+  background: var(--main-color);
+  box-shadow: 
+  2px 2px 5px var(--secondary),
+  -2px -2px 5px var(--secondary);
+}
+
+.tournament_creation .form_wrapper .nb_players_selection_wrapper input[type="range"]::-moz-range-track {
+  background: white;
+  height: 0.5em;
+  border-radius: 15px;
+}
+
+.tournament_creation .form_wrapper .nb_players_selection_wrapper input[type="range"]:focus::-webkit-slider-thumb {
+  border: 1px solid var(--main-bg-color);
+  outline: 3px solid var(--main-bg-color);
+  outline-offset: 0.125em;
+}
+
+.tournament_creation .form_wrapper .nb_players_selection_wrapper .sliderticks {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  width: calc(100% + 27.4px);
+  margin: 0 -14px;
+}
+
+.tournament_creation .form_wrapper .nb_players_selection_wrapper .sliderticks li:not(:last-child) {
+  margin-right: 0;
+}
+
+.tournament_creation .form_wrapper .nb_players_selection_wrapper span {
+  position: relative;
+  min-width: 58px;
+  text-align: center;
+  display: block;
+  padding-top: 4px;
+  word-break: break-word;
+}
+
+.tournament_creation .form_wrapper .nb_players_selection_wrapper .tick {
+  content: '';
+  background: white;
+  width: 1px;
+  height: 15px;
+  margin: auto;
+}
+
+.tournament_creation .form_wrapper .game_type_selection_wrapper {
+  display: flex;
+  justify-content: space-evenly;
+  margin-top: 10px;
+}
+
+.tournament_creation .form_wrapper .game_type_selection_wrapper button {
+  background: var(--secondary-bg-color);
+  border: 1px solid var(--secondary-bg-color);
+  border-radius: 50%;
+  width: 150px;
+  height: 150px;
+  cursor: pointer;
+}
+
+.tournament_creation .form_wrapper .game_type_selection_wrapper button:hover {
+  border: 3px solid var(--main-bg-color);
+  box-shadow:
+      1px 1px 5px var(--secondary-bg-color),
+      -1px -1px 5px var(--secondary-bg-color);
+}
+
+.tournament_creation .form_wrapper .game_type_selection_wrapper button.selected {
+  background: var(--main-bg-color);
+  border: 5px solid var(--fourth);
+  box-shadow:
+      2px 2px 10px var(--secondary-bg-color),
+      -2px -2px 10px var(--secondary-bg-color);
+
+}
+
+.tournament_creation .form_wrapper .game_type_selection_wrapper img {
+  width: 100px;
+  height: auto;
+}
+
+.tournament_creation .form_wrapper .submitButtonCreateTournaments {
+    display: block;
+    margin: 30px auto auto auto;
+    width: 80%;
+    letter-spacing: 2px;
+    background: 
+    linear-gradient(135deg, var(--secondary-bg-color),  var(--main-bg-color)),
+    var(--main-bg-color);
+    color: white;
+    font-size: 1.3em;
+    font-weight: 900;
+    padding: 5px 10px 5px 10px;
+    border: 1px solid var(--main-bg-color);
+    border-radius: 5px;
+    transition: all .3s;
+}
+
+.tournament_creation .form_wrapper .submitButtonCreateTournaments:hover {
+    background: 
+    linear-gradient(135deg, rgba(0, 155, 217, 0.1), rgba(0, 155, 217, 0.4)),
+    white;
+    color: var(--main-bg-color);
+    cursor: pointer;
 }

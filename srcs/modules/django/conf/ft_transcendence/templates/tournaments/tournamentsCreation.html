@@ -6,47 +6,58 @@
   <h2>
     Create Tournament 
   </h2>
-
-  <form>
+  
+  <div class='form_wrapper'>
     {% csrf_token %}
 
     <div class="tournament_name_wrapper">
       <label for="TournamentsName">Tournament's Name:</label>
-      <input type="text" class="TournamentsName">
+      <input type="text" class="TournamentsName" placeholder="Enter tournament name">
     </div>
     <div class="tournament_description_wrapper">
       <label for="TournamentsDescription">Tournament's Description:</label>
-      <input type="text" class="TournamentsDescription">
+      <textarea type="text" rows="3" class="TournamentsDescription" placeholder="Enter tournament description"></textarea>
     </div>
-
     <div class='nb_players_selection_wrapper'>
       <label for="NumberOfPlayer">Number of players:</label>
       <div class="nb_players_input_wrapper">
         <input type="range" min='1' max='5' value='1' step='1'>
-        <div class="sliderticks">
-          <span>4</span>
-          <span>8</span>
-          <span>16</span>
-          <span>32</span>
-          <span>64</span>
-        </div>
+        <ul class="sliderticks">
+          <li>
+            <div class="tick"></div>
+            <span>4</span>
+          </li>
+          <li>
+            <div class="tick"></div>
+            <span>8</span>
+          </li>
+          <li>
+            <div class="tick"></div>
+            <span>16</span>
+          </li>
+          <li>
+            <div class="tick"></div>
+            <span>32</span>
+          </li>
+          <li>
+            <div class="tick"></div>
+            <span>64</span>
+          </li>
+        </ul>
       </div>
     </div>
+    <label>Game type:</label>
     <div class="game_type_selection_wrapper">
-      <label>Game type:</label><br/>
       <div class="pong_selection_wrapper">
-        <label for="typePong">Pong</label>
+        <!-- <label for="typePong">Pong</label> -->
         <button><img src="../../static/assets/logo/ping-pong.png" alt='Pong selection button'></button>
       </div>
       <div class="battleship_selection_wrapper">
         <button><img src="../../static/assets/logo/battleship.png" alt='Battleship selection button'></button>
-        <label for="typeBattleship">Battleship</label>
+        <!-- <label for="typeBattleship">Battleship</label> -->
       </div>
     </div>
-
-  </form>
   <button class="submitButtonCreateTournaments">Submit</button>
-
   <p id="messageCreationTournaments"></p>
-  </p>
+  </div>
 </div>
