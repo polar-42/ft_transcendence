@@ -103,7 +103,7 @@ class chatSocket(WebsocketConsumer):
 	def receive(self, text_data):
 		self.UserModel = userModels.User.objects.get(identification=self.identification)
 		data = json.loads(text_data)
-
+		ColorPrint.prRed(data)
 		match(data['type']):
 			case 'chat_message':
 				self.sendPrivateMessage(data['target'], data['message'])
@@ -150,9 +150,11 @@ class chatSocket(WebsocketConsumer):
 			case 'accept_invitation_battleship':
 				self.acceptInvitationBattleship(data['target'])
 			case 'invit_to_friend':
-				self.invit_to_friend(data['target'])
+				self.InviteToFriend(data['target'])
 			case 'receiveFriendInvitation':
 				self.receiveFriendInvitation(data['sender'])
+			case 'responseFriendInvitation':
+				self.friendshipRequestResponse(data['result'], data['sender'])
 			case 'refuse_invitation':
 				self.refuseInvitation(data['target'], data['sender'])
 			case 'refused_invitation':
@@ -323,11 +325,15 @@ class chatSocket(WebsocketConsumer):
 				data = {
 						'type': 'channel',
 						'name': chan,
-						'last_msg': { 
-				   'sender': lastMsgSender, 
-				   'msg': lastMsg },
-						'timestamp': timestamp 
+						'last_msg': 
+						{ 
+				   			'sender': lastMsgSender, 
+				   			'msg': lastMsg 
+						},
+						'timestamp': timestamp,
+						'friend' : 'unknown',
 						}
+				
 				allConv.append(data)
 
 		allMessages = MessageModels.objects.filter(type='P').filter(Q(sender=self.identification) | Q(receiver=self.identification)).order_by('-id').values()
@@ -342,6 +348,10 @@ class chatSocket(WebsocketConsumer):
 			if contact not in contactList:
 				contactList.append(contact)
 		for contact in contactList:
+			if userModels.User.objects.get(identification=contact).PendingInvite is not None and self.identification in userModels.User.objects.get(identification=contact).PendingInvite:
+				friendStatus = 'unknown'
+			elif self.UserModel.Friends is not None and msg['sender'] in self.UserModel.Friends:
+				friendStatus = 'unknown'
 			msg = allMessages.filter(Q(sender=contactList[0]) | Q(receiver=contactList[0])).order_by('-id')[0]
 			connexionStatus = userModels.User.objects.get(identification=contact).connexionStatus
 			allConv.append({
@@ -353,7 +363,8 @@ class chatSocket(WebsocketConsumer):
 					'msg': msg['message'],
 					'sender': userModels.User.objects.get(identification=msg['sender']).nickname
 					},
-				'timestamp': msg['timeCreation']
+				'timestamp': msg['timeCreation'],
+				'friend': friendStatus,
 				})
 
 		def cmpTimeStamp(msg):
@@ -401,14 +412,20 @@ class chatSocket(WebsocketConsumer):
 
 	def getUser(self, target):
 		user = userModels.User.objects.get(identification=target)
+		friendStatus = 'friend'
+		if user.PendingInvite is not None and self.identification in user.PendingInvite:
+			friendStatus = 'unknown'
+		elif user.Friends is not None and self.identification in user.Friends:
+			friendStatus = 'unknown'
 		self.send(text_data=json.dumps({
 			'type': 'get_user_data',
 			'name': user.nickname,
 			'identification':  user.identification,
 			'connexion_status': user.connexionStatus,
-			'conversation': user.allPrivateTalks
+			'conversation': user.allPrivateTalks,
+			'friend' : friendStatus
 			})
-			)
+		)
 
 	def getChannel(self, target):
 		channel = ChannelModels.objects.get(channelName=target)
@@ -756,7 +773,10 @@ class chatSocket(WebsocketConsumer):
 					'description': self.allChannels[chan].ChanModel.description,
 					'member': member,
 					'privacy_status': self.allChannels[chan].ChanModel.privacyStatus,
-					'last_msg': "" })
+					'last_msg': "",
+					'friend' : 'unknown'
+					})
+				
 
 
 		for user in allUsers:
@@ -764,6 +784,11 @@ class chatSocket(WebsocketConsumer):
 				msgs = MessageModels.objects.filter(Q(receiver=user.identification) | Q(sender=user.identification))
 
 				connexionStatus = user.connexionStatus
+				friendStatus = 'friend'
+				if user.PendingInvite is not None and self.identification in user.PendingInvite:
+					friendStatus = 'unknown'
+				elif user.Friends is not None and self.identification in user.Friends:
+					friendStatus = 'unknown'
 				if msgs.count() > 0:
 					if msgs[0].sender == self.UserModel.identification:
 						sender = 'Me'
@@ -777,7 +802,8 @@ class chatSocket(WebsocketConsumer):
 						'last_msg': {
 							'message': msgs[0].message,
 							'sender': sender
-							}
+							},
+						'friend': friendStatus,
 						})
 				else:
 					response.append({
@@ -785,7 +811,9 @@ class chatSocket(WebsocketConsumer):
 						'name': user.nickname,
 						'id': user.identification,
 						'connexion_status': connexionStatus,
-						'last_msg': '' })
+						'last_msg': '',
+						'friend': friendStatus,
+						})
 
 		def getConvName(conv):
 			return(conv['name'].lower())
@@ -806,7 +834,7 @@ class chatSocket(WebsocketConsumer):
 			print(channelName, channelDescription, privacyStatus, password,  adminId)	
 			self.allChannels[channelName] = ChannelChat(channelName, channelDescription, privacyStatus, password,  adminId)
 			self.allChannels[channelName].joinChannel(self.UserModel)
-			self.joinChannel(channelName, False, None)
+			self.joinChannel(channelName, False, None, 1)
 			self.send(json.dumps({
 				'type': 'channel_creation',
 				'state': 'success',
@@ -822,6 +850,7 @@ class chatSocket(WebsocketConsumer):
 			 )
 
 	def editDescription(self, channelName, newDescription):
+
 		if ChannelModels.objects.filter(channelName=channelName).exists() is False:
 			self.send(json.dumps({
 				'type': 'edit_description',
@@ -831,7 +860,7 @@ class chatSocket(WebsocketConsumer):
 
 		channel = ChannelModels.objects.get(channelName=channelName)
 		channel.description = newDescription
-		print(channel)
+		ColorPrint.prGreen(channel)
 		channel.save()
 		self.send(json.dumps({
 			'type': 'edit_description',
@@ -848,93 +877,118 @@ class chatSocket(WebsocketConsumer):
 
 		channel.save()
 
-	def invit_to_friend(self, target):
+	def InviteToFriend(self, target):
 		if userModels.User.objects.filter(identification=target).exists() is False or target == self.identification:
-			ColorPrint.prYellow("{usrID} try sending a friendship request to {targetID} but he doesn't exist.".format(self.user.identification, target))
+			ColorPrint.prYellow("{usrID} try sending a friendship request to {targetID} but he doesn't exist.".format(usrID=self.user.identification, targetID=target))
 			return
 
-		if target in self.UserModel.Friends:
-			ColorPrint.prYellow("{usrID} try sending a friendship request to {targetID} but they was already friend.".format(self.user.identification, target))
+		if self.UserModel.Friends is not None and target in self.UserModel.Friends:
+			ColorPrint.prYellow("{usrID} try sending a friendship request to {targetID} but they was already friend.".format(usrID=self.user.identification, targetID=target))
 			return
 
-		targetModel = userModels.User.objects.get(identification=target)
+		TargetModel = userModels.User.objects.get(identification=target)
 
-		if self.identification in targetModel.PendingInvite:
-			ColorPrint.prYellow("{usrID} try sending a friendship request to {targetID} but he already have a pending request.".format(self.user.identification, target))
+		if TargetModel.PendingInvite is not None and self.identification in TargetModel.PendingInvite:
+			ColorPrint.prYellow("{usrID} try sending a friendship request to {targetID} but he already have a pending request.".format(usrID=self.user.identification, targetID=target))
 			return
 	
-		if self.isBlock(targetModel):
-			ColorPrint.prYellow("{usrID} try sending a friendship request to {targetID} but he block him.".format(self.user.identification, target))
+		if self.isBlock(TargetModel):
+			ColorPrint.prYellow("{usrID} try sending a friendship request to {targetID} but he block him.".format(usrID=self.user.identification, targetID=target))
 			return
 
-		if self.isBlockBy(targetModel):
-			ColorPrint.prYellow("{usrID} try sending a friendship request to {targetID} who block him.".format(self.user.identification, target))
+		if self.isBlockBy(TargetModel):
+			ColorPrint.prYellow("{usrID} try sending a friendship request to {targetID} who block him.".format(usrID=self.user.identification, targetID=target))
 			return
 		
+		if TargetModel.PendingInvite is not None and self.identification in TargetModel.PendingInvite:
+			ColorPrint.prYellow("{usrID} try sending a friendship request to {targetID} but he already have a pending request.".format(usrID=self.user.identification, targetID=target))
+			return
+		
+		if self.UserModel.PendingInvite is not None and target in self.UserModel.PendingInvite:
+			self.UserModel.PendingInvite.remove(target)
+			if self.UserModel.Friends is not None:
+				self.UserModel.Friends.append(target)
+			else:
+				self.UserModel.Friends = [target]
+			self.UserModel.save()
+			if TargetModel.Friends is not None:
+				TargetModel.Friends.append(self.identification)
+			else:
+				TargetModel.Friends = [self.identification]
+			TargetModel.save()
+			return
+
+		if TargetModel.PendingInvite is not None:
+			TargetModel.PendingInvite.append(self.identification)
+		else:
+			TargetModel.PendingInvite = [self.identification]
+		TargetModel.save()
+
 		async_to_sync(self.channel_layer.group_send)(
 		'chat_' + target,
 		{
 			'type': 'receiveFriendInvitation',
 			'sender': self.identification
-			}
-		)
+		})
 	
 	def receiveFriendInvitation(self, sender):
-		if userModels.User.objects.filter(identification=sender).exists() is False or sender == self.identification:
-			ColorPrint.prYellow("{usrID} receive friendship request from {targetID} but he dont exist.".format(self.user.identification, sender))
+		ColorPrint.prGreen('FriendShipRequestReceived')
+		if userModels.User.objects.filter(identification=sender['sender']).exists() is False or sender['sender'] == self.identification:
+			ColorPrint.prYellow("{usrID} receive friendship request from {targetID} but he dont exist.".format(usrID=self.user.identification, targetID=sender['sender']))
 			return
 		
-		if sender in self.UserModel.Friends:
-			ColorPrint.prYellow("{usrID} receive friendship request from {targetID} but they was already friend.".format(self.user.identification, sender))
+		if self.UserModel.Friends is not None and sender['sender'] in self.UserModel.Friends:
+			ColorPrint.prYellow("{usrID} receive friendship request from {targetID} but they was already friend.".format(usrID=self.user.identification, targetID=sender['sender']))
 			return
 
-		if sender in self.UserModel.PendingInvite:
-			ColorPrint.prYellow("{usrID} try sending a friendship request to {targetID} but he already have a pending request.".format(self.user.identification, target))
+		targetModel = userModels.User.objects.get(identification=sender['sender'])
+
+		if self.isBlock(targetModel):
+			ColorPrint.prYellow("{usrID} receive friendship request from {targetID} but he block him.".format(usrID=self.user.identification, targetID=sender['sender']))
 			return
 
-		if self.isBlock(sender):
-			ColorPrint.prYellow("{usrID} receive friendship request from {targetID} but he block him.".format(self.user.identification, sender))
+		if self.isBlockBy(targetModel):
+			ColorPrint.prYellow("{usrID} receive friendship request from {targetID} who block him.".format(usrID=self.user.identification, targetID=sender['sender']))
 			return
-
-		if self.isBlockBy(sender):
-			ColorPrint.prYellow("{usrID} receive friendship request from {targetID} who block him.".format(self.user.identification, sender))
-			return
-
-		self.UserModel.PendingInvite.append(sender)
-		self.UserModel.save()
 
 		self.send(text_data=json.dumps({
 			'type': 'receive_friendship_invitation',
-			'sender': sender
+			'sender': sender['sender']
 			}))
 
 	def friendshipRequestResponse(self, result, sender):
 		if userModels.User.objects.filter(identification=sender).exists() is False or sender == self.identification:
-			ColorPrint.prYellow("{usrID} answer friendship request from {targetID} but he dont exist.".format(self.user.identification, sender))
+			ColorPrint.prYellow("{usrID} answer friendship request from {targetID} but he dont exist.".format(usrID=self.user.identification, targetID=sender))
 			return
 		
-		if sender in self.UserModel.Friends:
-			ColorPrint.prYellow("{usrID} answer friendship request from {targetID} but they was already friend.".format(self.user.identification, sender))
+		if self.UserModel.Friends is not None and sender in self.UserModel.Friends:
+			ColorPrint.prYellow("{usrID} answer friendship request from {targetID} but they was already friend.".format(usrID=self.user.identification, targetID=sender))
 			return
 
-		if sender not in self.UserModel.PendingInvite:
-			ColorPrint.prYellow("{usrID} try answering a friendship request from {targetID} but invite not exisiting.".format(self.user.identification, sender))
+		if self.UserModel.PendingInvite is None or sender not in self.UserModel.PendingInvite:
+			ColorPrint.prYellow("{usrID} try answering a friendship request from {targetID} but invite not exisiting.".format(usrID=self.user.identification, targetID=sender))
 			return
 
 		if self.isBlock(sender):
-			ColorPrint.prYellow("{usrID} answer friendship request from {targetID} but he block him.".format(self.user.identification, sender))
+			ColorPrint.prYellow("{usrID} answer friendship request from {targetID} but he block him.".format(usrID=self.user.identification, targetID=sender))
 			result = False
 
 		if self.isBlockBy(sender):
-			ColorPrint.prYellow("{usrID} answer friendship request from {targetID} who block him.".format(self.user.identification, sender))
+			ColorPrint.prYellow("{usrID} answer friendship request from {targetID} who block him.".format(usrID=self.user.identification, targetID=sender))
 			result = False
 		
 		if result == True:
 			self.UserModel.PendingInvite.remove(sender)
-			self.UserModel.Friends.append(sender)
+			if self.UserModel.Friends is not None:
+				self.UserModel.Friends.append(sender)
+			else:
+				self.UserModel.Friends = [sender]
 			self.UserModel.save()
 			TargetModel = userModels.User.objects.get(identification=sender)
-			TargetModel.Friends.append(self.identification)
+			if TargetModel.Friends is not None:
+				TargetModel.Friends.append(self.identification)
+			else:
+				TargetModel.Friends = [self.identification]
 			TargetModel.save()
 		if result == False:
 			self.UserModel.PendingInvite.remove(sender)

@@ -12,8 +12,8 @@ class User(AbstractUser):
 
 	channels = ArrayField(models.CharField(), blank=True, null=True)
 
-	Friends = ArrayField(models.CharField(), blank=True, null=True)
-	PendingInvite = ArrayField(models.CharField(), blank=True, null=True)
+	Friends = ArrayField(models.CharField(), blank=True)
+	PendingInvite = ArrayField(models.CharField(), blank=True)
 
 	blockedUser = ArrayField(models.CharField(), blank=True, null=True)
 	allPrivateTalks = ArrayField(models.CharField(), blank=True, null=True)

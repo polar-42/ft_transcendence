@@ -1,3 +1,4 @@
+import { initChat } from "./chatApp.js";
 import { navto } from "./index.js"
 
 export function initLogin() {
@@ -150,6 +151,7 @@ async function connect(event) {
 				feedback.innerHTML = data.message
 				sleep(3000)
 				initProfileButton(true)
+				initChat()
 				navto("/")
 			}
 			else if (data.TFA) {
@@ -220,6 +222,7 @@ function sendTFACode(container) {
 			sleep(3000)
 			initProfileButton(true)
 			navto("/")
+			initChat()
 		})
 		.catch(error => {
 			feedback.style.color = 'red'
