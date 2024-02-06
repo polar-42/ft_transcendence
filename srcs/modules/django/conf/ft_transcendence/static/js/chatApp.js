@@ -13,6 +13,12 @@ export async function initChat() {
 		chatHeader.addEventListener("click", openChatbox)
 		startChatConnexion();
 	}
+	else if (logStatus == false)
+	{
+		if(chatHeader.classList.contains('connected'))
+			chatHeader.classList.remove('connected')
+		chatSocket = undefined
+	}
 }
 
 function openChatbox() {

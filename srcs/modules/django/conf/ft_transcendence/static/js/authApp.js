@@ -220,9 +220,9 @@ function sendTFACode(container) {
 			feedback.style.color = 'green'
 			feedback.innerHTML = data.message
 			sleep(3000)
-			initProfileButton(true)
-			navto("/")
+			initProfileButton(false)
 			initChat()
+			navto("/")
 		})
 		.catch(error => {
 			feedback.style.color = 'red'
@@ -290,7 +290,7 @@ function dataURItoBlob(dataURI) {
 	return new Blob([ab], { type: mimeString });
 }
 
-async function initProfileButton(connected) {
+export async function initProfileButton(connected) {
 	let profiles = document.querySelectorAll(".profile_button")
 	if (connected === true) {
 		let profiles = document.querySelectorAll(".profile_button")

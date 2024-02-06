@@ -1,5 +1,6 @@
 import { navto } from "../index.js"
-import { closeChat  } from "../chatApp.js";
+import { closeChat, initChat  } from "../chatApp.js";
+import { initProfileButton } from "../authApp.js";
 
 export function initUpdateAccount() {
 	avatarButtonFunction() //TO CHANGE
@@ -65,6 +66,13 @@ function Handle2FaToggle(checkbox) {
 	})
 }
 
+function ClosePopUp()
+{
+	document.querySelector(".TFA_PopUp_Container").remove()
+	fetch(window.location.origin + "/authApp/TFA/Disable")
+	document.querySelector('input[type="checkbox"]').checked = false
+}
+
 function Effective2Fa(doc, TFARequestType) {
 	let content = doc.querySelector('.TFA_Content')
 	fetch(window.location.origin + "/authApp/TFA/ConfirmPass")
@@ -78,6 +86,9 @@ function Effective2Fa(doc, TFARequestType) {
 			content.innerHTML = texted
 			content.querySelector('.submit_BTN').addEventListener('click', () => {
 				VerifyPass(content, TFARequestType)
+			})
+			content.querySelector('.cancel_BTN').addEventListener('click', () => {
+				ClosePopUp()
 			})
 		})
 		.catch(error => {
@@ -149,6 +160,9 @@ function Disable2FARequest(content, text)
 				document.querySelector('.TFA_PopUp_Container').remove()
 			}
 		})
+		.catch(error => {
+			console.error(error)
+		})
 }
 
 function Select2FA(content)
@@ -172,6 +186,9 @@ function Select2FA(content)
 		})
 		content.querySelector('.submit_BTN').addEventListener('click', () => {
 			ChooseAuth(content)
+		})
+		content.querySelector('.cancel_BTN').addEventListener('click', () => {
+			ClosePopUp()
 		})
 	})
 	.catch(error => {
@@ -244,6 +261,9 @@ function QrAuth(content)
 		content.querySelector(".submit_BTN").addEventListener("click", () => {
 			SendQrAnswer(content, content.querySelector("#Input_code"))
 		})
+		content.querySelector('.cancel_BTN').addEventListener('click', () => {
+			ClosePopUp()
+		})
 	})
 }
 
@@ -273,10 +293,12 @@ function SendQrAnswer(content, codeInput)
 		if (data.error != undefined)
 			throw new Error(data.error)
 		content.querySelector('#messageError').textContent = data.success
+
+		initProfileButton(false)
+		initChat()
+		navto('/')
 	})
 	.catch(error => {
-		console.log(content)
-		console.log(content.querySelector('#messageError'))
 		content.querySelector('#messageError').textContent = error
 	})
 }

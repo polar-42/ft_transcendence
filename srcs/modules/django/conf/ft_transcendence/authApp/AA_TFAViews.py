@@ -144,16 +144,13 @@ def Disable(request):
 
 def LoginPage(request):
 	if request.user.is_authenticated == True:
-		ColorPrint.prGreen("1")
 		return HttpResponseForbidden('', content_type="text/plain")
 	cookie = request.COOKIES.get('2FACookie')
 	if cookie == None:
-		ColorPrint.prGreen("3")
+		return HttpResponseForbidden('', content_type="text/plain")
 	cookie = jwt.decode(cookie, os.environ.get('DJANGO_KEY'), algorithms="HS256")
 	if User.objects.filter(email=cookie.get('email')).exists() is False:
-		ColorPrint.prGreen("2")
 		return HttpResponseForbidden('', content_type="text/plain")
-	userModel = User.objects.get(email=cookie.get('email'))
 	return render(request, 'authApp/TFA/Enter2FACode.html')
 
 def LoginCheck(request):
