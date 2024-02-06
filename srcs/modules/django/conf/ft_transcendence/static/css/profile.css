@@ -1,6 +1,6 @@
 
 .userInformation {
-	display: grid;
+	display: none;
     grid-template-areas: 'a b c';
     text-align: center;
     justify-content: space-evenly;

@@ -186,11 +186,11 @@ function onMessageChat(e)
       break
     case 'start_battleship_game':
       startBattleshipGame(data)
-      break 
+      break
   }
 }
 
-async function getProfilePicture(data) { 
+async function getProfilePicture(data) {
   console.log(data)
   if (data.type === 'channel') {
     let channelName = data.name
@@ -241,14 +241,16 @@ async function displayLastChats(data) {
     else
       isConnected = 'connected'
     let profilePicture = await getProfilePicture(data[i])
-    let ppUrl  
+    let ppUrl
     if (profilePicture.type == 'image/null')
       ppUrl = "../static/assets/logo/user.png"
-    else 
+    else
       ppUrl = URL.createObjectURL(profilePicture)
+
+    console.log(data)
     let item =
-      '<li class="' + data[i].type + '">' +
-      '<img src=' + ppUrl + ' alt="converstion_picture">' +
+      '<li class="' + data[i].type + '" ' + 'id="conv_' + data[i].id + '">' +
+      '<img src="../static/assets/logo/user.png" alt="converstion_picture">' +
       '<div class="conversation_text">' +
       '<div class="conversation_name">' +
       '<p>' + data[i].name + '</p>' +
@@ -313,12 +315,12 @@ async function displaySearchResult(data) {
     else
       lastMsg = data[i].last_msg.sender + ': ' + data[i].last_msg.message
     let profilePicture = await getProfilePicture(data[i])
-    let ppUrl  
+    let ppUrl
     if (profilePicture.type == 'image/null')
       ppUrl = "../static/assets/logo/user.png"
-    else 
+    else
       ppUrl = URL.createObjectURL(profilePicture)
-    let item = 
+    let item =
       '<li class="' + data[i].type + ' ' + member + '" ' + privacyStatus +'>' +
       '<img src=' + ppUrl + ' alt="converstion_picture">' +
       '<div class="conversation_text">' +
@@ -337,7 +339,7 @@ async function displaySearchResult(data) {
       resultWrapper.innerHTML = item
     }
     resultWrapper.lastChild.addEventListener("click", () => {
-      if (data[i].type === 'private_message') { 
+      if (data[i].type === 'private_message') {
         goToConv(data[i].id)
       } else if (data[i].type === 'channel' && data[i].member === true) {
         goToChan(data[i].name)
@@ -422,9 +424,9 @@ function displayChannel(data) {
     let ppUrl
     if (profilePicture.type === 'image/null')
       ppUrl = "../static/assets/logo/user.png"
-    else 
+    else
       ppUrl = URL.createObjectURL(profilePicture)
-    let html = 
+    let html =
       '<div class="contact_wrapper ' + general + ' ">' +
       '<img src=' + ppUrl + ' alt="channel picture">' +
       '<div class="contact_name_wrapper">' +
@@ -552,10 +554,10 @@ function displayChannel(data) {
           isConnected = ''
         }
         let profilePicture = await getProfilePicture({ 'type': 'user', 'id': users[i].id})
-        let ppUrl  
+        let ppUrl
         if (profilePicture.type == 'image/null')
           ppUrl = "../static/assets/logo/user.png"
-        else 
+        else
           ppUrl = URL.createObjectURL(profilePicture)
         if (users[i] !== self.username) {
           let item =
@@ -596,7 +598,7 @@ async function displayChannelHistory(data) {
   let userData = await Response.json()
   let html = ''
   for (let i = data.length - 1; i >= 0 ; i--) {
-    let sender 
+    let sender
     let received
     if (data[i].senderID === userData.userID) {
       received = "own"
@@ -606,10 +608,10 @@ async function displayChannelHistory(data) {
       sender = data[i].sender
     }
     let profilePicture = await getProfilePicture({ 'type': 'user', 'id': data[i].senderID})
-    let ppUrl  
+    let ppUrl
     if (profilePicture.type == 'image/null')
       ppUrl = "../static/assets/logo/user.png"
-    else 
+    else
       ppUrl = URL.createObjectURL(profilePicture)
 
     let item =
@@ -684,7 +686,7 @@ async function initGameInvitiation() {
       method: 'GET'
   })
   if (!Response.ok) {
-    return 
+    return
   }
   let usrListJson = await Response.json()
   let html =
@@ -739,10 +741,10 @@ async function initGameInvitiation() {
     let inputBox = document.querySelector(".opponent_selection_box input")
     let input = inputBox.value.toLowerCase()
     let filterUsers = []
-    
+
     autocompleteList.innerHTML = ''
     usrListJson.forEach((usr) => {
-      if (usr.name.substr(0, input.length).toLowerCase() === input) 
+      if (usr.name.substr(0, input.length).toLowerCase() === input)
         filterUsers.push(usr)
     })
     if (input == '') {
@@ -751,20 +753,20 @@ async function initGameInvitiation() {
     for (let i = 0; i < filterUsers.length; i++) {
       let item = document.createElement("li")
       item.appendChild(document.createElement('button'))
-      item.firstChild.textContent = filterUsers[i].name 
+      item.firstChild.textContent = filterUsers[i].name
       item.firstChild.setAttribute("id", filterUsers[i].id)
       item.addEventListener("click", onButtonClick)
-      autocompleteList.appendChild(item)  
+      autocompleteList.appendChild(item)
     }
   }
 
   function onButtonClick(e) {
     e.preventDefault()
-    
+
     const btn = e.target
     let inputBox = document.querySelector(".opponent_selection_box input")
     inputBox.value = btn.innerHTML
-    document.querySelector(".autocomplete-list").innerHTML = '' 
+    document.querySelector(".autocomplete-list").innerHTML = ''
   }
 
   function closeInvitationBox() {
@@ -780,14 +782,14 @@ function sendGameInvitation(usrList) {
   let checkboxes = document.querySelectorAll(".game_choice_box input")
   let feedback = document.querySelector(".invitation_box .feedback")
   feedback.innerHTML = ''
-  
+
   if (userName.value === '') {
-    feedback.innerHTML = "No user selected" 
+    feedback.innerHTML = "No user selected"
     return
   }
   let user = usrList.find((usr) => usr.name === userName)
   if (checkboxes[0].checked === false && checkboxes[1].checked === false) {
-    feedback.innerHTML = "No game selected" 
+    feedback.innerHTML = "No game selected"
     return
   } else if (checkboxes[0].checked === true) {
     chatSocket.send(JSON.stringify({
@@ -805,18 +807,18 @@ function sendGameInvitation(usrList) {
 
 function receivePongInvitation(data)
 {
-  if (data.sender_id !== document.querySelector(".main_box_header .contact_wrapper").getAttribute("userid")) 
+  if (data.sender_id !== document.querySelector(".main_box_header .contact_wrapper").getAttribute("userid"))
     return // notif
 
   let conversation = document.querySelector(".conversation")
   let item = document.createElement("li")
   item.classList.add("message_item", "game_invitation")
-  item.innerHTML = 
+  item.innerHTML =
       '<p>' + data.sender + ' invite you to a Pong game</p>' +
       '<div class="acceptation_wrapper">' +
-        '<button class="accept_btn">Accept</button>' + 
-        '<button class="refuse_btn">Refuse</button>' + 
-      '</div>' 
+        '<button class="accept_btn">Accept</button>' +
+        '<button class="refuse_btn">Refuse</button>' +
+      '</div>'
 
   item.querySelector(".accept_btn").addEventListener("click", acceptPongInvitation.bind(null, data.sender, data.sender_id))
   item.querySelector(".refuse_btn").addEventListener("click", refusePongInvitation.bind(null, data.sender, data.sender_id))
@@ -838,7 +840,7 @@ function acceptPongInvitation(senderName, senderId) {
 async function refusePongInvitation(senderName, senderId) {
   let inviteElm = document.querySelector(".game_invitation")
   let userData
-  let Response = await fetch(document.location.origin + '/authApp/getUserID', 
+  let Response = await fetch(document.location.origin + '/authApp/getUserID',
     {
       method: 'GET'
     })
@@ -859,18 +861,18 @@ async function refusePongInvitation(senderName, senderId) {
 
 function receiveBattleshipInvitation(data)
 {
-  if (data.sender_id !== document.querySelector(".main_box_header .contact_wrapper").getAttribute("userid")) 
+  if (data.sender_id !== document.querySelector(".main_box_header .contact_wrapper").getAttribute("userid"))
     return // notif
 
   let conversation = document.querySelector(".conversation")
   let item = document.createElement("li")
   item.classList.add("message_item", "game_invitation")
-  item.innerHTML = 
+  item.innerHTML =
       '<p>' + data.sender + ' invite you to a Battleship game</p>' +
       '<div class="acceptation_wrapper">' +
-        '<button class="accept_btn">Accept</button>' + 
-        '<button class="refuse_btn">Refuse</button>' + 
-      '</div>' 
+        '<button class="accept_btn">Accept</button>' +
+        '<button class="refuse_btn">Refuse</button>' +
+      '</div>'
 
   item.querySelector(".accept_btn").addEventListener("click", acceptBattleshipInvitation.bind(null, data.sender, data.sender_id))
   item.querySelector(".refuse_btn").addEventListener("click", refuseBattleshipInvitation.bind(null, data.sender, data.sender_id))
@@ -892,7 +894,7 @@ function acceptBattleshipInvitation(senderName, senderId) {
 async function refuseBattleshipInvitation(senderName, senderId) {
   let inviteElm = document.querySelector(".game_invitation")
   let userData
-  let Response = await fetch(document.location.origin + '/authApp/getUserID', 
+  let Response = await fetch(document.location.origin + '/authApp/getUserID',
     {
       method: 'GET'
     })
@@ -919,12 +921,12 @@ function receiveRefusedInvitation(data) {
 
   let item = document.createElement("li")
   item.classList.add("message_item", "game_invitation")
-  item.innerHTML = 
+  item.innerHTML =
     '<p>' + data.sender + ' refused your invitation</p>'
   item.firstChild.style.fontStyle = "italic"
   console.log(item)
   document.querySelector(".conversation").appendChild(item)
-  
+
 }
 
 function sendMessage(message, targetUser)
@@ -1109,19 +1111,19 @@ function displayPrivMsg(data) {
   initPrvMsgBody(data.identification)
 
   async function  initPrvMsgHeader(data) {
-    let isConnected 
+    let isConnected
     if (data.connexion_status === 2) {
       isConnected = 'connected'
     } else {
       isConnected = 'disconnected'
     }
     let profilePicture = await getProfilePicture({ 'type': 'user', 'id': data.identification})
-    let ppUrl  
+    let ppUrl
     if (profilePicture.type == 'image/null')
       ppUrl = "../static/assets/logo/user.png"
-    else 
+    else
       ppUrl = URL.createObjectURL(profilePicture)
-    let html = 
+    let html =
       '<div class="contact_wrapper" userID="' + data.identification + '">' +
       '<img src=' + ppUrl + ' alt="contact profile picture">' +
       '<div class="contact_name_wrapper">' +
@@ -1177,16 +1179,25 @@ function displayPrivMsg(data) {
 }
 
 function receiveMsg(data) {
-  console.log('page contact:', document.querySelector(".contact_wrapper").getAttribute('userID'), 'data sender:', data.sender)
-  if (document.querySelector(".contact_wrapper").getAttribute('userID') === data.sender) {
-    let conversation = document.querySelector(".conversation")
-    let msgItem =
-      "<li class='message_item' msgid='" + data.id + "'>" +
-      "<p class='message'>" + data.message + "</p>" +
-      "<p class='timestamp'>" + data.time + "</p>" +
-      "</li>"
-    conversation.lastChild.insertAdjacentHTML('afterend', msgItem)
-    conversation.scrollTo(0, conversation.scrollHeight)
+  if (document.querySelector(".contact_wrapper") == null)
+  {
+    console.log('NOTFICATIONS')
+    console.log(data)
+    document.getElementById('conv_' + data.sender).style.background = 'red'
+  }
+  else
+  {
+    console.log('page contact:', document.querySelector(".contact_wrapper").getAttribute('userID'), 'data sender:', data.sender)
+    if (document.querySelector(".contact_wrapper").getAttribute('userID') === data.sender) {
+      let conversation = document.querySelector(".conversation")
+      let msgItem =
+        "<li class='message_item' msgid='" + data.id + "'>" +
+        "<p class='message'>" + data.message + "</p>" +
+        "<p class='timestamp'>" + data.time + "</p>" +
+        "</li>"
+      conversation.lastChild.insertAdjacentHTML('afterend', msgItem)
+      conversation.scrollTo(0, conversation.scrollHeight)
+    }
   }
 }
 

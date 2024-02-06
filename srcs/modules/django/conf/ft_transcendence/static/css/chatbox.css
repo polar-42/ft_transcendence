@@ -2,7 +2,7 @@
   position: fixed;
   bottom: 0;
   right: 30px;
-  box-shadow: 
+  box-shadow:
   1px 1px 5px rgba(255, 255, 255, 0.2),
   -1px -1px 5px rgba(255, 255, 255, 0.2);
   width: 350px;
@@ -34,7 +34,7 @@
 .chatbox_header_wrapper:hover {
   background: radial-gradient(ellipse at bottom, var(--main-color) , var(--third));
   border-bottom: none;
-  box-shadow: 
+  box-shadow:
   1px 1px 2px white,
   -1px -1px 2px white;
 }
@@ -115,7 +115,7 @@
   font-size: 31px;
   text-align: center;
   height: 38px;
-} 
+}
 
 .main_box_body.homepage .conversation_list {
   height: 75%;
@@ -130,11 +130,11 @@
 ::-webkit-scrollbar-thumb {
   background: var(--second);
   border-radius: 5px;
-} 
+}
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--third);
-} 
+}
 
 .main_box_body.homepage .conversation_list li {
   border-radius: 5px;
@@ -421,7 +421,7 @@
     padding: 3px 7px 3px 7px;
     font-size: 1em;
     color: white;
-    background: 
+    background:
     linear-gradient(135deg, var(--secondary-bg-color),  var(--main-bg-color)),
     var(--main-bg-color);
     border: 1px solid var(--main-bg-color);
@@ -431,7 +431,7 @@
   }
 
   button:hover {
-    background: 
+    background:
     linear-gradient(135deg, rgba(0, 155, 217, 0.1), rgba(0, 155, 217, 0.4)),
     white;
     color: var(--main-bg-color);
@@ -442,7 +442,7 @@
     font-size: 0.7em;
     font-family: radjhanibold;
     color: red;
-  } 
+  }
 }
 
 .main_box_header.private_message ,
@@ -460,7 +460,7 @@
 
 }
 
-.main_box_header.private_message .contact_wrapper, 
+.main_box_header.private_message .contact_wrapper,
 .main_box_header.channel .contact_wrapper {
   display: grid;
   grid-template-areas: "a b c";
@@ -568,7 +568,7 @@
 
 .main_box_body.private_message .conversation,
 .main_box_body.channel .conversation {
-  padding: 10px 5px 5px 5px; 
+  padding: 10px 5px 5px 5px;
   overflow: scroll;
   height: 300px;
 

@@ -127,6 +127,7 @@
 	display: grid;
 	grid-template-areas:'a'
 						'b';
+	grid-template-rows: repeat(auto-fit, minmax(100px,1fr));
 }
 
 #statName {
@@ -139,12 +140,11 @@
 	flex-wrap: wrap;
 	justify-content: space-around;
 	align-content: center;
-	flex: 1;
+	margin-top: 10px;
 }
 
 .gameStats
 {
-	margin-top: 5px;
 	display: grid;
 	grid-template-areas: 'a b';
 	gap: 10px;
@@ -192,7 +192,6 @@
 }
 
 .tournamentStats {
-	margin-top: 5px;
 	display: grid;
 	grid-template-areas: 'a b';
 	gap: 10px;
@@ -242,17 +241,20 @@
 
 .otherStat {
 	grid-area: b;
-	text-align: center;
-	display: flex;
-	justify-content: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: center;
 }
 
 #otherStatLine {
 	grid-area: b;
-	display: grid;
+	column-count: 2;
+	margin-left: 5%;
 }
 
 #otherStatRow {
+	margin-bottom: 8%;
 }
 
 .PopUp_wrapper {
@@ -473,5 +475,17 @@
 	}
 	#otherStatLine {
 		font-size: 1.7vh;
+	}
+}
+
+@media (max-width: 600px) {
+	#otherStatLine {
+		font-size: 75%;
+	}
+}
+
+@media (max-width: 500px) {
+	#otherStatLine {
+		font-size: 65%;
 	}
 }
