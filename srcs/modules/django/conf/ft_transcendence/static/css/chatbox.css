@@ -306,7 +306,7 @@
   .opponent_selection_box {
     width: 80%;
     display: flex;
-    flex-direction: column;	
+    flex-direction: column;
     margin: auto;
     text-align: center;
     position: relative;
@@ -346,7 +346,7 @@
 
   button {
     display: block;
-    background: 
+    background:
     linear-gradient(135deg, var(--secondary-bg-color),  var(--main-bg-color)),
     var(--main-bg-color);
     color: white;
@@ -357,7 +357,7 @@
   }
 
   button:hover {
-    background: 
+    background:
     linear-gradient(135deg, rgba(0, 155, 217, 0.1), rgba(0, 155, 217, 0.4)),
     white;
     color: var(--main-bg-color);
@@ -743,3 +743,23 @@
 }
 
 
+.pop_up_unread {
+  display: none;
+  position: absolute;
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at bottom, #4c77e6 5%, #7f4af5);
+  margin-top: -5px;
+  margin-left: 308px;
+}
+
+#pop_up_unread_chatbox {
+  display: none;
+  position: absolute;
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  background: red;
+  margin-left: 338px;
+}

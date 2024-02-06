@@ -104,7 +104,7 @@ export function closeChat()
 	{
 		if (chatSocket.readyState === chatSocket.OPEN)
 		{
-			console.log('close')
+			//console.log('close')
 			chatSocket.close();
 			chatSocket = undefined
 		}
@@ -131,7 +131,7 @@ function onMessageChat(e)
 {
   const data = JSON.parse(e.data)
 
-  console.log(data)
+  //console.log(data)
   switch (data['type']) {
     case 'search_conv':
       displaySearchResult(data.data)
@@ -146,7 +146,7 @@ function onMessageChat(e)
       displayChannel(data)
       break
     case 'chat_history':
-      displayChatHistory(data.data)
+      displayChatHistory(data.data, data.isStillUnreadMessage)
       break
     case 'actualize_chat_history':
       actualizeChatHistory(data.data)
@@ -155,7 +155,7 @@ function onMessageChat(e)
       actualizeChannelHistory(data.data)
       break
     case 'channel_history':
-      displayChannelHistory(data.data)
+      displayChannelHistory(data.data, data.isStillUnreadMessage)
       break
     case 'channel_creation':
       receiveChanCreation(data)
@@ -191,7 +191,7 @@ function onMessageChat(e)
 }
 
 async function getProfilePicture(data) {
-  console.log(data)
+  //console.log(data)
   if (data.type === 'channel') {
     let channelName = data.name
     Response = await fetch(document.location.origin + '/authApp/get_avatar_image/?'
@@ -203,7 +203,7 @@ async function getProfilePicture(data) {
         })
       if (Response.ok) {
         let picture = await Response.blob()
-        console.log(picture)
+        //console.log(picture)
         return picture
       }
 
@@ -218,7 +218,7 @@ async function getProfilePicture(data) {
         })
       if (Response.ok) {
         let picture = await Response.blob()
-        console.log(picture)
+        //console.log(picture)
         return picture
       }
   }
@@ -227,7 +227,6 @@ async function getProfilePicture(data) {
 async function displayLastChats(data) {
   let conversation_list = document.querySelector(".conversation_list")
   for (let i = data.length - 1; i >= 0; i--) {
-    console.log(data[i])
     let lastMsg
     if (data[i].last_msg.msg !== '')
       lastMsg = data[i].last_msg.sender + ': ' + data[i].last_msg.msg
@@ -247,9 +246,16 @@ async function displayLastChats(data) {
     else
       ppUrl = URL.createObjectURL(profilePicture)
 
-    console.log(data)
+    let convId;
+    if (data[i].id != undefined)
+      convId = "conv_" + data[i].id
+    else
+      convId = "conv_" + data[i].name
+    //console.log('displayLastChats', data[i])
+
     let item =
-      '<li class="' + data[i].type + '" ' + 'id="conv_' + data[i].id + '">' +
+      '<li class="' + data[i].type + '" ' + 'id="' + convId + '" isread="' + data[i].isRead +'">' +
+      '<div class="pop_up_unread" isread_popup="' + data[i].isRead + '"></div>' +
       '<img src="../static/assets/logo/user.png" alt="converstion_picture">' +
       '<div class="conversation_text">' +
       '<div class="conversation_name">' +
@@ -271,6 +277,15 @@ async function displayLastChats(data) {
         goToChan(data[i].name)
     })
   }
+
+  let divConv = document.querySelectorAll('.pop_up_unread')
+  divConv.forEach((e) => {
+    if (e.getAttribute('isread_popup') == 'false')
+    {
+      e.style.display = 'block'
+      document.getElementById('pop_up_unread_chatbox').style.display = 'block'
+    }
+  })
 }
 
 async function displaySearchResult(data) {
@@ -290,7 +305,7 @@ async function displaySearchResult(data) {
   let member
 
   for (let i = 0; i < data.length; i++) {
-    console.log(data[i])
+    //console.log(data[i])
     if (data[i].connexion_status == 2) {
       isConnected = 'connected'
     } else if (data[i].connexion_status === 0) {
@@ -387,7 +402,7 @@ function clickJoinChan(event) {
   })
 }
 
-function displayChatHistory(data) {
+function displayChatHistory(data, isStillUnreadMessage) {
   let conversation = document.querySelector(".conversation")
   for (let i = 0 ; i < data.length; i++) {
     let sender
@@ -407,6 +422,13 @@ function displayChatHistory(data) {
       conversation.firstChild.insertAdjacentHTML("beforebegin", item)
     }
   }
+
+  if (isStillUnreadMessage == true) {
+    document.getElementById('pop_up_unread_chatbox').style.display = 'block'
+  } else {
+    document.getElementById('pop_up_unread_chatbox').style.display = 'none'
+  }
+
   conversation.scrollTo(0, conversation.scrollHeight)
 }
 
@@ -586,7 +608,7 @@ function displayChannel(data) {
   }
 }
 
-async function displayChannelHistory(data) {
+async function displayChannelHistory(data, isStillUnreadMessage) {
   let conversation = document.querySelector(".conversation")
   let Response = await fetch(document.location.origin + '/authApp/getUserID',
     {
@@ -627,9 +649,16 @@ async function displayChannelHistory(data) {
       '</li>'
 
     html += item
+
   }
   conversation.innerHTML = html
   conversation.scrollTo(0, conversation.scrollHeight)
+
+  if (isStillUnreadMessage == true) {
+    document.getElementById('pop_up_unread_chatbox').style.display = 'block'
+  } else {
+    document.getElementById('pop_up_unread_chatbox').style.display = 'none'
+  }
 }
 
 function goToConv(id) {
@@ -770,7 +799,7 @@ async function initGameInvitiation() {
   }
 
   function closeInvitationBox() {
-    console.log('dsadsa')
+    //console.log('dsadsa')
     document.querySelector(".invitation_box").remove()
     invitationButton.addEventListener("click", initGameInvitiation)
     invitationButton.removeEventListener("click", closeInvitationBox)
@@ -924,14 +953,14 @@ function receiveRefusedInvitation(data) {
   item.innerHTML =
     '<p>' + data.sender + ' refused your invitation</p>'
   item.firstChild.style.fontStyle = "italic"
-  console.log(item)
+  //console.log(item)
   document.querySelector(".conversation").appendChild(item)
 
 }
 
 function sendMessage(message, targetUser)
 {
-  console.log('message is', message, 'and tagetUser is', targetUser);
+  //console.log('message is', message, 'and tagetUser is', targetUser);
 
   let conversation = document.querySelector(".conversation")
   let date = new Date()
@@ -977,7 +1006,7 @@ function inviteToPongGame()
 
   if (channelName.value.length <= 3)
   {
-    console.log('Error: One field too small');
+    //console.log('Error: One field too small');
     return;
   }
 
@@ -994,7 +1023,7 @@ function inviteToBattleshipGame()
 
   if (channelName.value.length <= 3)
   {
-    console.log('Error: One field too small');
+    //console.log('Error: One field too small');
     return;
   }
 
@@ -1007,7 +1036,7 @@ function inviteToBattleshipGame()
 
 function joinChannel(channelName, privacyStatus, password)
 {
-  console.log('channelName:', channelName, ' privacyStatus:', privacyStatus, ' password:', password)
+  //console.log('channelName:', channelName, ' privacyStatus:', privacyStatus, ' password:', password)
   if (privacyStatus === false) {
     chatSocket.send(JSON.stringify({
       'type': 'channel_join',
@@ -1041,7 +1070,7 @@ function blockUser()
 
   if (target.value.length <= 3)
   {
-    console.log('Error: channel name too small');
+    //console.log('Error: channel name too small');
     return;
   }
 
@@ -1058,7 +1087,7 @@ function unblockUser()
 
   if (target.value.length <= 3)
   {
-    console.log('Error: channel name too small');
+    //console.log('Error: channel name too small');
     return;
   }
 
@@ -1181,13 +1210,15 @@ function displayPrivMsg(data) {
 function receiveMsg(data) {
   if (document.querySelector(".contact_wrapper") == null)
   {
-    console.log('NOTFICATIONS')
-    console.log(data)
-    //document.getElementById('conv_' + data.sender).style.background = 'red'
+    //console.log(data)
+    let divConv = document.getElementById('conv_' + data.sender)
+    divConv.querySelector('.pop_up_unread').style.display = 'block'
+    divConv.querySelector('.conversation_text').querySelector('.last_msg').innerHTML = data.senderNickname + ': ' + data.message
+    document.getElementById('pop_up_unread_chatbox').style.display = 'block'
   }
   else
   {
-    console.log('page contact:', document.querySelector(".contact_wrapper").getAttribute('userID'), 'data sender:', data.sender)
+    //console.log('page contact:', document.querySelector(".contact_wrapper").getAttribute('userID'), 'data sender:', data.sender)
     if (document.querySelector(".contact_wrapper").getAttribute('userID') === data.sender) {
       let conversation = document.querySelector(".conversation")
       let msgItem =
@@ -1197,6 +1228,13 @@ function receiveMsg(data) {
         "</li>"
       conversation.lastChild.insertAdjacentHTML('afterend', msgItem)
       conversation.scrollTo(0, conversation.scrollHeight)
+
+      console.log('SEND READ DATA', data.sender, data.receiver)
+      chatSocket.send(JSON.stringify({
+        'type': 'msg_read',
+        'sender': data.sender,
+        'receiver': data.receiver
+      }))
     }
   }
 }
@@ -1221,7 +1259,7 @@ async function receiveChanMsg(data) {
   }
 
   let item =
-    '<li class="message_item ' + received + '">' +
+    '<li class="message_item ' + received + '" msgid="' + '">' +
     '<div class="sender">' +
     '<img src="../static/assets/logo/user.png" alt="sender profile picture">' +
     '<p>' + sender + '<p>' +
@@ -1232,12 +1270,30 @@ async function receiveChanMsg(data) {
     '</div>' +
     '</li>'
 
-  if (conversation.children.length > 0) {
-    conversation.lastChild.insertAdjacentHTML("afterend", item)
-  } else {
-    conversation.innerHTML = item
+  if (conversation == undefined)
+  {
+    let divConv = document.getElementById('conv_' + data.channel)
+    divConv.querySelector('.pop_up_unread').style.display = 'block'
+    divConv.querySelector('.conversation_text').querySelector('.last_msg').innerHTML = data.sender + ': ' + data.message
+    document.getElementById('pop_up_unread_chatbox').style.display = 'block'
   }
-  conversation.scrollTo(0, conversation.scrollHeight)
+  else
+  {
+    if (conversation.children.length > 0) {
+      conversation.lastChild.insertAdjacentHTML("afterend", item)
+    } else {
+      conversation.innerHTML = item
+    }
+    conversation.scrollTo(0, conversation.scrollHeight)
+
+
+    console.log(data)
+    chatSocket.send(JSON.stringify({
+      'type': 'msg_read',
+      'sender': data.senderID,
+      'receiver': data.channel
+    }))
+  }
 }
 
 async function prvMsgOnTopScroll(contactId) {
@@ -1452,7 +1508,7 @@ async function createChannel() {
     return
   }
 
-  console.log(pwd)
+  //console.log(pwd)
   chatSocket.send(JSON.stringify({
     'type': 'create_channel',
     'channel_name': channelName,
