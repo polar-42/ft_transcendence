@@ -1,7 +1,11 @@
 {% for item in games %}
-    <li> </br> Name: {{ item.name }}</br>
-        Type: {{ item.typeGame }} </br>
-        Creator: {{ item.creator}} </br>
-        Description: {{ item.description }} </br>
-        <button class="joinGame_BTN {{ item.joinable }}" id="{{ item.index }}">Join</button> </br> </li>
+<li>
+	<img class="tournament_type" src="{{ item.typeGame }}" alt="Game type"> 
+	<div class="tournament_data">
+		<p class="tournament_name">{{ item.name }}</p>
+		<p class="creator_name">Creator: {{ item.creator}}</p> 
+		<p class="tournament_description">{{ item.description }}</p> 
+	</div>
+	<button class="joinGame_BTN {{ item.joinable }}" id="{{ item.index }}">Join</button>
+</li>
 {% endfor %}

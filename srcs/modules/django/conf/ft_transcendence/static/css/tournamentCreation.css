@@ -149,7 +149,7 @@
 
 .tournament_creation .form_wrapper .game_type_selection_wrapper button.selected {
   background: var(--main-bg-color);
-  border: 5px solid var(--fourth);
+  border: 5px solid #6c5af0;
   box-shadow:
       2px 2px 10px var(--secondary-bg-color),
       -2px -2px 10px var(--secondary-bg-color);
@@ -184,4 +184,9 @@
     white;
     color: var(--main-bg-color);
     cursor: pointer;
+}
+
+.tournament_creation #messageCreationTournaments {
+  text-align: center;
+  color: red;
 }

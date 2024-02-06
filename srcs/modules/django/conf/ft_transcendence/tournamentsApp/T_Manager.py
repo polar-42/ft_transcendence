@@ -24,13 +24,13 @@ class TournamentsManager():
 					return False, -1
 
 		tournamentType = GameType.Pong if data.get('typeGame') == "Pong" else GameType.Battleship
-
+		ColorPrint.prYellow(data)
 		obj = TournamentsModels.objects.create(
 			tournamentsName = str(data.get('tournamentsName')),
 			numberOfPlayers = int(data.get('numberOfPlayers')),
 			creatorId = creator.id,
 			privateGame = TournamentVisibility.Public,
-			description =  "DESCRIPTION TO DO",
+			description =  str(data.get('tournamentsDescription')),
 			tournamentType = tournamentType
 		)
 

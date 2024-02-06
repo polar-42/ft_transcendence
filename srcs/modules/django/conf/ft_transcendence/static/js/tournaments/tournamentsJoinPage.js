@@ -18,7 +18,7 @@ export async function initTournamentsJoinPage()
 	})
 	.then(data =>
 	{
-		document.getElementById("listOfTournaments").innerHTML = data
+		document.querySelector(".tournament_list").innerHTML = data
 	})
 	.catch(error =>
 	{
