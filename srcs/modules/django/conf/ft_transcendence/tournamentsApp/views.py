@@ -30,6 +30,7 @@ def create_tournament(request):
 	data = json.loads(request.body)
 	tournamentName = data.get('tournamentsName')
 	tournamentsDescription = data.get('tournamentsDescription')
+	ColorPrint.prYellow(tournamentsDescription)
 	numberOfPlayers = data.get('numberOfPlayers')
 	typeGame = data.get('typeGame')
 	if len(numberOfPlayers) <= 0:
@@ -53,7 +54,6 @@ def create_tournament(request):
 def get_tournaments_html(request):
 	tournamentL = T_Manager.Manager.GetTournaments()
 	dictionnary = []
-	ColorPrint.prRed(tournamentL)
 	for tour in tournamentL.values():
 		Joinable = 'NotJoinable'
 		usr = tour.GetUserById(request.user.id)
@@ -61,10 +61,11 @@ def get_tournaments_html(request):
 			Joinable = 'Joinable'
 		elif (tour.Status is not TournamentState.Created and usr is not None and usr.Status is not UserState.Dead and usr.Status is not UserState.GivedUp):
 			Joinable = 'Joinable'
-		if tour.Type == 'Pong':
+		if tour.Type == 0:
 			gameTypeUrl = '../static/assets/logo/ping-pong.png'
 		else:
 			gameTypeUrl = '../static/assets/logo/battleship.png'
+		ColorPrint.prRed(tour.Description)
 		dictionnary.append({
 			'index': tour.TournamentId,
 			'name': tour.TournamentName,
@@ -75,7 +76,6 @@ def get_tournaments_html(request):
 			'description': tour.Description,
 			'joinable' : Joinable
 			})
-		ColorPrint.prRed(dictionnary)
 
 	return render(request, 'tournaments/templateTournaments.html', {'games': dictionnary})
 

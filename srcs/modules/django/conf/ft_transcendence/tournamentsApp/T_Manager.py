@@ -24,19 +24,18 @@ class TournamentsManager():
 					return False, -1
 
 		tournamentType = GameType.Pong if data.get('typeGame') == "Pong" else GameType.Battleship
-		ColorPrint.prYellow(data)
 		obj = TournamentsModels.objects.create(
 			tournamentsName = str(data.get('tournamentsName')),
 			numberOfPlayers = int(data.get('numberOfPlayers')),
 			creatorId = creator.id,
 			privateGame = TournamentVisibility.Public,
-			description =  str(data.get('tournamentsDescription')),
+			description =  data.get('tournamentsDescription'),
 			tournamentType = tournamentType
 		)
 
 		obj.save()
 
-		nTournament = Tournament(tournamentId=obj.id, creator=creator.id, playerAmount=int(data.get('numberOfPlayers')), description="DESCRIPTION TO DO", tournamentName=data.get('tournamentsName'), gameType=tournamentType, visibility=TournamentVisibility.Public, obj=obj)
+		nTournament = Tournament(tournamentId=obj.id, creator=creator.id, playerAmount=int(data.get('numberOfPlayers')), description=data.get('tournamentsDescription'), tournamentName=data.get('tournamentsName'), gameType=tournamentType, visibility=TournamentVisibility.Public, obj=obj)
 		self._Tournaments[int(obj.id)] = nTournament
 		if (self.thread is None):
 			self.thread = TimerLoop(self)
