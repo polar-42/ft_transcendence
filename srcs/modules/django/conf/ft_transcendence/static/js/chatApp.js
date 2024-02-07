@@ -246,7 +246,7 @@ async function displayLastChats(data) {
 		else
 			ppUrl = URL.createObjectURL(profilePicture)
 		let item =
-			'<li class="' + data[i].type + '">' +
+			'<li class="' + data[i].type + '" ' + 'id="conv_' + data[i].id + '">' +
 			'<img src=' + ppUrl + ' alt="converstion_picture">' +
 			'<div class="conversation_text">' +
 			'<div class="conversation_name">' +
@@ -945,7 +945,6 @@ function receiveRefusedInvitation(data) {
 	item.firstChild.style.fontStyle = "italic"
 	console.log(item)
 	document.querySelector(".conversation").appendChild(item)
-
 }
 
 function sendMessage(message, targetUser) {
@@ -1189,16 +1188,25 @@ function displayPrivMsg(data) {
 }
 
 function receiveMsg(data) {
-	console.log('page contact:', document.querySelector(".contact_wrapper").getAttribute('userID'), 'data sender:', data.sender)
-	if (document.querySelector(".contact_wrapper").getAttribute('userID') === data.sender) {
-		let conversation = document.querySelector(".conversation")
-		let msgItem =
-			"<li class='message_item' msgid='" + data.id + "'>" +
-			"<p class='message'>" + data.message + "</p>" +
-			"<p class='timestamp'>" + data.time + "</p>" +
-			"</li>"
-		conversation.lastChild.insertAdjacentHTML('afterend', msgItem)
-		conversation.scrollTo(0, conversation.scrollHeight)
+	if (document.querySelector(".contact_wrapper") == null)
+	{
+	  console.log('NOTFICATIONS')
+	  console.log(data)
+	  //document.getElementById('conv_' + data.sender).style.background = 'red'
+	}
+	else
+	{
+		console.log('page contact:', document.querySelector(".contact_wrapper").getAttribute('userID'), 'data sender:', data.sender)
+		if (document.querySelector(".contact_wrapper").getAttribute('userID') === data.sender) {
+			let conversation = document.querySelector(".conversation")
+			let msgItem =
+				"<li class='message_item' msgid='" + data.id + "'>" +
+				"<p class='message'>" + data.message + "</p>" +
+				"<p class='timestamp'>" + data.time + "</p>" +
+				"</li>"
+			conversation.lastChild.insertAdjacentHTML('afterend', msgItem)
+			conversation.scrollTo(0, conversation.scrollHeight)
+    	}
 	}
 }
 

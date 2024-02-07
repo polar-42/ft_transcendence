@@ -22,7 +22,7 @@ def getUserInformation(request):
         return JsonResponse({'error': 'error'})
 
     params = request.GET.get('userIdentification', None)
-    if params != None and User.objects.filter(identification=params).exists():
+    if params != None and User.objects.filter(identification=params).exists() and request.user.identification != params:
         userModel = User.objects.get(identification=str(params))
     else:
         return JsonResponse({'error': 'error'})

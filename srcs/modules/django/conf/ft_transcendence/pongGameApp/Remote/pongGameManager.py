@@ -1,5 +1,6 @@
 from .pongThreads import pongGame
 from ..models import PongGameModels
+from authApp.models import User
 
 class PongGameManager():
 	_matchList = {}
@@ -50,6 +51,31 @@ def addToDb(player1_id, player2_id, player1_score, player2_score, winner, n_ball
 			tournamentId=str(tournamentId)
 	)
 
-	obj.save
+	obj.save()
+
+	player1Model = User.objects.get(id=int(player1_id))
+	player2Model = User.objects.get(id=int(player2_id))
+
+	player1Model.Pong_BallHit += n_ball_touch_player1
+	player1Model.Pong_Point += player1_score
+	player1Model.Pong_PointTaken += player2_score
+	player1Model.Pong_Game += 1
+	player1Model.Pong_BallHitByOpponent += n_ball_touch_player2
+
+	player2Model.Pong_BallHit += n_ball_touch_player2
+	player2Model.Pong_Point += player2_score
+	player2Model.Pong_PointTaken += player1_score
+	player2Model.Pong_Game += 1
+	player2Model.Pong_BallHitByOpponent += n_ball_touch_player1
+
+	if str(winner) == str(player1_id):
+		player1Model.Pong_Win += 1
+		player2Model.Pong_Lose += 1
+	else:
+		player2Model.Pong_Win += 1
+		player1Model.Pong_Lose += 1
+
+	player1Model.save()
+	player2Model.save()
 
 	print('pongGame between playerId =', str(player1_id), 'and playerId =', str(player2_id), 'is win by', str(winner), 'tournamentId =', tournamentId, 'and reason is', reason_end)

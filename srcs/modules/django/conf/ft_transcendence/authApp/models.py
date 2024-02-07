@@ -31,6 +31,19 @@ class User(AbstractUser):
 
 	BS_E_Hit = models.IntegerField(default=0) #Hit given
 	BS_P_Hit = models.IntegerField(default=0) #Hit taken
-	BS_E_BoatsDestroyed = models.IntegerField(default=0) #Boat Destroyed  
+	BS_E_BoatsDestroyed = models.IntegerField(default=0) #Boat Destroyed
 	BS_P_BoatsDestroyed = models.IntegerField(default=0) #Boat got destroyed
+	BS_G_Win = models.IntegerField(default=0) #Total BS Win
+	BS_G_Lose = models.IntegerField(default=0) #Total BS Lose
 	BS_GameCount = models.IntegerField(default=0) #Total game played (without cancelled)
+
+
+	Pong_BallHit = models.IntegerField(default=0) #Total Ball Hit
+	Pong_BallHitByOpponent = models.IntegerField(default=0) #Total Ball Hit
+	Pong_Point = models.IntegerField(default=0) #Total Point
+	Pong_PointTaken = models.IntegerField(default=0) #Point Taken
+
+	Pong_Win = models.IntegerField(default=0) #Total Pong Win
+	Pong_Lose = models.IntegerField(default=0) #Total Pong Lose
+	Pong_Game = models.IntegerField(default=0) #Total Pong played
+	Pong_Versus_AI = models.IntegerField(default=0) #+/- against AI

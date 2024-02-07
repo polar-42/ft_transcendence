@@ -109,5 +109,35 @@ def addToDb(player1_id, player2_id, playerone_score, playertwo_score, winner, n_
 			reason=reason_end
 	)
 
-	obj.save
+	obj.save()
+
+	player1Model = User.objects.get(id=int(player1_id))
+	player2Model = User.objects.get(id=int(player2_id))
+
+	player1Model.Pong_BallHit += n_ball_touch_player1
+	player1Model.Pong_Point += playerone_score
+	player1Model.Pong_PointTaken += playertwo_score
+	player1Model.Pong_Game += 1
+
+	player2Model.Pong_BallHit += n_ball_touch_player2
+	player2Model.Pong_Point += playertwo_score
+	player2Model.Pong_PointTaken += playerone_score
+	player2Model.Pong_Game += 1
+
+	if str(winner) == str(player1_id):
+		player1Model.Pong_Win += 1
+		player2Model.Pong_Lose += 1
+	else:
+		player2Model.Pong_Win += 1
+		player1Model.Pong_Lose += 1
+
+	if str(player2Model.identification) == 'AI':
+		if str(winner) == str(player2Model.id):
+			player1Model.Pong_Versus_AI += 1
+		else:
+			player1Model.Pong_Versus_AI -= 1
+
+	player1Model.save()
+	player2Model.save()
+
 	print('pongGame between playerId =', str(player1_id), 'and', str(player2_id), 'is win by', str(winner), 'and reason is', reason_end)
