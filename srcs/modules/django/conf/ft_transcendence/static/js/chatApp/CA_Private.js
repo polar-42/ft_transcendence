@@ -1,7 +1,7 @@
 import { initChatHomepage, getProfilePicture, cleanMainBox, sleep, chatSocket } from "./CA_General.js"
 import { AddToFriend } from "./CA_Friends.js"
 
-export function displayChatHistory(data) {
+export function displayChatHistory(data, isStillUnreadMessage) {
 	let conversation = document.querySelector(".conversation")
 	for (let i = 0; i < data.length; i++) {
 		let sender
@@ -20,6 +20,14 @@ export function displayChatHistory(data) {
 		} else {
 			conversation.firstChild.insertAdjacentHTML("beforebegin", item)
 		}
+	}
+	if (isStillUnreadMessage == true)
+	{
+		document.getElementById('pop_up_unread_chatbox').style.display = 'block'
+	} 
+	else
+	{
+		document.getElementById('pop_up_unread_chatbox').style.display = 'none'
 	}
 	conversation.scrollTo(0, conversation.scrollHeight)
 }
@@ -66,7 +74,7 @@ export function displayPrivMsg(data) {
 			ppUrl = URL.createObjectURL(profilePicture)
 		let html =
 			'<div class="contact_wrapper" userID="' + data.identification + '">' +
-			'<img src=' + ppUrl + ' alt="contact profile picture">' +
+			'<img src=' + ppUrl + ' alt="contact profile picture" id="profile_id_' + data.identification + '">' +
 			'<div class="contact_name_wrapper">' +
 			'<p>' + data.name + '</p>' +
 			'<div class="connection_point ' + isConnected + '"></div>' +
@@ -83,6 +91,9 @@ export function displayPrivMsg(data) {
 			mainBoxBody.classList.remove("private_message")
 			cleanMainBox()
 			initChatHomepage()
+		})
+		document.getElementById('profile_id_' + data.identification).addEventListener("click", () => {
+			navto("/profile", data.identification)
 		})
 		const element = mainBoxHeader.children[1].children[0]
 		element.addEventListener("click", () => {
@@ -128,12 +139,47 @@ export function displayPrivMsg(data) {
 
 export function receiveMsg(data) {
 	if (document.querySelector(".contact_wrapper") == null) {
-		console.log('NOTFICATIONS')
-		console.log(data)
-		//document.getElementById('conv_' + data.sender).style.background = 'red'
+		let divConv = document.getElementById('conv_' + data.sender)
+		if (divConv == null) {
+			if (data.type == 'chat_private_message') {
+				data.type = 'private'
+			} else {
+				data.type = 'channel'
+			}
+			let convId = "conv_" + data.sender
+			data.isRead = false
+			let lastMsg = data.message
+
+
+			let html =
+				'<li class="' + data.type + '" ' + 'id="' + convId + '" isread="' + data.isRead + '">' +
+				'<div class="pop_up_unread" isread_popup="' + data.isRead + '"></div>' +
+				'<img src="../static/assets/logo/user.png" alt="converstion_picture">' +
+				'<div class="conversation_text">' +
+				'<div class="conversation_name">' +
+				'<p>' + data.senderNickname + '</p>' +
+				'<div class="connection_point connected' + '"></div>' +
+				'</div>' +
+				'<p class="last_msg">' + lastMsg + '</p>' +
+				'</div>' +
+				'</li>'
+
+			document.querySelectorAll('.conversation_list')[0].innerHTML = html + document.querySelectorAll('.conversation_list')[0].innerHTML
+			document.getElementById('conv_' + data.sender).querySelector('.pop_up_unread').style.display = 'block'
+
+			document.getElementById('conv_' + data.sender).addEventListener("click", () => {
+				if (data.type === 'private')
+					goToConv(data.sender)
+			})
+		}
+		else {
+			divConv.querySelector('.pop_up_unread').style.display = 'block'
+			divConv.querySelector('.conversation_text').querySelector('.last_msg').innerHTML = data.senderNickname + ': ' + data.message
+		}
+		document.getElementById('pop_up_unread_chatbox').style.display = 'block'
 	}
 	else {
-		console.log('page contact:', document.querySelector(".contact_wrapper").getAttribute('userID'), 'data sender:', data.sender)
+		console.log('test')
 		if (document.querySelector(".contact_wrapper").getAttribute('userID') === data.sender) {
 			let conversation = document.querySelector(".conversation")
 			let msgItem =
@@ -143,6 +189,14 @@ export function receiveMsg(data) {
 				"</li>"
 			conversation.lastChild.insertAdjacentHTML('afterend', msgItem)
 			conversation.scrollTo(0, conversation.scrollHeight)
+			console.log('SEND READ DATA', data.sender, data.receiver)
+			chatSocket.send(JSON.stringify({
+				'type': 'msg_read',
+				'sender': data.sender,
+				'receiver': data.receiver
+			}))
+		} else {
+			document.getElementById('pop_up_unread_chatbox').style.display = 'block'
 		}
 	}
 }
@@ -167,7 +221,7 @@ export async function actualizeChatHistory(data) {
 		for (let i = 0; i < data.length; i++) {
 			let received
 
-			if (data[i].received === true) {
+			if (data[i].received === false) {
 				received = 'own'
 			} else {
 				received = ''

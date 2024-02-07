@@ -191,7 +191,7 @@ export function displayChannel(data) {
 					let item =
 						'<div class="user_wrapper">' +
 						'<div class="connection_point ' + isConnected + '"></div>' +
-						'<img src=' + ppUrl + ' alt="channel member profile picture">' +
+						'<img src=' + ppUrl + ' alt="channel member profile picture" id="profile_id_' + users[i].id + '">' +
 						'<p class="username">' + users[i].name + '</p>' +
 						'<img class="kick_cross" src="../static/assets/logo/red_cross.png" alt="kick user button">' +
 						'</div>'
@@ -208,13 +208,16 @@ export function displayChannel(data) {
 						kick.addEventListener("click", () => {
 							kickUser(data.name, users[i].id)
 						})
+					document.getElementById('profile_id_' + users[i].id).addEventListener("click", () => {
+						navto("/profile", users[i].id)
+					  })
 				}
 			}
 		}
 	}
 }
 
-export async function displayChannelHistory(data) {
+export async function displayChannelHistory(data, isStillUnreadMessage) {
 	let conversation = document.querySelector(".conversation")
 	let Response = await fetch(document.location.origin + '/authApp/GET/userID',
 		{
@@ -245,7 +248,7 @@ export async function displayChannelHistory(data) {
 		let item =
 			'<li class="message_item ' + received + '" msgId="' + data[i].id + '">' +
 			'<div class="sender">' +
-			'<img src=' + ppUrl + ' alt="sender profile picture">' +
+			'<img src=' + ppUrl + ' alt="sender profile picture" class="profile_id_chan_' + data[i].senderID + '">' +
 			'<p>' + sender + '</p>' +
 			'</div>' +
 			'<div class="message_wrapper">' +
@@ -258,6 +261,23 @@ export async function displayChannelHistory(data) {
 	}
 	conversation.innerHTML = html
 	conversation.scrollTo(0, conversation.scrollHeight)
+	let tabIdentification = [];
+
+	for (let i = data.length - 1; i >= 0; i--) {
+		if (tabIdentification.includes(data[i].senderID) == false)
+			document.querySelectorAll('.profile_id_chan_' + data[i].senderID).forEach((div) => {
+				div.addEventListener("click", () => {
+					navto("/profile", data[i].senderID)
+				})
+			})
+		tabIdentification.push(data[i].senderID)
+	}
+
+	if (isStillUnreadMessage == true) {
+		document.getElementById('pop_up_unread_chatbox').style.display = 'block'
+	} else {
+		document.getElementById('pop_up_unread_chatbox').style.display = 'none'
+	}
 }
 
 export function goToChan(name) {
@@ -317,6 +337,20 @@ function getHistoryChannel(channelName, msgId) {
 
 export async function receiveChanMsg(data) {
 	let conversation = document.querySelector(".conversation")
+
+	if (conversation == undefined || conversation.parentElement == undefined || conversation.parentElement.parentElement == undefined) {
+		let divConv = document.getElementById('conv_' + data.channel)
+		divConv.querySelector('.pop_up_unread').style.display = 'block'
+		divConv.querySelector('.conversation_text').querySelector('.last_msg').innerHTML = data.sender + ': ' + data.message
+		document.getElementById('pop_up_unread_chatbox').style.display = 'block'
+		return
+	}
+
+	if (conversation.parentElement.parentElement.classList[1] == 'private_message') {
+		document.getElementById('pop_up_unread_chatbox').style.display = 'block'
+		return
+	}
+
 	let Response = await fetch(document.location.origin + '/authApp/GET/userID',
 		{
 			method: 'GET'
@@ -333,11 +367,17 @@ export async function receiveChanMsg(data) {
 		received = ""
 		sender = data.sender
 	}
+	let profilePicture = await getProfilePicture({ 'type': 'user', 'id': data.senderID })
+	let ppUrl
+	if (profilePicture.type == 'image/null')
+		ppUrl = "../static/assets/logo/user.png"
+	else
+		ppUrl = URL.createObjectURL(profilePicture)
 
 	let item =
-		'<li class="message_item ' + received + '">' +
+		'<li class="message_item ' + received + '" msgid="' + '">' +
 		'<div class="sender">' +
-		'<img src="../static/assets/logo/user.png" alt="sender profile picture">' +
+		'<img src="' + ppUrl + '" alt="sender profile picture" id="new_message_from_' + data.senderID + '">' +
 		'<p>' + sender + '<p>' +
 		'</div>' +
 		'<div class="messGage_wrapper">' +
@@ -345,13 +385,26 @@ export async function receiveChanMsg(data) {
 		'<p class="timestamp">' + data.time.substring(0, 19) + '</p>' +
 		'</div>' +
 		'</li>'
-
-	if (conversation.children.length > 0) {
+	if (conversation != undefined)
+	{
+	  if (conversation.children.length > 0) {
 		conversation.lastChild.insertAdjacentHTML("afterend", item)
-	} else {
+	  } else {
 		conversation.innerHTML = item
+	  }
+	  conversation.scrollTo(0, conversation.scrollHeight)
+	
+	  document.getElementById('new_message_from_' + data.senderID).addEventListener('click', () => {
+		navto("/profile", data.senderID)
+	  })
+	
+	  console.log(data)
+	  chatSocket.send(JSON.stringify({
+		'type': 'msg_read',
+		'sender': data.senderID,
+		'receiver': data.channel
+	  }))
 	}
-	conversation.scrollTo(0, conversation.scrollHeight)
 }
 
 async function chanOnTopScroll(channelName) {
@@ -383,6 +436,13 @@ export async function actualizeChannelHistory(data) {
 			let received
 			let sender
 
+			let profilePicture = await getProfilePicture({ 'type': 'user', 'id': data[i].senderID })
+			let ppUrl
+			if (profilePicture.type == 'image/null')
+				ppUrl = "../static/assets/logo/user.png"
+			else
+				ppUrl = URL.createObjectURL(profilePicture)
+
 			if (data[i].senderID !== userData.userID) {
 				received = 'own'
 				sender = ''
@@ -393,7 +453,7 @@ export async function actualizeChannelHistory(data) {
 			let item =
 				'<li class="message_item ' + received + '" msgid="' + data[i].id + '">' +
 				'<div class="sender">' +
-				'<img src="../static/assets/logo/user.png" alt="sender profile picture">' +
+				'<img src="' + ppUrl +'" alt="sender profile picture">' +
 				'<p>' + sender + '<p>' +
 				'</div>' +
 				'<div class="messGage_wrapper">' +

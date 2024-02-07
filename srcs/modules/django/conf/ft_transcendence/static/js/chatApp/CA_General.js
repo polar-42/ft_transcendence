@@ -132,7 +132,7 @@ function onMessageChat(e) {
 			displayChannel(data)
 			break
 		case 'chat_history':
-			displayChatHistory(data.data)
+			displayChatHistory(data.data, data.isStillUnreadMessage)
 			break
 		case 'actualize_chat_history':
 			actualizeChatHistory(data.data)
@@ -141,7 +141,7 @@ function onMessageChat(e) {
 			actualizeChannelHistory(data.data)
 			break
 		case 'channel_history':
-			displayChannelHistory(data.data)
+			displayChannelHistory(data.data, data.isStillUnreadMessage)
 			break
 		case 'channel_creation':
 			receiveChanCreation(data)
@@ -204,7 +204,7 @@ export async function getProfilePicture(data) {
 	}
 }
 
-async function displayLastChats(data) {
+async function displayLastChats(data, isStillUnreadMessage) {
 	let conversation_list = document.querySelector(".conversation_list")
 	for (let i = data.length - 1; i >= 0; i--) {
 		console.log(data[i])
@@ -226,8 +226,14 @@ async function displayLastChats(data) {
 			ppUrl = "../static/assets/logo/user.png"
 		else
 			ppUrl = URL.createObjectURL(profilePicture)
+		let convId;
+		if (data[i].id != undefined)
+			convId = "conv_" + data[i].id
+		else
+			convId = "conv_" + data[i].name
 		let item =
 			'<li class="' + data[i].type + '" ' + 'id="conv_' + data[i].id + '">' +
+			'<div class="pop_up_unread" isread_popup="' + data[i].isRead + '"></div>' +
 			'<img src=' + ppUrl + ' alt="converstion_picture">' +
 			'<div class="conversation_text">' +
 			'<div class="conversation_name">' +
@@ -249,6 +255,14 @@ async function displayLastChats(data) {
 				goToConv(data[i].id)
 			else
 				goToChan(data[i].name)
+		})
+		let divConv = document.querySelectorAll('.pop_up_unread')
+		divConv.forEach((e) => {
+		  if (e.getAttribute('isread_popup') == 'false')
+		  {
+			e.style.display = 'block'
+			document.getElementById('pop_up_unread_chatbox').style.display = 'block'
+		  }
 		})
 		const element = conversation_list.firstChild.querySelector('.FriendShip_BTN')
 		element.addEventListener("click", () => {
