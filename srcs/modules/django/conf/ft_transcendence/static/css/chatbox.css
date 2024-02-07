@@ -146,6 +146,7 @@
   grid-template-columns: 1fr 5fr 1fr 1fr;
   grid-gap: 10px;
   padding: 5px;
+  position: relative;
 }
 
 .main_box_body.homepage .conversation_list li:hover {
@@ -750,8 +751,7 @@
   width: 10px;
   border-radius: 50%;
   background: radial-gradient(ellipse at bottom, #4c77e6 5%, #7f4af5);
-  margin-top: -5px;
-  margin-left: 308px;
+  margin-left: 313px;
 }
 
 #pop_up_unread_chatbox {

@@ -345,7 +345,7 @@ function updateAccount(event) {
 	var headers = new Headers()
 	headers.append('X-CSRFToken', crsf_token)
 
-  closeChat()
+  	closeChat() //TO CHECK !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	fetch(document.location.origin + "/userManagement/updateAccount",
 		{
 			method: 'POST',

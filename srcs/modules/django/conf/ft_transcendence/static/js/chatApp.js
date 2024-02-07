@@ -225,6 +225,7 @@ async function getProfilePicture(data) {
 }
 
 async function displayLastChats(data) {
+  console.log('displayLastChats')
   let conversation_list = document.querySelector(".conversation_list")
   for (let i = data.length - 1; i >= 0; i--) {
     let lastMsg
@@ -257,7 +258,7 @@ async function displayLastChats(data) {
     let item =
       '<li class="' + data[i].type + '" ' + 'id="' + convId + '" isread="' + data[i].isRead +'">' +
       '<div class="pop_up_unread" isread_popup="' + data[i].isRead + '"></div>' +
-      '<img src="../static/assets/logo/user.png" alt="converstion_picture">' +
+      '<img src="' + ppUrl + '" alt="converstion_picture">' +
       '<div class="conversation_text">' +
       '<div class="conversation_name">' +
       '<p>' + data[i].name + '</p>' +
@@ -306,7 +307,7 @@ async function displaySearchResult(data) {
   let member
 
   for (let i = 0; i < data.length; i++) {
-    //console.log(data[i])
+    console.log(data[i])
     if (data[i].connexion_status == 2) {
       isConnected = 'connected'
     } else if (data[i].connexion_status === 0) {
@@ -1211,10 +1212,45 @@ function displayPrivMsg(data) {
 function receiveMsg(data) {
   if (document.querySelector(".contact_wrapper") == null)
   {
-    console.log(data)
     let divConv = document.getElementById('conv_' + data.sender)
-    divConv.querySelector('.pop_up_unread').style.display = 'block'
-    divConv.querySelector('.conversation_text').querySelector('.last_msg').innerHTML = data.senderNickname + ': ' + data.message
+    if (divConv == null)
+    {
+      if (data.type == 'chat_private_message') {
+        data.type = 'private'
+      } else {
+        data.type = 'channel'
+      }
+      let convId = "conv_" + data.sender
+      data.isRead = false
+      let lastMsg = data.message
+
+
+      let html =
+      '<li class="' + data.type + '" ' + 'id="' + convId + '" isread="' + data.isRead +'">' +
+      '<div class="pop_up_unread" isread_popup="' + data.isRead + '"></div>' +
+      '<img src="../static/assets/logo/user.png" alt="converstion_picture">' +
+      '<div class="conversation_text">' +
+      '<div class="conversation_name">' +
+      '<p>' + data.senderNickname + '</p>' +
+      '<div class="connection_point connected' + '"></div>' +
+      '</div>' +
+      '<p class="last_msg">' + lastMsg + '</p>' +
+      '</div>' +
+      '</li>'
+
+      document.querySelectorAll('.conversation_list')[0].innerHTML = html + document.querySelectorAll('.conversation_list')[0].innerHTML
+      document.getElementById('conv_' + data.sender).querySelector('.pop_up_unread').style.display = 'block'
+
+      document.getElementById('conv_' + data.sender).addEventListener("click", () => {
+        if (data.type === 'private')
+          goToConv(data.sender)
+      })
+    }
+    else
+    {
+      divConv.querySelector('.pop_up_unread').style.display = 'block'
+      divConv.querySelector('.conversation_text').querySelector('.last_msg').innerHTML = data.senderNickname + ': ' + data.message
+    }
     document.getElementById('pop_up_unread_chatbox').style.display = 'block'
   }
   else
@@ -1244,7 +1280,6 @@ function receiveMsg(data) {
 
 async function receiveChanMsg(data) {
   let conversation = document.querySelector(".conversation")
-  //console.log(conversation.parentElement.parentElement.classList)
 
   if (conversation == undefined || conversation.parentElement == undefined || conversation.parentElement.parentElement == undefined)
   {
@@ -1278,10 +1313,17 @@ async function receiveChanMsg(data) {
     sender = data.sender
   }
 
+  let profilePicture = await getProfilePicture({ 'type': 'user', 'id': data.senderID})
+  let ppUrl
+  if (profilePicture.type == 'image/null')
+    ppUrl = "../static/assets/logo/user.png"
+  else
+    ppUrl = URL.createObjectURL(profilePicture)
+
   let item =
     '<li class="message_item ' + received + '" msgid="' + '">' +
     '<div class="sender">' +
-    '<img src="../static/assets/logo/user.png" alt="sender profile picture">' +
+    '<img src="' + ppUrl + '" alt="sender profile picture">' +
     '<p>' + sender + '<p>' +
     '</div>' +
     '<div class="messGage_wrapper">' +
@@ -1293,7 +1335,6 @@ async function receiveChanMsg(data) {
   if (conversation != undefined)
   {
     if (conversation.children.length > 0) {
-      console.log('blabla')
       conversation.lastChild.insertAdjacentHTML("afterend", item)
     } else {
       conversation.innerHTML = item
@@ -1339,7 +1380,7 @@ async function actualizeChatHistory(data) {
     for (let i = 0; i < data.length; i++) {
       let received
 
-      if (data[i].received === true) {
+      if (data[i].received === false) {
         received = 'own'
       } else {
         received = ''

@@ -48,8 +48,8 @@ def updateAccount(request):
             if len(newUsername) == 0 and len(newEmail) == 0 and len(newPassword) == 0 and len(newPasswordConfirmation) == 0 and avatarImage is None:
                 return JsonResponse({'error': 'All field are empty'})
 
-            if len(newUsername) > 0 and len(newUsername) <= 3:
-                return JsonResponse({'error': 'Username length is too small'})
+            if len(newUsername) > 0 and len(newUsername) < 3 or len(newUsername) > 16:
+                return JsonResponse({'error': 'Username length is too small or to big'})
             elif len(newUsername) != 0 and userModel.nickname != newUsername:
                 print('username has been updated to', newUsername)
                 userModel.nickname = newUsername

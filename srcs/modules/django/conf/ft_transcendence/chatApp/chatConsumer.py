@@ -251,8 +251,7 @@ class chatSocket(WebsocketConsumer):
 					'sender': self.userIdentification,
 					'senderNickname': self.UserModel.nickname,
 					'message': message
-					}
-				)
+				})
 
 	def sendChannelMessage(self, channel, message):
 		if channel in self.allChannels:
@@ -339,8 +338,8 @@ class chatSocket(WebsocketConsumer):
 						'type': 'channel',
 						'name': chan,
 						'last_msg': {
-				   'sender': lastMsgSender,
-				   'msg': lastMsg },
+				   			'sender': lastMsgSender,
+				   			'msg': lastMsg },
 						'timestamp': timestamp,
 						'isRead': isRead
 						}
@@ -367,9 +366,11 @@ class chatSocket(WebsocketConsumer):
 					(Q(receiver=str(self.userIdentification)) & Q(sender=contact))).order_by('-id')[0]
 
 			if lastMsg.sender == self.identification:
+				sender = "Me"
 				isRead = True
 			else:
 				isRead = lastMsg.isRead
+				sender = userModels.User.objects.get(identification=lastMsg.sender).nickname
 
 			allConv.append({
 				'type': 'private',
@@ -378,9 +379,9 @@ class chatSocket(WebsocketConsumer):
 				'connexionStatus': connexionStatus,
 				'last_msg': {
 					'msg': lastMsg.message,
-					'sender': userModels.User.objects.get(identification=lastMsg.sender).nickname
+					'sender': sender
 					},
-				'timestamp': msg['timeCreation'],
+				'timestamp': lastMsg.timeCreation,
 				'isRead': isRead
 				})
 
@@ -388,7 +389,6 @@ class chatSocket(WebsocketConsumer):
 		def cmpTimeStamp(msg):
 			return msg['timestamp']
 
-		print(allConv)
 		allConv.sort(key = cmpTimeStamp, reverse = True)
 		for conv in allConv:
 			conv['timestamp'] = str(conv['timestamp'])
@@ -542,9 +542,6 @@ class chatSocket(WebsocketConsumer):
 		else:
 			isStillUnreadMessage = False
 
-		print('isStillUnreadMessage:', isStillUnreadMessage)
-
-		print('response: ',response)
 		self.send(json.dumps({
 			'type': type,
 			'data': response,
@@ -852,14 +849,17 @@ class chatSocket(WebsocketConsumer):
 
 		for user in allUsers:
 			if user.identification.find(input) >= 0:
-				msgs = MessageModels.objects.filter(Q(receiver=user.identification) | Q(sender=user.identification))
+				msgs = MessageModels.objects.filter(
+					(Q(sender=str(self.userIdentification)) & Q(receiver=user.identification)) |
+					(Q(receiver=str(self.userIdentification)) & Q(sender=user.identification))).order_by('-id')
 
 				connexionStatus = user.connexionStatus
+				print('msgs:', msgs)
 				if msgs.count() > 0:
 					if msgs[0].sender == self.UserModel.identification:
 						sender = 'Me'
 					else:
-						sender = msgs[0].sender
+						sender = userModels.User.objects.get(identification=msgs[0].sender).nickname
 					response.append({
 						'type': 'private_message',
 						'name': user.nickname,
