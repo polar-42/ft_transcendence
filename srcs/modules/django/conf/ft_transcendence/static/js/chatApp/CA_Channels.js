@@ -1,4 +1,5 @@
 import { initChatHomepage, getProfilePicture, cleanMainBox, sleep, chatSocket } from "./CA_General.js"
+import { navto } from "../index.js"
 
 export function clickJoinChan(event) {
 	let item = event.target.parentElement
@@ -272,7 +273,7 @@ export async function displayChannelHistory(data, isStillUnreadMessage) {
 			})
 		tabIdentification.push(data[i].senderID)
 	}
-
+	console.log(isStillUnreadMessage)
 	if (isStillUnreadMessage == true) {
 		document.getElementById('pop_up_unread_chatbox').style.display = 'block'
 	} else {

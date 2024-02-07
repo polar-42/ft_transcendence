@@ -243,8 +243,8 @@ class chatSocket(WebsocketConsumer):
 		msg.save()
 
 		allMessages = MessageModels.objects.filter(
-					(Q(sender=str(self.userIdentification)) & Q(receiver=receiver)) |
-					(Q(receiver=str(self.userIdentification)) & Q(sender=receiver))).order_by('-id')[:2]
+					(Q(sender=str(self.identification)) & Q(receiver=receiver)) |
+					(Q(receiver=str(self.identification)) & Q(sender=receiver))).order_by('-id')[:2]
 
 		if len(allMessages) > 1:
 			allMessages[1].isRead = True
@@ -367,6 +367,7 @@ class chatSocket(WebsocketConsumer):
 				contactList.append(contact)
 
 		for contact in contactList:
+			friendStatus = 'friend'
 			if userModels.User.objects.get(identification=contact).PendingInvite is not None and self.identification in userModels.User.objects.get(identification=contact).PendingInvite:
 				friendStatus = 'unknown'
 			elif self.UserModel.Friends is not None and msg['sender'] in self.UserModel.Friends:
@@ -375,8 +376,8 @@ class chatSocket(WebsocketConsumer):
 			connexionStatus = userModels.User.objects.get(identification=contact).connexionStatus
 
 			lastMsg = MessageModels.objects.filter(
-					(Q(sender=str(self.userIdentification)) & Q(receiver=contact)) |
-					(Q(receiver=str(self.userIdentification)) & Q(sender=contact))).order_by('-id')[0]
+					(Q(sender=str(self.identification)) & Q(receiver=contact)) |
+					(Q(receiver=str(self.identification)) & Q(sender=contact))).order_by('-id')[0]
 
 			if lastMsg.sender == self.identification:
 				sender = "Me"
@@ -519,6 +520,7 @@ class chatSocket(WebsocketConsumer):
 		print('conv between ', self.identification, ' and ', chatTarget)
 		modelChatTarget = userModels.User.objects.get(identification=chatTarget)
 		if msgId == 0:
+			ColorPrint.prGreen('0')
 			self.send(json.dumps({
 				'type': 'actualize_chat_history',
 				'data': {}
@@ -526,11 +528,13 @@ class chatSocket(WebsocketConsumer):
 			 )
 			return
 		elif msgId == -1:
+			ColorPrint.prGreen('1')
 			type = 'chat_history'
 			messages = MessageModels.objects.filter(
 					(Q(sender=str(self.identification)) & Q(receiver=modelChatTarget.identification)) |
 					(Q(receiver=str(self.identification)) & Q(sender=modelChatTarget.identification))).order_by('-id')[:10]
 		else:
+			ColorPrint.prGreen('2')
 			type = 'actualize_chat_history'
 			messages = MessageModels.objects.filter(
 					(Q(sender=str(self.identification)) & Q(receiver=modelChatTarget.identification)) & Q(id__lt=int(msgId))  |
@@ -545,7 +549,7 @@ class chatSocket(WebsocketConsumer):
 				received = True
 				contact = msg['sender']
 
-			if msg['sender'] != self.userIdentification:
+			if msg['sender'] != self.identification:
 				msgModel = MessageModels.objects.get(id=msg['id'])
 				msgModel.isRead = True
 				msgModel.save()
@@ -641,7 +645,7 @@ class chatSocket(WebsocketConsumer):
 		return (isStillUnreadMessage)
 
 	def inviteToPong(self, receiver):
-		if userModels.User.objects.filter(identification=receiver).exists() is False or receiver == self.userIdentification:
+		if userModels.User.objects.filter(identification=receiver).exists() is False or receiver == self.identification:
 			print(self.user.identification, 'try to invite', receiver, 'but he doesn"t exist') #TO DEL
 			return
 
@@ -873,8 +877,8 @@ class chatSocket(WebsocketConsumer):
 		for user in allUsers:
 			if user.identification.find(input) >= 0:
 				msgs = MessageModels.objects.filter(
-					(Q(sender=str(self.userIdentification)) & Q(receiver=user.identification)) |
-					(Q(receiver=str(self.userIdentification)) & Q(sender=user.identification))).order_by('-id')
+					(Q(sender=str(self.identification)) & Q(receiver=user.identification)) |
+					(Q(receiver=str(self.identification)) & Q(sender=user.identification))).order_by('-id')
 
 				connexionStatus = user.connexionStatus
 				friendStatus = 'friend'

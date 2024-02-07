@@ -1,5 +1,6 @@
 import { initChatHomepage, getProfilePicture, cleanMainBox, sleep, chatSocket } from "./CA_General.js"
 import { AddToFriend } from "./CA_Friends.js"
+import { navto } from "../index.js"
 
 export function displayChatHistory(data, isStillUnreadMessage) {
 	let conversation = document.querySelector(".conversation")
