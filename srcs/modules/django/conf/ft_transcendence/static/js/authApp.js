@@ -1,4 +1,4 @@
-import { initChat } from "./chatApp.js";
+import { initChat } from "./chatApp/CA_General.js";
 import { navto } from "./index.js"
 
 export function initLogin() {

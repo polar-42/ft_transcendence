@@ -4,3 +4,4 @@ sujet_transcendence.pdf
 mysite/
 __pycache__/
 *.pyc
+srcs/modules/django/conf/ft_transcendence/**/migrations/*.py

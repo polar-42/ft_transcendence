@@ -1,6 +1,7 @@
 import { navto } from "../index.js"
-import { closeChat, initChat  } from "../chatApp.js";
+import { initChat  } from "../chatApp/CA_General.js";
 import { initProfileButton } from "../authApp.js";
+import { unsetChatbox } from "../chatApp/CA_General.js";
 
 export function initUpdateAccount() {
 	avatarButtonFunction() //TO CHANGE
@@ -367,7 +368,7 @@ function updateAccount(event) {
 	var headers = new Headers()
 	headers.append('X-CSRFToken', crsf_token)
 
-  closeChat()
+  	unsetChatbox()
 	fetch(document.location.origin + "/userManagement/updateAccount",
 		{
 			method: 'POST',
