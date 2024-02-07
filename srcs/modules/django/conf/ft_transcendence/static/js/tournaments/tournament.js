@@ -22,12 +22,35 @@ export function initTournaments()
 			'function': 'Reconnect'
 		}))
 	}
+  const csrf_token = document.querySelector('input[name="csrfmiddlewaretoken"]').value
+	let headers = new Headers()
+	headers.append('Content-Type', 'application/json')
+	headers.append('X-CSRFToken', csrf_token)
+	fetch(document.location.origin + "/tournaments/GetTournamentData",
+		{
+			method: 'POST',
+			headers: headers,
+			body: JSON.stringify({'tourID' : tournamentId})
+		})
+		.then(Response => {
+			if (!Response.ok) {
+				throw new Error('Network response was not okay')
+			}
+			return Response.json()
+		})
+		.then(data => {
+			console.log(data)
+			initTournamentsStatus(data)
+		})
 	document.getElementById('BTN_Leave').addEventListener('click', leaveTournament)
-
 	tournamentSocket.onopen = launchTournamentSocket
 	tournamentSocket.onclose = quitTournamentSocket
 	tournamentSocket.onmessage = e => OnMessageTournament(e)
 	document.getElementById('BTN_Ready').addEventListener('click', ReadyBehavior)
+}
+
+function initTournamentsStatus(data) {
+
 }
 
 export function GoingAway()
@@ -71,6 +94,7 @@ function leaveTournament()
 
 function OnMessageTournament(e)
 {
+	console.log(e.data)
 	const data = JSON.parse(e.data)
 	switch (data.type) {
 		case 'MSG_UpdateUserList':
@@ -99,14 +123,14 @@ function LoadGame(data)
 
 function PrintPlayers(data)
 {
-	const PL = document.getElementsByName("PlayerList")[0]
+	const PL = document.querySelector(".PlayerList")
 	if (PL == null)
 		return
-    let child = PL.lastElementChild
-    while (child) {
-        PL.removeChild(child)
-        child = PL.lastElementChild
-    }
+	let child = PL.lastElementChild
+	while (child) {
+		PL.removeChild(child)
+		child = PL.lastElementChild
+	}
 	const Players = data.usrList
 	Players.forEach(element => {
 		const txt = document.createElement('li')
@@ -121,11 +145,11 @@ function PrintMatchs(data)
 	const PL = document.getElementsByName("MatchList")[0]
 	if (PL == null)
 		return
-    let child = PL.lastElementChild
-    while (child) {
-        PL.removeChild(child)
-        child = PL.lastElementChild
-    }
+	let child = PL.lastElementChild
+	while (child) {
+		PL.removeChild(child)
+		child = PL.lastElementChild
+	}
 	if (data.matchs == 'None')
 	{
 		return

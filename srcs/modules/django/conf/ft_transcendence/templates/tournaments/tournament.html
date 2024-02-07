@@ -1,15 +1,17 @@
 {% load static %}
 <script type="module" src="{% static '/js/loading.js' %}"></script>
 
-<p>
-    Welcome To Tournaments Page
-</p>
+<h2 class="tournament_name"></h2>
 
-<p>
+	{% csrf_token %}
+<div class="tournament_wrapper">
+  <div class="tournament_box">
     <button id="BTN_Leave">Leave Tournament</button>
     <p id="players_in_tournaments"></p>
-    <ul name="PlayerList"></ul><br><br>
-    <ul name="MatchList"></ul><br><br>
+    <ul class="PlayerList"></ul><br><br>
+    <ul class="MatchList"></ul><br><br>
     <button id="BTN_Ready">Ready</button>
     <!-- <canvas id="pongCanvas" width="720" height="450"></canvas> -->
-</p>
+  </div>
+</div>
+

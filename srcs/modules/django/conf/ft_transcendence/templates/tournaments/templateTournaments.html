@@ -1,6 +1,5 @@
 {% for item in games %}
 <li>
-	{% csrf_token %}
 		<img class="tournament_type" src="{{ item.typeGame }}" alt="Game type"> 
 		<div class="tournament_data">
 			<p class="tournament_name">{{ item.name }}</p>

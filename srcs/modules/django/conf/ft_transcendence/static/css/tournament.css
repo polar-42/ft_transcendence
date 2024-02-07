@@ -1,0 +1,15 @@
+h2 {
+  text-align: center;
+  margin-top: 50px;
+  margin-bottom: 30px;
+}
+
+.tournament_wrapper {
+	background: var(--fourth);
+	padding: 20px 0;
+}
+
+.tournament_box {
+  width: 60%;
+  margin: auto 20%;
+}

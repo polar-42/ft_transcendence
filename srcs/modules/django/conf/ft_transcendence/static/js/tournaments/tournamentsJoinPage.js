@@ -51,12 +51,12 @@ function ViewTournament(tournamentsId)
 function joinTournaments(tournamentsId)
 {
 
-	const crsf_token = document.getElementsByName('csrfmiddlewaretoken').value
+	const crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
 
 	var headers = new Headers()
     headers.append('Content-Type', 'application/json')
 	headers.append('X-CSRFToken', crsf_token)
-
+  console.log(headers)
 	var data = {
 		'tournamentsId': tournamentsId,
 	}

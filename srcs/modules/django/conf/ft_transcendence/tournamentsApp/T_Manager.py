@@ -93,7 +93,7 @@ class TournamentsManager():
 #region Getter
 
 	def GetTournament(self, tournamentId):
-		tournamentId = int(tournamentId)
+		tournamentId = tournamentId
 		if tournamentId not in self._Tournaments.keys():
 			return None
 		return self._Tournaments[tournamentId]

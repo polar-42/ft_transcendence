@@ -63,9 +63,6 @@ def get_tournaments_html(request):
 			Joinable = 'Joinable'
 		if tour.Type == 0:
 			gameTypeUrl = '../static/assets/logo/ping-pong.png'
-		else:
-			gameTypeUrl = '../static/assets/logo/battleship.png'
-		ColorPrint.prRed(tour.Description)
 		dictionnary.append({
 			'index': tour.TournamentId,
 			'name': tour.TournamentName,
@@ -93,12 +90,18 @@ def GetTournamentData(request):
 	tournamentId = data.get('tourID')
 	print("TOurnament ID = ", tournamentId)
 	print("Type of TOurnament ID = ", type(tournamentId))
-	Tournament = T_Manager.Manager.GetTournament(tournamentId)
+	Tournament = T_Manager.Manager.GetTournament(tournamentId[0])
 	if (Tournament is None):
 		return JsonResponse({'error': 'Invalid Tournament ID'})
 	UserMSG = Tournament.GetUsersList()
 	MatchMSG = Tournament.GetMatchList()
-	return JsonResponse({'users' : UserMSG, 'matchs' : 'None' if MatchMSG is None else MatchMSG})
+	ColorPrint.prRed(Tournament.TournamentName)
+	ColorPrint.prRed(Tournament.Type)
+	return JsonResponse({ "tournamentName" : Tournament.TournamentName, 
+		"tournamentType" : Tournament.Type, 
+		"users" : UserMSG, 
+		"matchs" : 'None' if MatchMSG is None else MatchMSG
+		})
 
 def get_tournaments(request):
 	tournamentL = T_Manager.Manager.GetTournaments()
@@ -118,6 +121,7 @@ def get_tournaments(request):
 	return JsonResponse({'games' : dictionnary})
 
 def join_tournaments(request):
+	ColorPrint.prGreen('fds')
 	if request.user.is_authenticated is False:
 		return JsonResponse({'error': 'You are not authentiated', 'canJoin': False})
 	if request.method != 'POST':
