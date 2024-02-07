@@ -24,4 +24,6 @@ class MessageModels(models.Model):
     message = models.CharField(default='NULL')
     sender = models.CharField(default='NULL')
     receiver = models.CharField(default='NULL')
+    isRead = models.BooleanField(default=False)
+    readBy = ArrayField(models.CharField(), blank=True, null=True)
     timeCreation = models.DateTimeField(auto_now=True)

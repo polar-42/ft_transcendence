@@ -18,7 +18,7 @@ def createGeneralChat(allChannels):
 
 class chatSocket(WebsocketConsumer):
 	allChannels = {}
-	allUsers = {} 
+	allUsers = {}
 
 
 	def initAllChannels(allChannelsDict):
@@ -159,6 +159,8 @@ class chatSocket(WebsocketConsumer):
 				self.refuseInvitation(data['target'], data['sender'])
 			case 'refused_invitation':
 				self.receiveRefusedInvitation(data)
+			case 'msg_read':
+				self.readMessage(data)
 
 	def joinChannel(self, channelName, privacyStatus, password, atConnection):
 		if self.allChannels[channelName] is None:
@@ -240,15 +242,22 @@ class chatSocket(WebsocketConsumer):
 				)
 		msg.save()
 
-		print(msg.sender, ' send ', msg.message, ' to ', msg.receiver)
+		allMessages = MessageModels.objects.filter(
+					(Q(sender=str(self.userIdentification)) & Q(receiver=receiver)) |
+					(Q(receiver=str(self.userIdentification)) & Q(sender=receiver))).order_by('-id')[:2]
+
+		if len(allMessages) > 1:
+			allMessages[1].isRead = True
+
+		print(msg.sender, ' send', msg.message, 'to', msg.receiver)
 		async_to_sync(self.channel_layer.group_send)(
 				'chat_' + receiver,
 				{
 					'type': 'chatPrivateMessage',
 					'sender': self.identification,
+					'senderNickname': self.UserModel.nickname,
 					'message': message
-					}
-				)
+				})
 
 	def sendChannelMessage(self, channel, message):
 		if channel in self.allChannels:
@@ -317,10 +326,18 @@ class chatSocket(WebsocketConsumer):
 					lastMsg = chanMsgs[0].message
 					lastMsgSender = userModels.User.objects.get(identification=chanMsgs[0].sender).nickname
 					timestamp = chanMsgs[0].timeCreation
+
+					tabMsg = chanMsgs[0].readBy
+					if tabMsg is not None and self.identification not in tabMsg:
+						isRead = False
+					else:
+						isRead = True
+
 				else:
 					lastMsg = ''
 					lastMsgSender = ''
-					timestamp = datetime.datetime.min.replace(tzinfo=datetime.timezone.utc) 
+					timestamp = datetime.datetime.min.replace(tzinfo=datetime.timezone.utc)
+					isRead = True
 
 				data = {
 						'type': 'channel',
@@ -331,6 +348,7 @@ class chatSocket(WebsocketConsumer):
 				   			'msg': lastMsg 
 						},
 						'timestamp': timestamp,
+						'isRead': isRead,
 						'friend' : 'unknown',
 						}
 				
@@ -347,6 +365,7 @@ class chatSocket(WebsocketConsumer):
 				msgSender = contact
 			if contact not in contactList:
 				contactList.append(contact)
+
 		for contact in contactList:
 			if userModels.User.objects.get(identification=contact).PendingInvite is not None and self.identification in userModels.User.objects.get(identification=contact).PendingInvite:
 				friendStatus = 'unknown'
@@ -354,23 +373,36 @@ class chatSocket(WebsocketConsumer):
 				friendStatus = 'unknown'
 			msg = allMessages.filter(Q(sender=contactList[0]) | Q(receiver=contactList[0])).order_by('-id')[0]
 			connexionStatus = userModels.User.objects.get(identification=contact).connexionStatus
+
+			lastMsg = MessageModels.objects.filter(
+					(Q(sender=str(self.userIdentification)) & Q(receiver=contact)) |
+					(Q(receiver=str(self.userIdentification)) & Q(sender=contact))).order_by('-id')[0]
+
+			if lastMsg.sender == self.identification:
+				sender = "Me"
+				isRead = True
+			else:
+				isRead = lastMsg.isRead
+				sender = userModels.User.objects.get(identification=lastMsg.sender).nickname
+
 			allConv.append({
 				'type': 'private',
 				'name': userModels.User.objects.get(identification=contact).nickname,
 				'id': userModels.User.objects.get(identification=contact).identification,
 				'connexionStatus': connexionStatus,
 				'last_msg': {
-					'msg': msg['message'],
-					'sender': userModels.User.objects.get(identification=msg['sender']).nickname
+					'msg': lastMsg.message,
+					'sender': sender
 					},
-				'timestamp': msg['timeCreation'],
+				'timestamp': lastMsg.timeCreation,
+				'isRead': isRead,
 				'friend': friendStatus,
 				})
+
 
 		def cmpTimeStamp(msg):
 			return msg['timestamp']
 
-		print(allConv)
 		allConv.sort(key = cmpTimeStamp, reverse = True)
 		for conv in allConv:
 			conv['timestamp'] = str(conv['timestamp'])
@@ -454,7 +486,7 @@ class chatSocket(WebsocketConsumer):
 				'connexion_status': user.connexionStatus
 				})
 
-		self.send(text_data=json.dumps({ 
+		self.send(text_data=json.dumps({
 								  'type': 'get_channel_data',
 								  'name': channel.channelName,
 								  'admin': admin,
@@ -494,7 +526,7 @@ class chatSocket(WebsocketConsumer):
 			 )
 			return
 		elif msgId == -1:
-			type = 'chat_history'		
+			type = 'chat_history'
 			messages = MessageModels.objects.filter(
 					(Q(sender=str(self.identification)) & Q(receiver=modelChatTarget.identification)) |
 					(Q(receiver=str(self.identification)) & Q(sender=modelChatTarget.identification))).order_by('-id')[:10]
@@ -513,6 +545,10 @@ class chatSocket(WebsocketConsumer):
 				received = True
 				contact = msg['sender']
 
+			if msg['sender'] != self.userIdentification:
+				msgModel = MessageModels.objects.get(id=msg['id'])
+				msgModel.isRead = True
+				msgModel.save()
 
 			response.append({
 				'id': msg['id'],
@@ -522,10 +558,15 @@ class chatSocket(WebsocketConsumer):
 				'message': msg['message']
 				})
 
-		print('response: ',response)
+		if self.isStillNotification() is True:
+			isStillUnreadMessage = True
+		else:
+			isStillUnreadMessage = False
+
 		self.send(json.dumps({
 			'type': type,
-			'data': response
+			'data': response,
+			'isStillUnreadMessage': isStillUnreadMessage
 			})
 			)
 
@@ -552,6 +593,13 @@ class chatSocket(WebsocketConsumer):
 		for msg in messages.values():
 			senderModel = userModels.User.objects.get(identification=msg['sender'])
 
+			msgModel = MessageModels.objects.get(id=msg['id'])
+			tabReadBy = msgModel.readBy
+			if tabReadBy is not None and self.identification not in tabReadBy:
+				tabReadBy.append(self.identification)
+				msgModel.readBy = tabReadBy
+				msgModel.save()
+
 			if self.isBlock(senderModel) is False:
 				response.append({
 					'id': msg['id'],
@@ -561,15 +609,40 @@ class chatSocket(WebsocketConsumer):
 					'message': msg['message']
 					})
 
+		if self.isStillNotification() == True:
+			isStillUnreadMessage = True
+		else:
+			isStillUnreadMessage = False
+
 		self.send(json.dumps({
 			'type': type,
-			'data': response
+			'data': response,
+			'isStillUnreadMessage': isStillUnreadMessage
 			})
 			)
 
+	def isStillNotification(self):
+		isStillUnreadMessage = False
+
+		allChannels = userModels.User.objects.get(identification=self.identification).channels
+		for chan in allChannels:
+			lastMsg = MessageModels.objects.filter(type='C').filter(receiver=chan).order_by('-id')
+			if len(lastMsg) > 0 and self.identification not in lastMsg[0].readBy:
+				isStillUnreadMessage = True
+				return isStillUnreadMessage
+
+		if isStillUnreadMessage == False:
+			allMessages = MessageModels.objects.filter(type='P').filter(receiver=self.identification).order_by('-id')
+			for msg in allMessages:
+				if msg.isRead == False:
+					isStillUnreadMessage = True
+					return isStillUnreadMessage
+
+		return (isStillUnreadMessage)
+
 	def inviteToPong(self, receiver):
-		if userModels.User.objects.filter(identification=receiver).exists() is False or receiver == self.identification:
-			print(self.user.identification, 'try to invite', receiver, 'but he dont exist') #TO DEL
+		if userModels.User.objects.filter(identification=receiver).exists() is False or receiver == self.userIdentification:
+			print(self.user.identification, 'try to invite', receiver, 'but he doesn"t exist') #TO DEL
 			return
 
 		receiverModel = userModels.User.objects.get(identification=receiver)
@@ -670,7 +743,7 @@ class chatSocket(WebsocketConsumer):
 					'gameId': gameId
 					}
 				)
-	
+
 	def refuseInvitation(self, target, sender):
 		senderModel = userModels.User.objects.get(identification=sender)
 		if senderModel is None:
@@ -683,6 +756,22 @@ class chatSocket(WebsocketConsumer):
 					'userId': senderModel.identification,
 					'userName': senderModel.nickname
 				})
+
+	def readMessage(self, data):
+		if MessageModels.objects.filter(receiver=data['receiver']).exists() is False:
+			return
+
+		lastMsg = MessageModels.objects.filter(receiver=data['receiver']).order_by('-id')[:1]
+		lastMsg = MessageModels.objects.get(id=lastMsg[0].id)
+
+		if ChannelModels.objects.filter(channelName=data['receiver']).exists():
+			tabReadBy = lastMsg.readBy
+			tabReadBy.append(self.identification)
+			lastMsg.readBy = tabReadBy
+		else:
+			lastMsg.isRead = True
+
+		lastMsg.save()
 
 	#CHANNEL LAYER FUNCTIONS
 	#GAMES INVITATION
@@ -724,11 +813,14 @@ class chatSocket(WebsocketConsumer):
 	#CHAT RECEIVE
 	def chatPrivateMessage(self, event):
 		sender = event['sender']
+		senderNickname = event['senderNickname']
 		message = event['message']
 
 		self.send(text_data=json.dumps({
 			'type': 'chat_private_message',
 			'sender': sender,
+			'senderNickname': senderNickname,
+			'receiver': self.identification,
 			'message': message,
 			'time': time.strftime("%Y-%m-%d %X")
 			}))
@@ -738,7 +830,6 @@ class chatSocket(WebsocketConsumer):
 		message = event['message']
 		channel = event['channel']
 
-		print('yoo')
 		senderModel = userModels.User.objects.get(identification=sender)
 		if self.isBlock(senderModel):
 			print(sender, 'try to send a message on channel', channel, 'to', self.user.identification, 'but he block him') #TO DEL
@@ -747,14 +838,14 @@ class chatSocket(WebsocketConsumer):
 		self.send(text_data=json.dumps({
 			'type': 'chat_channel_message',
 			'channel': channel,
-			'sender': senderModel.nickname, 
+			'sender': senderModel.nickname,
 			'senderID':  senderModel.identification,
 			'message': message,
 			'time': time.strftime("%Y-%m-%d %X")
 			}))
 
 	def searchConv(self, input):
-		allUsers = userModels.User.objects.exclude(Q(identification='AI') | Q(identification='admin') | Q(identification = self.UserModel.identification)) 
+		allUsers = userModels.User.objects.exclude(Q(identification='AI') | Q(identification='admin') | Q(identification = self.UserModel.identification))
 		print('allUsers: ', allUsers)
 		response = []
 
@@ -781,7 +872,9 @@ class chatSocket(WebsocketConsumer):
 
 		for user in allUsers:
 			if user.identification.find(input) >= 0:
-				msgs = MessageModels.objects.filter(Q(receiver=user.identification) | Q(sender=user.identification))
+				msgs = MessageModels.objects.filter(
+					(Q(sender=str(self.userIdentification)) & Q(receiver=user.identification)) |
+					(Q(receiver=str(self.userIdentification)) & Q(sender=user.identification))).order_by('-id')
 
 				connexionStatus = user.connexionStatus
 				friendStatus = 'friend'
@@ -793,12 +886,12 @@ class chatSocket(WebsocketConsumer):
 					if msgs[0].sender == self.UserModel.identification:
 						sender = 'Me'
 					else:
-						sender = msgs[0].sender
+						sender = userModels.User.objects.get(identification=msgs[0].sender).nickname
 					response.append({
 						'type': 'private_message',
 						'name': user.nickname,
 						'id': user.identification,
-						'connexion_status': connexionStatus, 
+						'connexion_status': connexionStatus,
 						'last_msg': {
 							'message': msgs[0].message,
 							'sender': sender
@@ -831,7 +924,7 @@ class chatSocket(WebsocketConsumer):
 				password = password
 			else:
 				password = None
-			print(channelName, channelDescription, privacyStatus, password,  adminId)	
+			print(channelName, channelDescription, privacyStatus, password,  adminId)
 			self.allChannels[channelName] = ChannelChat(channelName, channelDescription, privacyStatus, password,  adminId)
 			self.allChannels[channelName].joinChannel(self.UserModel)
 			self.joinChannel(channelName, False, None, 1)

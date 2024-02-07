@@ -103,14 +103,22 @@ class ChannelChat():
 		print(user.identification, 'leave channel', self.channelName, 'with', self.ChanModel.users) #TO DEL
 
 	def sendMessageChannel(self, sender, message):
+		tabRead = []
+		tabRead.append(sender.identification)
 		msg = MessageModels.objects.create(
 				message=message,
 				sender=sender.identification,
 				receiver=self.channelName,
+				readBy=tabRead,
 				type='C'
 				)
 
 		msg.save()
+		allMessages = MessageModels.objects.filter(receiver=self.channelName).order_by('-id')[:2]
+		if len(allMessages) > 2:
+			chan = ChannelModels.objects.get(id=self.channelId)
+			allMessages[1].readBy = chan.users
+			chan.save()
 
 		async_to_sync(self.channel_layer.group_send)(
 				'channel_' + self.channelName,
