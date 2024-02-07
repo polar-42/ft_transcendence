@@ -1,0 +1,16 @@
+.error_404 {
+	display: flex;
+	justify-content: center;
+}
+
+.error_message {
+	display: grid;
+    margin-top: 25vh;
+    margin-bottom: 25vh;
+    background: var(--fourth);
+    padding: 5%;
+    border-radius: 10px;
+	font-size: 150%;
+	text-align: center;
+}
+
