@@ -295,6 +295,8 @@ export function goToChan(name) {
 }
 
 function channelMessage(message, targetChannel) {
+	if (message.length <= 0)
+		return
 	chatSocket.send(JSON.stringify({
 		'type': 'channel_message',
 		'target': targetChannel,
@@ -394,11 +396,11 @@ export async function receiveChanMsg(data) {
 		conversation.innerHTML = item
 	  }
 	  conversation.scrollTo(0, conversation.scrollHeight)
-	
+
 	  document.getElementById('new_message_from_' + data.senderID).addEventListener('click', () => {
 		navto("/profile", data.senderID)
 	  })
-	
+
 	  console.log(data)
 	  chatSocket.send(JSON.stringify({
 		'type': 'msg_read',

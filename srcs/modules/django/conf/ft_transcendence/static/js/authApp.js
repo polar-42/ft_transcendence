@@ -307,15 +307,24 @@ export async function initProfileButton(connected) {
 			button.children[2].textContent = userData.userName
 		})
 
+
+		let param = new URLSearchParams({
+			type: 'user',
+			userId: 'self'
+		})
+
 		let profileImage = document.querySelectorAll('img.user_logo')
-		Response = await fetch(document.location.origin + '/authApp/GET/avatarImage',
+		Response = await fetch(document.location.origin + '/authApp/GET/avatarImage/?'
+			+ param,
 			{
 				method: 'GET'
+
 			})
 		if (Response.ok) {
+			console.log('testtest')
 			var vari = await Response.blob()
+        	console.log(vari)
 			if (vari.type == "image/png") {
-        console.log(vari)
 				profileImage.forEach((img) => {
 					img.src = URL.createObjectURL(vari)
 					img.style.borderRadius = '50%';

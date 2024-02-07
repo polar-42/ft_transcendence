@@ -1,5 +1,6 @@
 from django.http import JsonResponse, HttpResponse
 from .models import User
+from chatApp.models import ChannelModels
 
 def check_connexion(request):
     if (request.user.is_authenticated):
@@ -20,10 +21,30 @@ def getUserID(request):
 
 def getAvatarImage(request):
     if request.user.is_authenticated:
-        usr = User.objects.get(id=request.user.id)
-        if usr.avatarImage is None:
-            return HttpResponse(None, content_type='image/null')
-        return HttpResponse(usr.avatarImage, content_type='image/png')
+
+        paramType = request.GET.get('type', None)
+        if paramType == 'channel':
+            print('TO DO')
+            channelName = request.GET.get('userId', None)
+            if ChannelModels.objects.filter(channelName=channelName).exists() is False:
+                return HttpResponse(None, content_type='image/null')
+            avatarChan = ChannelModels.objects.get(channelName=channelName).channelPicture
+            if avatarChan is None:
+                return HttpResponse(None, content_type='image/null')
+            return HttpResponse(avatarChan, content_type='image/png')
+        else:
+            userId = request.GET.get('userId', None)
+            if userId == 'self':
+                userId = request.user.identification
+            if User.objects.filter(identification=userId).exists() is False:
+                return HttpResponse(None, content_type='image/null')
+
+            avatarImage = User.objects.get(identification=userId).avatarImage
+            if avatarImage == None:
+                return HttpResponse(None, content_type='image/null')
+            return HttpResponse(avatarImage, content_type='image/png')
+    else:
+        return HttpResponse(None, content_type='image/null')
 
 def Get2FaStatus(request):
 	if request.user.is_authenticated == False:

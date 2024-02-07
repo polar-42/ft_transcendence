@@ -182,7 +182,7 @@ export async function getProfilePicture(data) {
 	{
 		param = new URLSearchParams({
 			'type': 'channel',
-			'name': data.name 
+			'name': data.name
 		})
 	}
 	else
@@ -231,8 +231,9 @@ async function displayLastChats(data, isStillUnreadMessage) {
 			convId = "conv_" + data[i].id
 		else
 			convId = "conv_" + data[i].name
+
 		let item =
-			'<li class="' + data[i].type + '" ' + 'id="conv_' + data[i].id + '">' +
+			'<li class="' + data[i].type + '" ' + 'id="' + convId + '">' +
 			'<div class="pop_up_unread" isread_popup="' + data[i].isRead + '"></div>' +
 			'<img src=' + ppUrl + ' alt="converstion_picture">' +
 			'<div class="conversation_text">' +

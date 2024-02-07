@@ -220,6 +220,8 @@ class chatSocket(WebsocketConsumer):
 				)
 
 	def sendPrivateMessage(self, receiver, message):
+		if len(message) <= 0:
+			return
 		if userModels.User.objects.filter(identification=receiver).exists() is False or receiver == self.identification:
 			print(self.user.identification, 'try to send a message to', receiver, 'but he dont exist') #TO DEL
 			return
@@ -234,6 +236,14 @@ class chatSocket(WebsocketConsumer):
 			print(self.user.identification, 'try to send a message to user', receiverModel.identification, 'who block him') #TO DEL
 			return
 
+		allMessages = MessageModels.objects.filter(
+					(Q(sender=str(self.identification)) & Q(receiver=receiver)) |
+					(Q(receiver=str(self.identification)) & Q(sender=receiver))).order_by('-id')
+		if len(allMessages) > 0:
+			allMessages[0].isRead = True
+			allMessages[0].save()
+			print('allMessages[0]:', allMessages[0])
+
 		msg = MessageModels.objects.create(
 				message=message,
 				sender=self.identification,
@@ -241,13 +251,6 @@ class chatSocket(WebsocketConsumer):
 				type='P'
 				)
 		msg.save()
-
-		allMessages = MessageModels.objects.filter(
-					(Q(sender=str(self.identification)) & Q(receiver=receiver)) |
-					(Q(receiver=str(self.identification)) & Q(sender=receiver))).order_by('-id')[:2]
-
-		if len(allMessages) > 1:
-			allMessages[1].isRead = True
 
 		print(msg.sender, ' send', msg.message, 'to', msg.receiver)
 		async_to_sync(self.channel_layer.group_send)(
@@ -260,6 +263,8 @@ class chatSocket(WebsocketConsumer):
 				})
 
 	def sendChannelMessage(self, channel, message):
+		if len(message) <= 0:
+			return
 		if channel in self.allChannels:
 			tab = self.UserModel.channels
 
@@ -317,7 +322,7 @@ class chatSocket(WebsocketConsumer):
 		print(user, 'has been unblock by', self.user.identification) #TO DEL
 
 	def getLastChats(self):
-		allConv = [] 
+		allConv = []
 		if self.UserModel.channels is not None:
 			print(self.UserModel.channels)
 			for chan in self.UserModel.channels:
@@ -342,16 +347,16 @@ class chatSocket(WebsocketConsumer):
 				data = {
 						'type': 'channel',
 						'name': chan,
-						'last_msg': 
-						{ 
-				   			'sender': lastMsgSender, 
-				   			'msg': lastMsg 
+						'last_msg':
+						{
+				   			'sender': lastMsgSender,
+				   			'msg': lastMsg
 						},
 						'timestamp': timestamp,
 						'isRead': isRead,
 						'friend' : 'unknown',
 						}
-				
+
 				allConv.append(data)
 
 		allMessages = MessageModels.objects.filter(type='P').filter(Q(sender=self.identification) | Q(receiver=self.identification)).order_by('-id').values()
@@ -413,7 +418,7 @@ class chatSocket(WebsocketConsumer):
 			'data': allConv
 			})
 			)
-	
+
 	def isBlock(self, user):
 		if userModels.User.objects.filter(id=user.id).exists():
 			blockedUser = self.UserModel.blockedUser
@@ -871,7 +876,7 @@ class chatSocket(WebsocketConsumer):
 					'last_msg': "",
 					'friend' : 'unknown'
 					})
-				
+
 
 
 		for user in allUsers:
@@ -988,7 +993,7 @@ class chatSocket(WebsocketConsumer):
 		if TargetModel.PendingInvite is not None and self.identification in TargetModel.PendingInvite:
 			ColorPrint.prYellow("{usrID} try sending a friendship request to {targetID} but he already have a pending request.".format(usrID=self.user.identification, targetID=target))
 			return
-	
+
 		if self.isBlock(TargetModel):
 			ColorPrint.prYellow("{usrID} try sending a friendship request to {targetID} but he block him.".format(usrID=self.user.identification, targetID=target))
 			return
@@ -996,11 +1001,11 @@ class chatSocket(WebsocketConsumer):
 		if self.isBlockBy(TargetModel):
 			ColorPrint.prYellow("{usrID} try sending a friendship request to {targetID} who block him.".format(usrID=self.user.identification, targetID=target))
 			return
-		
+
 		if TargetModel.PendingInvite is not None and self.identification in TargetModel.PendingInvite:
 			ColorPrint.prYellow("{usrID} try sending a friendship request to {targetID} but he already have a pending request.".format(usrID=self.user.identification, targetID=target))
 			return
-		
+
 		if self.UserModel.PendingInvite is not None and target in self.UserModel.PendingInvite:
 			self.UserModel.PendingInvite.remove(target)
 			if self.UserModel.Friends is not None:
@@ -1027,13 +1032,13 @@ class chatSocket(WebsocketConsumer):
 			'type': 'receiveFriendInvitation',
 			'sender': self.identification
 		})
-	
+
 	def receiveFriendInvitation(self, sender):
 		ColorPrint.prGreen('FriendShipRequestReceived')
 		if userModels.User.objects.filter(identification=sender['sender']).exists() is False or sender['sender'] == self.identification:
 			ColorPrint.prYellow("{usrID} receive friendship request from {targetID} but he dont exist.".format(usrID=self.user.identification, targetID=sender['sender']))
 			return
-		
+
 		if self.UserModel.Friends is not None and sender['sender'] in self.UserModel.Friends:
 			ColorPrint.prYellow("{usrID} receive friendship request from {targetID} but they was already friend.".format(usrID=self.user.identification, targetID=sender['sender']))
 			return
@@ -1057,7 +1062,7 @@ class chatSocket(WebsocketConsumer):
 		if userModels.User.objects.filter(identification=sender).exists() is False or sender == self.identification:
 			ColorPrint.prYellow("{usrID} answer friendship request from {targetID} but he dont exist.".format(usrID=self.user.identification, targetID=sender))
 			return
-		
+
 		if self.UserModel.Friends is not None and sender in self.UserModel.Friends:
 			ColorPrint.prYellow("{usrID} answer friendship request from {targetID} but they was already friend.".format(usrID=self.user.identification, targetID=sender))
 			return
@@ -1073,7 +1078,7 @@ class chatSocket(WebsocketConsumer):
 		if self.isBlockBy(sender):
 			ColorPrint.prYellow("{usrID} answer friendship request from {targetID} who block him.".format(usrID=self.user.identification, targetID=sender))
 			result = False
-		
+
 		if result == True:
 			self.UserModel.PendingInvite.remove(sender)
 			if self.UserModel.Friends is not None:

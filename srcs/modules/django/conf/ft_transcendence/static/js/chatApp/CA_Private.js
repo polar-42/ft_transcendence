@@ -25,7 +25,7 @@ export function displayChatHistory(data, isStillUnreadMessage) {
 	if (isStillUnreadMessage == true)
 	{
 		document.getElementById('pop_up_unread_chatbox').style.display = 'block'
-	} 
+	}
 	else
 	{
 		document.getElementById('pop_up_unread_chatbox').style.display = 'none'
@@ -151,6 +151,8 @@ export function receiveMsg(data) {
 			data.isRead = false
 			let lastMsg = data.message
 
+			//PROFILE INAGE
+
 
 			let html =
 				'<li class="' + data.type + '" ' + 'id="' + convId + '" isread="' + data.isRead + '">' +
@@ -240,6 +242,8 @@ export async function actualizeChatHistory(data) {
 }
 
 function sendMessage(message, targetUser) {
+	if (message.length <= 0)
+		return
 	console.log('message is', message, 'and tagetUser is', targetUser);
 
 	let conversation = document.querySelector(".conversation")
