@@ -1442,6 +1442,13 @@ async function actualizeChannelHistory(data) {
       let received
       let sender
 
+      let profilePicture = await getProfilePicture({ 'type': 'user', 'id': data[i].senderID})
+      let ppUrl
+      if (profilePicture.type == 'image/null')
+        ppUrl = "../static/assets/logo/user.png"
+      else
+        ppUrl = URL.createObjectURL(profilePicture)
+
       if (data[i].senderID !== userData.userID) {
         received = 'own'
         sender = ''
@@ -1452,7 +1459,7 @@ async function actualizeChannelHistory(data) {
       let item =
         '<li class="message_item ' + received + '" msgid="' + data[i].id + '">' +
         '<div class="sender">' +
-        '<img src="../static/assets/logo/user.png" alt="sender profile picture">' +
+        '<img src="' + ppUrl +'" alt="sender profile picture">' +
         '<p>' + sender + '<p>' +
         '</div>' +
         '<div class="messGage_wrapper">' +
