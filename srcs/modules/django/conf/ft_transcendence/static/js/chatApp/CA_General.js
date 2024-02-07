@@ -364,8 +364,16 @@ export function cleanMainBox() {
 	while (mainBoxHeader.children.length > 0) {
 		mainBoxHeader.removeChild(mainBoxHeader.children[0])
 	}
-	mainBoxBody.classList.remove("homepage")
-	mainBoxHeader.classList.remove("homepage")
+	if (mainBoxBody.classList.contains('homepage'))
+	{
+		mainBoxBody.classList.remove("homepage")
+		mainBoxHeader.classList.remove("homepage")
+	}
+	if (mainBoxBody.classList.contains('friendpage'))
+	{
+		mainBoxBody.classList.remove('friendpage')
+		mainBoxHeader.classList.remove('friendpage')
+	}
 }
 
 
