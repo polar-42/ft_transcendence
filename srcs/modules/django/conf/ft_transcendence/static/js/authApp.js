@@ -321,9 +321,7 @@ export async function initProfileButton(connected) {
 
 			})
 		if (Response.ok) {
-			console.log('testtest')
 			var vari = await Response.blob()
-        	console.log(vari)
 			if (vari.type == "image/png") {
 				profileImage.forEach((img) => {
 					img.src = URL.createObjectURL(vari)

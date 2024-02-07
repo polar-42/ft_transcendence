@@ -67,7 +67,7 @@ function initHomepageHeader() {
 	mainBoxHeader.classList.add("homepage")
 	let html =
 		'<img src="../static/assets/logo/search-regular-24.png" alt="search icon">' +
-		'<input type="text" name"searchbar">'
+		'<input type="text" name="searchbar">'
 	mainBoxHeader.innerHTML = html
 	mainBoxHeader.children[1].addEventListener("keypress", (event) => {
 		if (event.key === 'Enter') {
@@ -206,6 +206,7 @@ export async function getProfilePicture(data) {
 
 async function displayLastChats(data, isStillUnreadMessage) {
 	let conversation_list = document.querySelector(".conversation_list")
+
 	for (let i = data.length - 1; i >= 0; i--) {
 		console.log(data[i])
 		let lastMsg
@@ -274,12 +275,16 @@ async function displayLastChats(data, isStillUnreadMessage) {
 
 async function displaySearchResult(data) {
 	let resultWrapper = document.querySelector(".conversation_list")
+
 	if (document.querySelector(".main_box_header").children.length === 2)
+	{
 		document.querySelector(".main_box_header").insertAdjacentHTML("beforeend", '<img src="../static/assets/logo/arrow-back-regular-60.png" alt="return back button" class="back_arrow">')
-	document.querySelector(".main_box_header img.back_arrow").addEventListener("click", () => {
-		cleanMainBox()
-		initChatHomepage()
-	})
+
+		document.querySelector(".main_box_header img.back_arrow").addEventListener("click", () => {
+			cleanMainBox()
+			initChatHomepage()
+		})
+	}
 
 	while (resultWrapper.children.length > 0) {
 		resultWrapper.removeChild(resultWrapper.children[0])
@@ -365,6 +370,7 @@ export function cleanMainBox() {
 	while (mainBoxHeader.children.length > 0) {
 		mainBoxHeader.removeChild(mainBoxHeader.children[0])
 	}
+	//document.querySelectorAll('conversation_list')[0].innerHTML = ''
 	mainBoxBody.classList.remove("homepage")
 	mainBoxHeader.classList.remove("homepage")
 }
