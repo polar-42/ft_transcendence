@@ -225,7 +225,6 @@ async function getProfilePicture(data) {
 }
 
 async function displayLastChats(data) {
-  console.log('displayLastChats')
   let conversation_list = document.querySelector(".conversation_list")
   for (let i = data.length - 1; i >= 0; i--) {
     let lastMsg
@@ -587,7 +586,7 @@ function displayChannel(data) {
           let item =
             '<div class="user_wrapper">' +
             '<div class="connection_point ' + isConnected + '"></div>' +
-            '<img src=' + ppUrl + ' alt="channel member profile picture">' +
+            '<img src=' + ppUrl + ' alt="channel member profile picture" id="profile_id_' + users[i].id + '">' +
             '<p class="username">' + users[i].name + '</p>' +
             '<img class="kick_cross" src="../static/assets/logo/red_cross.png" alt="kick user button">' +
             '</div>'
@@ -604,6 +603,9 @@ function displayChannel(data) {
             kick.addEventListener("click", () => {
               kickUser(data.name, users[i].id)
             })
+          document.getElementById('profile_id_' + users[i].id).addEventListener("click", () => {
+            navto("/profile", users[i].id)
+          })
         }
       }
     }
@@ -637,11 +639,10 @@ async function displayChannelHistory(data, isStillUnreadMessage) {
       ppUrl = "../static/assets/logo/user.png"
     else
       ppUrl = URL.createObjectURL(profilePicture)
-
     let item =
       '<li class="message_item ' + received + '" msgId="' + data[i].id + '">' +
       '<div class="sender">' +
-      '<img src=' + ppUrl + ' alt="sender profile picture">' +
+      '<img src=' + ppUrl + ' alt="sender profile picture" class="profile_id_chan_' + data[i].senderID + '">' +
       '<p>' + sender + '</p>' +
       '</div>' +
       '<div class="message_wrapper">' +
@@ -652,9 +653,22 @@ async function displayChannelHistory(data, isStillUnreadMessage) {
 
     html += item
 
+
   }
   conversation.innerHTML = html
   conversation.scrollTo(0, conversation.scrollHeight)
+
+  let tabIdentification = [];
+
+  for (let i = data.length - 1; i >= 0 ; i--) {
+    if (tabIdentification.includes(data[i].senderID) == false)
+    document.querySelectorAll('.profile_id_chan_' + data[i].senderID).forEach((div) => {
+      div.addEventListener("click", () => {
+        navto("/profile", data[i].senderID)
+      })
+    })
+    tabIdentification.push(data[i].senderID)
+  }
 
   if (isStillUnreadMessage == true) {
     document.getElementById('pop_up_unread_chatbox').style.display = 'block'
@@ -1156,7 +1170,7 @@ function displayPrivMsg(data) {
       ppUrl = URL.createObjectURL(profilePicture)
     let html =
       '<div class="contact_wrapper" userID="' + data.identification + '">' +
-      '<img src=' + ppUrl + ' alt="contact profile picture">' +
+      '<img src=' + ppUrl + ' alt="contact profile picture" id="profile_id_' + data.identification + '">' +
       '<div class="contact_name_wrapper">' +
       '<p>' + data.name + '</p>' +
       '<div class="connection_point ' + isConnected + '"></div>' +
@@ -1170,6 +1184,10 @@ function displayPrivMsg(data) {
       mainBoxBody.classList.remove("private_message")
       cleanMainBox()
       initChatHomepage()
+    })
+
+    document.getElementById('profile_id_' + data.identification).addEventListener("click", () => {
+      navto("/profile", data.identification)
     })
   }
 
@@ -1323,7 +1341,7 @@ async function receiveChanMsg(data) {
   let item =
     '<li class="message_item ' + received + '" msgid="' + '">' +
     '<div class="sender">' +
-    '<img src="' + ppUrl + '" alt="sender profile picture">' +
+    '<img src="' + ppUrl + '" alt="sender profile picture" id="new_message_from_' + data.senderID + '">' +
     '<p>' + sender + '<p>' +
     '</div>' +
     '<div class="messGage_wrapper">' +
@@ -1341,6 +1359,9 @@ async function receiveChanMsg(data) {
     }
     conversation.scrollTo(0, conversation.scrollHeight)
 
+    document.getElementById('new_message_from_' + data.senderID).addEventListener('click', () => {
+      navto("/profile", data.senderID)
+    })
 
     console.log(data)
     chatSocket.send(JSON.stringify({

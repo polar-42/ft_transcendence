@@ -598,6 +598,7 @@
         height: auto;
         margin-right: 10px;
         border-radius: 50%;
+        cursor: pointer;
       }
 
       p {
@@ -717,6 +718,7 @@
     height: auto;
     margin: auto;
     border-radius: 50%;
+    cursor: pointer;
   }
 
   .user_wrapper {
