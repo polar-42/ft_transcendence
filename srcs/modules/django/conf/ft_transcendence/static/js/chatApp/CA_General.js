@@ -1,6 +1,6 @@
 import { checkConnexion } from "../authApp.js";
 import { navto } from "../index.js";
-import { AddToFriend } from "./CA_Friends.js";
+import { AddToFriend, initFriendsPage } from "./CA_Friends.js";
 import { goToChan, clickJoinChan, displayChannel, displayChannelHistory, receiveChanMsg, actualizeChannelHistory, initCreateChannel, receiveChanCreation, receiveJoinChanResponse, receiveDescriptionEdit } from "./CA_Channels.js";
 import { goToConv, displayChatHistory, displayPrivMsg, receiveMsg, actualizeChatHistory } from "./CA_Private.js";
 import { initGameInvitiation, receivePongInvitation, receiveBattleshipInvitation, receiveRefusedInvitation } from "./CA_GameInvite.js";
@@ -99,6 +99,7 @@ function initHomepageBody() {
 
 	document.querySelector("button[name='create_channel']").addEventListener("click", initCreateChannel)
 	document.querySelector("button[name='invitations']").addEventListener("click", initGameInvitiation)
+	document.querySelector("button[name='friends']").addEventListener("click", initFriendsPage)
 	getLastChats()
 }
 
