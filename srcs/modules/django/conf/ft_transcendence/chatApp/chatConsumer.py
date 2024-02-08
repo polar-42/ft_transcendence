@@ -1142,7 +1142,7 @@ class chatSocket(WebsocketConsumer):
 						isRead = lastMsg.isRead
 					last_msg = {
 						'msg': lastMsg.message,
-						'sender': msgSender
+						'sender': user.nickname
 					}
 				else:
 					last_msg = None

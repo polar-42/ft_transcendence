@@ -147,7 +147,7 @@ export function displayChannel(data) {
 			}
 		})
 		sendbox.children[1].addEventListener("click", () => {
-			channelMessage(sendbox.children[0].textContent, data.name)
+			channelMessage(sendbox.children[0].value, data.name)
 			sendbox.children[0].value = ""
 		})
 

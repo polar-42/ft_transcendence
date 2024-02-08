@@ -121,7 +121,7 @@ export function displayPrivMsg(data) {
 			}
 		})
 		sendbox.children[1].addEventListener("click", () => {
-			sendMessage(sendbox.children[0].textContent, id)
+			sendMessage(sendbox.children[0].value, id)
 			sendbox.children[0].value = ""
 		})
 
