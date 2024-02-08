@@ -851,3 +851,40 @@
 	overflow-y: scroll;
 	scrollbar-color: var(--third) transparent;
   }
+
+  .game_invitation {
+    width: 80%;
+    margin-left: 10%;
+    padding: 10px;
+	background: radial-gradient(ellipse at bottom, #4c77e6 5%, #7f4af5);
+	border-radius: 10px;
+
+    .acceptation_wrapper {
+      display: flex;
+      justify-content: space-evenly;
+
+      button {
+        display: block;
+        color: var(--main-bg-color);
+        border: none;
+        margin: 5px auto 0 auto;
+        padding: 2px 5px 2px 5px;
+        font-size: 0.9em;
+        transition: .3s ease;
+      }
+
+      .accept_btn {
+        background: #63AB24;
+      }
+
+      .refuse_btn {
+        background: #CF331F;
+      }
+
+      button:hover {
+        background: var(--main-bg-color);
+        color: var(--fourth);
+        cursor: pointer;
+      }
+    }
+  }

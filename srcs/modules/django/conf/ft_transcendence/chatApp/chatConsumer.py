@@ -161,6 +161,8 @@ class chatSocket(WebsocketConsumer):
 				self.receiveRefusedInvitation(data)
 			case 'msg_read':
 				self.readMessage(data)
+			case 'MSG_RetrieveFriendInvitation':
+				self.RetrieveFriendInvitation()
 
 	def joinChannel(self, channelName, privacyStatus, password, atConnection):
 		if self.allChannels[channelName] is None:
@@ -370,7 +372,7 @@ class chatSocket(WebsocketConsumer):
 			friendStatus = 'friend'
 			if userModels.User.objects.get(identification=contact).PendingInvite is not None and self.identification in userModels.User.objects.get(identification=contact).PendingInvite:
 				friendStatus = 'unknown'
-			elif self.UserModel.Friends is not None and msg['sender'] in self.UserModel.Friends:
+			elif self.UserModel.Friends is not None and contact in self.UserModel.Friends:
 				friendStatus = 'unknown'
 			msg = allMessages.filter(Q(sender=contactList[0]) | Q(receiver=contactList[0])).order_by('-id')[0]
 			connexionStatus = userModels.User.objects.get(identification=contact).connexionStatus
@@ -1065,12 +1067,14 @@ class chatSocket(WebsocketConsumer):
 		if self.UserModel.PendingInvite is None or sender not in self.UserModel.PendingInvite:
 			ColorPrint.prYellow("{usrID} try answering a friendship request from {targetID} but invite not exisiting.".format(usrID=self.user.identification, targetID=sender))
 			return
+		
+		senderModel = userModels.User.objects.get(identification=sender)
 
-		if self.isBlock(sender):
+		if self.isBlock(senderModel):
 			ColorPrint.prYellow("{usrID} answer friendship request from {targetID} but he block him.".format(usrID=self.user.identification, targetID=sender))
 			result = False
 
-		if self.isBlockBy(sender):
+		if self.isBlockBy(senderModel):
 			ColorPrint.prYellow("{usrID} answer friendship request from {targetID} who block him.".format(usrID=self.user.identification, targetID=sender))
 			result = False
 		
@@ -1091,3 +1095,17 @@ class chatSocket(WebsocketConsumer):
 			self.UserModel.PendingInvite.remove(sender)
 			self.UserModel.save()
 			return
+
+	def RetrieveFriendInvitation(self):
+		invitList = []
+		if self.UserModel.PendingInvite is not None:
+			for invit in self.UserModel.PendingInvite:
+				invitList.append({
+					'senderNick' : userModels.User.objects.get(identification=invit).nickname,
+					'identification' : invit  
+				})
+		self.send(text_data=json.dumps({
+			'type': 'ReceiveFrienshipPendingInvit',
+			'pendingInvit' : invitList
+		}))
+

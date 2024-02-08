@@ -1,4 +1,5 @@
 import { chatSocket } from "./CA_General.js"
+import { goToConv } from "./CA_Private.js"
 
 export async function initGameInvitiation() {
 	Response = await fetch(document.location.origin + '/chatApp/getAllUsers', {

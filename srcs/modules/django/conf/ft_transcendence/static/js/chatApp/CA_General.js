@@ -1,6 +1,6 @@
 import { checkConnexion } from "../authApp.js";
 import { navto } from "../index.js";
-import { AddToFriend, initFriendsPage } from "./CA_Friends.js";
+import { AddToFriend, initFriendsPage, showFriendList } from "./CA_Friends.js";
 import { goToChan, clickJoinChan, displayChannel, displayChannelHistory, receiveChanMsg, actualizeChannelHistory, initCreateChannel, receiveChanCreation, receiveJoinChanResponse, receiveDescriptionEdit } from "./CA_Channels.js";
 import { goToConv, displayChatHistory, displayPrivMsg, receiveMsg, actualizeChatHistory } from "./CA_Private.js";
 import { initGameInvitiation, receivePongInvitation, receiveBattleshipInvitation, receiveRefusedInvitation } from "./CA_GameInvite.js";
@@ -173,6 +173,8 @@ function onMessageChat(e) {
 		case 'start_battleship_game':
 			navto("/battleship", data.gameId)
 			break
+		case 'ReceiveFrienshipPendingInvit':
+			showFriendList(data.pendingInvit)
 	}
 }
 
