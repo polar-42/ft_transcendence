@@ -767,3 +767,7 @@
   margin-left: 339px;
   margin-top: -10px;
 }
+
+.unknown {
+  display: none;
+}

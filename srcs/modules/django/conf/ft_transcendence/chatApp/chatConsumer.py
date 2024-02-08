@@ -89,12 +89,14 @@ class chatSocket(WebsocketConsumer):
 		async_to_sync(self.channel_layer.group_discard)(
 				self.chatId,
 				self.channel_name
-				)
+		)
 
 		async_to_sync(self.channel_layer.group_discard)(
 				"generalChat",
 				self.channel_name
-				)
+		)
+
+		#self.sendChannelMessage('General', 'disconnexion')
 
 		self.allUsers.pop(self.identification)
 
@@ -842,6 +844,13 @@ class chatSocket(WebsocketConsumer):
 		senderModel = userModels.User.objects.get(identification=sender)
 		if self.isBlock(senderModel):
 			print(sender, 'try to send a message on channel', channel, 'to', self.user.identification, 'but he block him') #TO DEL
+			return
+
+		#print('testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest')
+		print('dict(event).get(data)', dict(event).get('data'))
+
+		if dict(event).get('data') is not None in event and event['data'] == 'disconnexion':
+			print("disconexiondisconexiondisconexiondisconexiondisconexiondisconexiondisconexiondisconexiondisconexiondisconexiondisconexiondisconexiondisconexiondisconexiondisconexiondisconexiondisconexiondisconexiondisconexiondisconexiondisconexiondisconexiondisconexion")
 			return
 
 		self.send(text_data=json.dumps({
