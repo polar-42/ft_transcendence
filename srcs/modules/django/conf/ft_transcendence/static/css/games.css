@@ -1,86 +1,86 @@
-h1 {
+.games_page h1 {
   text-align: center;
   text-transform: uppercase;
   margin-bottom: 40px;
 }
 
-.wrapper {
+.games_page .wrapper {
   margin: 30px 20% 90px 20%;
   display: flex;
   font-size: 1.4rem;
   min-height: 70vh;
 }
 
-.games_selection {
+.games_page .games_selection {
   justify-content: center;
   text-align: center;
   margin-right: 50px;
   display: grid;
   grid-template-areas:
-          'a b'
-          'c c';
+  'a b'
+  'c c';
   grid-gap: 50px;
   max-height: 440px;
 }
 
-.game_pres {
+.games_page .game_pres {
   height: 11ch;
 }
 
-.tournaments {
+.games_page .tournaments {
   width: 360px;
 }
 
-.games_selection {
+.games_page .games_selection {
   width: 600px;
 }
 
-.headers {
+.games_page .headers {
   text-align: center;
 }
 
-.pong:hover .headers,
-.battleship:hover .headers,
-.tournaments:hover .headers {
+.games_page .pong:hover .headers,
+.games_page .battleship:hover .headers,
+.games_page .tournaments:hover .headers {
   background:
-        radial-gradient(ellipse at bottom, var(--main-color), rgba(0, 0, 0, 0) 50%);
+  radial-gradient(ellipse at bottom, var(--main-color), rgba(0, 0, 0, 0) 50%);
 }
 
-.pong.inqueue .headers,
-.battleship.inqueue .headers,
-.tournaments.inqueue .headers {
+.games_page .pong.inqueue .headers,
+.games_page .battleship.inqueue .headers,
+.games_page .tournaments.inqueue .headers {
   background:
-        radial-gradient(ellipse at bottom, var(--main-color), rgba(0, 0, 0, 0) 50%);
+  radial-gradient(ellipse at bottom, var(--main-color), rgba(0, 0, 0, 0) 50%);
 }
 
 
-.headers h2 {
+.games_page .headers h2 {
   text-align: center;
 }
 
-.line1 {
+.games_page .line1 {
   height: 1px;
   border-bottom: 1px solid white;
   margin-bottom: 10px;
   width: 100%;
 }
 
-.selection_wrapper {
+.games_page .selection_wrapper {
   text-align: justify;
   text-justify: inter-character;
   margin-top: 30px;
   transition: all .3s ease-in;
 }
 
-.selection_wrapper section p:first-child {
+.games_page .selection_wrapper section p:first-child {
   margin-bottom: 30px;
 }
 
-.selection_wrapper ul {
+.games_page .selection_wrapper ul {
   text-align: center;
 }
 
-.selection_wrapper li {
+.games_page .selection_wrapper li {
   display: grid;
   grid-template-columns: 40px auto;
   gap: 20px;
@@ -90,7 +90,7 @@ h1 {
   user-select: none;
 }
 
-.selection_wrapper input[type="checkbox"] {
+.games_page .selection_wrapper input[type="checkbox"] {
   cursor: pointer;
   transform:
   rotate(45deg)
@@ -103,14 +103,14 @@ h1 {
   transform: all .3s ease;
 }
 
-.selection_wrapper label span {
+.games_page .selection_wrapper label span {
   display: block;
   width: 1px;
   height: 1px;
   position: absolute;
 }
 
-.selection_wrapper label span::after {
+.games_page .selection_wrapper label span::after {
   content: '';
   position: absolute;
   top: -20px;
@@ -127,24 +127,24 @@ h1 {
   opacity: 0;
 }
 
-.selection_wrapper input[type="checkbox"]:hover {
+.games_page .selection_wrapper input[type="checkbox"]:hover {
   border: 3px solid var(--main-color);
   box-shadow:
   1px 1px 4px var(--third),
   -1px -1px 4px var(--third);
 }
 
-.selection_wrapper label span.checked::after {
+.games_page  .selection_wrapper label span.checked::after {
   opacity: 1;
 }
 
-h3 {
+.games_page h3 {
   margin-top: 30px;
   margin-bottom: 15px;
   text-align: center;
 }
 
-.wrapper button {
+.games_page .wrapper button {
   border-radius: 2px;
   margin: 0;
   padding: 0.2em;
@@ -159,14 +159,14 @@ h3 {
   transition: .5s ease;
 }
 
-.wrapper button:hover {
+.games_page .wrapper button:hover {
   box-shadow:
   2px 2px 5px var(--main-color)
   -2px -2px 5px var(--main-color);
   background: var(--main-background);
 }
 
-.confirm_btn.inqueue {
+.games_page .confirm_btn.inqueue {
   content: 'Searching a match';
   background:
   linear-gradient(to bottom left, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, .4) 80%),
@@ -177,7 +177,7 @@ h3 {
   font-weight: 900;
 }
 
-.confirm_btn.inqueue:hover {
+.games_page .confirm_btn.inqueue:hover {
   background:
   linear-gradient(to bottom left, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, .4) 80%),
   linear-gradient(to bottom left, rgba(255, 255, 255, 0.4) 80%, rgba(255, 255, 255, 0) 100%),
@@ -188,15 +188,15 @@ h3 {
   cursor: auto;
 }
 
-.button_wrap {
+.games_page .button_wrap {
   grid-area: c;
 }
 
-.confirm_btn {
+.games_page .confirm_btn {
   position: relative;
 }
 
-.games_selection .cancel_btn {
+.games_page .games_selection .cancel_btn {
   position: relative;
   top: 17px;
   border-radius: 50%;
@@ -211,11 +211,11 @@ h3 {
   }
 }
 
-.tournament_btn_wrapper {
+.games_page .tournament_btn_wrapper {
   position: relative;
 }
 
-.tournament_btn {
+.games_page .tournament_btn {
   position: absolute;
   top: 50%;
   left: 25%;
@@ -224,87 +224,87 @@ h3 {
   width: 50%;
 }
 
-.tournament_btn:first-child {
+.games_page .tournament_btn:first-child {
   transform: translateY(-50%);
 }
 
-.tournament_btn:nth-child(2) {
+.games_page .tournament_btn:nth-child(2) {
   transform: translateY(100%);
 }
 
-.tournament_btn button {
+.games_page .tournament_btn button {
   font-size: 1.2em;
 }
 
-.games_selection button {
+.games_page .games_selection button {
   font-size: 1.5em;
 }
 
 @media (max-width: 1380px) {
-  .game_pres {
+  .games_page .game_pres {
     height: 13ch;
   }
 }
 
 @media (max-width: 1320px) {
-  .wrapper {
+  .games_page .wrapper {
     margin: 30px 15% 0 15%;
   }
 }
 
 @media (max-width: 1220px) {
-  .wrapper {
+  .games_page .wrapper {
     font-size: 1.1rem;
   }
 }
 
 @media (max-width: 1130px) {
-  .wrapper {
+  .games_page .wrapper {
     display: block;
   }
 
-  .wrapper li {
+  .games_page .wrapper li {
     font-size: 1.4rem;
   }
 
-  .tournaments,
-  .games_selection {
+  .games_page .tournaments,
+  .games_page .games_selection {
     width: 70vw;
   }
 
-  .tournaments {
+  .games_page .tournaments {
     margin-top: 120px;
   }
 
-  .tournaments p {
+  .games_page .tournaments p {
     text-align: center;
     padding: 0 10% 0 10%;
     height: 5ch;
     margin-bottom: 30px;
   }
 
-  .games_selection {
+  .games_page .games_selection {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-gap: 30px;
     margin-bottom: 40px;
   }
 
-  .selection_wrapper {
+  .games_page .selection_wrapper {
     display: block;
   }
 
-  .selection_wrapper ul {
+  .games_page .selection_wrapper ul {
     height: 140px;
   }
 
-  .tournament_btn_wrapper {
+  .games_page .tournament_btn_wrapper {
     display: flex;
     justify-content: space-around;
     position: static;
   }
 
-  .tournament_btn_wrapper .tournament_btn {
+  .games_page .tournament_btn_wrapper .tournament_btn {
     position: static;
     transform: none;
     text-align: center;
@@ -312,54 +312,54 @@ h3 {
 }
 
 @media (max-width: 680px) {
-  .game_pres {
+  .games_page .game_pres {
     height: 14ch;
   }
 }
 
 @media (max-width: 600px) {
-  .games_selection {
+  .games_page .games_selection {
     display: block;
     max-height: none;
   }
 
-  .button_wrap {
+  .games_page .button_wrap {
     margin-top: 30px;
   }
 
-  .game_pres {
+  .games_page .game_pres {
     font-size: 1em;
     height: auto;
   }
 
-  section {
+  .games_page section {
     margin-bottom: 30px;
     height: auto;
   }
 
-  .selection_wrapper ul {
+  .games_page .selection_wrapper ul {
     height: auto;
   }
 
-  .tournaments {
+  .games_page .tournaments {
     margin-top: 0;
   }
 
-  .tournaments .game_pres {
+  .games_page .tournaments .game_pres {
     height: auto;
   }
 }
 
 @media (max-width: 540px) {
-  .tournament_btn button {
+  .games_page .tournament_btn button {
     font-size: 1em;
   }
 
-  .game_pres {
+  .games_page .game_pres {
     height: auto;
   }
 
-  .tournament_btn {
+  .games_page .tournament_btn {
     padding: 0 10% 0 10%;
   }
 }

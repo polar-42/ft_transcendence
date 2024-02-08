@@ -8,7 +8,7 @@ import json, math, random
 
 class Tournament():
 
-	def __init__(self, tournamentId : str, creator : int, tournamentName : str, playerAmount : int, description : str, gameType : GameType, visibility : TournamentVisibility, obj):
+	def __init__(self, tournamentId : str, creator : str, tournamentName : str, playerAmount : int, description : str, gameType : GameType, visibility : TournamentVisibility, obj):
 		self.TournamentName = tournamentName
 		self.TournamentId = tournamentId
 		self.PlayerAmount = playerAmount
@@ -153,7 +153,7 @@ class Tournament():
 		pos = 0
 		SendList = []
 		for User in self.PlayersList:
-			SendList.append(User.Username)
+			SendList.append({'userName': User.Username, 'userId': User.UserId})
 			pos += 1
 		return SendList
 
@@ -212,7 +212,7 @@ class Tournament():
 			return False
 		if (len(self.PlayersList) == self.PlayerAmount):
 			return False
-		usr = TournamentUser(socket, user, user.nickname, user.id)
+		usr = TournamentUser(socket, user, user.nickname, user.identification)
 		if (usr.UserId == self.Administrator):
 			self.Administrator = usr
 		self.PlayersList.append(usr)

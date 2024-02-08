@@ -190,8 +190,7 @@ function onMessageChat(e)
   }
 }
 
-async function getProfilePicture(data) { 
-  console.log(data)
+export async function getProfilePicture(data) { 
   if (data.type === 'channel') {
     let channelName = data.name
     Response = await fetch(document.location.origin + '/authApp/get_avatar_image/?'
@@ -209,6 +208,7 @@ async function getProfilePicture(data) {
 
   } else {
     let userId = data.id
+		console.log('userId type:', typeof(userId))
     Response = await fetch(document.location.origin + '/authApp/get_avatar_image/?'
         + new URLSearchParams({
           type: 'user',

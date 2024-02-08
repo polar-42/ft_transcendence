@@ -1,17 +1,155 @@
 {% load static %}
 <script type="module" src="{% static '/js/loading.js' %}"></script>
 
-<h2 class="tournament_name"></h2>
+<div class="tournament_page">
+  {% csrf_token %}
 
-	{% csrf_token %}
-<div class="tournament_wrapper">
-  <div class="tournament_box">
-    <button id="BTN_Leave">Leave Tournament</button>
-    <p id="players_in_tournaments"></p>
-    <ul class="PlayerList"></ul><br><br>
-    <ul class="MatchList"></ul><br><br>
-    <button id="BTN_Ready">Ready</button>
-    <!-- <canvas id="pongCanvas" width="720" height="450"></canvas> -->
+  <div class="tournament_name_wrapper">
+    <img class="tournament_type">
+    <h2 class="tournament_name"></h2>
+  </div>
+
+  <div class="tournament_wrapper">
+    <div class="tournament_box">
+      <button class="BTN_Leave">Leave</button>
+      <div class="tournament_info_wrapper">
+        <div class="description_wrapper">
+          <h3>Description:</h3>
+          <p class="tournament_description"></p>
+        </div>
+        <div class="player_list_wrapper">
+          <h3>Players list:</h3>
+          <ul class="player_list"></ul>
+        </div>
+      </div>
+      <div class="next_match_wrapper">
+        <p class="next_match">Next game against: </p>
+        <button class="BTN_Ready">Ready</button>
+      </div>
+      <div class="bracket">
+        <div class="round quarter">
+          <h4>1/4 Finals</h4>
+          <ul class="matchup">
+            <li class="player player-top">
+              <div class="player_profile">
+                <img src='../static/assets/logo/user.png' alt='player profile picture'>
+                Player 1
+              </div>
+              <span class="score">3</span>
+            </li>
+            <li class="player player-bottom">
+              <div class="player_profile">
+                <img src='../static/assets/logo/user.png' alt='player profile picture'>
+                Player 1
+              </div>
+              <span class="score">3</span>
+            </li>
+          </ul>
+          <ul class="matchup">
+            <li class="player player-top">
+              <div class="player_profile">
+                <img src='../static/assets/logo/user.png' alt='player profile picture'>
+                Player 2
+              </div>
+              <span class="score">3</span>
+            </li>
+            <li class="player player-bottom">
+              <div class="player_profile">
+                <img src='../static/assets/logo/user.png' alt='player profile picture'>
+                Player 3
+              </div>
+              <span class="score">3</span>
+            </li>
+          </ul>
+          <ul class="matchup">
+            <li class="player player-top">
+              <div class="player_profile">
+                <img src='../static/assets/logo/user.png' alt='player profile picture'>
+                Player 4
+              </div>
+              <span class="score">3</span>
+            </li>
+            <li class="player player-bottom">
+              <div class="player_profile">
+                <img src='../static/assets/logo/user.png' alt='player profile picture'>
+                Player 5
+              </div>
+              <span class="score">3</span>
+            </li>
+          </ul>
+          <ul class="matchup">
+            <li class="player player-top">
+              <div class="player_profile">
+                <img src='../static/assets/logo/user.png' alt='player profile picture'>
+                Player 7
+              </div>
+              <span class="score">3</span>
+            </li>
+            <li class="player player-bottom">
+              <div class="player_profile">
+                <img src='../static/assets/logo/user.png' alt='player profile picture'>
+                Player 8
+              </div>
+              <span class="score">3</span>
+            </li>
+          </ul>
+        </div>
+        <div class="round semi">
+          <h4>1/2 Finals</h4>
+          <ul class="matchup">
+            <li class="player player-top">
+              <div class="player_profile">
+                <img src='../static/assets/logo/user.png' alt='player profile picture'>
+                Player 4
+              </div>
+              <span class="score">3</span>
+            </li>
+            <li class="player player-bottom">
+              <div class="player_profile">
+                <img src='../static/assets/logo/user.png' alt='player profile picture'>
+                Player 5
+              </div>
+              <span class="score">3</span>
+            </li>
+          </ul>
+          <ul class="matchup">
+            <li class="player player-top">
+              <div class="player_profile">
+                <img src='../static/assets/logo/user.png' alt='player profile picture'>
+                Player 4
+              </div>
+              <span class="score">3</span>
+            </li>
+            <li class="player player-bottom">
+              <div class="player_profile">
+                <img src='../static/assets/logo/user.png' alt='player profile picture'>
+                Player 5
+              </div>
+              <span class="score">3</span>
+            </li>
+          </ul>
+        </div>
+        <div class="round final">
+          <h4>Final</h4>
+          <ul class="matchup">
+            <li class="player player-top">
+              <div class="player_profile">
+                <img src='../static/assets/logo/user.png' alt='player profile picture'>
+                Player 4
+              </div>
+              <span class="score">3</span>
+            </li>
+            <li class="player player-bottom">
+              <div class="player_profile">
+                <img src='../static/assets/logo/user.png' alt='player profile picture'>
+                Player 5
+              </div>
+              <span class="score">3</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <!-- <canvas id="pongCanvas" width="720" height="450"></canvas> -->
+    </div>
   </div>
 </div>
-

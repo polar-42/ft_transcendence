@@ -87,10 +87,10 @@ def GetTournamentData(request):
 	if request.method != "POST":
 		return JsonResponse({'error': 'Method is invalid'})
 	data = json.loads(request.body)
-	tournamentId = data.get('tourID')
+	tournamentId = int(data.get('tourID'))
 	print("TOurnament ID = ", tournamentId)
 	print("Type of TOurnament ID = ", type(tournamentId))
-	Tournament = T_Manager.Manager.GetTournament(tournamentId[0])
+	Tournament = T_Manager.Manager.GetTournament(tournamentId)
 	if (Tournament is None):
 		return JsonResponse({'error': 'Invalid Tournament ID'})
 	UserMSG = Tournament.GetUsersList()
@@ -99,6 +99,7 @@ def GetTournamentData(request):
 	ColorPrint.prRed(Tournament.Type)
 	return JsonResponse({ "tournamentName" : Tournament.TournamentName, 
 		"tournamentType" : Tournament.Type, 
+        "tournamentDescription": Tournament.Description,
 		"users" : UserMSG, 
 		"matchs" : 'None' if MatchMSG is None else MatchMSG
 		})
@@ -121,7 +122,6 @@ def get_tournaments(request):
 	return JsonResponse({'games' : dictionnary})
 
 def join_tournaments(request):
-	ColorPrint.prGreen('fds')
 	if request.user.is_authenticated is False:
 		return JsonResponse({'error': 'You are not authentiated', 'canJoin': False})
 	if request.method != 'POST':
@@ -132,9 +132,9 @@ def join_tournaments(request):
 
 	print(request.user, 'is trying yo join tournament number', tournamentsId)
 
-	# messageAddUser, isJoin, canJoin = TournamentManager.Manager.canJoin(request.user, tournamentsId)
+	# messageAddUser, isJoin, canJoin = T_Manager.Manager.canJoin(request.user, tournamentsId)
 	# if isJoin is False:
-		# return JsonResponse({'error': messageAddUser, 'canJoin': True})
+	# 	return JsonResponse({'error': messageAddUser, 'canJoin': True})
 	return JsonResponse({'message': "", 'canJoin': True})
 
 @isValidLoading
