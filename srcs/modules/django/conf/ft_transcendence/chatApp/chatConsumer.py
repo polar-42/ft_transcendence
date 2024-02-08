@@ -163,7 +163,8 @@ class chatSocket(WebsocketConsumer):
 				self.readMessage(data)
 			case 'MSG_RetrieveFriendInvitation':
 				self.RetrieveFriendInvitation()
-
+			case 'MSG_RetrieveFriendConversation':
+				self.RetrieveFriendConversation(data['limiter'])
 	def joinChannel(self, channelName, privacyStatus, password, atConnection):
 		if self.allChannels[channelName] is None:
 			return
@@ -319,7 +320,7 @@ class chatSocket(WebsocketConsumer):
 		print(user, 'has been unblock by', self.user.identification) #TO DEL
 
 	def getLastChats(self):
-		allConv = [] 
+		allConv = []
 		if self.UserModel.channels is not None:
 			print(self.UserModel.channels)
 			for chan in self.UserModel.channels:
@@ -1105,7 +1106,68 @@ class chatSocket(WebsocketConsumer):
 					'identification' : invit  
 				})
 		self.send(text_data=json.dumps({
-			'type': 'ReceiveFrienshipPendingInvit',
+			'type': 'ReceiveFriendshipPendingInvit',
 			'pendingInvit' : invitList
 		}))
 
+	def RetrieveFriendConversation(self, limiter):
+		allMessages = MessageModels.objects.filter(type='P').filter(Q(sender=self.identification) | Q(receiver=self.identification)).order_by('-id').values()
+		allUsers = userModels.User.objects.exclude(Q(identification='AI') | Q(identification='admin') | Q(identification = self.UserModel.identification))
+		
+		contactList = []
+		for msg in allMessages:
+			if (msg['sender'] == self.identification):
+				contact = msg['receiver']
+				msgSender = 'Me'
+			else:
+				contact = msg['sender']
+				msgSender = contact
+			if contact not in contactList:
+				contactList.append(contact)
+
+		allConv = []
+
+		for user in allUsers:
+			if user.identification in self.UserModel.Friends and user.nickname.startswith(limiter):
+				lastMsg = None
+				isRead = True
+				connexionStatus = user.connexionStatus
+				if user.identification in contactList:
+					lastMsg = MessageModels.objects.filter(
+							(Q(sender=str(self.identification)) & Q(receiver=user.identification)) |
+							(Q(receiver=str(self.identification)) & Q(sender=user.identification))).order_by('-id')[0]
+					if lastMsg.sender == self.identification:
+						isRead = True
+					else:
+						isRead = lastMsg.isRead
+					last_msg = {
+						'msg': lastMsg.message,
+						'sender': msgSender
+					}
+				else:
+					last_msg = None
+				allConv.append({
+					'type': 'private',
+					'name': user.nickname,
+					'id': user.identification,
+					'connexionStatus': connexionStatus,
+					'last_msg': last_msg,
+					'timestamp': lastMsg.timeCreation if lastMsg is not None else datetime.datetime.min.replace(tzinfo=datetime.timezone.utc),
+					'isRead': isRead,
+					'friend': 'unknown',
+					})
+			
+		def cmpTimeStamp(msg):
+			return msg['timestamp']
+
+		allConv.sort(key = cmpTimeStamp, reverse = False)
+		for conv in allConv:
+			if conv['timestamp'] == datetime.datetime.min:
+				conv['timestamp'] = ''
+			else:
+				conv['timestamp'] = str(conv['timestamp'])
+
+		self.send(text_data=json.dumps({
+			'type': 'ReceiveFriendsConversation',
+			'data': allConv
+			}))

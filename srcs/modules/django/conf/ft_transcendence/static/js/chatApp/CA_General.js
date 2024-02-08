@@ -1,6 +1,6 @@
 import { checkConnexion } from "../authApp.js";
 import { navto } from "../index.js";
-import { AddToFriend, initFriendsPage, showFriendList } from "./CA_Friends.js";
+import { AddToFriend, initFriendsPage, showFriendList, showFriendConversation, searchFriend } from "./CA_Friends.js";
 import { goToChan, clickJoinChan, displayChannel, displayChannelHistory, receiveChanMsg, actualizeChannelHistory, initCreateChannel, receiveChanCreation, receiveJoinChanResponse, receiveDescriptionEdit } from "./CA_Channels.js";
 import { goToConv, displayChatHistory, displayPrivMsg, receiveMsg, actualizeChatHistory } from "./CA_Private.js";
 import { initGameInvitiation, receivePongInvitation, receiveBattleshipInvitation, receiveRefusedInvitation } from "./CA_GameInvite.js";
@@ -71,7 +71,10 @@ function initHomepageHeader() {
 	mainBoxHeader.innerHTML = html
 	mainBoxHeader.children[1].addEventListener("keypress", (event) => {
 		if (event.key === 'Enter') {
-			searchConv()
+			if (mainBoxHeader.classList.contains('friendpage'))
+				searchFriend(mainBoxHeader.children[1].value)
+			else
+				searchConv()
 		}
 	})
 }
@@ -173,8 +176,13 @@ function onMessageChat(e) {
 		case 'start_battleship_game':
 			navto("/battleship", data.gameId)
 			break
-		case 'ReceiveFrienshipPendingInvit':
+		case 'ReceiveFriendshipPendingInvit':
 			showFriendList(data.pendingInvit)
+			break
+		case 'ReceiveFriendsConversation':
+			console.log(data)
+			showFriendConversation(data.data)
+			break
 	}
 }
 
