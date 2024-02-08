@@ -36,18 +36,25 @@ export function initFriendsPage()
 		mainBoxBody.classList.add('friendpage')
 		mainBoxHeader.classList.add('friendpage')
 		mainBoxBody.children[0].innerHTML = 'Friends'
-		document.querySelector(".main_box_header img.back_arrow").addEventListener("click", () => {
-			cleanMainBox()
-			initChatHomepage()
-		})
+		document.querySelector(".main_box_header img.back_arrow").addEventListener("click", returnArrow)
 	}
-	chatSocket.send(JSON.stringify({
-		'type' : "MSG_RetrieveFriendInvitation"
-	}))
-	chatSocket.send(JSON.stringify({
-		'type' : 'MSG_RetrieveFriendConversation',
-		'limiter' : ''
-	}))
+	searchFriend('')
+}
+
+let Direction = 'home'
+
+function returnArrow()
+{
+	const mainBoxHeader = document.querySelector(".main_box_header").children[1].value = ''
+	if (Direction === 'home')
+	{
+		cleanMainBox()
+		initChatHomepage()
+	}
+	else
+	{
+		searchFriend('')
+	}
 }
 
 export function showFriendList(data)
@@ -162,4 +169,8 @@ export function searchFriend(value)
 		'type' : 'MSG_RetrieveFriendConversation',
 		'limiter' : value
 	}))
+	if (value === '')
+		Direction = 'home'
+	else
+		Direction = 'friend'
 }

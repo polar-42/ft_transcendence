@@ -180,7 +180,6 @@ function onMessageChat(e) {
 			showFriendList(data.pendingInvit)
 			break
 		case 'ReceiveFriendsConversation':
-			console.log(data)
 			showFriendConversation(data.data)
 			break
 	}
