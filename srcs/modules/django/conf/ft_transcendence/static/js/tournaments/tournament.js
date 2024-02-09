@@ -46,11 +46,10 @@ export function initTournaments()
 	tournamentSocket.onopen = launchTournamentSocket
 	tournamentSocket.onclose = quitTournamentSocket
 	tournamentSocket.onmessage = e => OnMessageTournament(e)
-	document.getElementById('BTN_Ready').addEventListener('click', ReadyBehavior)
+	document.querySelector('.BTN_Ready').addEventListener('click', ReadyBehavior)
 }
 
 function initTournamentsStatus(data) {
-  console.log(data)
   let tournamentNameEl= document.querySelector(".tournament_name")
   let tournamentDescriptionEl = document.querySelector(".tournament_description")
   let tournamentTypeEl = document.querySelector(".tournament_type")
@@ -63,6 +62,42 @@ function initTournamentsStatus(data) {
   } else {
     tournamentTypeEl.src = "../static/assets/logo/battleship.png"
     tournamentTypeEl.alt = "Battleship Tournament"
+  }
+  initBracket(data.numberPlayers)
+}
+
+async function initBracket(numberOfPlayers) {
+  let nbOfGame = 1
+  let rounds = {1: 'Final', 2: '1/2 Final', 4: '1/4 Final', 8: 'Round of 8', 16: 'Round of 16',  32: 'Round of 32'}
+  let bracketClass = {4: 'four', 8: 'eight', 16: 'sixteen', 32: 'thirtytwo', 64: 'sixtyfour'}
+  let matchClass = {1: 'final', 2: 'semi', 4: 'quarter', 8: 'eigth', 16: 'sixteen',  32: 'thirtytwo'}
+  let matchHtml = await fetch(document.location.origin + "/tournaments/get_match_html",
+    {
+      method: 'GET'
+    })
+    .then(Response => {
+      if (!Response.ok) {
+        throw new Error('Network response was not okay')
+      }
+      return Response.text()
+    })
+    .catch(error => {
+      console.error('Error:', error)
+      return
+    })
+  let bracket = document.querySelector(".bracket")
+  bracket.classList.add(bracketClass[numberOfPlayers])
+  
+  while (numberOfPlayers / nbOfGame > 1) {
+    let roundElem = document.createElement("div")
+    roundElem.classList.add("round", matchClass[nbOfGame])
+    roundElem.appendChild(document.createElement("h4"))
+    roundElem.firstChild.textContent = rounds[nbOfGame]
+    bracket.insertBefore(roundElem, bracket.firstChild)
+    for (let i = 0; i < nbOfGame; i++) {
+      roundElem.insertAdjacentHTML("beforeend", matchHtml)
+    }
+    nbOfGame *= 2
   }
 }
 
@@ -107,7 +142,6 @@ function leaveTournament()
 
 function OnMessageTournament(e)
 {
-	console.log(e.data)
 	const data = JSON.parse(e.data)
 	switch (data.type) {
 		case 'MSG_UpdateUserList':
@@ -117,6 +151,7 @@ function OnMessageTournament(e)
 			LoadGame(data);
 			break
 		case 'MSG_UpdateMatchList':
+      console.log('coucou')
 			PrintMatchs(data)
 			break
 	}
@@ -165,40 +200,32 @@ async function PrintPlayers(data)
   // document.getElementById('players_in_tournaments').innerHTML = 'There is ' + data.player_in_tournament + ' in this ' + data.size_tournaments + ' players tournament.'
 }
 
-function PrintMatchs(data)
+async function PrintMatchs(data)
 {
-  const PL = document.getElementsByName("MatchList")[0]
-  if (PL == null)
-    return
-  let child = PL.lastElementChild
-  while (child) {
-    PL.removeChild(child)
-    child = PL.lastElementChild
-  }
-  if (data.matchs == 'None')
+  console.log(data)
+  if (data.matchList == 'None')
   {
     return
   }
   const Matchs = data.matchList
   Matchs.forEach(element => {
-    const txt = document.createElement('li')
-    const user1 = document.createElement('h1')
-    const user2 = document.createElement('h1')
-    user1.textContent = element.User1
-    user2.textContent = element.User2
-    if (element.Winner == 0)
-    {
-      user1.style.color = "green"
-      user2.style.color = "red"
-    }
-    else if (element.Winner == 1)
-    {
-      user1.style.color = "red"
-      user2.style.color = "green"
-    }
-    txt.appendChild(user1)
-    txt.appendChild(user2)
-    PL.appendChild(txt)
+    const matchupEl = document.querySelector(".bracket").children[element['Y']].children[element['X']]
+    let user1 = matchupEl.children[0]
+    let user2 = matchupEl.children[1]
+    let user1PP = await getProfilePicture({type: 'user', userId: }) 
+  //   if (element.Winner == 0)
+  //   {
+  //     user1.style.color = "green"
+  //     user2.style.color = "red"
+  //   }
+  //   else if (element.Winner == 1)
+  //   {
+  //     user1.style.color = "red"
+  //     user2.style.color = "green"
+  //   }
+  //   txt.appendChild(user1)
+  //   txt.appendChild(user2)
+  //   PL.appendChild(txt)
   })
   // document.getElementById('players_in_tournaments').innerHTML = 'There is ' + data.player_in_tournament + ' in this ' + data.size_tournaments + ' players tournament.'
 }

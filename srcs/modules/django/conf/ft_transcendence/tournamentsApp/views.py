@@ -74,7 +74,12 @@ def get_tournaments_html(request):
 			'joinable' : Joinable
 			})
 
-	return render(request, 'tournaments/templateTournaments.html', {'games': dictionnary})
+	return render(request, 'tournaments/templateTournamentList.html', {'games': dictionnary})
+
+def get_match_html(request):
+	if (request.method != 'GET'):
+		return JsonResponse({'error': 'Invalid request method'})
+	return render(request, 'tournaments/templateBracketMatch.html')
 
 @isValidLoading
 def TournamentSpectateView(request):
@@ -88,7 +93,7 @@ def GetTournamentData(request):
 		return JsonResponse({'error': 'Method is invalid'})
 	data = json.loads(request.body)
 	tournamentId = int(data.get('tourID'))
-	print("TOurnament ID = ", tournamentId)
+	print("Tournament ID = ", tournamentId)
 	print("Type of TOurnament ID = ", type(tournamentId))
 	Tournament = T_Manager.Manager.GetTournament(tournamentId)
 	if (Tournament is None):
@@ -99,7 +104,8 @@ def GetTournamentData(request):
 	ColorPrint.prRed(Tournament.Type)
 	return JsonResponse({ "tournamentName" : Tournament.TournamentName, 
 		"tournamentType" : Tournament.Type, 
-        "tournamentDescription": Tournament.Description,
+		"tournamentDescription": Tournament.Description,
+		"numberPlayers": Tournament.PlayerAmount,
 		"users" : UserMSG, 
 		"matchs" : 'None' if MatchMSG is None else MatchMSG
 		})
