@@ -8,9 +8,11 @@ from tournamentsApp.models import TournamentsModels
 from battleshipApp.models import BattleshipGameModels
 from web3 import Web3
 import os, json
+from ft_transcendence.decorators import isValidLoading
 from chatApp.enumChat import connexionStatus
 
 # Create your views here.
+@isValidLoading
 def profileView(request):
     if request.user.is_authenticated:
         print('test')

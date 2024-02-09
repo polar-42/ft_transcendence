@@ -12,6 +12,8 @@ class socket(WebsocketConsumer):
 		self.user = self.scope['user']
 		from . import BS_MatchmakingManager
 		self.Game = BS_MatchmakingManager.GameManager.JoinGame(BS_MatchmakingManager.GameManager, self.GameId, self.scope['user'], self)
+		if (self.Game == None):
+			self.close(3001)
 
 	def disconnect(self, close_code):
 

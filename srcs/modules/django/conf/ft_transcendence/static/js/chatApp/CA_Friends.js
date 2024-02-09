@@ -25,7 +25,7 @@ export function initFriendsPage()
 		child = mainBoxBody.children[1].lastElementChild;
 	}
 	if (mainBoxHeader.children.length === 2)
-		mainBoxHeader.insertAdjacentHTML("beforeend", '<img src="../static/assets/logo/arrow-back-regular-60.png" alt="return back button" class="back_arrow">')
+		mainBoxHeader.insertAdjacentHTML("beforeend", '<img src="/static/assets/logo/arrow-back-regular-60.png" alt="return back button" class="back_arrow">')
 	if (mainBoxBody.classList.contains('homepage'))
 	{
 		mainBoxBody.classList.remove('homepage')
@@ -45,7 +45,6 @@ let Direction = 'home'
 
 function returnArrow()
 {
-	const mainBoxHeader = document.querySelector(".main_box_header").children[1].value = ''
 	if (Direction === 'home')
 	{
 		cleanMainBox()
@@ -132,7 +131,7 @@ async function createConversation(conversation)
 	let profilePicture = await getProfilePicture(conversation)
 	let ppUrl
 	if (profilePicture.type == 'image/null')
-		ppUrl = "../static/assets/logo/user.png"
+		ppUrl = "/static/assets/logo/user.png"
 	else
 		ppUrl = URL.createObjectURL(profilePicture)
 	let convId;
@@ -154,7 +153,7 @@ async function createConversation(conversation)
 		'<p class="last_msg">' + lastMsg + '</p>' +
 		'</div>' +
 		'<div class="AddToFriendContainer ' + conversation.friend + '">' +
-		'<img class="FriendShip_BTN" src="../static/assets/logo/AddToFriendIcon.svg" alt="Add to friend">' +
+		'<img class="FriendShip_BTN" src="/static/assets/logo/AddToFriendIcon.svg" alt="Add to friend">' +
 		'</div>' +
 		'</li>'
 	return item

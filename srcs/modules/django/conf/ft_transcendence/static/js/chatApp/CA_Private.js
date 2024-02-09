@@ -70,7 +70,7 @@ export function displayPrivMsg(data) {
 		let profilePicture = await getProfilePicture({ 'type': 'user', 'id': data.identification })
 		let ppUrl
 		if (profilePicture.type == 'image/null')
-			ppUrl = "../static/assets/logo/user.png"
+			ppUrl = "/static/assets/logo/user.png"
 		else
 			ppUrl = URL.createObjectURL(profilePicture)
 		let html =
@@ -82,9 +82,9 @@ export function displayPrivMsg(data) {
 			'</div>' +
 			'</div>' +
 			'<div class="AddToFriendContainer ' + data.friend + '">' +
-			'<img class="FriendShip_BTN" src="../static/assets/logo/AddToFriendIcon.svg" alt="Add to friend">' +
+			'<img class="FriendShip_BTN" src="/static/assets/logo/AddToFriendIcon.svg" alt="Add to friend">' +
 			'</div>' +
-			'<img src="../static/assets/logo/arrow-back-regular-60.png" alt="return arrow button">'
+			'<img src="/static/assets/logo/arrow-back-regular-60.png" alt="return arrow button">'
 
 		document.querySelector(".main_box_header").innerHTML = html
 		mainBoxHeader.children[2].addEventListener("click", () => {
@@ -94,7 +94,7 @@ export function displayPrivMsg(data) {
 			initChatHomepage()
 		})
 		document.getElementById('profile_id_' + data.identification).addEventListener("click", () => {
-			navto("/profile", data.identification)
+			navto("/profile/?id=" + data.identification)
 		})
 		const element = mainBoxHeader.children[1].children[0]
 		element.addEventListener("click", () => {
@@ -109,7 +109,7 @@ export function displayPrivMsg(data) {
 			'</div>' +
 			'<div class="sendbox">' +
 			'<input type="text" placeholder="Enter your message">' +
-			'<img src="../static/assets/logo/send-solid-60.png" alt="send arrow">' +
+			'<img src="/static/assets/logo/send-solid-60.png" alt="send arrow">' +
 			'</div>'
 		document.querySelector(".main_box_body").innerHTML = html
 		let sendbox = document.querySelector(".sendbox")
@@ -155,7 +155,7 @@ export function receiveMsg(data) {
 			let html =
 				'<li class="' + data.type + '" ' + 'id="' + convId + '" isread="' + data.isRead + '">' +
 				'<div class="pop_up_unread" isread_popup="' + data.isRead + '"></div>' +
-				'<img src="../static/assets/logo/user.png" alt="converstion_picture">' +
+				'<img src="/static/assets/logo/user.png" alt="converstion_picture">' +
 				'<div class="conversation_text">' +
 				'<div class="conversation_name">' +
 				'<p>' + data.senderNickname + '</p>' +
@@ -215,7 +215,7 @@ export async function actualizeChatHistory(data) {
 			conversation.children[0].classList.add("top_point")
 		}
 	} else {
-		let loadingHtml = "<img src ='../static/assets/logo/loader-circle-regular-36.png' class='loading'>"
+		let loadingHtml = "<img src ='/static/assets/logo/loader-circle-regular-36.png' class='loading'>"
 		conversation.firstChild.insertAdjacentHTML("beforebegin", loadingHtml)
 		await sleep(300)
 

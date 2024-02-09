@@ -27,11 +27,11 @@
       <a href="/games" class="nav__link" data-link>Play</a>
       <div class="profile_dropdown">
         <div class="profile_button">
-          <img class="user_logo" src="../static/assets/logo/user.png">
-          <img class="user_logo" src="../static/assets/logo/blue_user.png">
+          <img class="user_logo" src="{% static '/assets/logo/user.png' %}">
+          <img class="user_logo" src="{% static '/assets/logo/blue_user.png' %}">
           <a href="" class="nav__link" data-link>Log in</a>
-          <img id="angle" src="../static/assets/logo/angle_down.png">
-          <img id="blue_angle" src="../static/assets/logo/blue_angle_down.png">
+          <img id="angle" src="{% static '/assets/logo/angle_down.png' %}">
+          <img id="blue_angle" src="{% static '/assets/logo/blue_angle_down.png' %}">
         </div>
         <div class="profile_menu">
           <li><a href="/userManagement" class="nav__link" data-link>Settings</a></li>
@@ -39,17 +39,17 @@
         </div>
       </div>
     </nav>
-    <img src="../static/assets/logo/hamburger.png" alt="Navigation Menu" class="menu_btn">
+    <img src="{% static '/assets/logo/hamburger.png' %}" alt="Navigation Menu" class="menu_btn">
     <div class="dropdown_menu">
       <li><a href="/dashboard" class="menu_link nav__link" data-link>Dashboard</a></li>
       <li><a href="/games" class="menu_link" data-link>Play</a></li>
       <div class="profile_dropdown">
         <div class="profile_button">
-          <img class="user_logo" src="../static/assets/logo/user.png">
-          <img class="user_logo" src="../static/assets/logo/blue_user.png">
+          <img class="user_logo" src="{% static '/assets/logo/user.png' %}">
+          <img class="user_logo" src="{% static '/assets/logo/blue_user.png' %}">
           <a href="" class="nav__link" data-link>Log in</a>
-          <img id="angle" src="../static/assets/logo/angle_down.png">
-          <img id="blue_angle" src="../static/assets/logo/blue_angle_down.png">
+          <img id="angle" src="{% static '/assets/logo/angle_down.png' %}">
+          <img id="blue_angle" src="{% static '/assets/logo/blue_angle_down.png' %}">
         </div>
         <div class="profile_menu">
           <li><a href="/userManagement" class="nav__link" data-link>Settings</a></li>
@@ -64,7 +64,7 @@
       <div id="pop_up_unread_chatbox"></div>
       <div class="chatbox_header_wrapper">
         <div class="chatbox_header">
-          <img src="../static/assets/logo/chat-solid-24.png" alt="chat logo">
+          <img src="{% static '/assets/logo/chat-solid-24.png' %}" alt="chat logo">
           <p>Chat</p>
         </div>
         <div class="notification_wrapper">

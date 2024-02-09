@@ -568,7 +568,7 @@ export async function popUpPongGameStat(gameId)
                 displayPlayerNickname(e, player1, 1, false)
             })
             img.addEventListener('click', function(e) {
-                navto("/profile", player1_identification)
+                navto("/profile/?id="+ player1_identification)
             })
         }
     }
@@ -597,7 +597,7 @@ export async function popUpPongGameStat(gameId)
                 displayPlayerNickname(e, player2, 2, false)
             })
             img.addEventListener('click', function(e) {
-                navto("/profile", player2_identification)
+                navto("/profile/?id=" + player2_identification)
             })
         }
     }
@@ -683,7 +683,7 @@ export async function popUpBattleshipGameStat(gameId)
                 displayPlayerNickname(e, player1, 1, false)
             })
             img.addEventListener('click', function(e) {
-                navto("/profile", player1_identification)
+                navto("/profile/?id=" + player1_identification)
             })
         }
     }
@@ -712,7 +712,7 @@ export async function popUpBattleshipGameStat(gameId)
                 displayPlayerNickname(e, player2, 2, false)
             })
             img.addEventListener('click', function(e) {
-                navto("/profile", player2_identification)
+                navto("/profile/?id=" + player2_identification)
             })
         }
     }
@@ -834,7 +834,7 @@ export async function popUpTournamentStat(tournamentId) {
                 displayPlayerNickname(e, winner, 3, false)
             })
             img.addEventListener('click', function(e) {
-                navto("/profile", winner_identification)
+                navto("/profile/?id = " + winner_identification)
             })
         }
     }

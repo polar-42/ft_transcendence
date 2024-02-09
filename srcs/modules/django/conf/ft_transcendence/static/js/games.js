@@ -18,6 +18,7 @@ export function initGames() {
   let tournamentBtnArray = document.querySelectorAll(".tournament_btn button")
   tournamentBtnArray.forEach((button) => {
     button.addEventListener("click", () => {
+		// TODO new navTo
       if (button.name === "create_tournament") {
         navto("/tournaments/Create", "True")
       } else if (button.name === "join_tournament") {

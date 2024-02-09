@@ -10,7 +10,9 @@ class PongGameManager():
 			print("ERROR, user", user.username, "try to join an non existing game", gameId)
 			return None
 
-		self._matchList[gameId].connectUser(user, socket)
+		result = self._matchList[gameId].connectUser(user, socket)
+		if (result == False):
+			return None
 		return self._matchList[gameId]
 
 	def leaveGame(self, gameId, user):

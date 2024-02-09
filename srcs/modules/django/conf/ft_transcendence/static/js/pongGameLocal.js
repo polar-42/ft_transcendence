@@ -10,15 +10,24 @@ let isGameRunning;
 let isGamePause;
 let bSpeed;
 let bGravity;
+let gameStarted = false;
+
+
+export function exit()
+{
+	// gameStarted = false
+}
 
 export function initLocalGamePong()
 {
-	if (arguments[0] == undefined)
+	console.log(gameStarted = false)
+	if (gameStarted == true)
 	{
+		gameStarted = false
 		navto('/games');
 		return;
 	}
-
+	gameStarted = true
 	console.log(document.innerHTML)
 	canvas = document.getElementById("pongCanvasLocal");
 	context = canvas.getContext("2d");

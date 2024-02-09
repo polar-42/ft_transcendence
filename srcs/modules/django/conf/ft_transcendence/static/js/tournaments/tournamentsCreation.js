@@ -38,7 +38,7 @@ function createTournaments()
 		if (data.isCreated == true)
 		{
 			creationTournamentsValidate(data.message)
-			navto('/tournaments/Play', data.id)
+			navto('/tournaments/Play/?id=' + data.id)
 		}
 		else
 		{

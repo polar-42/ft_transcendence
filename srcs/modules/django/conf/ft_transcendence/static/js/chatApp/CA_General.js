@@ -66,7 +66,7 @@ function initHomepageHeader() {
 	let mainBoxHeader = document.querySelector(".main_box_header")
 	mainBoxHeader.classList.add("homepage")
 	let html =
-		'<img src="../static/assets/logo/search-regular-24.png" alt="search icon">' +
+		'<img src="/static/assets/logo/search-regular-24.png" alt="search icon">' +
 		'<input type="text" name"searchbar">'
 	mainBoxHeader.innerHTML = html
 	mainBoxHeader.children[1].addEventListener("keypress", (event) => {
@@ -171,10 +171,10 @@ function onMessageChat(e) {
 			receiveRefusedInvitation(data)
 			break
 		case 'start_pong_game':
-			navto("/pongGame/Remote", data.gameId);
+			navto("/pongGame/Remote/?gameid=" + data.gameId);
 			break
 		case 'start_battleship_game':
-			navto("/battleship", data.gameId)
+			navto("/battleship/?gameid=" + data.gameId)
 			break
 		case 'ReceiveFriendshipPendingInvit':
 			showFriendList(data.pendingInvit)
@@ -232,7 +232,7 @@ async function displayLastChats(data, isStillUnreadMessage) {
 		let profilePicture = await getProfilePicture(data[i])
 		let ppUrl
 		if (profilePicture.type == 'image/null')
-			ppUrl = "../static/assets/logo/user.png"
+			ppUrl = "/static/assets/logo/user.png"
 		else
 			ppUrl = URL.createObjectURL(profilePicture)
 		let convId;
@@ -252,7 +252,7 @@ async function displayLastChats(data, isStillUnreadMessage) {
 			'<p class="last_msg">' + lastMsg + '</p>' +
 			'</div>' +
 			'<div class="AddToFriendContainer ' + data[i].friend + '">' +
-			'<img class="FriendShip_BTN" src="../static/assets/logo/AddToFriendIcon.svg" alt="Add to friend">' +
+			'<img class="FriendShip_BTN" src="/static/assets/logo/AddToFriendIcon.svg" alt="Add to friend">' +
 			'</div>' +
 			'</li>'
 		if (conversation_list.children.length > 0)
@@ -283,7 +283,7 @@ async function displayLastChats(data, isStillUnreadMessage) {
 async function displaySearchResult(data) {
 	let resultWrapper = document.querySelector(".conversation_list")
 	if (document.querySelector(".main_box_header").children.length === 2)
-		document.querySelector(".main_box_header").insertAdjacentHTML("beforeend", '<img src="../static/assets/logo/arrow-back-regular-60.png" alt="return back button" class="back_arrow">')
+		document.querySelector(".main_box_header").insertAdjacentHTML("beforeend", '<img src="/static/assets/logo/arrow-back-regular-60.png" alt="return back button" class="back_arrow">')
 	document.querySelector(".main_box_header img.back_arrow").addEventListener("click", () => {
 		cleanMainBox()
 		initChatHomepage()
@@ -324,7 +324,7 @@ async function displaySearchResult(data) {
 		let profilePicture = await getProfilePicture(data[i])
 		let ppUrl
 		if (profilePicture.type == 'image/null')
-			ppUrl = "../static/assets/logo/user.png"
+			ppUrl = "/static/assets/logo/user.png"
 		else
 			ppUrl = URL.createObjectURL(profilePicture)
 		let item =
@@ -338,9 +338,9 @@ async function displaySearchResult(data) {
 			'<p class="last_msg">' + lastMsg + '</p>' +
 			'</div>' +
 			'<div class="notification_wrapper ' + isNoticationActive + '"></div>' +
-			'<img class="join_btn" src="../static/assets/logo/user-plus-regular-36.png" alt="join channel button">' +
+			'<img class="join_btn" src="/static/assets/logo/user-plus-regular-36.png" alt="join channel button">' +
 			'<div class="AddToFriendContainer ' + data[i].friend + '">' +
-			'<img class="FriendShip_BTN" src="../static/assets/logo/AddToFriendIcon.svg" alt="Add to friend">' +
+			'<img class="FriendShip_BTN" src="/static/assets/logo/AddToFriendIcon.svg" alt="Add to friend">' +
 			'</div>' +
 			'</li>'
 		if (resultWrapper.children.length > 0) {

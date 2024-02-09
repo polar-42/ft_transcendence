@@ -6,12 +6,16 @@ let socketPongIA = null;
 
 export function initGamePongIA()
 {
-	if (arguments[0] == undefined)
+	if (socketPongIA != undefined && socketPongIA.readyState != WebSocket.CLOSED)
 	{
+		if (socketPongIA != undefined)
+		{
+			socketPongIA.close()
+			socketPongIA = undefined
+		}
 		navto('/games');
 		return;
 	}
-
 	console.log("ws://" + window.location.host + '/pongGame/gameVsIA');
 	socketPongIA = new WebSocket("ws://" + window.location.host + '/pongGame/gameVsIA');
 	//socketPongIA = new WebSocket("wss://" + window.location.host + '/pongGame/gameVsIA');

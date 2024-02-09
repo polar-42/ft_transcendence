@@ -41,10 +41,10 @@ class BattleshipMatch():
 		FindedUser = self.getUser(user)
 		if (FindedUser is None):
 			ColorPrint.prRed("Error! GAME {gID}: User {username} are not in game.".format(gID=self.gameId, username= user.username))
-			return
+			return False
 		elif (FindedUser.ConnexionStatus != ConnexionState.NeverConnected):
 			ColorPrint.prYellow("Warning! GAME {gID}: User {username} already connected.".format(gID=self.gameId, username= user.username))
-			return
+			return False
 		else:
 			FindedUser.ConnexionStatus = ConnexionState.Connected
 			FindedUser.socket = socket
@@ -52,6 +52,7 @@ class BattleshipMatch():
 		if (self.Users[0].ConnexionStatus == ConnexionState.Connected and self.Users[1].ConnexionStatus == ConnexionState.Connected):
 			if (self.Gamestatus == GameState.Initialisation):
 				self.StartGame()
+		return True
 
 	def StartGame(self):
 		self.Gamestatus = GameState.BoatPlacement

@@ -62,6 +62,6 @@ function OnMessage(e)
 {
 	const data = JSON.parse(e.data);
 	LeaveMatchmaking();
-	navto("/pongGame/Remote", data.gameId);
+	navto("/pongGame/Remote/?id=" + data.gameId);
 }
 

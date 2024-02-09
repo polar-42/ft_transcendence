@@ -37,9 +37,9 @@ var curInterval = undefined
 
 export function initGame()
 {
-	if (arguments[0] == undefined || battleshipSocket != undefined && battleshipSocket.readyState != WebSocket.CLOSED)
+	if (battleshipSocket != undefined && battleshipSocket.readyState != WebSocket.CLOSED)
 	{
-		if (battleshipSocket != null)
+		if (battleshipSocket != undefined)
 		{
 			battleshipSocket.close()
 			battleshipSocket = undefined
@@ -47,9 +47,28 @@ export function initGame()
 		navto('/games')
 		return
 	}
-	gameId = arguments[0]
-	//battleshipSocket = new WebSocket("wss://" + window.location.host + '/battleshipApp/Game/' + gameId)
-	battleshipSocket = new WebSocket("ws://" + window.location.host + '/battleshipApp/Game/' + gameId)
+	var arg = undefined
+	if (window.location.search != '')
+		arg = window.location.search.substring(window.location.search.indexOf('=') + 1)
+	if (arg == undefined)
+	{
+		if (battleshipSocket != undefined && battleshipSocket.readyState != WebSocket.CLOSED)
+		{
+			battleshipSocket.close()
+			battleshipSocket = undefined
+		}
+		navto('/games')
+	}
+	//battleshipSocket = new WebSocket("wss://" + window.location.host + '/battleshipApp/Game/' + arg)
+	battleshipSocket = new WebSocket("ws://" + window.location.host + '/battleshipApp/Game/' + arg)
+	battleshipSocket.onclose = (event) => {
+		console.log(code.event)
+		if (event.code == 3001)
+		{
+			battleshipSocket = undefined
+			navto('/games')
+		}
+	};
 	battleshipSocket.onmessage = e => OnMessage(e)
 }
 
@@ -130,7 +149,7 @@ function RP_GameStop(message, id)
 	else
 	{
 		battleshipSocket = null
-		navto("tournaments/Play", id)
+		navto("tournaments/Play/?T_ID=" + id)
 	}
 }
 

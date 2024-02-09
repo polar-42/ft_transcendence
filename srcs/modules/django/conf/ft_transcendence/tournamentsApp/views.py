@@ -7,6 +7,7 @@ from . import T_Manager
 from .T_Enum import TournamentState, UserState
 
 from ft_transcendence.decorators import isValidLoading
+from ft_transcendence import ColorPrint
 
 # Create your views here.
 @isValidLoading
@@ -135,6 +136,7 @@ def view_JoinPage(request):
 @isValidLoading
 def Tournament_view(request):
 	if (request.method == "GET"):
+		
 		return render(request, 'tournaments/tournament.html')
 	else:
 		return render(request, 'index.html')

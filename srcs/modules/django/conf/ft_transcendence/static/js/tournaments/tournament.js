@@ -4,20 +4,27 @@ var tournamentSocket = undefined
 
 export function initTournaments()
 {
-	if (arguments[0] == undefined)
+	var arg = undefined
+	if (window.location.search != '')
+		arg = window.location.search.substring(window.location.search.indexOf('=') + 1)
+	if (arg == undefined)
 	{
+		if (tournamentSocket != undefined && tournamentSocket.readyState != WebSocket.CLOSED)
+		{
+			tournamentSocket.close()
+			tournamentSocket = undefined
+		}
 		navto('/tournaments/Home')
 		return
 	}
-	const tournamentId = arguments[0]
-	if (tournamentSocket == undefined || tournamentSocket.url.endsWith(tournamentId) == false)
+	if (tournamentSocket == undefined || tournamentSocket.url.endsWith(arg) == false)
 	{
-		tournamentSocket = new WebSocket("ws://" + window.location.host + '/tournamentsApp/' + tournamentId)
-		//tournamentSocket = new WebSocket("wss://" + window.location.host + '/tournamentsApp/' + tournamentId)
+		tournamentSocket = new WebSocket("ws://" + window.location.host + '/tournamentsApp/' + arg)
+		//tournamentSocket = new WebSocket("wss://" + window.location.host + '/tournamentsApp/' + arg)
 	}
 	else
 	{
-		console.log("ReconnectToTournament")
+		console.log('reconnect')
 		tournamentSocket.send(JSON.stringify({
 			'function': 'Reconnect'
 		}))
@@ -89,7 +96,7 @@ function LoadGame(data)
 {
 	if (data.gameType == 'ship')
 	{
-		navto("/battleship	", data.gameId)
+		navto("/battleship/?gameid=" +data.gameId)
 	}
 	else if (data.gameType == 'pong')
 	{

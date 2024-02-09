@@ -17,11 +17,11 @@ export function clickJoinChan(event) {
 		'<label for="channel_password">Enter Channel Password</label>' +
 		'<div class="join_input_wrapper">' +
 		'<input name="channel_password" type="password" placeholder="Enter channel password">' +
-		'<img src="../static/assets/logo/send-solid-60.png" name="send arrow">' +
+		'<img src="/static/assets/logo/send-solid-60.png" name="send arrow">' +
 		'</div>' +
 		'<p class="feedback"></p>' +
 		'</div>' +
-		'<img src="../static/assets/logo/arrow-back-regular-60.png" name="back arrow">' +
+		'<img src="/static/assets/logo/arrow-back-regular-60.png" name="back arrow">' +
 		'</div>'
 
 	item.innerHTML = html
@@ -52,7 +52,7 @@ export function displayChannel(data) {
 		let profilePicture = await getProfilePicture({ 'type': 'channel', 'name': data.name })
 		let ppUrl
 		if (profilePicture.type === 'image/null')
-			ppUrl = "../static/assets/logo/user.png"
+			ppUrl = "/static/assets/logo/user.png"
 		else
 			ppUrl = URL.createObjectURL(profilePicture)
 		let html =
@@ -62,12 +62,12 @@ export function displayChannel(data) {
 			'<p class="channel_name">' + data.name + '</p>' +
 			'<div class="description_wrapper">' +
 			'<p class="channel_description">' + data.description + '</p>' +
-			'<img class="edit_description" src="../static/assets/logo/edit-regular-36.png" alt="leave channel button">' +
+			'<img class="edit_description" src="/static/assets/logo/edit-regular-36.png" alt="leave channel button">' +
 			'</div>' +
 			'</div>' +
-			'<img class="leave_channel" src="../static/assets/logo/red_cross.png" alt="leave channel button">' +
+			'<img class="leave_channel" src="/static/assets/logo/red_cross.png" alt="leave channel button">' +
 			'</div>' +
-			'<img src="../static/assets/logo/arrow-back-regular-60.png" alt="return arrow button">'
+			'<img src="/static/assets/logo/arrow-back-regular-60.png" alt="return arrow button">'
 
 
 		document.querySelector(".main_box_header").innerHTML = html
@@ -91,10 +91,10 @@ export function displayChannel(data) {
 				'<label for="description">New description</label>' +
 				'<div class="input_wrapper">' +
 				'<input name="description" type="text" placeholder="Enter new description">' +
-				'<img src="../static/assets/logo/send-solid-60.png" alt="send arrow">' +
+				'<img src="/static/assets/logo/send-solid-60.png" alt="send arrow">' +
 				'</div>' +
 				'</div>' +
-				'<img class="back_arrow" src="../static/assets/logo/arrow-back-regular-60.png" alt="return arrow button">'
+				'<img class="back_arrow" src="/static/assets/logo/arrow-back-regular-60.png" alt="return arrow button">'
 			'</div>'
 			document.querySelector(".main_box_header.channel").insertAdjacentHTML("afterend", box)
 			document.querySelector(".back_arrow").addEventListener("click", () => {
@@ -134,7 +134,7 @@ export function displayChannel(data) {
 			'</div>' +
 			'<div class="sendbox">' +
 			'<input type="text" placeholder="Enter your message">' +
-			'<img src="../static/assets/logo/send-solid-60.png" alt="send arrow">' +
+			'<img src="/static/assets/logo/send-solid-60.png" alt="send arrow">' +
 			'</div>'
 
 		document.querySelector(".main_box_body").innerHTML = html
@@ -185,7 +185,7 @@ export function displayChannel(data) {
 				let profilePicture = await getProfilePicture({ 'type': 'user', 'id': users[i].id })
 				let ppUrl
 				if (profilePicture.type == 'image/null')
-					ppUrl = "../static/assets/logo/user.png"
+					ppUrl = "/static/assets/logo/user.png"
 				else
 					ppUrl = URL.createObjectURL(profilePicture)
 				if (users[i] !== self.username) {
@@ -194,7 +194,7 @@ export function displayChannel(data) {
 						'<div class="connection_point ' + isConnected + '"></div>' +
 						'<img src=' + ppUrl + ' alt="channel member profile picture" id="profile_id_' + users[i].id + '">' +
 						'<p class="username">' + users[i].name + '</p>' +
-						'<img class="kick_cross" src="../static/assets/logo/red_cross.png" alt="kick user button">' +
+						'<img class="kick_cross" src="/static/assets/logo/red_cross.png" alt="kick user button">' +
 						'</div>'
 
 					if (sidebar.children.length > 0) {
@@ -210,7 +210,7 @@ export function displayChannel(data) {
 							kickUser(data.name, users[i].id)
 						})
 					document.getElementById('profile_id_' + users[i].id).addEventListener("click", () => {
-						navto("/profile", users[i].id)
+						navto("/profile/?id=" + users[i].id)
 					  })
 				}
 			}
@@ -242,7 +242,7 @@ export async function displayChannelHistory(data, isStillUnreadMessage) {
 		let profilePicture = await getProfilePicture({ 'type': 'user', 'id': data[i].senderID })
 		let ppUrl
 		if (profilePicture.type == 'image/null')
-			ppUrl = "../static/assets/logo/user.png"
+			ppUrl = "/static/assets/logo/user.png"
 		else
 			ppUrl = URL.createObjectURL(profilePicture)
 
@@ -268,7 +268,7 @@ export async function displayChannelHistory(data, isStillUnreadMessage) {
 		if (tabIdentification.includes(data[i].senderID) == false)
 			document.querySelectorAll('.profile_id_chan_' + data[i].senderID).forEach((div) => {
 				div.addEventListener("click", () => {
-					navto("/profile", data[i].senderID)
+					navto("/profile/?id=" + data[i].senderID)
 				})
 			})
 		tabIdentification.push(data[i].senderID)
@@ -371,7 +371,7 @@ export async function receiveChanMsg(data) {
 	let profilePicture = await getProfilePicture({ 'type': 'user', 'id': data.senderID })
 	let ppUrl
 	if (profilePicture.type == 'image/null')
-		ppUrl = "../static/assets/logo/user.png"
+		ppUrl = "/static/assets/logo/user.png"
 	else
 		ppUrl = URL.createObjectURL(profilePicture)
 
@@ -396,7 +396,7 @@ export async function receiveChanMsg(data) {
 	  conversation.scrollTo(0, conversation.scrollHeight)
 	
 	  document.getElementById('new_message_from_' + data.senderID).addEventListener('click', () => {
-		navto("/profile", data.senderID)
+		navto("/profile/?id=" + data.senderID)
 	  })
 	
 	  console.log(data)
@@ -421,7 +421,7 @@ export async function actualizeChannelHistory(data) {
 			conversation.children[0].classList.add("top_point")
 		}
 	} else {
-		let loadingHtml = "<img src='../static/assets/logo/loader-circle-regular-36.png' class='loading'>"
+		let loadingHtml = "<img src='/static/assets/logo/loader-circle-regular-36.png' class='loading'>"
 		conversation.firstChild.insertAdjacentHTML("beforebegin", loadingHtml)
 		await sleep(300)
 		let html = ''
@@ -440,7 +440,7 @@ export async function actualizeChannelHistory(data) {
 			let profilePicture = await getProfilePicture({ 'type': 'user', 'id': data[i].senderID })
 			let ppUrl
 			if (profilePicture.type == 'image/null')
-				ppUrl = "../static/assets/logo/user.png"
+				ppUrl = "/static/assets/logo/user.png"
 			else
 				ppUrl = URL.createObjectURL(profilePicture)
 

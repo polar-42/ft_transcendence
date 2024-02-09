@@ -1,6 +1,13 @@
 onload = (event) => {
 	if(document.querySelector("#app") == null)
 	{
-		window.location.replace(window.location.origin + window.location.pathname + '/?Valid=false')
+		var actualRoute = document.location.origin + window.location.pathname + window.location.search
+		if (actualRoute.includes('/?') == false)
+			actualRoute += '/?Valid=false'
+		else if (actualRoute.endsWith('/') == true)
+			actualRoute += '?Valid=false'
+		else if (actualRoute.includes('Valid=') == false)
+			actualRoute += '&Valid=false'
+		window.location.replace(actualRoute)
 	}
 }
