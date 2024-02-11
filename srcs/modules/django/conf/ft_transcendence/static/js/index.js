@@ -8,7 +8,7 @@ import { CP_Unload, initGame } from "./BattleshipGame.js"
 import { initGamePong, unLoadGamePong } from "./pongGameRemote.js"
 import { initTournamentsCreation } from "./tournaments/tournamentsCreation.js"
 import { initTournamentsJoinPage } from "./tournaments/tournamentsJoinPage.js"
-import { initTournaments } from "./tournaments/tournament.js"
+import { GoingAway, initTournaments } from "./tournaments/tournament.js"
 import { initChat, unsetChatbox } from "./chatApp/CA_General.js"
 import { InitTournamentView } from "./tournaments/tournamentSpectate.js"
 import { initUpdateAccount } from "./userManagement/userManagement.js"
@@ -43,7 +43,7 @@ function getRoute(RoutePath)
     { path: "/pongGame/IA", init: initGamePongIA, unload: unloadGamePongIA, title:"pongGame", LogStatus: 1},
     { path: "/tournaments/Create", init: initTournamentsCreation, unload: null, title:"initTournaments", LogStatus: 1},
     { path: "/tournaments/Join", init: initTournamentsJoinPage, unload: null, title:"Join Tournaments", LogStatus: 1},
-    { path: "/tournaments/Play/", init: initTournaments, unload: null, title:"Tournament", LogStatus: 1},
+    { path: "/tournaments/Play/", init: initTournaments, unload: GoingAway, title:"Tournament", LogStatus: 1},
     { path: "/tournaments/View", init: InitTournamentView, unload: null, title:"Tournament", LogStatus: 1},
     { path: "/authApp/login", init: initLogin, unload: null, title:"Login", LogStatus: 0},
     { path: "/authApp/register", init: initRegister, unload: null, title:"Register", LogStatus: 0},

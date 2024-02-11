@@ -41,7 +41,8 @@ export function GoingAway()
 {
 	if (tournamentSocket == undefined)
 		return
-	console.log("GoingAway")
+	if (tournamentSocket.readyState == WebSocket.CLOSED)
+		return
 	tournamentSocket.send(JSON.stringify({
 		'function': 'GoingAway'
 	}))
@@ -96,11 +97,11 @@ function LoadGame(data)
 {
 	if (data.gameType == 'ship')
 	{
-		navto("/battleship/?gameid=" +data.gameId)
+		navto("/battleship/?gameid=" + data.gameId)
 	}
 	else if (data.gameType == 'pong')
 	{
-		navto("/pongGame/Remote", data.gameId)
+		navto("/pongGame/Remote/?gameid=" + data.gameId)
 	}
 }
 

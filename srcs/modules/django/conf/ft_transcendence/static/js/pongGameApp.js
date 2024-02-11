@@ -27,7 +27,7 @@ export function LaunchPongIA()
 	document.getElementsByClassName("launchPongLocal_BTN")[0].removeEventListener("click", LaunchPongLocal);
 	document.getElementsByClassName("launchPongIA_BTN")[0].removeEventListener("click", LaunchPongIA);
 	LeaveMatchmaking();
-	navto("/pongGame/IA", 'True');
+	navto("/pongGame/IA");
 }
 
 export function LaunchPongLocal()
@@ -36,7 +36,7 @@ export function LaunchPongLocal()
 	document.getElementsByClassName("launchPongLocal_BTN")[0].removeEventListener("click", LaunchPongLocal);
 	document.getElementsByClassName("launchPongIA_BTN")[0].removeEventListener("click", LaunchPongIA);
 	LeaveMatchmaking();
-	navto("/pongGame/Local", 'True');
+	navto("/pongGame/Local");
 }
 
 export function JoinMatchmaking()
@@ -54,7 +54,7 @@ export function LeaveMatchmaking()
 		return
 	matchmakingPongGame.close()
 
-	matchmakingPongGame = null
+matchmakingPongGame = null
 	console.log('Matchmaking disconnect');
 }
 

@@ -16,6 +16,8 @@ from ft_transcendence import ColorPrint
 def createGeneralChat(allChannels):
 	allChannels["General"] = ChannelChat("General", "General channel", channelPrivacy.Public, None, None)
 
+UsersSockets = {}
+
 class chatSocket(WebsocketConsumer):
 	allChannels = {}
 	allUsers = {}
@@ -55,7 +57,8 @@ class chatSocket(WebsocketConsumer):
 				)
 
 		self.accept()
-
+		global UsersSockets
+		UsersSockets[self.identification] = self
 		if tabChannels is not None:
 			for chan in tabChannels:
 				privacyStatus = ChannelModels.objects.get(channelName=chan).privacyStatus
@@ -97,7 +100,8 @@ class chatSocket(WebsocketConsumer):
 				)
 
 		self.allUsers.pop(self.identification)
-
+		global UsersSockets
+		UsersSockets.remove(self.identification)
 		self.close()
 
 	def receive(self, text_data):

@@ -18,11 +18,10 @@ export function initGames() {
   let tournamentBtnArray = document.querySelectorAll(".tournament_btn button")
   tournamentBtnArray.forEach((button) => {
     button.addEventListener("click", () => {
-		// TODO new navTo
       if (button.name === "create_tournament") {
-        navto("/tournaments/Create", "True")
+        navto("/tournaments/Create")
       } else if (button.name === "join_tournament") {
-        navto("/tournaments/Join", "True")
+        navto("/tournaments/Join")
       }
     })
   })
@@ -31,9 +30,9 @@ export function initGames() {
     for (let i = 0; i < checkboxArray.length; i++) {
       if (checkboxArray[i].checked === true) {
         if (checkboxArray[i].name === 'local') {
-          navto("/pongGame/Local", 'True')
+          navto("/pongGame/Local")
         } else if (checkboxArray[i].name === 'AI') {
-          navto("/pongGame/IA", 'True')
+          navto("/pongGame/IA"	)
         } else if (checkboxArray[i].name === 'online') {
           toggleQueue("pong")
         } else if (checkboxArray[i].name === 'normal') {

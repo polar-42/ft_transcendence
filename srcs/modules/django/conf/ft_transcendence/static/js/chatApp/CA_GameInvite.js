@@ -243,3 +243,8 @@ export function receiveRefusedInvitation(data) {
 	console.log(item)
 	document.querySelector(".conversation").appendChild(item)
 }
+
+export function showTMatchRequest()
+{
+	console.log('Hey bitch')
+}

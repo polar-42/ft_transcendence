@@ -136,7 +136,6 @@ def view_JoinPage(request):
 @isValidLoading
 def Tournament_view(request):
 	if (request.method == "GET"):
-		
 		return render(request, 'tournaments/tournament.html')
 	else:
 		return render(request, 'index.html')

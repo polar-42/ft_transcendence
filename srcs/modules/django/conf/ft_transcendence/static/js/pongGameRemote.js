@@ -188,7 +188,7 @@ function FinishGameByScore(data)
 function returnToTournament(id)
 {
 	pongGameSocket = null
-	navto("/tournaments/Play", id)
+	navto("/tournaments/Play/?id=" + id)
 }
 
 function OnMessage(e)

@@ -62,7 +62,6 @@ export function initGame()
 	//battleshipSocket = new WebSocket("wss://" + window.location.host + '/battleshipApp/Game/' + arg)
 	battleshipSocket = new WebSocket("ws://" + window.location.host + '/battleshipApp/Game/' + arg)
 	battleshipSocket.onclose = (event) => {
-		console.log(code.event)
 		if (event.code == 3001)
 		{
 			battleshipSocket = undefined
@@ -149,7 +148,7 @@ function RP_GameStop(message, id)
 	else
 	{
 		battleshipSocket = null
-		navto("tournaments/Play/?T_ID=" + id)
+		navto("/tournaments/Play/?id=" + id)
 	}
 }
 

@@ -3,7 +3,7 @@ import { navto } from "../index.js";
 import { AddToFriend, initFriendsPage, showFriendList, showFriendConversation, searchFriend } from "./CA_Friends.js";
 import { goToChan, clickJoinChan, displayChannel, displayChannelHistory, receiveChanMsg, actualizeChannelHistory, initCreateChannel, receiveChanCreation, receiveJoinChanResponse, receiveDescriptionEdit } from "./CA_Channels.js";
 import { goToConv, displayChatHistory, displayPrivMsg, receiveMsg, actualizeChatHistory } from "./CA_Private.js";
-import { initGameInvitiation, receivePongInvitation, receiveBattleshipInvitation, receiveRefusedInvitation } from "./CA_GameInvite.js";
+import { initGameInvitiation, receivePongInvitation, receiveBattleshipInvitation, receiveRefusedInvitation, showTMatchRequest } from "./CA_GameInvite.js";
 
 const chatHeader = document.querySelector(".chatbox_header_wrapper");
 export let chatSocket = undefined;
@@ -182,6 +182,8 @@ function onMessageChat(e) {
 		case 'ReceiveFriendsConversation':
 			showFriendConversation(data.data)
 			break
+		case 'MSG_GameWaiting':
+			showTMatchRequest()
 	}
 }
 
