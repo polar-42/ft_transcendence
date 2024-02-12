@@ -45,7 +45,7 @@ export async function initTournamentsJoinPage()
 
 function ViewTournament(tournamentsId)
 {
-	navto("View", tournamentsId)
+	navto("View/?id=" + tournamentsId)
 }
 
 function joinTournaments(tournamentsId)
@@ -82,7 +82,7 @@ function joinTournaments(tournamentsId)
 			console.log('Error:', data.error)
 			if (data.canJoin == true)
 			{
-				navto("Play", tournamentsId)
+				navto("Play/?id=" + tournamentsId)
 				return
 			}
 			else
@@ -91,7 +91,7 @@ function joinTournaments(tournamentsId)
 				return
 			}
 		}
-		navto("Play", tournamentsId)
+		navto("Play/?id=" + tournamentsId)
 		return
 
 	})

@@ -3,6 +3,8 @@ import { initChat  } from "../chatApp/CA_General.js";
 import { initProfileButton } from "../authApp.js";
 import { unsetChatbox } from "../chatApp/CA_General.js";
 
+var toto = undefined
+
 export function initUpdateAccount() {
 	avatarButtonFunction() //TO CHANGE
 

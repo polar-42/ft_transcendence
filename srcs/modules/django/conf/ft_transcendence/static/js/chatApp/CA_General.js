@@ -1,9 +1,9 @@
 import { checkConnexion } from "../authApp.js";
 import { navto } from "../index.js";
-import { AddToFriend, initFriendsPage } from "./CA_Friends.js";
+import { AddToFriend, initFriendsPage, showFriendList, showFriendConversation, searchFriend } from "./CA_Friends.js";
 import { goToChan, clickJoinChan, displayChannel, displayChannelHistory, receiveChanMsg, actualizeChannelHistory, initCreateChannel, receiveChanCreation, receiveJoinChanResponse, receiveDescriptionEdit } from "./CA_Channels.js";
 import { goToConv, displayChatHistory, displayPrivMsg, receiveMsg, actualizeChatHistory } from "./CA_Private.js";
-import { initGameInvitiation, receivePongInvitation, receiveBattleshipInvitation, receiveRefusedInvitation } from "./CA_GameInvite.js";
+import { initGameInvitiation, receivePongInvitation, receiveBattleshipInvitation, receiveRefusedInvitation, showTMatchRequest } from "./CA_GameInvite.js";
 
 const chatHeader = document.querySelector(".chatbox_header_wrapper");
 export let chatSocket = undefined;
@@ -45,16 +45,22 @@ export function unsetChatbox() {
 	}
 }
 
-function openChatbox() {
-	document.querySelector(".chatbox_wrapper").classList.add("open")
-	chatHeader.removeEventListener("click", openChatbox)
-	chatHeader.addEventListener("click", closeChatbox)
+export function openChatbox() {
+	if (document.querySelector(".chatbox_wrapper").classList.contains('open') == false)
+	{
+		document.querySelector(".chatbox_wrapper").classList.add("open")
+		chatHeader.removeEventListener("click", openChatbox)
+		chatHeader.addEventListener("click", closeChatbox)
+	}	
 }
 
-function closeChatbox() {
-	document.querySelector(".chatbox_wrapper").classList.remove("open")
-	chatHeader.removeEventListener("click", closeChatbox)
-	chatHeader.addEventListener("click", openChatbox)
+export function closeChatbox() {
+	if (document.querySelector(".chatbox_wrapper").classList.contains('open') == true)
+	{
+		document.querySelector(".chatbox_wrapper").classList.remove("open")
+		chatHeader.removeEventListener("click", closeChatbox)
+		chatHeader.addEventListener("click", openChatbox)
+	}
 }
 
 export function initChatHomepage() {
@@ -66,12 +72,15 @@ function initHomepageHeader() {
 	let mainBoxHeader = document.querySelector(".main_box_header")
 	mainBoxHeader.classList.add("homepage")
 	let html =
-		'<img src="../static/assets/logo/search-regular-24.png" alt="search icon">' +
+		'<img src="/static/assets/logo/search-regular-24.png" alt="search icon">' +
 		'<input type="text" name="searchbar">'
 	mainBoxHeader.innerHTML = html
 	mainBoxHeader.children[1].addEventListener("keypress", (event) => {
 		if (event.key === 'Enter') {
-			searchConv()
+			if (mainBoxHeader.classList.contains('friendpage'))
+				searchFriend(mainBoxHeader.children[1].value)
+			else
+				searchConv()
 		}
 	})
 }
@@ -168,10 +177,16 @@ function onMessageChat(e) {
 			receiveRefusedInvitation(data)
 			break
 		case 'start_pong_game':
-			navto("/pongGame/Remote", data.gameId);
+			navto("/pongGame/Remote/?gameid=" + data.gameId);
 			break
 		case 'start_battleship_game':
-			navto("/battleship", data.gameId)
+			navto("/battleship/?gameid=" + data.gameId)
+			break
+		case 'ReceiveFriendshipPendingInvit':
+			showFriendList(data.pendingInvit)
+			break
+		case 'ReceiveFriendsConversation':
+			showFriendConversation(data.data)
 			break
 		case 'update_connexion_status':
 			updateConnexionStatus(data)
@@ -186,6 +201,8 @@ function updateConnexionStatus(data) {
 			liDiv.querySelectorAll('.connection_point')[0].style.background = 'red'
 		else
 			liDiv.querySelectorAll('.connection_point')[0].style.background = 'green'
+		case 'MSG_GameWaiting':
+			showTMatchRequest(data.tournamentId)
 	}
 }
 
@@ -237,7 +254,7 @@ async function displayLastChats(data, isStillUnreadMessage) {
 		let profilePicture = await getProfilePicture(data[i])
 		let ppUrl
 		if (profilePicture.type == 'image/null')
-			ppUrl = "../static/assets/logo/user.png"
+			ppUrl = "/static/assets/logo/user.png"
 		else
 			ppUrl = URL.createObjectURL(profilePicture)
 		let convId;
@@ -258,7 +275,7 @@ async function displayLastChats(data, isStillUnreadMessage) {
 			'<p class="last_msg">' + lastMsg + '</p>' +
 			'</div>' +
 			'<div class="AddToFriendContainer ' + data[i].friend + '">' +
-			'<img class="FriendShip_BTN" src="../static/assets/logo/AddToFriendIcon.svg" alt="Add to friend">' +
+			'<img class="FriendShip_BTN" src="/static/assets/logo/AddToFriendIcon.svg" alt="Add to friend">' +
 			'</div>' +
 			'</li>'
 		if (conversation_list.children.length > 0)
@@ -334,7 +351,7 @@ async function displaySearchResult(data) {
 		let profilePicture = await getProfilePicture(data[i])
 		let ppUrl
 		if (profilePicture.type == 'image/null')
-			ppUrl = "../static/assets/logo/user.png"
+			ppUrl = "/static/assets/logo/user.png"
 		else
 			ppUrl = URL.createObjectURL(profilePicture)
 		let item =
@@ -348,9 +365,9 @@ async function displaySearchResult(data) {
 			'<p class="last_msg">' + lastMsg + '</p>' +
 			'</div>' +
 			'<div class="notification_wrapper ' + isNoticationActive + '"></div>' +
-			'<img class="join_btn" src="../static/assets/logo/user-plus-regular-36.png" alt="join channel button">' +
+			'<img class="join_btn" src="/static/assets/logo/user-plus-regular-36.png" alt="join channel button">' +
 			'<div class="AddToFriendContainer ' + data[i].friend + '">' +
-			'<img class="FriendShip_BTN" src="../static/assets/logo/AddToFriendIcon.svg" alt="Add to friend">' +
+			'<img class="FriendShip_BTN" src="/static/assets/logo/AddToFriendIcon.svg" alt="Add to friend">' +
 			'</div>' +
 			'</li>'
 		if (resultWrapper.children.length > 0) {
@@ -383,9 +400,16 @@ export function cleanMainBox() {
 	while (mainBoxHeader.children.length > 0) {
 		mainBoxHeader.removeChild(mainBoxHeader.children[0])
 	}
-	//document.querySelectorAll('conversation_list')[0].innerHTML = ''
-	mainBoxBody.classList.remove("homepage")
-	mainBoxHeader.classList.remove("homepage")
+	if (mainBoxBody.classList.contains('homepage'))
+	{
+		mainBoxBody.classList.remove("homepage")
+		mainBoxHeader.classList.remove("homepage")
+	}
+	if (mainBoxBody.classList.contains('friendpage'))
+	{
+		mainBoxBody.classList.remove('friendpage')
+		mainBoxHeader.classList.remove('friendpage')
+	}
 }
 
 

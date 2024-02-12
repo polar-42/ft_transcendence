@@ -1,24 +1,36 @@
 import { getProfilePicture } from '../chatApp.js'
-import { navto } from '../index.js'
-
-var tournamentSocket = undefined
+import { navto, tournamentSocket, ModifyTS } from '../index.js'
 
 export function initTournaments()
 {
-	if (arguments[0] == undefined)
+	var arg = undefined
+	if (window.location.search != '')
+		arg = window.location.search.substring(window.location.search.indexOf('=') + 1)
+	if (arg == undefined)
 	{
+		if (tournamentSocket != undefined && tournamentSocket.readyState != WebSocket.CLOSED && tournamentSocket.url.endsWith(arg) == false)
+		{
+			console.log("Iici conard 2")
+			tournamentSocket.close()
+			ModifyTS(undefined)
+		}
 		navto('/tournaments/Home')
 		return
 	}
-	const tournamentId = arguments[0][0]
-	if (tournamentSocket == undefined || tournamentSocket.url.endsWith(tournamentId) == false)
+	if (tournamentSocket == undefined || tournamentSocket.url.endsWith(arg) == false)
 	{
-		tournamentSocket = new WebSocket("ws://" + window.location.host + '/tournamentsApp/' + tournamentId)
-		//tournamentSocket = new WebSocket("wss://" + window.location.host + '/tournamentsApp/' + tournamentId)
+		if (tournamentSocket != undefined && tournamentSocket.readyState != WebSocket.CLOSED)
+		{
+			console.log("Ici Connard")
+			tournamentSocket.close()
+			ModifyTS(undefined)
+		}
+		ModifyTS(new WebSocket("ws://" + window.location.host + '/tournamentsApp/' + arg))
+		//tournamentSocket = new WebSocket("wss://" + window.location.host + '/tournamentsApp/' + arg)
 	}
 	else
 	{
-		console.log("ReconnectToTournament")
+		console.log('reconnect')
 		tournamentSocket.send(JSON.stringify({
 			'function': 'Reconnect'
 		}))
@@ -104,9 +116,11 @@ async function initBracket(numberOfPlayers) {
 
 export function GoingAway()
 {
+	console.log(tournamentSocket)	
 	if (tournamentSocket == undefined)
 		return
-	console.log("GoingAway")
+	if (tournamentSocket.readyState == WebSocket.CLOSED)
+		return
 	tournamentSocket.send(JSON.stringify({
 		'function': 'GoingAway'
 	}))
@@ -130,6 +144,7 @@ function launchTournamentSocket()
 function quitTournamentSocket()
 {
 	console.log('Socket disconnected')
+	// navto('/games')
 }
 
 function leaveTournament()
@@ -137,7 +152,7 @@ function leaveTournament()
 	if (tournamentSocket == undefined)
 		return
 	tournamentSocket.close()
-	tournamentSocket = undefined
+	ModifyTS(undefined)
 	navto('/tournaments/Home')
 	return
 }
@@ -163,11 +178,11 @@ function LoadGame(data)
 {
 	if (data.gameType == 'ship')
 	{
-		navto("/battleship	", data.gameId)
+		navto("/battleship/?gameid=" + data.gameId)
 	}
 	else if (data.gameType == 'pong')
 	{
-		navto("/pongGame/Remote", data.gameId)
+		navto("/pongGame/Remote/?gameid=" + data.gameId)
 	}
 }
 

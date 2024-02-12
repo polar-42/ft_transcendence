@@ -21,7 +21,8 @@ class PongGameSocket(WebsocketConsumer):
 		self.accept()
 
 		self.pongGame = Manager.joinGame(self.pongGameId, self.user, self)
-
+		if self.pongGame == None:
+			self.close(3001)
 #		print("PongGameId =", self.pongGameId)
 
 		async_to_sync(self.channel_layer.group_add)(
@@ -39,8 +40,8 @@ class PongGameSocket(WebsocketConsumer):
 			self.pongGameId,
 			self.channel_name
 		)
-
-		self.pongGame.quitGame(self)
+		if (self.pongGame is not None):
+			self.pongGame.quitGame(self)
 
 		print(f"Pong game user disconnected: {self.scope['user']}")
 

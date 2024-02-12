@@ -68,9 +68,10 @@ class Tournament():
 							self.Tree[Pos1 + 1][int(Pos2 / 2)].AddUser(Match2.Winner, PlayerPos)
 						else:
 							self.Tree[Pos1 + 1][int((Pos2 / 2) - 0.5)].AddUser(Match2.Winner, PlayerPos)
+						ColorPrint.prRed(Match2.Winner.UserId)
 						Target = 0 if Match2.Winner is [Match2.Users[1]] else 1
-						if Match2.Users[Target] is not self.UndefinedUser:
-							Match2.Users[Target].Status = UserState.Dead
+						# if Match2.Users[Target] is not self.UndefinedUser:
+							# Match2.Users[Target].Status = UserState.Dead
 						ColorPrint.prGreen("Debug ! Winner = ".format(Match2.Winner.Username))
 						self.SendMatch(None)
 						return
@@ -246,8 +247,10 @@ class Tournament():
 			ColorPrint.prRed("Error! Tournament {tournamentId} : User {username} trying to goingAway when not on Tournament.".format(tournamentId=self.TournamentId, username=user.username))
 			return False
 		if (usr.Position is UserPosition.InMatch):
+			usr.Position = UserPosition.Away
 			return True
 		if usr.Status is UserState.Dead:
+			ColorPrint.prGreen("CASSE LES COUILLEs")
 			usr.Socket.close()
 			return True
 		ColorPrint.prGreen("Debug! Tournament {tournamentId} : User {username} going away.".format(tournamentId=self.TournamentId, username=usr.Username))

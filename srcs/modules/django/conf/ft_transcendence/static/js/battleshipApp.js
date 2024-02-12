@@ -49,6 +49,6 @@ function OnMessage(e)
 	const data = JSON.parse(e.data)
 	// document.getElementsByClassName("matchmake_BTN")[0].removeEventListener("click", LeaveMatchmaking)
 	// matchmakingSocket.onclose = null
-	navto("/battleship", data.gameId)
+	navto("/battleship/?gameId=" + data.gameId)
 }
 

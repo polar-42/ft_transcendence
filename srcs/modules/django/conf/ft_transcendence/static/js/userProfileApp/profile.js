@@ -1,16 +1,17 @@
 import { navto } from "../index.js"
 import { addPongClassicMatch, addPongTournamentStat, addPongGlobalStat, addOtherPongStat, addBattleshipClassicMatch, addBattleshipTournamentStat, addBattleshipGlobalStat, addOtherBattleshipStat } from "../dashboardApp/dashboard.js"
 
-let userIdentification;
+let userIdentification = undefined;
 
 export function initProfile()
 {
-	if (arguments[0] == undefined)
+	if (window.location.search != '')
+		userIdentification = window.location.search.substring(window.location.search.indexOf('=') + 1)
+	if (userIdentification == undefined)
 	{
 		navto('/dashboard');
 		return;
 	}
-	userIdentification = arguments[0]
 
 	getUserInformation()
 	getUserAvatar()
@@ -26,7 +27,7 @@ function getUserInformation()
 	{
         url.searchParams.append('userIdentification', userIdentification);
 	}
-
+	console.log('modified = ' + url)
     fetch(url, {
         method: 'GET'
     })
@@ -61,7 +62,7 @@ async function getUserAvatar()
 	{
         url.searchParams.append('userIdentification', userIdentification);
 	}
-
+	console.log('modified = ' + url)
     let res = await fetch(url, {
         method: 'GET'
     })

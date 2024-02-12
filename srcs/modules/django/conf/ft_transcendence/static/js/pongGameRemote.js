@@ -5,22 +5,38 @@ var gameId = null;
 
 export function initGamePong()
 {
-	if (arguments[0] == undefined)
+	if (pongGameSocket != null && pongGameSocket.readyState != WebSocket.CLOSED)
 	{
-		navto('/games');
-		return;
+		if (pongGameSocket != null)
+		{
+			pongGameSocket.close()
+			pongGameSocket = null
+		}
+		navto('/games')
+		return
 	}
-	gameId = arguments[0];
+	var arg = null
+	if (window.location.search != '')
+		arg = window.location.search.substring(window.location.search.indexOf('=') + 1)
+	if (arg == null)
+	{
+		if (pongGameSocket != null && pongGameSocket.readyState != WebSocket.CLOSED)
+		{
+			pongGameSocket.close()
+			pongGameSocket = null
+		}
+		navto('/games')
+	}
 	console.log("GameID = " + gameId);
-	console.log("ws://" + window.location.host + '/pongGame/RemoteGame/' + gameId);
-	//pongGameSocket = new WebSocket("wss://" + window.location.host + '/pongGame/RemoteGame/' + gameId);
-	pongGameSocket = new WebSocket("ws://" + window.location.host + '/pongGame/RemoteGame/' + gameId);
+	console.log("ws://" + window.location.host + '/pongGame/RemoteGame/' + arg);
+	//pongGameSocket = new WebSocket("wss://" + window.location.host + '/pongGame/RemoteGame/' + srg);
+	pongGameSocket = new WebSocket("ws://" + window.location.host + '/pongGame/RemoteGame/' + arg);
 	console.log(pongGameSocket);
 
 	document.addEventListener('keydown', doKeyDown);
 
 	pongGameSocket.onopen = LaunchGame
-	pongGameSocket.onclose = FinishGame
+	pongGameSocket.onclose = FinishGame.bind(self)
 	pongGameSocket.onmessage = e => OnMessage(e)
 }
 
@@ -148,10 +164,16 @@ function LaunchGame()
 	console.log('Pong Game is launch');
 }
 
-function FinishGame()
+function FinishGame(event)
 {
-	console.log('Pong game is finish');
-	pongGameSocket = null;
+	if (event.code == 100)
+		console.log('Pong game is finish');
+	else if (event.code == 3001)
+	{
+		pongGameSocket = null;
+		navto('/games')
+		return
+	}
 }
 
 function FinishGameByScore(data)
@@ -166,7 +188,7 @@ function FinishGameByScore(data)
 function returnToTournament(id)
 {
 	pongGameSocket = null
-	navto("/tournaments/Play", id)
+	navto("/tournaments/Play/?id=" + id)
 }
 
 function OnMessage(e)

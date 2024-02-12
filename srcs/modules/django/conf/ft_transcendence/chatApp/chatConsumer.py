@@ -16,6 +16,8 @@ from ft_transcendence import ColorPrint
 def createGeneralChat(allChannels):
 	allChannels["General"] = ChannelChat("General", "General channel", channelPrivacy.Public, None, None)
 
+UsersSockets = {}
+
 class chatSocket(WebsocketConsumer):
 	allChannels = {}
 	allUsers = {}
@@ -66,7 +68,8 @@ class chatSocket(WebsocketConsumer):
 				)
 
 		self.accept()
-
+		global UsersSockets
+		UsersSockets[self.identification] = self
 		if tabChannels is not None:
 			for chan in tabChannels:
 				privacyStatus = ChannelModels.objects.get(channelName=chan).privacyStatus
@@ -110,7 +113,8 @@ class chatSocket(WebsocketConsumer):
 		self.allUsers.pop(self.identification)
   
 		self.updateConnexionStatus()
-
+		global UsersSockets
+		del UsersSockets[self.identification]
 		self.close()
   
 	def updateConnexionStatus(self):
@@ -186,7 +190,10 @@ class chatSocket(WebsocketConsumer):
 				self.receiveRefusedInvitation(data)
 			case 'msg_read':
 				self.readMessage(data)
-
+			case 'MSG_RetrieveFriendInvitation':
+				self.RetrieveFriendInvitation()
+			case 'MSG_RetrieveFriendConversation':
+				self.RetrieveFriendConversation(data['limiter'])
 	def joinChannel(self, channelName, privacyStatus, password, atConnection):
 		if self.allChannels[channelName] is None:
 			return
@@ -400,7 +407,7 @@ class chatSocket(WebsocketConsumer):
 			friendStatus = 'friend'
 			if userModels.User.objects.get(identification=contact).PendingInvite is not None and self.identification in userModels.User.objects.get(identification=contact).PendingInvite:
 				friendStatus = 'unknown'
-			elif self.UserModel.Friends is not None and msg['sender'] in self.UserModel.Friends:
+			elif self.UserModel.Friends is not None and contact in self.UserModel.Friends:
 				friendStatus = 'unknown'
 			msg = allMessages.filter(Q(sender=contactList[0]) | Q(receiver=contactList[0])).order_by('-id')[0]
 			connexionStatus = userModels.User.objects.get(identification=contact).connexionStatus
@@ -1106,12 +1113,14 @@ class chatSocket(WebsocketConsumer):
 		if self.UserModel.PendingInvite is None or sender not in self.UserModel.PendingInvite:
 			ColorPrint.prYellow("{usrID} try answering a friendship request from {targetID} but invite not exisiting.".format(usrID=self.user.identification, targetID=sender))
 			return
+		
+		senderModel = userModels.User.objects.get(identification=sender)
 
-		if self.isBlock(sender):
+		if self.isBlock(senderModel):
 			ColorPrint.prYellow("{usrID} answer friendship request from {targetID} but he block him.".format(usrID=self.user.identification, targetID=sender))
 			result = False
 
-		if self.isBlockBy(sender):
+		if self.isBlockBy(senderModel):
 			ColorPrint.prYellow("{usrID} answer friendship request from {targetID} who block him.".format(usrID=self.user.identification, targetID=sender))
 			result = False
 
@@ -1132,3 +1141,78 @@ class chatSocket(WebsocketConsumer):
 			self.UserModel.PendingInvite.remove(sender)
 			self.UserModel.save()
 			return
+
+	def RetrieveFriendInvitation(self):
+		invitList = []
+		if self.UserModel.PendingInvite is not None:
+			for invit in self.UserModel.PendingInvite:
+				invitList.append({
+					'senderNick' : userModels.User.objects.get(identification=invit).nickname,
+					'identification' : invit  
+				})
+		self.send(text_data=json.dumps({
+			'type': 'ReceiveFriendshipPendingInvit',
+			'pendingInvit' : invitList
+		}))
+
+	def RetrieveFriendConversation(self, limiter):
+		allMessages = MessageModels.objects.filter(type='P').filter(Q(sender=self.identification) | Q(receiver=self.identification)).order_by('-id').values()
+		allUsers = userModels.User.objects.exclude(Q(identification='AI') | Q(identification='admin') | Q(identification = self.UserModel.identification))
+		
+		contactList = []
+		for msg in allMessages:
+			if (msg['sender'] == self.identification):
+				contact = msg['receiver']
+				msgSender = 'Me'
+			else:
+				contact = msg['sender']
+				msgSender = contact
+			if contact not in contactList:
+				contactList.append(contact)
+
+		allConv = []
+
+		for user in allUsers:
+			if user.identification in self.UserModel.Friends and user.nickname.startswith(limiter):
+				lastMsg = None
+				isRead = True
+				connexionStatus = user.connexionStatus
+				if user.identification in contactList:
+					lastMsg = MessageModels.objects.filter(
+							(Q(sender=str(self.identification)) & Q(receiver=user.identification)) |
+							(Q(receiver=str(self.identification)) & Q(sender=user.identification))).order_by('-id')[0]
+					if lastMsg.sender == self.identification:
+						isRead = True
+					else:
+						isRead = lastMsg.isRead
+					last_msg = {
+						'msg': lastMsg.message,
+						'sender': user.nickname
+					}
+				else:
+					last_msg = None
+				allConv.append({
+					'type': 'private',
+					'name': user.nickname,
+					'id': user.identification,
+					'connexionStatus': connexionStatus,
+					'last_msg': last_msg,
+					'timestamp': lastMsg.timeCreation if lastMsg is not None else datetime.datetime.min.replace(tzinfo=datetime.timezone.utc),
+					'isRead': isRead,
+					'friend': 'unknown',
+					})
+			
+		def cmpTimeStamp(msg):
+			return msg['timestamp']
+
+		allConv.sort(key = cmpTimeStamp, reverse = False)
+		for conv in allConv:
+			if conv['timestamp'] == datetime.datetime.min:
+				conv['timestamp'] = ''
+			else:
+				conv['timestamp'] = str(conv['timestamp'])
+
+		self.send(text_data=json.dumps({
+			'type': 'ReceiveFriendsConversation',
+			'data': allConv
+			}))

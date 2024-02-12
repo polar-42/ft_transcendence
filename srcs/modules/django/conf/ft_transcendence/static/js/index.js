@@ -1,6 +1,6 @@
 import { checkConnexion, initLogin, initRegister, logout } from "./authApp.js"
 import { initGames } from "./games.js"
-import { initLocalGamePong } from "./pongGameLocal.js"
+import { exit, initLocalGamePong } from "./pongGameLocal.js"
 import { initGamePongIA, unloadGamePongIA } from './pongGameIA.js'
 import { initDashboard } from "./dashboardApp/dashboard.js"
 import { initHomePage} from "./homepage.js"
@@ -8,16 +8,23 @@ import { CP_Unload, initGame } from "./BattleshipGame.js"
 import { initGamePong, unLoadGamePong } from "./pongGameRemote.js"
 import { initTournamentsCreation } from "./tournaments/tournamentsCreation.js"
 import { initTournamentsJoinPage } from "./tournaments/tournamentsJoinPage.js"
-import { initTournaments } from "./tournaments/tournament.js"
+import { GoingAway, initTournaments } from "./tournaments/tournament.js"
 import { initChat, unsetChatbox } from "./chatApp/CA_General.js"
 import { InitTournamentView } from "./tournaments/tournamentSpectate.js"
 import { initUpdateAccount } from "./userManagement/userManagement.js"
 import { initProfile } from "./userProfileApp/profile.js"
 
+export let tournamentSocket = undefined
+
+export function ModifyTS(newValue)
+{
+	tournamentSocket = newValue
+}
+
 export function navto(urlpath)
 {
   history.pushState(null, null, urlpath)
-  router([].slice.call(arguments, 1))
+  router()
 }
 
 const navigateTo = url =>
@@ -31,27 +38,29 @@ initChat();
 function getRoute(RoutePath)
 {
   const routes = [
+
+    { path: "/", init: initHomePage, unload: null, title:"Home", LogStatus: 2},
     { path: "/404", init: null, unload: null, title:"404", LogStatus: 2},
     { path: "/needlog", init: null, unload: null, title:"Login required", LogStatus: 0},
-    { path: "/", init: initHomePage, unload: null, title:"Home", LogStatus: 2},
     { path: "/dashboard", init: initDashboard, unload: null, title:"Home", LogStatus: 1},
     { path: "/games", init: initGames, unload: null, title:"Games", LogStatus: 1},
-    { path: "/battleship", init: initGame, unload: CP_Unload, title:"Battleship", LogStatus: 1},
-    { path: "/pongGame/Remote", init: initGamePong, unload: unLoadGamePong, title:"pongGame", LogStatus: 1},
+    { path: "/battleship/", init: initGame, unload: CP_Unload, title:"Battleship", LogStatus: 1},
+    { path: "/pongGame/Remote/", init: initGamePong, unload: unLoadGamePong, title:"pongGame", LogStatus: 1},
     { path: "/pongGame/Local", init: initLocalGamePong, unload: null, title:"pongGame", LogStatus: 1},
     { path: "/pongGame/IA", init: initGamePongIA, unload: unloadGamePongIA, title:"pongGame", LogStatus: 1},
     { path: "/tournaments/Create", init: initTournamentsCreation, unload: null, title:"initTournaments", LogStatus: 1},
     { path: "/tournaments/Join", init: initTournamentsJoinPage, unload: null, title:"Join Tournaments", LogStatus: 1},
-    { path: "/tournaments/Play", init: initTournaments, unload: null, title:"Tournament", LogStatus: 1},
+    { path: "/tournaments/Play/", init: initTournaments, unload: GoingAway, title:"Tournament", LogStatus: 1},
     { path: "/tournaments/View", init: InitTournamentView, unload: null, title:"Tournament", LogStatus: 1},
     { path: "/authApp/login", init: initLogin, unload: null, title:"Login", LogStatus: 0},
     { path: "/authApp/register", init: initRegister, unload: null, title:"Register", LogStatus: 0},
     { path: "/userManagement", init: initUpdateAccount, unload: null, title:"userManagement", LogStatus: 1},
-    { path: "/profile", init: initProfile, unload: null, title:"profile", LogStatus: 1},
+    { path: "/profile/", init: initProfile, unload: exit, title:"profile", LogStatus: 1},
   ]
 
   const Potentialroutes = routes.map(route =>
     {
+		// console.log(document.location.origin + route.path)
       return {
         route: route,
         isMatch: RoutePath === (document.location.origin + route.path)
@@ -75,7 +84,7 @@ async function OnLogChange()
 
 let Prev_match = undefined
 
-const router = async (arg) =>
+const router = async () =>
 {
 	let match = getRoute(document.location.origin + location.pathname)
 	/* define 404 error page */
@@ -93,10 +102,17 @@ const router = async (arg) =>
 	if (match.route.path == "/")
 		actualRoute = match.route.path + "homepage"
 	else
-		actualRoute = match.route.path
+		actualRoute = document.location.origin + window.location.pathname + window.location.search
 	if (Prev_match != undefined && Prev_match.route.unload != null)
 		Prev_match.route.unload()
-	fetch(actualRoute + '/?Valid=true')
+	if (actualRoute.includes('/?') == false)
+		actualRoute += '/?Valid=true'
+	else if (actualRoute.endsWith('/') == true)
+		actualRoute += '?Valid=true'
+	else if (actualRoute.includes('Valid=') == false)
+		actualRoute += '&Valid=true'
+	console.log(actualRoute)
+	fetch(actualRoute)
 	.then(Response => {
 		document.title = match.route.title
 		return Response.text()
@@ -107,7 +123,7 @@ const router = async (arg) =>
 	.then(value =>
 	{
 		if (match.route.init != null)
-			match.route.init(arg)
+			match.route.init()
 		Prev_match = match
 		// OnLogChange()
 	})
@@ -135,7 +151,7 @@ function clickLogout(e) {
   let profileDropDowns = document.querySelectorAll(".profile_menu");
   profileDropDowns.forEach((menu) => menu.classList.remove("active"));
   dropDownMenu.classList.remove('open')
-  menuBtn.src = '../static/assets/logo/hamburger.png'
+  menuBtn.src = '/static/assets/logo/hamburger.png'
   unsetChatbox()
   logout(e);
   navto("/");
@@ -150,14 +166,14 @@ menuBtn.addEventListener("click", () => {
   dropDownMenu.classList.toggle('open')
   const isOpen = dropDownMenu.classList.contains('open')
 
-  menuBtn.src = isOpen ? '../static/assets/logo/cross.png' : '../static/assets/logo/hamburger.png';
+  menuBtn.src = isOpen ? '/static/assets/logo/cross.png' : '/static/assets/logo/hamburger.png';
 });
 
 const menuLink = document.querySelectorAll(".menu_link");
 for (let link of menuLink) {
   link.addEventListener("click", () => {
     dropDownMenu.classList.remove('open');
-    menuBtn.src = '../static/assets/logo/hamburger.png';
+    menuBtn.src = '/static/assets/logo/hamburger.png';
   });
 }
 
@@ -181,7 +197,7 @@ for (let i = 0; i < 2; i++)
     else
     {
       dropDownMenu.classList.toggle('active')
-      menuBtn.src = '../static/assets/logo/hamburger.png'
+      menuBtn.src = '/static/assets/logo/hamburger.png'
       navto("/authApp/login");
     }
   })
@@ -190,7 +206,7 @@ for (let i = 0; i < 2; i++)
 document.addEventListener("click", (event) => {
   if (!dropDownMenu.contains(event.target) && !menuBtn.contains(event.target)) {
     dropDownMenu.classList.remove('active');
-    menuBtn.src="../static/assets/logo/hamburger.png";
+    menuBtn.src="/static/assets/logo/hamburger.png";
   };
   for (let menu of profileDropDown) {
     if (!menu.contains(event.target)) {
