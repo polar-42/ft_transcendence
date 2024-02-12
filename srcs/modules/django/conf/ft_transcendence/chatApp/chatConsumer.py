@@ -41,6 +41,17 @@ class chatSocket(WebsocketConsumer):
 		self.UserModel.save()
 
 		self.identification = self.UserModel.identification
+
+		for user in self.allUsers:
+			async_to_sync(self.channel_layer.group_send)(
+				'chat_' + str(user),
+				{
+					'type': 'updateStatus',
+					'identification': self.identification,
+					'status': connexionStatus.Connected
+				}
+			)
+
 		self.allUsers[self.identification] = self.user
 		self.chatId = 'chat_' + self.identification
 
@@ -96,11 +107,23 @@ class chatSocket(WebsocketConsumer):
 				self.channel_name
 		)
 
-		#self.sendChannelMessage('General', 'disconnexion')
-
 		self.allUsers.pop(self.identification)
+  
+		self.updateConnexionStatus()
 
 		self.close()
+  
+	def updateConnexionStatus(self):
+		print('updateConnexionStatus')
+		for user in self.allUsers:
+			async_to_sync(self.channel_layer.group_send)(
+				'chat_' + str(user),
+				{
+					'type': 'updateStatus',
+					'identification': self.identification,
+					'status': connexionStatus.Disconnected
+				}
+			)
 
 	def receive(self, text_data):
 		self.UserModel = userModels.User.objects.get(identification=self.identification)
@@ -846,13 +869,6 @@ class chatSocket(WebsocketConsumer):
 			print(sender, 'try to send a message on channel', channel, 'to', self.user.identification, 'but he block him') #TO DEL
 			return
 
-		#print('testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest')
-		print('dict(event).get(data)', dict(event).get('data'))
-
-		if dict(event).get('data') is not None in event and event['data'] == 'disconnexion':
-			print("disconexiondisconexiondisconexiondisconexiondisconexiondisconexiondisconexiondisconexiondisconexiondisconexiondisconexiondisconexiondisconexiondisconexiondisconexiondisconexiondisconexiondisconexiondisconexiondisconexiondisconexiondisconexiondisconexion")
-			return
-
 		self.send(text_data=json.dumps({
 			'type': 'chat_channel_message',
 			'channel': channel,
@@ -861,6 +877,17 @@ class chatSocket(WebsocketConsumer):
 			'message': message,
 			'time': time.strftime("%Y-%m-%d %X")
 			}))
+  
+	def updateStatus(self, event):
+		userId = event['identification']
+		newStatus = event['status']
+
+		print('updateStatus', userId, 'is', newStatus)
+		self.send(text_data=json.dumps({
+			'type': 'update_connexion_status',
+			'user_id': userId,
+			'new_status': newStatus,
+		}))
 
 	def searchConv(self, input):
 		allUsers = userModels.User.objects.exclude(Q(identification='AI') | Q(identification='admin') | Q(identification = self.UserModel.identification))

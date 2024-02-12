@@ -138,7 +138,7 @@ export function displayPrivMsg(data) {
 	}
 }
 
-export function receiveMsg(data) {
+export async function receiveMsg(data) {
 	if (document.querySelector(".contact_wrapper") == null) {
 		let divConv = document.getElementById('conv_' + data.sender)
 		if (divConv == null) {
@@ -152,12 +152,17 @@ export function receiveMsg(data) {
 			let lastMsg = data.message
 
 			//PROFILE INAGE
-
+			let profilePicture = await getProfilePicture({ 'type': 'user', 'id': data.sender })
+			let ppUrl
+			if (profilePicture.type == 'image/null')
+				ppUrl = "../static/assets/logo/user.png"
+			else
+				ppUrl = URL.createObjectURL(profilePicture)
 
 			let html =
 				'<li class="' + data.type + '" ' + 'id="' + convId + '" isread="' + data.isRead + '">' +
 				'<div class="pop_up_unread" isread_popup="' + data.isRead + '"></div>' +
-				'<img src="../static/assets/logo/user.png" alt="converstion_picture">' +
+				'<img src=' + ppUrl + ' alt="contact profile picture" id="profile_id_' + data.sender + '">' +
 				'<div class="conversation_text">' +
 				'<div class="conversation_name">' +
 				'<p>' + data.senderNickname + '</p>' +
