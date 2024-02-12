@@ -14,6 +14,13 @@ import { InitTournamentView } from "./tournaments/tournamentSpectate.js"
 import { initUpdateAccount } from "./userManagement/userManagement.js"
 import { initProfile } from "./userProfileApp/profile.js"
 
+export let tournamentSocket = undefined
+
+export function ModifyTS(newValue)
+{
+	tournamentSocket = newValue
+}
+
 export function navto(urlpath)
 {
   history.pushState(null, null, urlpath)

@@ -1,6 +1,4 @@
-import { navto } from '../index.js'
-
-var tournamentSocket = undefined
+import { navto, tournamentSocket, ModifyTS } from '../index.js'
 
 export function initTournaments()
 {
@@ -9,17 +7,24 @@ export function initTournaments()
 		arg = window.location.search.substring(window.location.search.indexOf('=') + 1)
 	if (arg == undefined)
 	{
-		if (tournamentSocket != undefined && tournamentSocket.readyState != WebSocket.CLOSED)
+		if (tournamentSocket != undefined && tournamentSocket.readyState != WebSocket.CLOSED && tournamentSocket.url.endsWith(arg) == false)
 		{
+			console.log("Iici conard 2")
 			tournamentSocket.close()
-			tournamentSocket = undefined
+			ModifyTS(undefined)
 		}
 		navto('/tournaments/Home')
 		return
 	}
 	if (tournamentSocket == undefined || tournamentSocket.url.endsWith(arg) == false)
 	{
-		tournamentSocket = new WebSocket("ws://" + window.location.host + '/tournamentsApp/' + arg)
+		if (tournamentSocket != undefined && tournamentSocket.readyState != WebSocket.CLOSED)
+		{
+			console.log("Ici Connard")
+			tournamentSocket.close()
+			ModifyTS(undefined)
+		}
+		ModifyTS(new WebSocket("ws://" + window.location.host + '/tournamentsApp/' + arg))
 		//tournamentSocket = new WebSocket("wss://" + window.location.host + '/tournamentsApp/' + arg)
 	}
 	else
@@ -39,6 +44,7 @@ export function initTournaments()
 
 export function GoingAway()
 {
+	console.log(tournamentSocket)	
 	if (tournamentSocket == undefined)
 		return
 	if (tournamentSocket.readyState == WebSocket.CLOSED)
@@ -65,6 +71,7 @@ function launchTournamentSocket()
 function quitTournamentSocket()
 {
 	console.log('Socket disconnected')
+	// navto('/games')
 }
 
 function leaveTournament()
@@ -72,7 +79,7 @@ function leaveTournament()
 	if (tournamentSocket == undefined)
 		return
 	tournamentSocket.close()
-	tournamentSocket = undefined
+	ModifyTS(undefined)
 	navto('/tournaments/Home')
 	return
 }

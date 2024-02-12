@@ -896,3 +896,15 @@
       }
     }
   }
+
+.main_box_body.homepage .conversation_list .TournamentInvit {
+	width: 100%;
+	margin: 10px;
+}
+.main_box_body.homepage .conversation_list .TournamentInvit p {
+	width: 100%;
+}
+
+.main_box_body.homepage .conversation_list .TournamentInvit button {
+	width: 100%;
+}

@@ -45,16 +45,22 @@ export function unsetChatbox() {
 	}
 }
 
-function openChatbox() {
-	document.querySelector(".chatbox_wrapper").classList.add("open")
-	chatHeader.removeEventListener("click", openChatbox)
-	chatHeader.addEventListener("click", closeChatbox)
+export function openChatbox() {
+	if (document.querySelector(".chatbox_wrapper").classList.contains('open') == false)
+	{
+		document.querySelector(".chatbox_wrapper").classList.add("open")
+		chatHeader.removeEventListener("click", openChatbox)
+		chatHeader.addEventListener("click", closeChatbox)
+	}	
 }
 
-function closeChatbox() {
-	document.querySelector(".chatbox_wrapper").classList.remove("open")
-	chatHeader.removeEventListener("click", closeChatbox)
-	chatHeader.addEventListener("click", openChatbox)
+export function closeChatbox() {
+	if (document.querySelector(".chatbox_wrapper").classList.contains('open') == true)
+	{
+		document.querySelector(".chatbox_wrapper").classList.remove("open")
+		chatHeader.removeEventListener("click", closeChatbox)
+		chatHeader.addEventListener("click", openChatbox)
+	}
 }
 
 export function initChatHomepage() {
@@ -183,7 +189,7 @@ function onMessageChat(e) {
 			showFriendConversation(data.data)
 			break
 		case 'MSG_GameWaiting':
-			showTMatchRequest()
+			showTMatchRequest(data.tournamentId)
 	}
 }
 

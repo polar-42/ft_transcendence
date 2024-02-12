@@ -5,7 +5,6 @@ from .T_Enum import GameType, GameState, UserPosition, UserState
 from .T_User import TournamentUser
 import json
 from pongGameApp.Remote.pongGameManager import Manager
-from chatApp.chatConsumer import UsersSockets
 
 class TournamentMatch():
 
@@ -39,7 +38,8 @@ class TournamentMatch():
 			'type': "MSG_GameWaiting",
 			'tournamentId' : self.TournamentId
 			})
-			
+			from chatApp.chatConsumer import UsersSockets
+			ColorPrint.prGreen(UsersSockets)
 			for alluser in self.Users:
 				if alluser.Position is UserPosition.Away and alluser is not user:
 					UsersSockets[alluser.SockUser.identification].send(text_data=msg)

@@ -101,7 +101,7 @@ class chatSocket(WebsocketConsumer):
 
 		self.allUsers.pop(self.identification)
 		global UsersSockets
-		UsersSockets.remove(self.identification)
+		del UsersSockets[self.identification]
 		self.close()
 
 	def receive(self, text_data):

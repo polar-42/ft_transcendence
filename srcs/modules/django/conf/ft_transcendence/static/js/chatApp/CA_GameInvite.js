@@ -1,4 +1,5 @@
-import { chatSocket } from "./CA_General.js"
+import { navto } from "../index.js"
+import { chatSocket, closeChatbox, openChatbox } from "./CA_General.js"
 import { goToConv } from "./CA_Private.js"
 
 export async function initGameInvitiation() {
@@ -244,7 +245,20 @@ export function receiveRefusedInvitation(data) {
 	document.querySelector(".conversation").appendChild(item)
 }
 
-export function showTMatchRequest()
+export function showTMatchRequest(tId)
 {
-	console.log('Hey bitch')
+	openChatbox()
+	let conversation = document.querySelector(".conversation_list")
+	let item = document.createElement("li")
+	item.classList.add('TournamentInvit')
+	item.innerHTML =
+		'<p>Your next tournament match is ready</p>' +
+		'<div>' +
+		'<button class="BTN_GoToTournament">Go to tournament</button>' +
+		'</div>'
+	item.querySelector('.BTN_GoToTournament').addEventListener("click", event => {
+		closeChatbox()
+		navto('/tournaments/Play/?id=' + tId)
+	})
+	conversation.insertBefore(item, conversation.firstChild)
 }
