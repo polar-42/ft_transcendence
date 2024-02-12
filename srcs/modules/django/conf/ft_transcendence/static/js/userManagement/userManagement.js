@@ -65,7 +65,7 @@ function Handle2FaToggle(checkbox) {
 		Effective2Fa(doc, TFARequestType)
 	})
 	.catch(error => {
-		console.log(error)
+		// console.log(error)
 	})
 }
 

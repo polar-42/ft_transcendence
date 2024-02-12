@@ -9,11 +9,11 @@ def getAllUsers(request):
 		ColorPrint.prRed("Error! Invalid request type")
 		return JsonResponse({'error': 'Invalid request type.'})
 
-	query = User.objects.all().exclude(Q(identification='AI') | Q(identification=request.user))
+	query = User.objects.all().exclude(Q(id=5) | Q(id=request.user.id))
 	usrList = []
 	for usr in query:
 		name = usr.nickname
-		id = usr.identification
+		id = usr.id
 		usrList.append({'name': name, 'id':id})
 	
 

@@ -102,7 +102,7 @@ function createTournaments()
 	})
 	.catch(error => {
 		document.getElementById('messageCreationTournaments').innerHTML = error
-		console.log('Error:', error)
+		// console.log('Error:', error)
 	})
 }
 

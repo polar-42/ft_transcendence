@@ -26,5 +26,5 @@ export function initHomePage()
 async function debug(event)
 {
     event.preventDefault();
-    console.log(await checkConnexion())
+    // console.log(await checkConnexion())
 }

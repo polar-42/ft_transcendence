@@ -60,7 +60,7 @@ function getRoute(RoutePath)
 
   const Potentialroutes = routes.map(route =>
     {
-		// console.log(document.location.origin + route.path)
+		// // console.log(document.location.origin + route.path)
       return {
         route: route,
         isMatch: RoutePath === (document.location.origin + route.path)
@@ -94,6 +94,7 @@ const router = async () =>
 	}
 	else if (match.route.LogStatus == 1 && await checkConnexion() == false)
 	{
+		// console.log('hello')
 		match = getRoute(document.location.origin + "/needlog")
 	}
 	else if (match.route.LogStatus == 0 && await checkConnexion() == true)
@@ -101,8 +102,10 @@ const router = async () =>
 	var actualRoute
 	if (match.route.path == "/")
 		actualRoute = match.route.path + "homepage"
-	else
+	else if (match.route.path.endsWith('/needlog') == false)
 		actualRoute = document.location.origin + window.location.pathname + window.location.search
+	else
+		actualRoute = match.route.path
 	if (Prev_match != undefined && Prev_match.route.unload != null)
 		Prev_match.route.unload()
 	if (actualRoute.includes('/?') == false)
@@ -111,7 +114,7 @@ const router = async () =>
 		actualRoute += '?Valid=true'
 	else if (actualRoute.includes('Valid=') == false)
 		actualRoute += '&Valid=true'
-	console.log(actualRoute)
+	// console.log(actualRoute)
 	fetch(actualRoute)
 	.then(Response => {
 		document.title = match.route.title

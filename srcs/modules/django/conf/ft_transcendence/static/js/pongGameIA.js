@@ -16,7 +16,7 @@ export function initGamePongIA()
 		navto('/games');
 		return;
 	}
-	console.log("ws://" + window.location.host + '/pongGame/gameVsIA');
+	// console.log("ws://" + window.location.host + '/pongGame/gameVsIA');
 	socketPongIA = new WebSocket("ws://" + window.location.host + '/pongGame/gameVsIA');
 	//socketPongIA = new WebSocket("wss://" + window.location.host + '/pongGame/gameVsIA');
 
@@ -30,7 +30,7 @@ export function initGamePongIA()
 
 export function unloadGamePongIA()
 {
-	console.log('unloadGamePongIA');
+	// console.log('unloadGamePongIA');
 	if (socketPongIA != null)
 	{
 		socketPongIA.close();
@@ -127,14 +127,14 @@ function doKeyDown(e)
 			const key = e.key;
 			if (key == "ArrowUp") {
 					e.preventDefault();
-					console.log('ArrowUp');
+					// console.log('ArrowUp');
 					socketPongIA.send(JSON.stringify({
 							'message': 'input',
 							'input': 'ArrowUp'
 					}))
 			} else if (key == 'ArrowDown') {
 					e.preventDefault();
-					console.log('ArrowDown');
+					// console.log('ArrowDown');
 					socketPongIA.send(JSON.stringify({
 							'message': 'input',
 							'input': 'ArrowDown'
@@ -150,17 +150,17 @@ function LaunchGame()
 	canvas.widht = 720;
 	canvas.height = 450;
 
-	console.log('Pong Game vs ia is launch');
+	// console.log('Pong Game vs ia is launch');
 }
 
 function FinishGame()
 {
-	console.log('Pong game is finish');
+	// console.log('Pong game is finish');
 }
 
 function FinishGameByScore(data)
 {
-	console.log(data)
+	// console.log(data)
 	canvas.style.display="none";
 	let message = data.winner + " is the winner by the score of " + data.playerone_score + " to " + data.playertwo_score;
 	document.getElementById('gameMessage').innerHTML = message;
@@ -172,7 +172,7 @@ function OnMessage(e)
 
 	if (data.type == 'game_data')
 	{
-		console.log('game_data is received');
+		// console.log('game_data is received');
 		updateGameData(data);
 	}
 	else if (data.type == 'game_timer')

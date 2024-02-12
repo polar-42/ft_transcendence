@@ -10,7 +10,7 @@ describe('TranscendenceTournamentHistory', function () {
     const contract = await ContractTranscendenceTournamentHistory.deploy();
     await contract.deployed();
 
-    console.log('Current size of players:', await contract.getNumberPlayer());
+    // console.log('Current size of players:', await contract.getNumberPlayer());
 
     const tx = await contract.addPlayer('PlayerOne');
     await tx.wait();
@@ -18,8 +18,8 @@ describe('TranscendenceTournamentHistory', function () {
     const tx2 = await contract.addVictory('PlayerOne');
     await tx2.wait();
 
-    console.log('Current size after change:', await contract.getNumberPlayer());
-    console.log('Current victory of PlayerOne:', await contract.getNumberVictoryPlayer('PlayerOne'));
+    // console.log('Current size after change:', await contract.getNumberPlayer());
+    // console.log('Current victory of PlayerOne:', await contract.getNumberVictoryPlayer('PlayerOne'));
 
     const nVicory1 = await contract.getNumberVictoryPlayer('PlayerOne');
     expect(nVicory1).to.equal(1);

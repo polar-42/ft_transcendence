@@ -3,34 +3,34 @@ import { navto, tournamentSocket, ModifyTS } from '../index.js'
 
 export function initTournaments()
 {
-	var arg = undefined
+	var tournamentId = undefined
 	if (window.location.search != '')
-		arg = window.location.search.substring(window.location.search.indexOf('=') + 1)
-	if (arg == undefined)
+		tournamentId = window.location.search.substring(window.location.search.indexOf('=') + 1)
+	if (tournamentId == undefined)
 	{
-		if (tournamentSocket != undefined && tournamentSocket.readyState != WebSocket.CLOSED && tournamentSocket.url.endsWith(arg) == false)
+		if (tournamentSocket != undefined && tournamentSocket.readyState != WebSocket.CLOSED && tournamentSocket.url.endsWith(tournamentId) == false)
 		{
-			console.log("Iici conard 2")
+			// console.log("Iici conard 2")
 			tournamentSocket.close()
 			ModifyTS(undefined)
 		}
 		navto('/tournaments/Home')
 		return
 	}
-	if (tournamentSocket == undefined || tournamentSocket.url.endsWith(arg) == false)
+	if (tournamentSocket == undefined || tournamentSocket.url.endsWith(tournamentId) == false)
 	{
 		if (tournamentSocket != undefined && tournamentSocket.readyState != WebSocket.CLOSED)
 		{
-			console.log("Ici Connard")
+			// console.log("Ici Connard")
 			tournamentSocket.close()
 			ModifyTS(undefined)
 		}
-		ModifyTS(new WebSocket("ws://" + window.location.host + '/tournamentsApp/' + arg))
+		ModifyTS(new WebSocket("ws://" + window.location.host + '/tournamentsApp/' + tournamentId))
 		//tournamentSocket = new WebSocket("wss://" + window.location.host + '/tournamentsApp/' + arg)
 	}
 	else
 	{
-		console.log('reconnect')
+		// console.log('reconnect')
 		tournamentSocket.send(JSON.stringify({
 			'function': 'Reconnect'
 		}))
@@ -69,17 +69,17 @@ function initTournamentsStatus(data) {
   tournamentNameEl.textContent = data.tournamentName
   tournamentDescriptionEl.textContent = data.tournamentDescription
   if (data.tournamentType == 0) {
-    tournamentTypeEl.src = "../static/assets/logo/ping-pong.png"
+    tournamentTypeEl.src = "/static/assets/logo/ping-pong.png"
     tournamentTypeEl.alt = "Pong Tournament"
   } else {
-    tournamentTypeEl.src = "../static/assets/logo/battleship.png"
+    tournamentTypeEl.src = "/static/assets/logo/battleship.png"
     tournamentTypeEl.alt = "Battleship Tournament"
   }
   initBracket(data.numberPlayers)
 }
 
 async function initBracket(numberOfPlayers) {
-  console.log(numberOfPlayers)
+  // console.log(numberOfPlayers)
   let nbOfGame = 1
   let rounds = {1: 'Final', 2: '1/2 Final', 4: '1/4 Final', 8: 'Round of 8', 16: 'Round of 16',  32: 'Round of 32'}
   let bracketClass = {4: 'four', 8: 'eight', 16: 'sixteen', 32: 'thirtytwo', 64: 'sixtyfour'}
@@ -116,7 +116,7 @@ async function initBracket(numberOfPlayers) {
 
 export function GoingAway()
 {
-	console.log(tournamentSocket)	
+	// console.log(tournamentSocket)	
 	if (tournamentSocket == undefined)
 		return
 	if (tournamentSocket.readyState == WebSocket.CLOSED)
@@ -138,12 +138,12 @@ function ReadyBehavior()
 
 function launchTournamentSocket()
 {
-	console.log('Socket connected')
+	// console.log('Socket connected')
 }
 
 function quitTournamentSocket()
 {
-	console.log('Socket disconnected')
+	// console.log('Socket disconnected')
 	// navto('/games')
 }
 
@@ -168,7 +168,7 @@ function OnMessageTournament(e)
 			LoadGame(data);
 			break
 		case 'MSG_UpdateMatchList':
-      console.log('coucou')
+      // console.log('coucou')
 			PrintMatchs(data)
 			break
 	}
@@ -199,9 +199,10 @@ async function PrintPlayers(data)
 
   const Players = data.usrList
   Players.forEach(async element =>  {
+	console.log(element)
     let avatar = await getProfilePicture({'type': 'user', 'id': element.userId})
     if (avatar.type == 'image/null')
-      avatar = '../static/assets/logo/user.png'
+      avatar = '/static/assets/logo/user.png'
     else
       avatar = URL.createObjectURL(avatar)
     const item = document.createElement('li')
@@ -227,7 +228,7 @@ async function PrintMatchs(data)
     5: 64
   }
 
-  console.log(data)
+  // console.log(data)
   if (data.matchList == 'None')
   {
     return
@@ -241,14 +242,14 @@ async function PrintMatchs(data)
     if (element.User1.id === -1 || element.User1.id === 'Undefined')
       return
     const matchupEl = bracket.children[element.X].children[element.Y + 1]
-    console.log(matchupEl)
+    // console.log(matchupEl)
     if (matchupEl === undefined)
       return
     if (matchupEl.querySelector('.player_profile').children.length == 0) {
       let user1 = matchupEl.children[0].children[0]
       let user1PP = await getProfilePicture({type: 'user', id: element.User1.id})
       if (user1PP === 'image/null')
-        user1PP = "../static/assets/logo/user.png"
+        user1PP = "/static/assets/logo/user.png"
       else
         user1PP = URL.createObjectURL(user1PP)
       user1.appendChild(document.createElement('img'))
@@ -260,7 +261,7 @@ async function PrintMatchs(data)
       let user2 = matchupEl.children[1].children[0]
       let user2PP = await getProfilePicture({type: 'user', id: element.User2.id})
       if (user2PP === 'image/null')
-        user2PP = "../static/assets/logo/user.png"
+        user2PP = "/static/assets/logo/user.png"
       else
         user2PP = URL.createObjectURL(user2PP)
       user2.appendChild(document.createElement('img'))

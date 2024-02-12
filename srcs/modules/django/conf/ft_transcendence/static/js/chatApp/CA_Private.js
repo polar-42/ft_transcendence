@@ -58,7 +58,7 @@ export function displayPrivMsg(data) {
 	let mainBoxBody = document.querySelector(".main_box_body")
 
 	initPrvMsgHeader(data)
-	initPrvMsgBody(data.identification)
+	initPrvMsgBody(data.id)
 
 	async function initPrvMsgHeader(data) {
 		let isConnected
@@ -67,15 +67,15 @@ export function displayPrivMsg(data) {
 		} else {
 			isConnected = 'disconnected'
 		}
-		let profilePicture = await getProfilePicture({ 'type': 'user', 'id': data.identification })
+		let profilePicture = await getProfilePicture({ 'type': 'user', 'id': data.id })
 		let ppUrl
 		if (profilePicture.type == 'image/null')
 			ppUrl = "/static/assets/logo/user.png"
 		else
 			ppUrl = URL.createObjectURL(profilePicture)
 		let html =
-			'<div class="contact_wrapper" userID="' + data.identification + '">' +
-			'<img src=' + ppUrl + ' alt="contact profile picture" id="profile_id_' + data.identification + '">' +
+			'<div class="contact_wrapper" userID="' + data.id + '">' +
+			'<img src=' + ppUrl + ' alt="contact profile picture" id="profile_id_' + data.id + '">' +
 			'<div class="contact_name_wrapper">' +
 			'<p>' + data.name + '</p>' +
 			'<div class="connection_point ' + isConnected + '"></div>' +
@@ -93,12 +93,12 @@ export function displayPrivMsg(data) {
 			cleanMainBox()
 			initChatHomepage()
 		})
-		document.getElementById('profile_id_' + data.identification).addEventListener("click", () => {
-			navto("/profile/?id=" + data.identification)
+		document.getElementById('profile_id_' + data.id).addEventListener("click", () => {
+			navto("/profile/?id=" + data.id)
 		})
 		const element = mainBoxHeader.children[1].children[0]
 		element.addEventListener("click", () => {
-			AddToFriend(data.identification, element)
+			AddToFriend(data.id, element)
 		})
 	}
 
@@ -187,7 +187,7 @@ export async function receiveMsg(data) {
 		document.getElementById('pop_up_unread_chatbox').style.display = 'block'
 	}
 	else {
-		console.log('test')
+		// console.log('test')
 		if (document.querySelector(".contact_wrapper").getAttribute('userID') === data.sender) {
 			let conversation = document.querySelector(".conversation")
 			let msgItem =
@@ -197,7 +197,7 @@ export async function receiveMsg(data) {
 				"</li>"
 			conversation.lastChild.insertAdjacentHTML('afterend', msgItem)
 			conversation.scrollTo(0, conversation.scrollHeight)
-			console.log('SEND READ DATA', data.sender, data.receiver)
+			// console.log('SEND READ DATA', data.sender, data.receiver)
 			chatSocket.send(JSON.stringify({
 				'type': 'msg_read',
 				'sender': data.sender,
@@ -249,7 +249,7 @@ export async function actualizeChatHistory(data) {
 function sendMessage(message, targetUser) {
 	if (message.length <= 0)
 		return
-	console.log('message is', message, 'and tagetUser is', targetUser);
+	// console.log('message is', message, 'and tagetUser is', targetUser);
 
 	let conversation = document.querySelector(".conversation")
 	let date = new Date()

@@ -32,7 +32,7 @@ export function addPongClassicMatch()
     let url = new URL(document.location.origin + '/dashboard/getPongClassicGameStats/')
 	if (arguments[0] != undefined)
 	{
-        url.searchParams.append('userIdentification', arguments[0]);
+        url.searchParams.append('userid', arguments[0]);
 	}
 
     fetch(url, {
@@ -94,7 +94,7 @@ export function addPongTournamentStat()
     let url = new URL(document.location.origin + '/dashboard/getPongTournamentStats/')
 	if (arguments[0] != undefined)
 	{
-        url.searchParams.append('userIdentification', arguments[0]);
+        url.searchParams.append('userid', arguments[0]);
 	}
 
     fetch(url, {
@@ -157,7 +157,7 @@ export function addPongGlobalStat()
     let url = new URL(document.location.origin + '/dashboard/getWinratePongGames/')
 	if (arguments[0] != undefined)
 	{
-        url.searchParams.append('userIdentification', arguments[0]);
+        url.searchParams.append('userid', arguments[0]);
 	}
 
     fetch(url, {
@@ -216,7 +216,7 @@ export function addOtherPongStat()
     let url = new URL(document.location.origin + '/dashboard/getOtherPongStats/')
 	if (arguments[0] != undefined)
 	{
-        url.searchParams.append('userIdentification', arguments[0]);
+        url.searchParams.append('userid', arguments[0]);
 	}
 
     fetch(url, {
@@ -261,7 +261,7 @@ export function addBattleshipClassicMatch()
     let url = new URL(document.location.origin + '/dashboard/getBattlehipClassicGameStats/')
 	if (arguments[0] != undefined)
 	{
-        url.searchParams.append('userIdentification', arguments[0]);
+        url.searchParams.append('userid', arguments[0]);
 	}
 
     fetch(url, {
@@ -326,7 +326,7 @@ export function addBattleshipTournamentStat()
     let url = new URL(document.location.origin + '/dashboard/getBattleshipTournamentStats/')
 	if (arguments[0] != undefined)
 	{
-        url.searchParams.append('userIdentification', arguments[0]);
+        url.searchParams.append('userid', arguments[0]);
 	}
 
     fetch(url, {
@@ -389,7 +389,7 @@ export function addBattleshipGlobalStat()
     let url = new URL(document.location.origin + '/dashboard/getWinrateBattleshipGames/')
 	if (arguments[0] != undefined)
 	{
-        url.searchParams.append('userIdentification', arguments[0]);
+        url.searchParams.append('userid', arguments[0]);
 	}
 
     fetch(url, {
@@ -449,7 +449,7 @@ export function addOtherBattleshipStat()
     let url = new URL(document.location.origin + '/dashboard/getOtherBatlleshipStats/')
 	if (arguments[0] != undefined)
 	{
-        url.searchParams.append('userIdentification', arguments[0]);
+        url.searchParams.append('userid', arguments[0]);
 	}
 
     fetch(url, {
@@ -509,8 +509,8 @@ export async function popUpPongGameStat(gameId)
 
     let player1 = "";
     let player2 = "";
-    let player1_identification = "";
-    let player2_identification = "";
+    let player1_id = "";
+    let player2_id = "";
 
     fetch(document.location.origin + '/dashboard/getPongSpecificGame/', {
         method: 'POST',
@@ -530,8 +530,8 @@ export async function popUpPongGameStat(gameId)
         data = JSON.parse(data)
         player1 = data.player1
         player2 = data.player2
-        player1_identification = data.player1_identification
-        player2_identification = data.player2_identification
+        player1_id = data.player1_id
+        player2_id = data.player2_id
 
         document.getElementById('boxTime').innerText = 'Date: ' + data.date
         document.getElementById('boxScore').innerText = 'Score: ' + data.player1_score + ' | ' + data.player2_score
@@ -568,7 +568,7 @@ export async function popUpPongGameStat(gameId)
                 displayPlayerNickname(e, player1, 1, false)
             })
             img.addEventListener('click', function(e) {
-                navto("/profile/?id="+ player1_identification)
+                navto("/profile/?id="+ player1_id)
             })
         }
     }
@@ -597,7 +597,7 @@ export async function popUpPongGameStat(gameId)
                 displayPlayerNickname(e, player2, 2, false)
             })
             img.addEventListener('click', function(e) {
-                navto("/profile/?id=" + player2_identification)
+                navto("/profile/?id=" + player2_id)
             })
         }
     }
@@ -624,8 +624,8 @@ export async function popUpBattleshipGameStat(gameId)
 
     let player1 = "";
     let player2 = "";
-    let player1_identification = "";
-    let player2_identification = "";
+    let player1_id = "";
+    let player2_id = "";
 
     fetch(document.location.origin + '/dashboard/getBattleshipSpecificGame/', {
         method: 'POST',
@@ -645,8 +645,8 @@ export async function popUpBattleshipGameStat(gameId)
         data = JSON.parse(data)
         player1 = data.player1
         player2 = data.player2
-        player1_identification = data.player1_identification
-        player2_identification = data.player2_identification
+        player1_id = data.player1_id
+        player2_id = data.player2_id
 
         document.getElementById('boxTime').innerText = 'Date: ' + data.date
         document.getElementById('boxScore').innerText = 'Number hit: ' + data.player1_score + ' | ' + data.player2_score
@@ -683,7 +683,7 @@ export async function popUpBattleshipGameStat(gameId)
                 displayPlayerNickname(e, player1, 1, false)
             })
             img.addEventListener('click', function(e) {
-                navto("/profile/?id=" + player1_identification)
+                navto("/profile/?id=" + player1_id)
             })
         }
     }
@@ -712,7 +712,7 @@ export async function popUpBattleshipGameStat(gameId)
                 displayPlayerNickname(e, player2, 2, false)
             })
             img.addEventListener('click', function(e) {
-                navto("/profile/?id=" + player2_identification)
+                navto("/profile/?id=" + player2_id)
             })
         }
     }
@@ -766,7 +766,7 @@ export async function popUpTournamentStat(tournamentId) {
     headers.append('X-CSRFToken', crsf_token)
 
     let winner = "";
-    let winner_identification = "";
+    let winner_id = "";
 
     fetch(document.location.origin + '/dashboard/getTournamentStat/', {
         method: 'POST',
@@ -785,7 +785,7 @@ export async function popUpTournamentStat(tournamentId) {
     {
         data = JSON.parse(data)
         winner = data.winner
-        winner_identification = data.winner_identification
+        winner_id = data.winner_id
 
         let players = "";
         let i = 0;
@@ -834,7 +834,7 @@ export async function popUpTournamentStat(tournamentId) {
                 displayPlayerNickname(e, winner, 3, false)
             })
             img.addEventListener('click', function(e) {
-                navto("/profile/?id = " + winner_identification)
+                navto("/profile/?id = " + winner_id)
             })
         }
     }

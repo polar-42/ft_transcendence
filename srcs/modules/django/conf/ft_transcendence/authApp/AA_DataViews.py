@@ -1,7 +1,8 @@
 from django.http import JsonResponse, HttpResponse
 from .models import User
 from chatApp.models import ChannelModels
-
+from ft_transcendence import ColorPrint
+	
 def check_connexion(request):
     if (request.user.is_authenticated):
         return JsonResponse({'connexionStatus': True})
@@ -16,12 +17,11 @@ def getUserName(request):
 
 def getUserID(request):
     print(request)
-    print(request.user.identification)
-    return JsonResponse({'userID': request.user.identification})
+    print(request.user.id)
+    return JsonResponse({'userID': request.user.id})
 
 def getAvatarImage(request):
     if request.user.is_authenticated:
-
         paramType = request.GET.get('type', None)
         if paramType == 'channel':
             print('TO DO')
@@ -34,12 +34,13 @@ def getAvatarImage(request):
             return HttpResponse(avatarChan, content_type='image/png')
         else:
             userId = request.GET.get('userId', None)
+            ColorPrint.prRed('userId {id}'.format(id=userId))
             if userId == 'self':
-                userId = request.user.identification
-            if User.objects.filter(identification=userId).exists() is False:
+                userId = request.user.id
+            if User.objects.filter(id=userId).exists() is False:
                 return HttpResponse(None, content_type='image/null')
 
-            avatarImage = User.objects.get(identification=userId).avatarImage
+            avatarImage = User.objects.get(id=userId).avatarImage
             if avatarImage == None:
                 return HttpResponse(None, content_type='image/null')
             return HttpResponse(avatarImage, content_type='image/png')

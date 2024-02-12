@@ -34,19 +34,19 @@ class ChannelChat():
 		self.usersSocket = []
 
 		if creator != None:
-			self.admin = userModels.User.objects.get(identification=creator)
+			self.admin = userModels.User.objects.get(id=creator)
 			self.usersSocket.append(creator)
 
 			print('admin: ',self.admin)
 			obj = ChannelModels.objects.create(
 					channelName=self.channelName,
-					admin=self.admin.identification,
+					admin=self.admin.id,
 					privacyStatus = self.privacyStatus,
 					password = self.password,
 					description = self.description,
-					users=[self.admin.identification],
+					users=[self.admin.id],
 					)
-			print(self.admin.identification, 'create channel', self.channelName)
+			print(self.admin.id, 'create channel', self.channelName)
 
 		else: #ONLY FOR GENERAL CHANNEL
 			self.admin = creator
@@ -76,15 +76,15 @@ class ChannelChat():
 		tab = self.ChanModel.users
 		if tab is None:
 			tab = []
-			tab.append(user.identification)
+			tab.append(user.id)
 
-		elif user.identification not in self.ChanModel.users:
-			tab.append(user.identification)
+		elif user.id not in self.ChanModel.users:
+			tab.append(user.id)
 
 		self.ChanModel.users = tab
 		self.ChanModel.save()
 
-		print(user.identification, 'join channel', self.channelName, 'with', self.ChanModel.users)
+		print(user.id, 'join channel', self.channelName, 'with', self.ChanModel.users)
 
 	def leaveChannel(self, user):
 		if user is None or user not in self.usersSocket:
@@ -95,19 +95,19 @@ class ChannelChat():
 
 		if self.ChanModel.users is not None:
 			tab = self.ChanModel.users
-			if user.identification in tab:
-				tab.remove(user.identification)
+			if user.id in tab:
+				tab.remove(user.id)
 				self.ChanModel.users = tab
 				self.ChanModel.save()
 
-		print(user.identification, 'leave channel', self.channelName, 'with', self.ChanModel.users) #TO DEL
+		print(user.id, 'leave channel', self.channelName, 'with', self.ChanModel.users) #TO DEL
 
 	def sendMessageChannel(self, sender, message):
 		tabRead = []
-		tabRead.append(sender.identification)
+		tabRead.append(sender.id)
 		msg = MessageModels.objects.create(
 				message=message,
-				sender=sender.identification,
+				sender=sender.id,
 				receiver=self.channelName,
 				readBy=tabRead,
 				type='C'
@@ -125,7 +125,7 @@ class ChannelChat():
 				{
 					'type': 'chatChannelMessage',
 					'channel': self.channelName,
-					'sender': sender.identification,
+					'sender': sender.id,
 					'message': message,
 					'time': time.strftime("%Y-%m-%d %X")
 					}

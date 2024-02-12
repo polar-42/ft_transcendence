@@ -208,7 +208,7 @@ class UserPong():
         self.connexionStatus = ConnexionState.NeverConnected
         self.id = user.id
         self.socket = None
-        self.username = user.nickname + '-' + user.identification
+        self.username = user.nickname + '-' + str(user.id)
 
 class StatGame():
     def __init__(self, p1_id, p2_id, p1_score, p2_score, p1_n_ball_touch, p2_n_ball_touch, reason, idTournament=-1):

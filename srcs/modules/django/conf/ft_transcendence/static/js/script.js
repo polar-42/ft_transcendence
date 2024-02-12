@@ -64,7 +64,7 @@ function connexionButton() {
                 return response.json();
         })
         .then(data => {
-                console.log(data);
+                // console.log(data);
                 if (data.message) {
                         document.getElementById('messageConnexion').innerHTML = data.message;
                         location.reload();
@@ -109,7 +109,7 @@ function inscriptionButton() {
                 return response.json();
         })
         .then(data => {
-                console.log(data);
+                // console.log(data);
                 if (data.message) {
                         document.getElementById('messageInscription').innerHTML = data.message;
                         socket_function();
@@ -134,14 +134,14 @@ function socket_function() {
         fetch('/transcendence/check_connexion/')
                 .then(response => response.json())
                 .then(data => {
-                        console.log(data.connexionStatus);
+                        // console.log(data.connexionStatus);
                         if (data.connexionStatus == true) {
 
                                 const socket = new WebSocket('ws://' + window.location.host + '/ws/some_path/');
 
                                 socket.onmessage = function(e) {
                                         const data = JSON.parse(e.data);
-                                        console.log(data.message);
+                                        // console.log(data.message);
                                 
                                         if (data.type === 'chat') {
                                                 let message_send_back = document.getElementById('message_send_back');
@@ -209,7 +209,7 @@ function startGame(playerToPlayAgainst) {
                 })
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Game created:', data.game);
+                    // console.log('Game created:', data.game);
                 })
                 .catch(error => {
                     console.error('Error creating game:', error);

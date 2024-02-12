@@ -126,7 +126,7 @@ function closeChatSocket() {
 
 function onMessageChat(e) {
 	const data = JSON.parse(e.data)
-
+	// console.log(data)
 	switch (data['type']) {
 		case 'search_conv':
 			displaySearchResult(data.data)
@@ -190,6 +190,10 @@ function onMessageChat(e) {
 			break
 		case 'update_connexion_status':
 			updateConnexionStatus(data)
+			break
+		case 'MSG_GameWaiting':
+			showTMatchRequest(data.tournamentId)
+			break
 	}
 }
 
@@ -201,12 +205,11 @@ function updateConnexionStatus(data) {
 			liDiv.querySelectorAll('.connection_point')[0].style.background = 'red'
 		else
 			liDiv.querySelectorAll('.connection_point')[0].style.background = 'green'
-		case 'MSG_GameWaiting':
-			showTMatchRequest(data.tournamentId)
 	}
 }
 
 export async function getProfilePicture(data) {
+	// console.log(data)
 	let param = undefined
 	if (data.type === 'channel')
 	{
@@ -229,7 +232,7 @@ export async function getProfilePicture(data) {
 		})
 	if (Response.ok) {
 		let picture = await Response.blob()
-		console.log(picture)
+		// console.log(picture)
 		return picture
 	}
 }
@@ -238,7 +241,7 @@ async function displayLastChats(data, isStillUnreadMessage) {
 	let conversation_list = document.querySelector(".conversation_list")
 
 	for (let i = data.length - 1; i >= 0; i--) {
-		console.log(data[i])
+		// console.log(data[i])
 		let lastMsg
 		if (data[i].last_msg.msg !== '')
 			lastMsg = data[i].last_msg.sender + ': ' + data[i].last_msg.msg
@@ -324,7 +327,7 @@ async function displaySearchResult(data) {
 	let member
 
 	for (let i = 0; i < data.length; i++) {
-		console.log(data[i])
+		// console.log(data[i])
 		if (data[i].connexion_status == 2) {
 			isConnected = 'connected'
 		} else if (data[i].connexion_status === 0) {
@@ -417,7 +420,7 @@ function blockUser() {
 	let target = document.getElementById('target_user');
 
 	if (target.value.length <= 3) {
-		console.log('Error: channel name too small');
+		// console.log('Error: channel name too small');
 		return;
 	}
 
@@ -432,7 +435,7 @@ function unblockUser() {
 	let target = document.getElementById('target_user');
 
 	if (target.value.length <= 3) {
-		console.log('Error: channel name too small');
+		// console.log('Error: channel name too small');
 		return;
 	}
 

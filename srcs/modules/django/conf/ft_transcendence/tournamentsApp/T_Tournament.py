@@ -175,7 +175,7 @@ class Tournament():
 
 	def ChangeReadyState(self, user):
 		ColorPrint.prRed('user {user}'.format(user=user))
-		usr = self.GetUserById(user.identification)
+		usr = self.GetUserById(user.id)
 		if (usr is None):
 			ColorPrint.prRed("Error! Tournament {tournamentId} : User {username} trying to change readyState when not on Tournament.".format(tournamentId=self.TournamentId, username=user.username))
 			return False
@@ -218,7 +218,7 @@ class Tournament():
 			return False
 		if (len(self.PlayersList) == self.PlayerAmount):
 			return False
-		usr = TournamentUser(socket, user, user.nickname, user.identification)
+		usr = TournamentUser(socket, user, user.nickname, user.id)
 		if (usr.UserId == self.Administrator):
 			self.Administrator = usr
 		self.PlayersList.append(usr)

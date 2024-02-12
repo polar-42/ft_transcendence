@@ -31,7 +31,7 @@ class Command(BaseCommand):
                 nickname=username,
                 email=email,
                 password=password,
-                identification=getRandString(),
+                id=getRandString(),
                 avatarImage=avatarImage.read()
             )
             print('User created successfully')
@@ -54,7 +54,7 @@ class Command(BaseCommand):
                 nickname=username,
                 email=email,
                 password=password,
-                identification=getRandString(),
+                id=getRandString(),
                 avatarImage=avatarImage.read()
             )
             print('User created successfully')
@@ -77,7 +77,7 @@ class Command(BaseCommand):
                 nickname=username,
                 email=email,
                 password=password,
-                identification=getRandString(),
+                id=getRandString(),
                 avatarImage=avatarImage.read()
             )
             print('User created successfully')
@@ -94,7 +94,7 @@ class Command(BaseCommand):
                 nickname=username,
                 email=email,
                 password=password,
-                identification=getRandString(),
+                id=getRandString(),
                 avatarImage=avatarImage.read()
             )
             print('User created successfully')
@@ -117,7 +117,7 @@ class Command(BaseCommand):
                 nickname=username,
                 email=email,
                 password=password,
-                identification='AI',
+                id='AI',
                 avatarImage=avatarImage.read()
             )
             print('User created successfully')

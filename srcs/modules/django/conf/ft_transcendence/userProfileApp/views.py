@@ -23,9 +23,9 @@ def getUserInformation(request):
     if request.user.is_authenticated is False or request.method != 'GET':
         return JsonResponse({'error': 'error'})
 
-    params = request.GET.get('userIdentification', None)
-    if params != None and User.objects.filter(identification=params).exists() and request.user.identification != params:
-        userModel = User.objects.get(identification=str(params))
+    params = request.GET.get('userid', None)
+    if params != None and User.objects.filter(id=params).exists() and request.user.id != params:
+        userModel = User.objects.get(id=str(params))
     else:
         return JsonResponse({'error': 'error'})
 
@@ -41,9 +41,9 @@ def getPlayerImage(request):
     if request.user.is_authenticated is False or request.method != 'GET':
         return HttpResponse(None, content_type='image/null')
 
-    params = request.GET.get('userIdentification', None)
-    if params != None and User.objects.filter(identification=params).exists():
-        user = User.objects.get(identification=str(params))
+    params = request.GET.get('userid', None)
+    if params != None and User.objects.filter(id=params).exists():
+        user = User.objects.get(id=str(params))
         return HttpResponse(user.avatarImage, content_type='image/png')
     else:
         return HttpResponse(None, content_type='image/null')

@@ -131,7 +131,7 @@ def addToDb(player1_id, player2_id, playerone_score, playertwo_score, winner, n_
 		player2Model.Pong_Win += 1
 		player1Model.Pong_Lose += 1
 
-	if str(player2Model.identification) == 'AI':
+	if str(player2Model.id) == 'AI':
 		if str(winner) == str(player2Model.id):
 			player1Model.Pong_Versus_AI += 1
 		else:

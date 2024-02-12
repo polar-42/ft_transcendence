@@ -27,11 +27,11 @@ export function initGamePong()
 		}
 		navto('/games')
 	}
-	console.log("GameID = " + gameId);
-	console.log("ws://" + window.location.host + '/pongGame/RemoteGame/' + arg);
+	// console.log("GameID = " + gameId);
+	// console.log("ws://" + window.location.host + '/pongGame/RemoteGame/' + arg);
 	//pongGameSocket = new WebSocket("wss://" + window.location.host + '/pongGame/RemoteGame/' + srg);
 	pongGameSocket = new WebSocket("ws://" + window.location.host + '/pongGame/RemoteGame/' + arg);
-	console.log(pongGameSocket);
+	// console.log(pongGameSocket);
 
 	document.addEventListener('keydown', doKeyDown);
 
@@ -137,14 +137,14 @@ function doKeyDown(e)
 			const key = e.key;
 			if (key == "ArrowUp") {
 					e.preventDefault();
-					console.log('ArrowUp');
+					// console.log('ArrowUp');
 					pongGameSocket.send(JSON.stringify({
 							'message': 'input',
 							'input': 'ArrowUp'
 					}))
 			} else if (key == 'ArrowDown') {
 					e.preventDefault();
-					console.log('ArrowDown');
+					// console.log('ArrowDown');
 					pongGameSocket.send(JSON.stringify({
 							'message': 'input',
 							'input': 'ArrowDown'
@@ -156,19 +156,20 @@ function doKeyDown(e)
 function LaunchGame()
 {
 	canvas = document.getElementById('pongCanvas');
-	console.log(canvas)
+	// console.log(canvas)
 	context = canvas.getContext('2d');
 	canvas.widht = 720;
 	canvas.height = 450;
 
-	console.log('Pong Game is launch');
+	// console.log('Pong Game is launch');
 }
 
 function FinishGame(event)
 {
-	if (event.code == 100)
-		console.log('Pong game is finish');
-	else if (event.code == 3001)
+	// if (event.code == 100)
+		// console.log('Pong game is finish');
+		
+	if (event.code == 3001)
 	{
 		pongGameSocket = null;
 		navto('/games')
@@ -178,7 +179,7 @@ function FinishGame(event)
 
 function FinishGameByScore(data)
 {
-	console.log(data)
+	// console.log(data)
 	canvas.style.display="none";
 	let message = "Game is finished, " + data.winner + " is the winner by the score of " + data.playerone_score + " to " + data.playertwo_score;
 	document.getElementById('gameMessage').innerHTML = message;
@@ -197,7 +198,7 @@ function OnMessage(e)
 
 	if (data.type == 'game_data')
 	{
-		console.log('game_data is received');
+		// console.log('game_data is received');
 		updateGameData(data);
 	}
 	else if (data.type == 'game_timer')

@@ -56,7 +56,7 @@ function joinTournaments(tournamentsId)
 	var headers = new Headers()
     headers.append('Content-Type', 'application/json')
 	headers.append('X-CSRFToken', crsf_token)
-  console.log(headers)
+  // console.log(headers)
 	var data = {
 		'tournamentsId': tournamentsId,
 	}
@@ -79,7 +79,7 @@ function joinTournaments(tournamentsId)
 	{
 		if (data.error != undefined)
 		{
-			console.log('Error:', data.error)
+			// console.log('Error:', data.error)
 			if (data.canJoin == true)
 			{
 				navto("Play/?id=" + tournamentsId)

@@ -20,7 +20,7 @@ export function exit()
 
 export function initLocalGamePong()
 {
-	console.log(gameStarted = false)
+	// console.log(gameStarted = false)
 	if (gameStarted == true)
 	{
 		gameStarted = false
@@ -28,7 +28,7 @@ export function initLocalGamePong()
 		return;
 	}
 	gameStarted = true
-	console.log(document.innerHTML)
+	// console.log(document.innerHTML)
 	canvas = document.getElementById("pongCanvasLocal");
 	context = canvas.getContext("2d");
 	document.addEventListener('keydown', doKeyDown);

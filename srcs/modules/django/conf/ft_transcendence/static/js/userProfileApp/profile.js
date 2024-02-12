@@ -1,13 +1,13 @@
 import { navto } from "../index.js"
 import { addPongClassicMatch, addPongTournamentStat, addPongGlobalStat, addOtherPongStat, addBattleshipClassicMatch, addBattleshipTournamentStat, addBattleshipGlobalStat, addOtherBattleshipStat } from "../dashboardApp/dashboard.js"
 
-let userIdentification = undefined;
+let userid = undefined;
 
 export function initProfile()
 {
 	if (window.location.search != '')
-		userIdentification = window.location.search.substring(window.location.search.indexOf('=') + 1)
-	if (userIdentification == undefined)
+		userid = window.location.search.substring(window.location.search.indexOf('=') + 1)
+	if (userid == undefined)
 	{
 		navto('/dashboard');
 		return;
@@ -23,11 +23,11 @@ export function initProfile()
 function getUserInformation()
 {
     let url = new URL(document.location.origin + '/profile/getUserInformation/')
-	if (userIdentification != undefined)
+	if (userid != undefined)
 	{
-        url.searchParams.append('userIdentification', userIdentification);
+        url.searchParams.append('userid', userid);
 	}
-	console.log('modified = ' + url)
+	// console.log('modified = ' + url)
     fetch(url, {
         method: 'GET'
     })
@@ -58,11 +58,11 @@ function getUserInformation()
 async function getUserAvatar()
 {
     let url = new URL(document.location.origin + '/profile/getPlayerImage/')
-	if (userIdentification != undefined)
+	if (userid != undefined)
 	{
-        url.searchParams.append('userIdentification', userIdentification);
+        url.searchParams.append('userid', userid);
 	}
-	console.log('modified = ' + url)
+	// console.log('modified = ' + url)
     let res = await fetch(url, {
         method: 'GET'
     })
@@ -88,18 +88,18 @@ function getPongStat()
 {
     document.getElementById('buttonGamePong').style.background = 'var(--fourth)'
     document.getElementById('buttonGameBattleship').style.background = 'transparent'
-    addPongClassicMatch(userIdentification);
-    addPongTournamentStat(userIdentification);
-    addPongGlobalStat(userIdentification);
-    addOtherPongStat(userIdentification);
+    addPongClassicMatch(userid);
+    addPongTournamentStat(userid);
+    addPongGlobalStat(userid);
+    addOtherPongStat(userid);
 }
 
 function getBattleshipStat()
 {
     document.getElementById('buttonGameBattleship').style.background = 'var(--fourth)'
     document.getElementById('buttonGamePong').style.background = 'transparent'
-    addBattleshipClassicMatch(userIdentification)
-    addBattleshipTournamentStat(userIdentification)
-    addBattleshipGlobalStat(userIdentification)
-    addOtherBattleshipStat(userIdentification)
+    addBattleshipClassicMatch(userid)
+    addBattleshipTournamentStat(userid)
+    addBattleshipGlobalStat(userid)
+    addOtherBattleshipStat(userid)
 }

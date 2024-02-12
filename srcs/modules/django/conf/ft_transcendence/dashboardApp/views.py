@@ -18,9 +18,9 @@ def getPongClassicGameStats(request):
     if request.user.is_authenticated is False or request.method != 'GET':
         return render(request, 'index.html')
 
-    params = request.GET.get('userIdentification', None)
-    if params != None and User.objects.filter(identification=params).exists():
-        userId = User.objects.get(identification=str(params)).id
+    params = request.GET.get('userid', None)
+    if params != None and User.objects.filter(id=params).exists():
+        userId = User.objects.get(id=str(params)).id
     else:
         userId = request.user.id
 
@@ -67,9 +67,9 @@ def getPongTournamentStats(request):
         return render(request, 'index.html')
 
 
-    params = request.GET.get('userIdentification', None)
-    if params != None and User.objects.filter(identification=params).exists():
-        userId = User.objects.get(identification=str(params)).id
+    params = request.GET.get('userid', None)
+    if params != None and User.objects.filter(id=params).exists():
+        userId = User.objects.get(id=str(params)).id
     else:
         userId = request.user.id
 
@@ -115,9 +115,9 @@ def getWinratePongGames(request):
         return render(request, 'index.html')
 
 
-    params = request.GET.get('userIdentification', None)
-    if params != None and User.objects.filter(identification=params).exists():
-        userId = User.objects.get(identification=str(params)).id
+    params = request.GET.get('userid', None)
+    if params != None and User.objects.filter(id=params).exists():
+        userId = User.objects.get(id=str(params)).id
     else:
         userId = request.user.id
 
@@ -154,9 +154,9 @@ def getOtherPongStats(request):
         return render(request, 'index.html')
 
 
-    params = request.GET.get('userIdentification', None)
-    if params != None and User.objects.filter(identification=params).exists():
-        userId = User.objects.get(identification=str(params)).id
+    params = request.GET.get('userid', None)
+    if params != None and User.objects.filter(id=params).exists():
+        userId = User.objects.get(id=str(params)).id
     else:
         userId = request.user.id
 
@@ -236,9 +236,9 @@ def getBattlehipClassicGameStats(request):
         return render(request, 'index.html')
 
 
-    params = request.GET.get('userIdentification', None)
-    if params != None and User.objects.filter(identification=params).exists():
-        userId = User.objects.get(identification=str(params)).id
+    params = request.GET.get('userid', None)
+    if params != None and User.objects.filter(id=params).exists():
+        userId = User.objects.get(id=str(params)).id
     else:
         userId = request.user.id
 
@@ -279,9 +279,9 @@ def getBattleshipTournamentStats(request):
         return render(request, 'index.html')
 
 
-    params = request.GET.get('userIdentification', None)
-    if params != None and User.objects.filter(identification=params).exists():
-        userId = User.objects.get(identification=str(params)).id
+    params = request.GET.get('userid', None)
+    if params != None and User.objects.filter(id=params).exists():
+        userId = User.objects.get(id=str(params)).id
     else:
         userId = request.user.id
 
@@ -327,9 +327,9 @@ def getWinrateBattleshipGames(request):
         return render(request, 'index.html')
 
 
-    params = request.GET.get('userIdentification', None)
-    if params != None and User.objects.filter(identification=params).exists():
-        userId = User.objects.get(identification=str(params)).id
+    params = request.GET.get('userid', None)
+    if params != None and User.objects.filter(id=params).exists():
+        userId = User.objects.get(id=str(params)).id
     else:
         userId = request.user.id
 
@@ -366,9 +366,9 @@ def getOtherBatlleshipStats(request):
         return render(request, 'index.html')
 
 
-    params = request.GET.get('userIdentification', None)
-    if params != None and User.objects.filter(identification=params).exists():
-        userId = User.objects.get(identification=str(params)).id
+    params = request.GET.get('userid', None)
+    if params != None and User.objects.filter(id=params).exists():
+        userId = User.objects.get(id=str(params)).id
     else:
         userId = request.user.id
 
@@ -455,8 +455,8 @@ def getPongSpecificGame(request):
             return JsonResponse({
                 'player1': player1.nickname,
                 'player2': player2.nickname,
-                'player1_identification': player1.identification,
-                'player2_identification': player2.identification,
+                'player1_id': player1.id,
+                'player2_id': player2.id,
                 'winner': winner.nickname,
                 'player1_score': player1_score,
                 'player2_score': player2_score,
@@ -489,8 +489,8 @@ def getBattleshipSpecificGame(request):
             return JsonResponse({
                 'player1': player1.nickname,
                 'player2': player2.nickname,
-                'player1_identification': player1.identification,
-                'player2_identification': player2.identification,
+                'player1_id': player1.id,
+                'player2_id': player2.id,
                 'winner': winner.nickname,
                 'player1_score': player1_score,
                 'player2_score': player2_score,
@@ -547,7 +547,7 @@ def getTournamentStat(request):
                 'players': players,
                 'description': game.description,
                 'winner': winner.nickname,
-                'winner_identification': winner.identification,
+                'winner_id': winner.id,
                 'date': dateGame
             })
     else:

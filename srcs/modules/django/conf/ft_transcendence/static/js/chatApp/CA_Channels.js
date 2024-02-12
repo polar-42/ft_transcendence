@@ -209,7 +209,8 @@ export function displayChannel(data) {
 						kick.addEventListener("click", () => {
 							kickUser(data.name, users[i].id)
 						})
-					document.getElementById('profile_id_' + users[i].id).addEventListener("click", () => {
+					console.log(users[i])
+					sidebar.lastChild.addEventListener("click", () => {
 						navto("/profile/?id=" + users[i].id)
 					  })
 				}
@@ -262,18 +263,18 @@ export async function displayChannelHistory(data, isStillUnreadMessage) {
 	}
 	conversation.innerHTML = html
 	conversation.scrollTo(0, conversation.scrollHeight)
-	let tabIdentification = [];
+	let tabid = [];
 
 	for (let i = data.length - 1; i >= 0; i--) {
-		if (tabIdentification.includes(data[i].senderID) == false)
+		if (tabid.includes(data[i].senderID) == false)
 			document.querySelectorAll('.profile_id_chan_' + data[i].senderID).forEach((div) => {
 				div.addEventListener("click", () => {
 					navto("/profile/?id=" + data[i].senderID)
 				})
 			})
-		tabIdentification.push(data[i].senderID)
+		tabid.push(data[i].senderID)
 	}
-	console.log(isStillUnreadMessage)
+	// console.log(isStillUnreadMessage)
 	if (isStillUnreadMessage == true) {
 		document.getElementById('pop_up_unread_chatbox').style.display = 'block'
 	} else {
@@ -305,7 +306,7 @@ function channelMessage(message, targetChannel) {
 }
 
 function joinChannel(channelName, privacyStatus, password) {
-	console.log('channelName:', channelName, ' privacyStatus:', privacyStatus, ' password:', password)
+	// console.log('channelName:', channelName, ' privacyStatus:', privacyStatus, ' password:', password)
 	if (privacyStatus === false) {
 		chatSocket.send(JSON.stringify({
 			'type': 'channel_join',
@@ -327,6 +328,8 @@ function leaveChannel(channelName) {
 		'type': 'channel_leave',
 		'target': channelName
 	}))
+	document.querySelector(".main_box_header").classList.remove("channel")
+	document.querySelector(".main_box_body").classList.remove("channel")
 	initChatHomepage()
 }
 
@@ -401,7 +404,7 @@ export async function receiveChanMsg(data) {
 		navto("/profile/?id=" + data.senderID)
 	  })
 
-	  console.log(data)
+	  // console.log(data)
 	  chatSocket.send(JSON.stringify({
 		'type': 'msg_read',
 		'sender': data.senderID,
@@ -588,7 +591,7 @@ async function createChannel() {
 		return
 	}
 
-	console.log(pwd)
+	// console.log(pwd)
 	chatSocket.send(JSON.stringify({
 		'type': 'create_channel',
 		'channel_name': channelName,

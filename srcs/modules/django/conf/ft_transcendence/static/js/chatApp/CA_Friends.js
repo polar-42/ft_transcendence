@@ -3,10 +3,10 @@ import { goToConv } from './CA_Private.js'
 import { getProfilePicture } from './CA_General.js'
 
 
-export function AddToFriend(identification, element) {
+export function AddToFriend(id, element) {
 	chatSocket.send(JSON.stringify({
 		'type': 'invit_to_friend',
-		'target': identification,
+		'target': id,
 	}))
 	if (element.parentElement != undefined) {
 		element.parentElement.classList.remove("friend")
@@ -65,7 +65,7 @@ export function showFriendList(data)
 		child = mainBoxBody.children[1].lastElementChild;
 	}
 	data.forEach(element => {
-		mainBoxBody.children[1].appendChild(createInvit(element.senderNick, element.identification))
+		mainBoxBody.children[1].appendChild(createInvit(element.senderNick, element.id))
 	});
 }
 
@@ -103,7 +103,7 @@ function HandleFriendInvitation(send_id, result, item, send_nick)
 export function showFriendConversation(data)
 {
 	const messageList = document.querySelector(".main_box_body").children[1]
-	console.log(messageList)
+	// console.log(messageList)
 	data.forEach(async element => {
 		let item = await createConversation(element)
 		if (messageList.children.length > 0)

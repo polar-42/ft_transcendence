@@ -134,7 +134,7 @@ function OnMessage(e)
 
 function RP_GameStop(message, id)
 {
-	console.log("Tournament Match = " + id)
+	// console.log("Tournament Match = " + id)
 	if (curInterval != undefined)
 		clearInterval(curInterval)
 	curInterval = undefined

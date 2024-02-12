@@ -42,7 +42,7 @@ class TournamentMatch():
 			ColorPrint.prGreen(UsersSockets)
 			for alluser in self.Users:
 				if alluser.Position is UserPosition.Away and alluser is not user:
-					UsersSockets[alluser.SockUser.identification].send(text_data=msg)
+					UsersSockets[alluser.SockUser.id].send(text_data=msg)
 			self.Timer = 30
 			self.Status = GameState.Waiting
 		return True

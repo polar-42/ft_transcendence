@@ -91,7 +91,7 @@ export async function initGameInvitiation() {
 	}
 
 	function closeInvitationBox() {
-		console.log('dsadsa')
+		// console.log('dsadsa')
 		document.querySelector(".invitation_box").remove()
 		invitationButton.addEventListener("click", initGameInvitiation)
 		invitationButton.removeEventListener("click", closeInvitationBox)
@@ -127,8 +127,12 @@ function sendGameInvitation(usrList) {
 }
 
 export function receivePongInvitation(data) {
-	if (data.sender_id !== document.querySelector(".main_box_header .contact_wrapper").getAttribute("userid"))
+	if (data.sender_id !== parseInt(document.querySelector(".main_box_header .contact_wrapper").getAttribute("userid")))
+	{
+		console.log(data.sender_id)
+		console.log(document.querySelector(".main_box_header .contact_wrapper").getAttribute("userid"))
 		return // notif
+	}
 
 	let conversation = document.querySelector(".conversation")
 	let item = document.createElement("li")
@@ -180,7 +184,7 @@ async function refusePongInvitation(senderName, senderId) {
 }
 
 export function receiveBattleshipInvitation(data) {
-	if (data.sender_id !== document.querySelector(".main_box_header .contact_wrapper").getAttribute("userid"))
+	if (data.sender_id !== parseInt(document.querySelector(".main_box_header .contact_wrapper").getAttribute("userid")))
 		return // notif
 
 	let conversation = document.querySelector(".conversation")
@@ -233,7 +237,7 @@ async function refuseBattleshipInvitation(senderName, senderId) {
 }
 
 export function receiveRefusedInvitation(data) {
-	if (document.querySelector(".private_message .contact_wrapper").getAttribute("userid") !== data.sender_id)
+	if (parseInt(document.querySelector(".private_message .contact_wrapper").getAttribute("userid")) !== data.sender_id)
 		return
 
 	let item = document.createElement("li")
@@ -241,7 +245,7 @@ export function receiveRefusedInvitation(data) {
 	item.innerHTML =
 		'<p>' + data.sender + ' refused your invitation</p>'
 	item.firstChild.style.fontStyle = "italic"
-	console.log(item)
+	// console.log(item)
 	document.querySelector(".conversation").appendChild(item)
 }
 

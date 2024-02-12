@@ -32,7 +32,7 @@ function GetData()
 	})
 	.then(data =>
 	{
-		console.log(data)
+		// console.log(data)
 		PrintPlayers(data)
 		PrintMatchs(data)
 	})
