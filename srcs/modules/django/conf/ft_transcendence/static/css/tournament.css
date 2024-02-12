@@ -1,0 +1,368 @@
+.tournament_page {
+  margin-top: 60px;
+}
+
+.tournament_page .tournament_name_wrapper {
+  display: flex;
+  width: 60%;
+  margin: auto 20% 0 20%;
+  align-items: flex-end;
+  align-content: start;
+}
+
+.tournament_page .tournament_name_wrapper img {
+  width: 100px;
+  height: 100px;
+}
+
+.tournament_page .tournament_name_wrapper h2 {
+  text-align: center;
+  font-size: 2em;
+  margin-left: 20px;
+}
+
+.tournament_page .tournament_wrapper {
+  background: var(--fourth);
+  padding: 20px 0;
+}
+
+.tournament_page .tournament_box {
+  width: 60%;
+  margin: auto 20%;
+  font-size: 1.2em;
+  position: relative;
+}
+
+.tournament_page .tournament_box .BTN_Leave {
+  position: absolute;
+  top: -35px;
+  right: -4%;
+  border-radius: 20px;
+  margin: 0;
+  padding: 0.2em;
+  width: 90px;
+  height: auto;
+  font-size: 0.9em;
+  text-align: center;
+  overflow: visible;
+  border: none;
+  color: var(--main-color);
+  background: var(--main-bg-color);
+  cursor: pointer;
+  transition: .5s ease;
+}
+
+.tournament_page .tournament_box .BTN_Leave:hover {
+  box-shadow:
+  2px 2px 5px var(--main-color)
+  -2px -2px 5px var(--main-color);
+  background: rgba(230, 47, 59, 0.9);
+  color: var(--main-bg-color);
+  font-weight: bolder;
+}
+
+.tournament_page .tournament_box .tournament_info_wrapper {
+  display: grid;
+  grid-gap: 40px;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 30px;
+  margin-bottom: 50px;
+}
+
+.tournament_page .tournament_box .tournament_info_wrapper h3 {
+  margin-bottom: 20px;
+}
+
+.tournament_page .tournament_box .tournament_info_wrapper .description_wrapper p {
+  overflow-wrap: anywhere;
+}
+
+.tournament_page .tournament_box .player_list_wrapper {
+  display: block;
+  position: relative;
+  margin-left: 20px;
+}
+
+.tournament_page .tournament_box .player_list_wrapper:after {
+  content: "";
+  height: 80%;
+  width: 1px;
+  background: var(--secondary-bg-color);
+  position: absolute;
+  left: -40px;
+  top: 19px;
+}
+
+.tournament_page .tournament_box .player_list {
+  columns: 2;
+}
+
+.tournament_page .tournament_box .player_list li {
+  width: 50%;
+  display: flex;
+  align-content: center;
+  margin-bottom: 20px;
+}
+
+.tournament_page .tournament_box .player_list li p {
+  margin: auto 0 auto 10px;
+}
+
+.tournament_page .tournament_box .player_list li img {
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+}
+
+.tournament_wrapper .tournament_box  .next_match_wrapper {
+  display: none;
+  justify-content: space-around;
+  margin: auto 18%;
+}
+
+.tournament_wrapper .tournament_box  .next_match_wrapper p {
+  margin: auto 0;
+  font-size: 1.3em;
+}
+
+.tournament_wrapper .tournament_box  .next_match_wrapper .BTN_Ready {
+  border-radius: 2px;
+  margin-left: 10px;
+  padding: 0.2em;
+  font-size: 1.3em;
+  font-weight: bolder;
+  width: 10ch;
+  height: auto;
+  text-align: center;
+  overflow: visible;
+  border: 2px solid var(--secondary-bg-color);
+  color: var(--secondary-bg-color);
+  background: 
+		linear-gradient(135deg, rgba(0, 155, 217, 0.1), rgba(0, 155, 217, 0.4)),
+		white;
+  cursor: pointer;
+  transition: .5s ease-in-out;
+}
+
+.tournament_wrapper .tournament_box  .next_match_wrapper .BTN_Ready:hover {
+  background: 
+  linear-gradient(135deg, var(--secondary-bg-color),  var(--main-bg-color)),
+  var(--main-bg-color);
+  color: white;
+  border: 2px solid var(--main-bg-color);
+}
+
+.tournament_wrapper .tournament_box  .next_match_wrapper .BTN_Ready.ready {
+  background: 
+  linear-gradient(135deg, var(--secondary-bg-color),  var(--main-bg-color)),
+  var(--main-bg-color);
+  color: white;
+  border: 3px solid #6e59f0;
+  font-weight: bolder;
+}
+
+.tournament_wrapper .tournament_box .tournament_result {
+  display: none;
+  flex-flow: column;
+}
+
+.tournament_wrapper .tournament_box .trophy_wrapper {
+  margin: auto;
+  border-radius: 50%;
+  background: var(--secondary-bg-color);
+  width: 200px;
+  height: 200px;
+  display: flex;
+  box-shadow: 0px 0px 10px 5px #c156f7;
+
+  img {
+    display: block;
+    width: 80%;
+    height: 80%;
+    margin: auto;
+  }
+}
+
+.tournament_wrapper .tournament_box .winner_container {
+  display: grid;
+  margin: 20px auto;
+  grid-template-columns: 1fr 2fr;
+  grid-gap: 5px;
+
+  img {
+    width: 70px;
+    height: 70px;
+    display: block;
+    margin: auto;
+  }
+
+  p {
+    font-size: 2em;
+    margin: auto;
+    font-weight: bolder;
+  }
+}
+
+.tournament_wrapper .tournament_box .bracket {
+  margin-top: 50px;
+  display: flex;
+  justify-content: space-evenly;
+  position: relative;
+  min-height: 200px;
+}
+
+.tournament_wrapper .tournament_box .bracket h4 {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.tournament_wrapper .tournament_box .bracket .round .player {
+  display: flex;
+  justify-content: space-between;
+  background: var(--secondary-bg-color);
+  width: 180px;
+  margin: 10px;
+  padding: 5px;
+  border-radius: 5px;
+  height: 32px;
+}
+
+.tournament_wrapper .tournament_box .bracket .player.own {
+  background: radial-gradient(farthest-corner at  80% 30%, #4c77e6 15%, #7f4af5);
+  box-shadow: 2px 2px 5px 2px var(--secondary-bg-color);
+}
+
+.tournament_wrapper .tournament_box .bracket .player.winner {
+	background: radial-gradient(farthest-corner at 80% 72%, #7DDB80 5%, #5FDB14);
+  box-shadow: 2px 2px 2px 1px #7DDB80;
+}
+
+.tournament_wrapper .tournament_box .bracket .player.loser {
+	background: radial-gradient(farthest-corner at 20% 20%, #DB6B65 10%, #DB0038);
+	box-shadow: 2px 2px 5px 2px #DB0038;
+}
+
+.tournament_wrapper .tournament_box .bracket .player .player_profile {
+  display: flex;
+
+  img {
+    width: 28px;
+    height: 28px;
+    display: block;
+    margin: auto 5px;
+		border-radius: 50%;
+  }
+}
+
+.tournament_wrapper .tournament_box .bracket .waiting_screen {
+  position: absolute;
+  top: 0;
+  left: -34%;
+  width: 100vw;
+  height: 100%;
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-content: center;
+}
+
+.tournament_wrapper .tournament_box .bracket .waiting_screen p {
+  text-align: center;
+  font-size: 2em;
+  height: 2em;
+  margin: 100px auto;
+}
+
+/*Bracket matchup margin*/
+
+/* 4 players */
+
+.tournament_wrapper .tournament_box .bracket.four .semi .matchup {
+  margin: 40px auto;
+}
+
+.tournament_wrapper .tournament_box .bracket.four .final .matchup {
+  margin: 102px auto;
+}
+
+/* 8 players */
+.tournament_wrapper .tournament_box .bracket.eight .quarter .matchup {
+  margin: 30px auto;
+}
+
+.tournament_wrapper .tournament_box .bracket.eight .semi .matchup {
+  margin: 100px auto;
+}
+
+.tournament_wrapper .tournament_box .bracket.eight .final .matchup {
+  margin: 200px auto;
+}
+
+/* 16 players */
+
+.tournament_wrapper .tournament_box .bracket.sixteen .eigth .matchup {
+  margin: 30px auto;
+}
+
+.tournament_wrapper .tournament_box .bracket.sixteen .quarter .matchup {
+  margin: 115px auto;
+}
+
+.tournament_wrapper .tournament_box .bracket.sixteen .semi .matchup {
+  margin: 240px auto;
+}
+
+.tournament_wrapper .tournament_box .bracket.sixteen .final .matchup {
+  margin: 394px auto;
+}
+
+/* 32 players */
+
+.tournament_wrapper .tournament_box .bracket.thirtytwo .sixteen .matchup {
+  margin: 30px auto;
+}
+
+.tournament_wrapper .tournament_box .bracket.thirtytwo .eigth .matchup {
+  margin: 135px auto;
+}
+
+.tournament_wrapper .tournament_box .bracket.thirtytwo .quarter .matchup {
+  margin: 310px auto;
+}
+
+.tournament_wrapper .tournament_box .bracket.thirtytwo .semi .matchup {
+  margin: 575px auto;
+}
+
+.tournament_wrapper .tournament_box .bracket.thirtytwo .final .matchup {
+  margin: 445px auto;
+}
+
+/* 64 players */
+
+.tournament_wrapper .tournament_box .bracket.sixtyfour .thirtytwo .matchup {
+  margin: 30px auto;
+}
+
+.tournament_wrapper .tournament_box .bracket.sixtyfour .sixteen .matchup {
+  margin: 128px auto;
+}
+
+.tournament_wrapper .tournament_box .bracket.sixtyfour .eigth .matchup {
+  margin: 308px auto;
+}
+
+.tournament_wrapper .tournament_box .bracket.sixtyfour .quarter .matchup {
+  margin: 615px auto;
+}
+
+.tournament_wrapper .tournament_box .bracket.sixtyfour .semi .matchup {
+  margin: 1090px auto;
+}
+
+.tournament_wrapper .tournament_box .bracket.sixtyfour .final .matchup {
+  margin: 1642px auto;
+}
+
+
+
+

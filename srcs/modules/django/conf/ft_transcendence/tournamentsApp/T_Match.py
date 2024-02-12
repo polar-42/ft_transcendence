@@ -124,4 +124,16 @@ class TournamentMatch():
             WinnerUsr = 0 if self.Winner is self.Users[0] else 1
         else:
             WinnerUsr = -1
-        return {'MatchId' : self.GameId, 'User1' : self.Users[0].Username if self.Users[0] is not None else 'Undefined', 'User2' : self.Users[1].Username if self.Users[1] is not None else 'Undefined', 'Winner' : WinnerUsr, 'X' : x, 'Y' : y}
+        return {'MatchId' : self.GameId, 
+                'User1' : { 
+                    'id' : self.Users[0].UserId if self.Users[0] is not None else 'Undefined',
+                    'nickname' : self.Users[0].Username if self.Users[0] is not None else 'Undefined'
+                           }, 
+                'User2' : {
+                    'id' : self.Users[1].UserId if self.Users[1] is not None else 'Undefined',
+                    'nickname' : self.Users[1].Username if self.Users[1] is not None else 'Undefined'
+                           }, 
+                'Winner' : WinnerUsr, 
+                'X' : x, 
+                'Y' : y
+                }

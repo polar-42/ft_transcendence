@@ -18,7 +18,7 @@ export async function initTournamentsJoinPage()
 	})
 	.then(data =>
 	{
-		document.getElementById("listOfTournaments").innerHTML = data
+		document.querySelector(".tournament_list").innerHTML = data
 	})
 	.catch(error =>
 	{
@@ -56,7 +56,7 @@ function joinTournaments(tournamentsId)
 	var headers = new Headers()
     headers.append('Content-Type', 'application/json')
 	headers.append('X-CSRFToken', crsf_token)
-
+  console.log(headers)
 	var data = {
 		'tournamentsId': tournamentsId,
 	}

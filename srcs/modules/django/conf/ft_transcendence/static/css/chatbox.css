@@ -291,8 +291,6 @@
   .game_choice_box {
     display: flex;
     justify-content: space-evenly;
-
-
   }
 
   .input_box {

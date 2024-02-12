@@ -24,19 +24,18 @@ class TournamentsManager():
 					return False, -1
 
 		tournamentType = GameType.Pong if data.get('typeGame') == "Pong" else GameType.Battleship
-
 		obj = TournamentsModels.objects.create(
 			tournamentsName = str(data.get('tournamentsName')),
 			numberOfPlayers = int(data.get('numberOfPlayers')),
-			creatorId = creator.id,
+			creatorId = creator.identification,
 			privateGame = TournamentVisibility.Public,
-			description =  "DESCRIPTION TO DO",
+			description =  data.get('tournamentsDescription'),
 			tournamentType = tournamentType
 		)
 
 		obj.save()
 
-		nTournament = Tournament(tournamentId=obj.id, creator=creator.id, playerAmount=int(data.get('numberOfPlayers')), description="DESCRIPTION TO DO", tournamentName=data.get('tournamentsName'), gameType=tournamentType, visibility=TournamentVisibility.Public, obj=obj)
+		nTournament = Tournament(tournamentId=obj.id, creator=creator.identification, playerAmount=int(data.get('numberOfPlayers')), description=data.get('tournamentsDescription'), tournamentName=data.get('tournamentsName'), gameType=tournamentType, visibility=TournamentVisibility.Public, obj=obj)
 		self._Tournaments[int(obj.id)] = nTournament
 		if (self.thread is None):
 			self.thread = TimerLoop(self)
@@ -65,7 +64,7 @@ class TournamentsManager():
 			self._Tournaments[tournamentId].ReconnectUser(User)
 			return True
 		for tournament in self._Tournaments.values():
-			User = tournament.GetUserById(user.id)
+			User = tournament.GetUserById(user.identification)
 			if (User is not None):
 				if tournamentId == tournament.TournamentId:
 					continue
@@ -83,7 +82,7 @@ class TournamentsManager():
 		if tournamentId not in self._Tournaments:
 			ColorPrint.prYellow("Warning! User {username} : Try to leave a non existing tournament.".format(username=user.username))
 			return False
-		User = self._Tournaments[tournamentId].GetUserById(user.id)
+		User = self._Tournaments[tournamentId].GetUserById(user.identification)
 		if (User is None):
 			ColorPrint.prYellow("Warning! User {username} : Try to leave a tournament when not inside.".format(username=user.username))
 			return False
@@ -94,7 +93,7 @@ class TournamentsManager():
 #region Getter
 
 	def GetTournament(self, tournamentId):
-		tournamentId = int(tournamentId)
+		tournamentId = tournamentId
 		if tournamentId not in self._Tournaments.keys():
 			return None
 		return self._Tournaments[tournamentId]

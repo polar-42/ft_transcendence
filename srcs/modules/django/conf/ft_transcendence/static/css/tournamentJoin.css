@@ -1,0 +1,101 @@
+h2 {
+	text-align: center;
+}
+
+.join_tournament_wrapper {
+	background: var(--fourth);
+	padding: 20px 0;
+}
+
+.join_tournament_wrapper .tournament_list {
+	display: block;
+	width: 50%;
+	height: 600px;
+	overflow-y: scroll;
+	margin-left: 25%;
+	margin-right: 25%;
+  background: linear-gradient(to bottom, var(--secondary-bg-color) 60%, var(--main-bg-color));
+	border: 1px solid var(--main-bg-color);
+  border-radius: 5px;
+	padding: 20px 10px;
+}
+
+.join_tournament_wrapper .tournament_list li {
+	display: grid;
+	grid-template-columns: 1fr 3fr 1fr 1fr;
+	grid-gap: 10px;
+	width: 100%;
+	padding: 5px;
+	border-radius: 2px;
+  position: relative;
+  margin: 10px 0;
+  height: fit-content;
+}
+
+.join_tournament_wrapper .tournament_list li:not(:last-child):after {
+  content: "";
+  position: absolute;
+  top: 104%;
+  left: 5%;
+  width: 90%;
+  border-top: 1px solid var(--fourth);
+}
+
+.join_tournament_wrapper .tournament_list .tournament_data {
+  width: 100%;
+  overflow: hidden;
+  margin: auto;
+}
+
+.join_tournament_wrapper .tournament_list .tournament_data p {
+  margin: 5px;
+  font-size: 0.8em;
+}
+
+.join_tournament_wrapper .tournament_list .tournament_description {
+  overflow-wrap: break-word;
+  overflow: scroll;
+  max-height: 4em;
+}
+
+.join_tournament_wrapper .tournament_list .tournament_data .tournament_name {
+  font-size: 1.2em;
+  font-weight: bolder;
+}
+
+.join_tournament_wrapper .tournament_list .tournament_description {
+  font-style: italic;
+}
+
+.join_tournament_wrapper .tournament_list li img {
+	display: block;
+	margin: auto;
+	width: 80px;
+	height: 80px;
+}
+
+.join_tournament_wrapper .tournament_list li button {
+  border-radius: 2px;
+  margin: 0;
+  padding: 0.5em;
+  background: var(--fourth);
+  border: 1px solid var(--fourth);
+  color: var(--main-bg-color);
+  font-size: 1.4em;
+  width: fit-content;
+  height: fit-content;
+  display: block;
+  margin: auto;
+  transition: .3s ease;
+  cursor: pointer;
+}
+
+.join_tournament_wrapper .tournament_list li button:hover {
+  background: var(--main-bg-color);
+  border: 2px solid var(--fourth);
+  box-shadow:
+  2px 2px 10px var(--fourth),
+  -2px -2px 8px var(--fourth);
+  color: var(--fourth);
+  font-weight: bolder;
+}

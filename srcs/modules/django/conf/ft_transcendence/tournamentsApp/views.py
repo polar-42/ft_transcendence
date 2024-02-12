@@ -7,6 +7,7 @@ from . import T_Manager
 from .T_Enum import TournamentState, UserState
 
 from ft_transcendence.decorators import isValidLoading
+from ft_transcendence import ColorPrint
 
 # Create your views here.
 @isValidLoading
@@ -28,6 +29,8 @@ def create_tournament(request):
 		return JsonResponse({'error': 'Invalid request method'})
 	data = json.loads(request.body)
 	tournamentName = data.get('tournamentsName')
+	tournamentsDescription = data.get('tournamentsDescription')
+	ColorPrint.prYellow(tournamentsDescription)
 	numberOfPlayers = data.get('numberOfPlayers')
 	typeGame = data.get('typeGame')
 	if len(numberOfPlayers) <= 0:
@@ -52,24 +55,33 @@ def get_tournaments_html(request):
 	tournamentL = T_Manager.Manager.GetTournaments()
 	dictionnary = []
 	for tour in tournamentL.values():
-			Joinable = 'NotJoinable'
-			usr = tour.GetUserById(request.user.id)
-			if (tour.Status is TournamentState.Created and len(tour.PlayersList) != tour.PlayerAmount):
-				Joinable = 'Joinable'
-			elif (tour.Status is not TournamentState.Created and usr is not None and usr.Status is not UserState.Dead and usr.Status is not UserState.GivedUp):
-				Joinable = 'Joinable'
-			dictionnary.append({
-				'index': tour.TournamentId,
-				'name': tour.TournamentName,
-				'typeGame': tour.Type,
-				'numberPlayers': len(tour.PlayersList),
-				'creator': tour.Administrator.Username,
-				'private': tour.Visibility,
-				'description': tour.Description,
-				'joinable' : Joinable
+		Joinable = 'NotJoinable'
+		usr = tour.GetUserById(request.user.id)
+		if (tour.Status is TournamentState.Created and len(tour.PlayersList) != tour.PlayerAmount):
+			Joinable = 'Joinable'
+		elif (tour.Status is not TournamentState.Created and usr is not None and usr.Status is not UserState.Dead and usr.Status is not UserState.GivedUp):
+			Joinable = 'Joinable'
+		if tour.Type == 0:
+			gameTypeUrl = '../static/assets/logo/ping-pong.png'
+		else:
+			gameTypeUrl = '../static/assets/logo/battleship.png'
+		dictionnary.append({
+			'index': tour.TournamentId,
+			'name': tour.TournamentName,
+			'typeGame': gameTypeUrl,
+			'numberPlayers': len(tour.PlayersList),
+			'creator': tour.Administrator.Username,
+			'private': tour.Visibility,
+			'description': tour.Description,
+			'joinable' : Joinable
 			})
 
-	return render(request, 'tournaments/templateTournaments.html', {'games': dictionnary})
+	return render(request, 'tournaments/templateTournamentList.html', {'games': dictionnary})
+
+def get_match_html(request):
+	if (request.method != 'GET'):
+		return JsonResponse({'error': 'Invalid request method'})
+	return render(request, 'tournaments/templateBracketMatch.html')
 
 @isValidLoading
 def TournamentSpectateView(request):
@@ -82,15 +94,23 @@ def GetTournamentData(request):
 	if request.method != "POST":
 		return JsonResponse({'error': 'Method is invalid'})
 	data = json.loads(request.body)
-	tournamentId = data.get('tourID')
-	print("TOurnament ID = ", tournamentId)
+	tournamentId = int(data.get('tourID'))
+	print("Tournament ID = ", tournamentId)
 	print("Type of TOurnament ID = ", type(tournamentId))
 	Tournament = T_Manager.Manager.GetTournament(tournamentId)
 	if (Tournament is None):
 		return JsonResponse({'error': 'Invalid Tournament ID'})
 	UserMSG = Tournament.GetUsersList()
 	MatchMSG = Tournament.GetMatchList()
-	return JsonResponse({'users' : UserMSG, 'matchs' : 'None' if MatchMSG is None else MatchMSG})
+	ColorPrint.prRed(Tournament.TournamentName)
+	ColorPrint.prRed(Tournament.Type)
+	return JsonResponse({ "tournamentName" : Tournament.TournamentName, 
+					  "tournamentType" : Tournament.Type, 
+					  "tournamentDescription": Tournament.Description,
+					  "numberPlayers": Tournament.PlayerAmount,
+					  "users" : UserMSG, 
+					  "matchs" : 'None' if MatchMSG is None else MatchMSG
+					  })
 
 def get_tournaments(request):
 	tournamentL = T_Manager.Manager.GetTournaments()
@@ -105,7 +125,7 @@ def get_tournaments(request):
 			'creator': tour._creator.sock_user.username,
 			'private': tour._private,
 			'description': tour._desc
-		})
+			})
 		x += 1
 	return JsonResponse({'games' : dictionnary})
 
@@ -120,9 +140,9 @@ def join_tournaments(request):
 
 	print(request.user, 'is trying yo join tournament number', tournamentsId)
 
-	# messageAddUser, isJoin, canJoin = TournamentManager.Manager.canJoin(request.user, tournamentsId)
+	# messageAddUser, isJoin, canJoin = T_Manager.Manager.canJoin(request.user, tournamentsId)
 	# if isJoin is False:
-		# return JsonResponse({'error': messageAddUser, 'canJoin': True})
+	# 	return JsonResponse({'error': messageAddUser, 'canJoin': True})
 	return JsonResponse({'message': "", 'canJoin': True})
 
 @isValidLoading

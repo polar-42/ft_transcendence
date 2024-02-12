@@ -8,7 +8,7 @@ import json, math, random
 
 class Tournament():
 
-	def __init__(self, tournamentId : str, creator : int, tournamentName : str, playerAmount : int, description : str, gameType : GameType, visibility : TournamentVisibility, obj):
+	def __init__(self, tournamentId : str, creator : str, tournamentName : str, playerAmount : int, description : str, gameType : GameType, visibility : TournamentVisibility, obj):
 		self.TournamentName = tournamentName
 		self.TournamentId = tournamentId
 		self.PlayerAmount = playerAmount
@@ -30,6 +30,7 @@ class Tournament():
 
 		UserCounter = 0
 		random.shuffle(UsersList)
+		ColorPrint.prGreen(UsersList)
 		for Match in self.Tree[0]:
 			Match.AddUser(UsersList[UserCounter], 0)
 			ColorPrint.prGreen("Debug! Status = {status}.".format(status=Match.Status))
@@ -132,8 +133,11 @@ class Tournament():
 		for Match in self.Tree:
 			PosY = 0
 			for Match2 in Match:
-				Jsoned = Match2.Objectify(PosX + 1, PosY)
+				ColorPrint.prYellow(Match2.Users)
+				Jsoned = Match2.Objectify(PosX, PosY)
 				SendList.append(Jsoned)
+				PosY += 1
+			PosX += 1
 		return SendList
 
 	def	SendMatch(self, Usered):
@@ -142,7 +146,7 @@ class Tournament():
 		msg = json.dumps({
 			'type' : 'MSG_UpdateMatchList',
 			'matchList' : self.GetMatchList()
-		})
+			})
 		if (Usered is not None):
 			Usered.SendMessage(msg)
 			return
@@ -153,7 +157,7 @@ class Tournament():
 		pos = 0
 		SendList = []
 		for User in self.PlayersList:
-			SendList.append(User.Username)
+			SendList.append({'userName': User.Username, 'userId': User.UserId})
 			pos += 1
 		return SendList
 
@@ -161,7 +165,7 @@ class Tournament():
 		msg = json.dumps({
 			'type' : 'MSG_UpdateUserList',
 			'usrList' : self.GetUsersList()
-		})
+			})
 		if (Usered is not None):
 			Usered.SendMessage(msg)
 			return
@@ -169,7 +173,8 @@ class Tournament():
 			User.SendMessage(msg)
 
 	def ChangeReadyState(self, user):
-		usr = self.GetUserById(user.id)
+		ColorPrint.prRed('user {user}'.format(user=user))
+		usr = self.GetUserById(user.identification)
 		if (usr is None):
 			ColorPrint.prRed("Error! Tournament {tournamentId} : User {username} trying to change readyState when not on Tournament.".format(tournamentId=self.TournamentId, username=user.username))
 			return False
@@ -212,7 +217,7 @@ class Tournament():
 			return False
 		if (len(self.PlayersList) == self.PlayerAmount):
 			return False
-		usr = TournamentUser(socket, user, user.nickname, user.id)
+		usr = TournamentUser(socket, user, user.nickname, user.identification)
 		if (usr.UserId == self.Administrator):
 			self.Administrator = usr
 		self.PlayersList.append(usr)

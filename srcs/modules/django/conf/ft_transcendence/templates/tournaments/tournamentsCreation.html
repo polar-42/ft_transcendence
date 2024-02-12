@@ -2,34 +2,62 @@
 {% load static %}
 <script type="module" src="{% static '/js/loading.js' %}"></script>
 
-<p>
-    Welcome To The Tournaments Creation Page
-</p>
+<div class="tournament_creation">
+  <h2>
+    Create Tournament 
+  </h2>
+  
+  <div class='form_wrapper'>
+    {% csrf_token %}
 
-<p><br/>
-    <form>
-		{% csrf_token %}
-
-        <label for="TournamentsName">Tournaments Name:</label>
-        <input type="text" class="TournamentsName"><br/>
-
-        <label for="NumberOfPlayer">Number of players:</label>
-        <!-- <input type="number" min="4" max="64" class="NumberOfPlayer"> -->
-        <select name="NumberOfPlayer" class="NumberOfPlayer">
-            <option value="4">4</option>
-            <option value="8">8</option>
-            <option value="16">16</option>
-            <option value="32">32</option>
-            <option value="64">64</option>
-        </select><br/><br/>
-        <label>Game type:</label><br/>
-        <label for="typePong">Pong</label>
-        <input type="radio" name="TypeGame" value="Pong" class="typePong"><br/>
-        <label for="typeBattleship">Battleship</label>
-        <input type="radio" name="TypeGame" value="Battleship" class="typeBattleship"><br/>
-
-    </form>
-    <button class="submitButtonCreateTournaments">Submit</button>
-
-    <p id="messageCreationTournaments"></p>
-</p>
+    <div class="tournament_name_wrapper">
+      <label for="TournamentsName">Tournament's Name:</label>
+      <input type="text" class="TournamentsName" placeholder="Enter tournament name">
+    </div>
+    <div class="tournament_description_wrapper">
+      <label for="TournamentsDescription">Tournament's Description:</label>
+      <textarea type="text" rows="3" class="TournamentsDescription" placeholder="Enter tournament description"></textarea>
+    </div>
+    <div class='nb_players_selection_wrapper'>
+      <label for="NumberOfPlayer">Number of players:</label>
+      <div class="nb_players_input_wrapper">
+        <input type="range" min='1' max='5' value='1' step='1'>
+        <ul class="sliderticks">
+          <li>
+            <div class="tick"></div>
+            <span>4</span>
+          </li>
+          <li>
+            <div class="tick"></div>
+            <span>8</span>
+          </li>
+          <li>
+            <div class="tick"></div>
+            <span>16</span>
+          </li>
+          <li>
+            <div class="tick"></div>
+            <span>32</span>
+          </li>
+          <li>
+            <div class="tick"></div>
+            <span>64</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <label>Game type:</label>
+    <div class="game_type_selection_wrapper">
+      <div class="pong_selection_wrapper">
+        <!-- <label for="typePong">Pong</label> -->
+        <button><img src="../../static/assets/logo/ping-pong.png" alt='Pong selection button'></button>
+      </div>
+      <div class="battleship_selection_wrapper">
+        <button><img src="../../static/assets/logo/battleship.png" alt='Battleship selection button'></button>
+        <!-- <label for="typeBattleship">Battleship</label> -->
+      </div>
+    </div>
+  <button class="submitButtonCreateTournaments">Submit</button>
+  <p id="messageCreationTournaments"></p>
+  </div>
+</div>
