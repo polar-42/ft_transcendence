@@ -63,6 +63,8 @@ def get_tournaments_html(request):
 			Joinable = 'Joinable'
 		if tour.Type == 0:
 			gameTypeUrl = '../static/assets/logo/ping-pong.png'
+		else:
+			gameTypeUrl = '../static/assets/logo/battleship.png'
 		dictionnary.append({
 			'index': tour.TournamentId,
 			'name': tour.TournamentName,
@@ -103,12 +105,12 @@ def GetTournamentData(request):
 	ColorPrint.prRed(Tournament.TournamentName)
 	ColorPrint.prRed(Tournament.Type)
 	return JsonResponse({ "tournamentName" : Tournament.TournamentName, 
-		"tournamentType" : Tournament.Type, 
-		"tournamentDescription": Tournament.Description,
-		"numberPlayers": Tournament.PlayerAmount,
-		"users" : UserMSG, 
-		"matchs" : 'None' if MatchMSG is None else MatchMSG
-		})
+					  "tournamentType" : Tournament.Type, 
+					  "tournamentDescription": Tournament.Description,
+					  "numberPlayers": Tournament.PlayerAmount,
+					  "users" : UserMSG, 
+					  "matchs" : 'None' if MatchMSG is None else MatchMSG
+					  })
 
 def get_tournaments(request):
 	tournamentL = T_Manager.Manager.GetTournaments()

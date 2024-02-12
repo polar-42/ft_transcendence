@@ -138,8 +138,8 @@
   border: 2px solid var(--secondary-bg-color);
   color: var(--secondary-bg-color);
   background: 
-  linear-gradient(135deg, rgba(0, 155, 217, 0.1), rgba(0, 155, 217, 0.4)),
-  white;
+		linear-gradient(135deg, rgba(0, 155, 217, 0.1), rgba(0, 155, 217, 0.4)),
+		white;
   cursor: pointer;
   transition: .5s ease-in-out;
 }
@@ -250,6 +250,7 @@
     height: 28px;
     display: block;
     margin: auto 5px;
+		border-radius: 50%;
   }
 }
 

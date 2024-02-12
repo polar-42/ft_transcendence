@@ -67,6 +67,7 @@ function initTournamentsStatus(data) {
 }
 
 async function initBracket(numberOfPlayers) {
+  console.log(numberOfPlayers)
   let nbOfGame = 1
   let rounds = {1: 'Final', 2: '1/2 Final', 4: '1/4 Final', 8: 'Round of 8', 16: 'Round of 16',  32: 'Round of 32'}
   let bracketClass = {4: 'four', 8: 'eight', 16: 'sixteen', 32: 'thirtytwo', 64: 'sixtyfour'}
@@ -115,6 +116,7 @@ function ReadyBehavior()
 {
 	if (tournamentSocket == undefined)
 		return
+  document.querySelector('.BTN_Ready').classList.add("ready")
 	tournamentSocket.send(JSON.stringify({
 		'function': 'ReadyPressed'
 	}))
@@ -202,30 +204,87 @@ async function PrintPlayers(data)
 
 async function PrintMatchs(data)
 {
+  const nbPlayer = {
+    1: 4,
+    2: 8,
+    3: 16,
+    4: 32,
+    5: 64
+  }
+
   console.log(data)
   if (data.matchList == 'None')
   {
     return
   }
+  const bracket = document.querySelector('.bracket')
+  if (bracket === undefined || bracket.children.length < nbPlayer[data.matchList.slice(-1)[0].X]) {
+    await initBracket(data.matchList.slice(-1)[0].X)
+  }
   const Matchs = data.matchList
-  Matchs.forEach(element => {
-    const matchupEl = document.querySelector(".bracket").children[element['Y']].children[element['X']]
-    let user1 = matchupEl.children[0]
-    let user2 = matchupEl.children[1]
-    let user1PP = await getProfilePicture({type: 'user', userId: }) 
-  //   if (element.Winner == 0)
-  //   {
-  //     user1.style.color = "green"
-  //     user2.style.color = "red"
-  //   }
-  //   else if (element.Winner == 1)
-  //   {
-  //     user1.style.color = "red"
-  //     user2.style.color = "green"
-  //   }
-  //   txt.appendChild(user1)
-  //   txt.appendChild(user2)
-  //   PL.appendChild(txt)
+  Matchs.forEach(async (element) => {
+    if (element.User1.id === -1 || element.User1.id === 'Undefined')
+      return
+    const matchupEl = bracket.children[element.X].children[element.Y + 1]
+    console.log(matchupEl)
+    if (matchupEl === undefined)
+      return
+    if (matchupEl.querySelector('.player_profile').children.length == 0) {
+      let user1 = matchupEl.children[0].children[0]
+      let user1PP = await getProfilePicture({type: 'user', id: element.User1.id})
+      if (user1PP === 'image/null')
+        user1PP = "../static/assets/logo/user.png"
+      else
+        user1PP = URL.createObjectURL(user1PP)
+      user1.appendChild(document.createElement('img'))
+      user1.querySelector('img').src = user1PP
+      user1.querySelector('img').alt = 'Player profile picture'
+      user1.appendChild(document.createElement('p'))
+      user1.querySelector('p').textContent = element.User1.nickname
+      user1.setAttribute('id', element.User1.id)
+      let user2 = matchupEl.children[1].children[0]
+      let user2PP = await getProfilePicture({type: 'user', id: element.User2.id})
+      if (user2PP === 'image/null')
+        user2PP = "../static/assets/logo/user.png"
+      else
+        user2PP = URL.createObjectURL(user2PP)
+      user2.appendChild(document.createElement('img'))
+      user2.firstChild.src = user2PP
+      user2.firstChild.alt = 'Player profile picture'
+      user2.appendChild(document.createElement('p'))
+      user2.lastChild.textContent = element.User2.nickname
+      user2.setAttribute('id', element.User2.id)
+    }
+
+    if (element.Winner === 0) {
+      matchupEl.firstChild.classList.add("winner")
+      matchupEl.lastChild.user2.classList.add("loser")
+    } else if (element.Winner === 1) {
+      matchupEl.firstChild.classList.add("loser")
+      matchupEl.lastChild.user2.classList.add("winner")
+    }
   })
-  // document.getElementById('players_in_tournaments').innerHTML = 'There is ' + data.player_in_tournament + ' in this ' + data.size_tournaments + ' players tournament.'
+  document.querySelector(".waiting_screen").style.display = 'none'
+  document.querySelector('.next_match_wrapper').style.display = 'flex' 
+}
+
+function waitForElm(selector) {
+
+  return new Promise(resolve => {
+    if (document.querySelector(selector)) {
+      return resolve(document.querySelector(selector))
+    }
+
+    const observer = new MutationObserver(mutations => {
+      if (document.querySelector(selector)) {
+        observer.disconnect()
+        resolve(document.querySelector(selector))
+      }
+    })
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    })
+  })
 }
