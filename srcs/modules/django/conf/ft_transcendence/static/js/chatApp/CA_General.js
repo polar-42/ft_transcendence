@@ -187,6 +187,14 @@ function updateConnexionStatus(data) {
 		else
 			liDiv.querySelectorAll('.connection_point')[0].style.background = 'green'
 	}
+	let userDiv = document.getElementById('channel_connexion_point_' + data.user_id)
+	if (userDiv != undefined)
+	{
+		if (data.new_status == 0)
+			userDiv.querySelectorAll('.connection_point')[0].style.background = 'red'
+		else
+			userDiv.querySelectorAll('.connection_point')[0].style.background = 'green'
+	}
 }
 
 export async function getProfilePicture(data) {

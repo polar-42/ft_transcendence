@@ -190,7 +190,7 @@ export function displayChannel(data) {
 					ppUrl = URL.createObjectURL(profilePicture)
 				if (users[i] !== self.username) {
 					let item =
-						'<div class="user_wrapper">' +
+						'<div class="user_wrapper" id="channel_connexion_point_' + users[i].id + '">' +
 						'<div class="connection_point ' + isConnected + '"></div>' +
 						'<img src=' + ppUrl + ' alt="channel member profile picture" id="profile_id_' + users[i].id + '">' +
 						'<p class="username">' + users[i].name + '</p>' +
