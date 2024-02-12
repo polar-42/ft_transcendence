@@ -173,6 +173,19 @@ function onMessageChat(e) {
 		case 'start_battleship_game':
 			navto("/battleship", data.gameId)
 			break
+		case 'update_connexion_status':
+			updateConnexionStatus(data)
+	}
+}
+
+function updateConnexionStatus(data) {
+	let liDiv = document.getElementById('conv_' + data.user_id)
+	if (liDiv != undefined)
+	{
+		if (data.new_status == 0)
+			liDiv.querySelectorAll('.connection_point')[0].style.background = 'red'
+		else
+			liDiv.querySelectorAll('.connection_point')[0].style.background = 'green'
 	}
 }
 
