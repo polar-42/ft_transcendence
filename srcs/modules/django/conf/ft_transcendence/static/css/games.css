@@ -7,6 +7,7 @@
 .games_page .wrapper {
   margin: 30px 20% 90px 20%;
   display: flex;
+  justify-content: space-evenly;
   font-size: 1.4rem;
   min-height: 70vh;
 }

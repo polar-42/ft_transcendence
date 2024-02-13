@@ -127,9 +127,10 @@ header a:visited {
   display: none;
 }
 
-.profile_button p {
-  margin: 5px;
-  text-transform: none;
+.profile_button a {
+  max-width: 190px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .profile_button:hover {
@@ -149,7 +150,7 @@ header a:visited {
   display: block;
 }
 
-.profile_button:hover p {
+.profile_button:hover a {
   color: var(--fourth) !important;
 }
 
@@ -161,7 +162,7 @@ header a:visited {
   width: fit-content;
 }
 
-.profile_button.connected p {
+.profile_button.connected a {
   text-transform: none;
 }
 
