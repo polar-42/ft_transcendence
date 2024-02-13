@@ -104,7 +104,6 @@ def UserRegistration(request):
 		nickname=username,
 		email=email,
 		password=passwordHash,
-		id=getRandString(),
 		avatarImage = avatarImage.read()
 	)
 

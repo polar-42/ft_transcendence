@@ -119,7 +119,7 @@ header a:visited {
 .profile_button img {
   width: auto;
   height: 1em;
-  margin: 5px;
+  margin: 5px 10px;
   transition: 0.3s ease;
 }
 
@@ -158,8 +158,7 @@ header a:visited {
 }
 
 .profile_button.connected {
-  min-width: 150px;
-  width: auto;
+  width: fit-content;
 }
 
 .profile_button.connected p {
@@ -287,10 +286,9 @@ footer a:hover::before {
   display: none;
   flex-direction: column;
   position: absolute;
-  right: 1rem;
+  right: 0;
   top: 80px;
-  width: auto;
-  min-width: 300px;
+  width: 100%;
   height: 0;
   background: rgba(41, 41, 41, 0.4);
   backdrop-filter: blur(5px);
@@ -344,14 +342,21 @@ footer a:hover::before {
   }
 
   .profile_button {
-    margin-left: 20%;
-    margin-right: 20%;
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 
-@media (max-width: 576px) {
+@media(max-width: 450px) {
+  header {
+    padding: 20px 20px;
+  }
+
+  .menu_btn {
+    height: 30px
+  }
+
   .dropdown_menu {
-    left: 2rem;
-    width: unset;
+    font-size: 0.8em;
   }
 }

@@ -1,4 +1,4 @@
-import { getProfilePicture } from '../chatApp.js'
+import { getProfilePicture } from '../chatApp/CA_General.js'
 import { navto, tournamentSocket, ModifyTS } from '../index.js'
 
 export function initTournaments()
@@ -168,7 +168,6 @@ function OnMessageTournament(e)
 			LoadGame(data);
 			break
 		case 'MSG_UpdateMatchList':
-      // console.log('coucou')
 			PrintMatchs(data)
 			break
 	}
@@ -199,7 +198,6 @@ async function PrintPlayers(data)
 
   const Players = data.usrList
   Players.forEach(async element =>  {
-	console.log(element)
     let avatar = await getProfilePicture({'type': 'user', 'id': element.userId})
     if (avatar.type == 'image/null')
       avatar = '/static/assets/logo/user.png'
@@ -237,51 +235,44 @@ async function PrintMatchs(data)
   if (bracket === undefined || bracket.children.length < nbPlayer[data.matchList.slice(-1)[0].X]) {
     await initBracket(data.matchList.slice(-1)[0].X)
   }
+  console.log(bracket)
   const Matchs = data.matchList
   Matchs.forEach(async (element) => {
-    if (element.User1.id === -1 || element.User1.id === 'Undefined')
-      return
+    console.log(element) 
     const matchupEl = bracket.children[element.X].children[element.Y + 1]
-    // console.log(matchupEl)
     if (matchupEl === undefined)
       return
     if (matchupEl.querySelector('.player_profile').children.length == 0) {
-      let user1 = matchupEl.children[0].children[0]
-      let user1PP = await getProfilePicture({type: 'user', id: element.User1.id})
-      if (user1PP === 'image/null')
-        user1PP = "/static/assets/logo/user.png"
-      else
-        user1PP = URL.createObjectURL(user1PP)
-      user1.appendChild(document.createElement('img'))
-      user1.querySelector('img').src = user1PP
-      user1.querySelector('img').alt = 'Player profile picture'
-      user1.appendChild(document.createElement('p'))
-      user1.querySelector('p').textContent = element.User1.nickname
-      user1.setAttribute('id', element.User1.id)
-      let user2 = matchupEl.children[1].children[0]
-      let user2PP = await getProfilePicture({type: 'user', id: element.User2.id})
-      if (user2PP === 'image/null')
-        user2PP = "/static/assets/logo/user.png"
-      else
-        user2PP = URL.createObjectURL(user2PP)
-      user2.appendChild(document.createElement('img'))
-      user2.firstChild.src = user2PP
-      user2.firstChild.alt = 'Player profile picture'
-      user2.appendChild(document.createElement('p'))
-      user2.lastChild.textContent = element.User2.nickname
-      user2.setAttribute('id', element.User2.id)
+      if (element.User1.id != -1 && element.User1.id != 'Undefined')
+        displayMatchPlayerHTML(0, element.User1, matchupEl)
+      if (element.User2.id != -1 && element.User2.id != 'Undefined')
+        displayMatchPlayerHTML(1, element.User2, matchupEl)
     }
-
     if (element.Winner === 0) {
-      matchupEl.firstChild.classList.add("winner")
-      matchupEl.lastChild.user2.classList.add("loser")
+      matchupEl.children[0].classList.add("winner")
+      matchupEl.children[1].user2.classList.add("loser")
     } else if (element.Winner === 1) {
-      matchupEl.firstChild.classList.add("loser")
-      matchupEl.lastChild.user2.classList.add("winner")
+      matchupEl.children[0].classList.add("loser")
+      matchupEl.children[1].classList.add("winner")
     }
   })
   document.querySelector(".waiting_screen").style.display = 'none'
   document.querySelector('.next_match_wrapper').style.display = 'flex' 
+}
+
+async function displayMatchPlayerHTML(userNb, userData, matchupEl) {
+  let user = matchupEl.children[userNb].children[0]
+  let userPP = await getProfilePicture({type: 'user', id: userData.id})
+  if (userPP === 'image/null')
+    userPP = "/static/assets/logo/user.png"
+  else
+    userPP = URL.createObjectURL(userPP)
+  user.appendChild(document.createElement('img'))
+  user.querySelector('img').src = userPP
+  user.querySelector('img').alt = 'Player profile picture'
+  user.appendChild(document.createElement('p'))
+  user.querySelector('p').textContent = userData.nickname
+  user.setAttribute('id', userData.id)
 }
 
 function waitForElm(selector) {
