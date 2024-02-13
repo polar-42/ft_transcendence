@@ -95,12 +95,13 @@ const router = async () =>
 	var actualRoute
 	if (match.route.path == "/")
 		actualRoute = match.route.path + "homepage"
-	else if (match.route.path.endsWith('/needlog') == false)
+	else if (match.route.path.endsWith('/needlog') == false && match.route.path.endsWith('/404') == false)
 		actualRoute = document.location.origin + window.location.pathname + window.location.search
 	else
 		actualRoute = match.route.path
 	if (Prev_match != undefined && Prev_match.route.unload != null)
 		Prev_match.route.unload()
+	console.log(actualRoute)
 	if (actualRoute.includes('/?') == false)
 		actualRoute += '/?Valid=true'
 	else if (actualRoute.endsWith('/') == true)
