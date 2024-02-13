@@ -61,7 +61,7 @@ class TournamentsManager():
 		User = self._Tournaments[tournamentId].GetUserById(user.id)
 		if User is not None:
 			ColorPrint.prGreen("DEBUG ! User {username} here.".format(username=User.Username))
-			self._Tournaments[tournamentId].ReconnectUser(User)
+			self._Tournaments[tournamentId].ReconnectUser(User, socket)
 			return True
 		for tournament in self._Tournaments.values():
 			User = tournament.GetUserById(user.id)
@@ -77,7 +77,7 @@ class TournamentsManager():
 					return False
 			return self._Tournaments[tournamentId].CreateUser(user, socket)
 
-	def DisconnectUser(self, user, tournamentId : int):
+	def DisconnectUser(self, user, tournamentId : int, leave : bool):
 		tournamentId = int(tournamentId)
 		if tournamentId not in self._Tournaments:
 			ColorPrint.prYellow("Warning! User {username} : Try to leave a non existing tournament.".format(username=user.username))
@@ -87,7 +87,7 @@ class TournamentsManager():
 			ColorPrint.prYellow("Warning! User {username} : Try to leave a tournament when not inside.".format(username=user.username))
 			return False
 		else:
-			self._Tournaments[tournamentId].DisconnectUser(User)
+			self._Tournaments[tournamentId].DisconnectUser(User, leave)
 			return True
 
 #region Getter

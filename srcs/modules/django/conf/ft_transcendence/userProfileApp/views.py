@@ -10,13 +10,18 @@ from web3 import Web3
 import os, json
 from ft_transcendence.decorators import isValidLoading
 from chatApp.enumChat import connexionStatus
+from django.shortcuts import redirect
+from dashboardApp import views as dashview
+
 
 # Create your views here.
 @isValidLoading
 def profileView(request):
     if request.user.is_authenticated:
-        print('test')
-        return render(request, 'userProfileApp/profile.html')
+        if (request.user.id != int(request.GET.get('id'))):
+            return render(request, 'userProfileApp/profile.html')
+        else:
+            return redirect(dashview.dashboardView, permanent=True)
     return render(request, 'index.html')
 
 def getUserInformation(request):

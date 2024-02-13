@@ -9,7 +9,6 @@ class TournamentSocket(WebsocketConsumer):
 
 
 	def connect(self):
-		ColorPrint.prYellow("HELLO!!!!")
 		self.TournamentId = int(self.scope['url_route']['kwargs']['tournamentId'])
 		if (T_Manager.Manager.ConnectUser(self.scope['user'], self, self.TournamentId) is False):
 			self.close()
@@ -17,26 +16,15 @@ class TournamentSocket(WebsocketConsumer):
 		self.Opened = True
 
 	def disconnect(self, code):
-		T_Manager.Manager.DisconnectUser(self.scope['user'], self.TournamentId)
+		T_Manager.Manager.DisconnectUser(self.scope['user'], self.TournamentId, True if code == 3005 else False)
 		self.Opened = False
-		pass
+		return
 
 	def receive(self, text_data):
 		data = json.loads(text_data)
 		match (data['function']):
-			case 'Reconnect':
-				if (T_Manager.Manager.ConnectUser(self.scope['user'], self, self.TournamentId) is False):
-					self.close()
-				return
 			case 'GoingAway':
-				tournament = T_Manager.Manager.GetTournament(self.TournamentId)
-				if (tournament is None):
-					ColorPrint.prRed("Error! Tournament is None")
-					self.close()
-				elif (tournament.GoingAway(self.scope['user']) == False):
-					ColorPrint.prRed("CLOSE SOCKET")
-					self.close()
-				return
+				self.close(3000)
 			case 'ReadyPressed':
 				tournament = T_Manager.Manager.GetTournament(self.TournamentId)
 				if (tournament is None):
@@ -44,3 +32,5 @@ class TournamentSocket(WebsocketConsumer):
 					self.close()
 				tournament.ChangeReadyState(self.scope['user']) 
 				return
+			case 'LeavingTournament':
+				self.close(3005)

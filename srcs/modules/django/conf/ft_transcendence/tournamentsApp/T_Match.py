@@ -39,7 +39,7 @@ class TournamentMatch():
 			'tournamentId' : self.TournamentId
 			})
 			from chatApp.chatConsumer import UsersSockets
-			ColorPrint.prGreen(UsersSockets)
+			ColorPrint.prBlue(UsersSockets)
 			for alluser in self.Users:
 				if alluser.Position is UserPosition.Away and alluser is not user:
 					UsersSockets[alluser.SockUser.id].send(text_data=msg)

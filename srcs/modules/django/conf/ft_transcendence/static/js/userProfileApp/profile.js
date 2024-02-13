@@ -3,7 +3,7 @@ import { addPongClassicMatch, addPongTournamentStat, addPongGlobalStat, addOther
 
 let userid = undefined;
 
-export function initProfile()
+export async function initProfile()
 {
 	if (window.location.search != '')
 		userid = window.location.search.substring(window.location.search.indexOf('=') + 1)
@@ -12,12 +12,22 @@ export function initProfile()
 		navto('/dashboard');
 		return;
 	}
-
-	getUserInformation()
-	getUserAvatar()
-    getPongStat()
-    document.getElementById('buttonGamePong').addEventListener('click', getPongStat);
-    document.getElementById('buttonGameBattleship').addEventListener('click', getBattleshipStat);
+	fetch(window.location.origin + '/authApp/GET/userID')
+	.then(Response => 
+	{
+		if (Response.ok)
+			return Response.json()
+	})
+	.then (Jsoned => {
+		if (Jsoned.userID != parseInt(userid))
+		{
+			getUserInformation()
+			getUserAvatar()
+			getPongStat()
+			document.getElementById('buttonGamePong').addEventListener('click', getPongStat);
+			document.getElementById('buttonGameBattleship').addEventListener('click', getBattleshipStat);
+		}
+	})
 }
 
 function getUserInformation()

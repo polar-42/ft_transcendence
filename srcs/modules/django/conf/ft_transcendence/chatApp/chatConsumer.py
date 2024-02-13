@@ -70,6 +70,7 @@ class chatSocket(WebsocketConsumer):
 		self.accept()
 		global UsersSockets
 		UsersSockets[self.id] = self
+		ColorPrint.prBlue(UsersSockets)
 		if tabChannels is not None:
 			for chan in tabChannels:
 				privacyStatus = ChannelModels.objects.get(channelName=chan).privacyStatus
@@ -115,6 +116,7 @@ class chatSocket(WebsocketConsumer):
 		self.updateConnexionStatus()
 		global UsersSockets
 		del UsersSockets[self.id]
+		ColorPrint.prBlue(UsersSockets)
 		self.close()
   
 	def updateConnexionStatus(self):
@@ -135,9 +137,9 @@ class chatSocket(WebsocketConsumer):
 		ColorPrint.prRed(data)
 		match(data['type']):
 			case 'chat_message':
-				self.sendPrivateMessage(data['target'], data['message'])
+				self.sendPrivateMessage(str(data['target']), data['message'])
 			case 'channel_message':
-				self.sendChannelMessage(data['target'], data['message'])
+				self.sendChannelMessage(str(data['target']), data['message'])
 			case 'create_channel':
 				self.createChannel(data['channel_name'], data['channel_description'], data['privacy_status'], data['password'], data['adminId'])
 			case 'channel_join':
@@ -365,7 +367,7 @@ class chatSocket(WebsocketConsumer):
 					timestamp = chanMsgs[0].timeCreation
 
 					tabMsg = chanMsgs[0].readBy
-					if tabMsg is not None and self.id not in tabMsg:
+					if tabMsg is not None and str(self.id) not in tabMsg:
 						isRead = False
 					else:
 						isRead = True
@@ -566,7 +568,6 @@ class chatSocket(WebsocketConsumer):
 			 )
 			return
 		elif msgId == -1:
-			ColorPrint.prGreen('1')
 			type = 'chat_history'
 			messages = MessageModels.objects.filter(
 					(Q(sender=str(self.id)) & Q(receiver=modelChatTarget.id)) |
@@ -580,14 +581,15 @@ class chatSocket(WebsocketConsumer):
 
 		response = []
 		for msg in messages.values():
-			if msg['sender'] == self.id:
+
+			if msg['sender'] == str(self.id):
 				received = False
 				contact = self.id
 			else:
 				received = True
 				contact = msg['sender']
 
-			if msg['sender'] != self.id:
+			if msg['sender'] != str(self.id):
 				msgModel = MessageModels.objects.get(id=msg['id'])
 				msgModel.isRead = True
 				msgModel.save()
@@ -637,8 +639,8 @@ class chatSocket(WebsocketConsumer):
 
 			msgModel = MessageModels.objects.get(id=msg['id'])
 			tabReadBy = msgModel.readBy
-			if tabReadBy is not None and self.id not in tabReadBy:
-				tabReadBy.append(self.id)
+			if tabReadBy is not None and str(self.id) not in tabReadBy:
+				tabReadBy.append(str(self.id))
 				msgModel.readBy = tabReadBy
 				msgModel.save()
 
@@ -669,7 +671,7 @@ class chatSocket(WebsocketConsumer):
 		allChannels = userModels.User.objects.get(id=self.id).channels
 		for chan in allChannels:
 			lastMsg = MessageModels.objects.filter(type='C').filter(receiver=chan).order_by('-id')
-			if len(lastMsg) > 0 and self.id not in lastMsg[0].readBy:
+			if len(lastMsg) > 0 and str(self.id) not in lastMsg[0].readBy:
 				isStillUnreadMessage = True
 				return isStillUnreadMessage
 
@@ -808,7 +810,7 @@ class chatSocket(WebsocketConsumer):
 
 		if ChannelModels.objects.filter(channelName=data['receiver']).exists():
 			tabReadBy = lastMsg.readBy
-			tabReadBy.append(self.id)
+			tabReadBy.append(str(self.id))
 			lastMsg.readBy = tabReadBy
 		else:
 			lastMsg.isRead = True
@@ -1017,9 +1019,9 @@ class chatSocket(WebsocketConsumer):
 	def kickUser(self, channelName, userId):
 		channel = ChannelModels.objects.get(channelName=channelName)
 
-		if userId not in channel.users:
+		if str(userId) not in channel.users:
 			return
-		channel.users.remove(userId)
+		channel.users.remove(str(userId))
 
 		channel.save()
 
