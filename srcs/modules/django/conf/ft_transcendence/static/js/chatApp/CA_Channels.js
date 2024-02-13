@@ -393,6 +393,7 @@ export async function receiveChanMsg(data) {
 		'</li>'
 	if (conversation != undefined)
 	{
+		console.log(data)
 	  if (conversation.children.length > 0) {
 		conversation.lastChild.insertAdjacentHTML("afterend", item)
 	  } else {

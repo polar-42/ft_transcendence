@@ -207,8 +207,9 @@ class Tournament():
 
 #region Connexion
 
-	def ReconnectUser(self, user):
+	def ReconnectUser(self, user, socket):
 		user.Position = UserPosition.InTournament
+		user.Socket = socket
 		self.SendUsers(user)
 		self.SendMatch(user)
 		ColorPrint.prGreen("Tournament {tournamentId} : User {username} reconnected.".format(tournamentId=self.TournamentId, username=user.Username))

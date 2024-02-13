@@ -187,8 +187,7 @@ export async function receiveMsg(data) {
 		document.getElementById('pop_up_unread_chatbox').style.display = 'block'
 	}
 	else {
-		// console.log('test')
-		if (document.querySelector(".contact_wrapper").getAttribute('userID') === data.sender) {
+		if (parseInt(document.querySelector(".contact_wrapper").getAttribute('userID')) === data.sender) {
 			let conversation = document.querySelector(".conversation")
 			let msgItem =
 				"<li class='message_item' msgid='" + data.id + "'>" +
@@ -205,6 +204,7 @@ export async function receiveMsg(data) {
 			}))
 		} else {
 			document.getElementById('pop_up_unread_chatbox').style.display = 'block'
+			console.log('1')
 		}
 	}
 }

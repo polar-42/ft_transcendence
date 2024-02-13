@@ -1,62 +1,23 @@
-import { getProfilePicture } from '../chatApp.js'
-import { navto, tournamentSocket, ModifyTS } from '../index.js'
+import { getProfilePicture } from '../chatApp/CA_General.js'
+import { navto } from '../index.js'
+
+let tournamentSocket = undefined
+var tournamentId = undefined
 
 export function initTournaments()
 {
-	var tournamentId = undefined
 	if (window.location.search != '')
 		tournamentId = window.location.search.substring(window.location.search.indexOf('=') + 1)
 	if (tournamentId == undefined)
 	{
-		if (tournamentSocket != undefined && tournamentSocket.readyState != WebSocket.CLOSED && tournamentSocket.url.endsWith(tournamentId) == false)
-		{
-			// console.log("Iici conard 2")
-			tournamentSocket.close()
-			ModifyTS(undefined)
-		}
-		navto('/tournaments/Home')
+		navto('/games')
 		return
 	}
-	if (tournamentSocket == undefined || tournamentSocket.url.endsWith(tournamentId) == false)
-	{
-		if (tournamentSocket != undefined && tournamentSocket.readyState != WebSocket.CLOSED)
-		{
-			// console.log("Ici Connard")
-			tournamentSocket.close()
-			ModifyTS(undefined)
-		}
-		ModifyTS(new WebSocket("ws://" + window.location.host + '/tournamentsApp/' + tournamentId))
-		//tournamentSocket = new WebSocket("wss://" + window.location.host + '/tournamentsApp/' + arg)
-	}
-	else
-	{
-		// console.log('reconnect')
-		tournamentSocket.send(JSON.stringify({
-			'function': 'Reconnect'
-		}))
-	}
-  const csrf_token = document.querySelector('input[name="csrfmiddlewaretoken"]').value
-	let headers = new Headers()
-	headers.append('Content-Type', 'application/json')
-	headers.append('X-CSRFToken', csrf_token)
-	fetch(document.location.origin + "/tournaments/GetTournamentData",
-		{
-			method: 'POST',
-			headers: headers,
-			body: JSON.stringify({'tourID' : tournamentId})
-		})
-		.then(Response => {
-			if (!Response.ok) {
-				throw new Error('Network response was not okay')
-			}
-			return Response.json()
-		})
-		.then(data => {
-			initTournamentsStatus(data)
-		})
+	tournamentSocket = new WebSocket("ws://" + window.location.host + '/tournamentsApp/' + tournamentId)
+	//tournamentSocket = new WebSocket("wss://" + window.location.host + '/tournamentsApp/' + arg)
 	document.querySelector('.BTN_Leave').addEventListener('click', leaveTournament)
 	tournamentSocket.onopen = launchTournamentSocket
-	tournamentSocket.onclose = quitTournamentSocket
+	tournamentSocket.onclose = e => quitTournamentSocket(e)
 	tournamentSocket.onmessage = e => OnMessageTournament(e)
 	document.querySelector('.BTN_Ready').addEventListener('click', ReadyBehavior)
 }
@@ -138,10 +99,28 @@ function ReadyBehavior()
 
 function launchTournamentSocket()
 {
-	// console.log('Socket connected')
+	const csrf_token = document.querySelector('input[name="csrfmiddlewaretoken"]').value
+	let headers = new Headers()
+	headers.append('Content-Type', 'application/json')
+	headers.append('X-CSRFToken', csrf_token)
+	fetch(document.location.origin + "/tournaments/GetTournamentData",
+		{
+			method: 'POST',
+			headers: headers,
+			body: JSON.stringify({'tourID' : tournamentId})
+		})
+		.then(Response => {
+			if (!Response.ok) {
+				throw new Error('Network response was not okay')
+			}
+			return Response.json()
+		})
+		.then(data => {
+			initTournamentsStatus(data)
+		})
 }
 
-function quitTournamentSocket()
+function quitTournamentSocket(event)
 {
 	// console.log('Socket disconnected')
 	// navto('/games')
@@ -152,7 +131,7 @@ function leaveTournament()
 	if (tournamentSocket == undefined)
 		return
 	tournamentSocket.close()
-	ModifyTS(undefined)
+	tournamentSocket = undefined
 	navto('/tournaments/Home')
 	return
 }
