@@ -1,8 +1,4 @@
-* {
-	/*border: solid 1px white;*/
-}
-
-.boxTwoGame {
+.dashboard .boxTwoGame {
 	text-align: center;
 	justify-content: center;
 	display: grid;
@@ -15,8 +11,7 @@
 	margin-top: 10px;
 	margin-bottom: 10px;
 }
-
-.buttonGame {
+.dashboard .buttonGame {
 	background-color: transparent;
 	border: solid var(--fourth) 1px;
 	color: white;
@@ -28,22 +23,21 @@
 	border-radius: 10px;
 	cursor: pointer;
 }
-
-.buttonGame:hover {
+.dashboard .buttonGame:hover {
 	font-weight: bold;
 	background-color: var(--fourth);
 }
 
-.buttonGame:active {
+.dashboard .buttonGame:active {
 	font-weight: bold;
 	background-color: var(--fourth);
 }
 
-#h1 {
+.dashboard #h1 {
 	margin-bottom: 0%;
 }
 
-.dashboardInformation {
+.dashboard .dashboardInformation {
 	justify-content: center;
 	margin-left: 10vw;
 	margin-right: 10vw;
@@ -54,13 +48,13 @@
 	border-radius: 10px;
 }
 
-.h4 {
+.dashboard .h4 {
 	margin-top: 5px;
 	margin-bottom: 5px;
 	text-align: center;
 }
 
-.dash_classicMatchs {
+.dashboard .dash_classicMatchs {
 	background:
 		linear-gradient(to bottom, var(--secondary-bg-color) 0%, var(--main-bg-color) 65%),
 		var(--main-bg-color);
@@ -73,7 +67,7 @@
 	height: 14em;
 }
 
-.dash_classicMatch {
+.dashboard .dash_classicMatch {
 	background: linear-gradient(rgb(255, 255, 255) 0%, var(--main-bg-color) 65%);
 	border-radius: 5px;
 	margin-top: 1%;
@@ -83,13 +77,13 @@
 	cursor: pointer;;
 }
 
-.dash_classicMatch:hover,
-.dash_tournament:hover {
+.dashboard .dash_classicMatch:hover,
+.dashboard .dash_tournament:hover {
 	border: 1px solid var(--fourth);
 
 }
 
-.dash_tournaments {
+.dashboard .dash_tournaments {
 	border: 1px solid var(--fourth);
 	background:
 		linear-gradient(to bottom, var(--secondary-bg-color) 0%, var(--main-bg-color) 65%),
@@ -102,7 +96,7 @@
 	height: 14em;
 }
 
-.dash_tournament {
+.dashboard .dash_tournament {
 	background: linear-gradient(rgb(255, 0, 0) 0%, black 65%);
 	border-radius: 5px;
 	margin-top: 1%;
@@ -112,7 +106,7 @@
 	cursor: pointer;
 }
 
-.dash_stats {
+.dashboard .dash_stats {
 	border: 1px solid var(--fourth);
 	background:
 		linear-gradient(to bottom, var(--secondary-bg-color) 0%, var(--main-bg-color) 65%),
@@ -130,11 +124,11 @@
 	grid-template-rows: repeat(auto-fit, minmax(100px,1fr));
 }
 
-#statName {
+.dashboard #statName {
 	grid-area: a;
 }
 
-.allStat {
+.dashboard .allStat {
 	grid-area: a;
 	display: flex;
 	flex-wrap: wrap;
@@ -143,14 +137,14 @@
 	margin-top: 10px;
 }
 
-.gameStats
+.dashboard .gameStats
 {
 	display: grid;
 	grid-template-areas: 'a b';
 	gap: 10px;
 }
 
-.piechartGame {
+.dashboard .piechartGame {
 	grid-area: a;
 	width: 15vmin;
   	height: 15vmin;
@@ -160,7 +154,7 @@
         red 0 180deg);
 }
 
-.piechartStatGame {
+.dashboard .piechartStatGame {
 	grid-area: b;
 	display: grid;
 	grid-template-areas:
@@ -176,28 +170,28 @@
 	font-size: 1em;
 }
 
-#classicGameStat {
+.dashboard #classicGameStat {
 	color: white;
 	grid-area: a;
 }
 
-#winGame {
+.dashboard #winGame {
 	color: green;
 	grid-area: b;
 }
 
-#loseGame {
+.dashboard #loseGame {
 	color: red;
 	grid-area: c;
 }
 
-.tournamentStats {
+.dashboard .tournamentStats {
 	display: grid;
 	grid-template-areas: 'a b';
 	gap: 10px;
 }
 
-.piechartTournament {
+.dashboard .piechartTournament {
 	grid-area: a;
 	margin-top: 5px;
 	width: 15vmin;
@@ -208,7 +202,7 @@
         red 0 180deg);
 }
 
-.piechartStatTournament {
+.dashboard .piechartStatTournament {
 	grid-area: b;
 	display: grid;
 	grid-template-areas:
@@ -224,22 +218,22 @@
 	font-size: 1em;
 }
 
-#classicTournamentStat {
+.dashboard #classicTournamentStat {
 	color: white;
 	grid-area: a;
 }
 
-#winTournament {
+.dashboard #winTournament {
 	color: green;
 	grid-area: b;
 }
 
-#loseTournament {
+.dashboard #loseTournament {
 	color: red;
 	grid-area: c;
 }
 
-.otherStat {
+.dashboard .otherStat {
 	grid-area: b;
     display: flex;
     flex-wrap: wrap;
@@ -247,17 +241,17 @@
     align-content: center;
 }
 
-#otherStatLine {
+.dashboard #otherStatLine {
 	grid-area: b;
 	column-count: 2;
 	margin-left: 5%;
 }
 
-#otherStatRow {
+.dashboard #otherStatRow {
 	margin-bottom: 8%;
 }
 
-.PopUp_wrapper {
+.dashboard .PopUp_wrapper {
 	display: none;
 	backdrop-filter: blur(5px);
     position: absolute;
@@ -266,7 +260,7 @@
     width: 100%;
 }
 
-.GameStatPopUp {
+.dashboard .GameStatPopUp {
 	display: none;
 	position: absolute;
 	top: 15%;
@@ -279,7 +273,7 @@
 	border-radius: 5px;
 }
 
-.specificGameStat {
+.dashboard .specificGameStat {
 	display: grid;
 	grid-template-areas:
 				'a a a'
@@ -291,12 +285,12 @@
 	height: 100%;
 }
 
-#boxTime {
+.dashboard #boxTime {
 	grid-area: a;
 	text-align: center;
 }
 
-#playerVs {
+.dashboard #playerVs {
 	grid-area: b;
 	text-align: center;
 	display: grid;
@@ -306,25 +300,26 @@
 	gap: 10%;
 }
 
-#player_1_avatar {
+.dashboard #player_1_avatar {
 	grid-area: a;
 }
 
-#playerVsText {
+.dashboard #playerVsText {
 	grid-area: b;
 }
 
-#player_2_avatar {
+.dashboard #player_2_avatar {
 	grid-area: c;
 }
 
-#player_1, #player_2 {
+.dashboard #player_1, #player_2 {
 	display: flex;
 	justify-content: center;
 
 }
 
-#tooltip_player1, #tooltip_player2 {
+.dashboard #tooltip_player1, 
+.dashboard #tooltip_player2 {
 	display: none;
 	position: absolute;
 	width: auto;
@@ -338,17 +333,17 @@
     margin-top: -25px;
 }
 
-#boxScore {
+.dashboard #boxScore {
 	grid-area: c;
 	text-align: center;
 }
 
-#ballTouch {
+.dashboard #ballTouch {
 	grid-area: d;
 	text-align: center;
 }
 
-#closePopUp {
+.dashboard #closePopUp {
 	position: absolute;
 	top: 0px;
 	right: -10px;
@@ -358,7 +353,7 @@
 	cursor: pointer;
 }
 
-.TournamentStatPopUp {
+.dashboard .TournamentStatPopUp {
 	display: none;
 	position: absolute;
 	top: 15%;
@@ -371,7 +366,7 @@
 	border-radius: 5px;
 }
 
-.specificTournamentStat {
+.dashboard .specificTournamentStat {
 	display: grid;
 	grid-template-areas:
 				'a a a'
@@ -383,45 +378,46 @@
 	height: 90%;
 }
 
-#boxTimeTournament,
-#tournamentDescription,
-#winnerTextTournament,
-#winnerImageTournament {
+.dashboard #boxTimeTournament,
+.dashboard #tournamentDescription,
+.dashboard #winnerTextTournament,
+.dashboard #winnerImageTournament {
 	text-align: center;
 }
 
-#boxTimeTournament {
+.dashboard #boxTimeTournament {
 	grid-area: a;
 }
 
-#tournamentDescription {
+.dashboard #tournamentDescription {
 	grid-area: b;
 }
 
-#winnerTextTournament {
+.dashboard #winnerTextTournament {
 	grid-area: c;
 }
 
-#winnerImageTournament {
+.dashboard #winnerImageTournament {
 	grid-area: d;
 	display: grid;
 	justify-content: center;
-	grid-template-areas:	'a'
-							'b';
+	grid-template-areas:
+          'a'
+					'b';
 	row-gap: 5px;
 }
 
-#winnerTournamentImage {
+.dashboard #winnerTournamentImage {
 	grid-area: b;
 	align-items: center;
 }
 
-#tournamentWinner {
+.dashboard #tournamentWinner {
 	justify-content: center;
 	display: flex;
 }
 
-#tooltip_winnerTournament {
+.dashboard #tooltip_winnerTournament {
 	display: none;
 	width: auto;
 	min-width: 75px;
@@ -434,7 +430,7 @@
 	margin-top: -25px;
 }
 
-#closeTournamentPopUp {
+.dashboard #closeTournamentPopUp {
 	position: absolute;
 	top: 0px;
 	right: -10px;
@@ -445,47 +441,47 @@
 }
 
 @media (max-width: 1285px) {
-	.piechartStatGame,
-	.piechartStatTournament {
+.dashboard 	.piechartStatGame,
+.dashboard 	.piechartStatTournament {
 		font-size: 1em;
 	}
 }
 
 @media (max-width: 900px) {
-	.piechartStatGame,
-	.piechartStatTournament {
+  .dashboard .piechartStatGame,
+  .dashboard .piechartStatTournament {
 		font-size: 0.9em;
 	}
-	#otherStatLine {
+  .dashboard #otherStatLine {
 		font-size: 2vh ;
 	}
 }
 
 @media (max-width: 800px) {
-	.piechartStatGame,
-	.piechartStatTournament {
+  .dashboard .piechartStatGame,
+  .dashboard .piechartStatTournament {
 		font-size: 0.9em;
 	}
 }
 
 @media (max-width: 700px) {
-	.piechartStatGame,
-	.piechartStatTournament {
+  .dashboard .piechartStatGame,
+  .dashboard .piechartStatTournament {
 		font-size: 2.5vw;
 	}
-	#otherStatLine {
+  .dashboard #otherStatLine {
 		font-size: 1.7vh;
 	}
 }
 
 @media (max-width: 600px) {
-	#otherStatLine {
+  .dashboard #otherStatLine {
 		font-size: 75%;
 	}
 }
 
 @media (max-width: 500px) {
-	#otherStatLine {
+  .dashboard #otherStatLine {
 		font-size: 65%;
 	}
 }
