@@ -50,7 +50,7 @@
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
 	gap: 10px;
-	grid-auto-rows: repeat(2, 1fr);
+	grid-auto-rows: 1fr 1fr;
 	border-radius: 10px;
 }
 

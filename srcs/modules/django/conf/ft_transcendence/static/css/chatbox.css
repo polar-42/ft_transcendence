@@ -124,16 +124,16 @@
   scrollbar-color: var(--third) transparent;
 }
 
-::-webkit-scrollbar {
+-webkit-scrollbar {
   width: 5px;
 }
 
-::-webkit-scrollbar-thumb {
+-webkit-scrollbar-thumb {
   background: var(--second);
   border-radius: 5px;
 }
 
-::-webkit-scrollbar-thumb:hover {
+-webkit-scrollbar-thumb:hover {
   background: var(--third);
 }
 
@@ -458,7 +458,7 @@
   display: flex;
   justify-content: space-between;
   height: 50px;
-  padding: 10x 5px 10px 5px;
+  padding: 0 5px;
 }
 
 .main_box_body.channel .conversation_body {
@@ -482,8 +482,8 @@
   }
 
   p {
-    max-width: 120px;
-    height: 20px;
+    max-width: 125px;
+    height: 1em;
     word-wrap: break-word;
     overflow: scroll;
   }
@@ -752,7 +752,6 @@
 }
 
 .AddToFriendContainer {
-	grid-area: 'd';
 	display: block;
 	margin: auto;
 	cursor: pointer;
