@@ -70,6 +70,7 @@ class chatSocket(WebsocketConsumer):
 		self.accept()
 		global UsersSockets
 		UsersSockets[self.id] = self
+		ColorPrint.prBlue(UsersSockets)
 		if tabChannels is not None:
 			for chan in tabChannels:
 				privacyStatus = ChannelModels.objects.get(channelName=chan).privacyStatus
@@ -115,6 +116,7 @@ class chatSocket(WebsocketConsumer):
 		self.updateConnexionStatus()
 		global UsersSockets
 		del UsersSockets[self.id]
+		ColorPrint.prBlue(UsersSockets)
 		self.close()
   
 	def updateConnexionStatus(self):

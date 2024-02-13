@@ -122,7 +122,12 @@ function launchTournamentSocket()
 
 function quitTournamentSocket(event)
 {
-	// console.log('Socket disconnected')
+	if (event.code == 3005)
+	{
+		tournamentSocket = undefined
+		navto('/tournaments/Join')
+	}
+		// console.log('Socket disconnected')
 	// navto('/games')
 }
 
@@ -130,9 +135,11 @@ function leaveTournament()
 {
 	if (tournamentSocket == undefined)
 		return
-	tournamentSocket.close()
-	tournamentSocket = undefined
-	navto('/tournaments/Home')
+	// tournamentSocket.close()
+	tournamentSocket.send(JSON.stringify({
+		'function': 'LeavingTournament'
+	}))
+	navto('/tournaments/Join')
 	return
 }
 

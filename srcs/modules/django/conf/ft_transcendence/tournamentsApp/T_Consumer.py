@@ -32,5 +32,5 @@ class TournamentSocket(WebsocketConsumer):
 					self.close()
 				tournament.ChangeReadyState(self.scope['user']) 
 				return
-			case 'Leaving Tournament':
+			case 'LeavingTournament':
 				self.close(3005)

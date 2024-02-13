@@ -16,8 +16,6 @@ def getUserName(request):
         return JsonResponse({'userName': 'LOG IN'})
 
 def getUserID(request):
-    print(request)
-    print(request.user.id)
     return JsonResponse({'userID': request.user.id})
 
 def getAvatarImage(request):

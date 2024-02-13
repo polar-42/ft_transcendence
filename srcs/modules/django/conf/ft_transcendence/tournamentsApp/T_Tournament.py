@@ -210,6 +210,7 @@ class Tournament():
 	def ReconnectUser(self, user, socket):
 		user.Position = UserPosition.InTournament
 		user.Socket = socket
+		socket.accept()
 		self.SendUsers(user)
 		self.SendMatch(user)
 		ColorPrint.prGreen("Tournament {tournamentId} : User {username} reconnected.".format(tournamentId=self.TournamentId, username=user.Username))
@@ -229,14 +230,16 @@ class Tournament():
 			self.StartTournament()
 		return True
 
-	def DisconnectUser(self, user):
-		if self.Status is TournamentState.Created:
+	def DisconnectUser(self, user, leave : bool):
+		if (leave == False):
+			user.Position = UserPosition.Away
+			return
+		elif self.Status is TournamentState.Created:
 			self.PlayersList.remove(user)
 			ColorPrint.prGreen("Tournament {tournamentId} : User {username} deleted.".format(tournamentId=self.TournamentId, username=user.Username))
 			self.SendUsers(None)
 		elif self.Status is TournamentState.Ongoing:
-			if (user.Position is not UserPosition.InMatch):
-				user.Status = UserState.GivedUp
+			user.Status = UserState.GivedUp
 			ColorPrint.prGreen("Tournament {tournamentId} : User {username} giveUp.".format(tournamentId=self.TournamentId, username=user.Username))
 			pass
 		else:
