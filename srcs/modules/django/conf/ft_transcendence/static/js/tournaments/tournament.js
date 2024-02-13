@@ -3,6 +3,7 @@ import { navto } from '../index.js'
 
 let tournamentSocket = undefined
 var tournamentId = undefined
+let isBracketInit = false
 
 export function initTournaments()
 {
@@ -13,6 +14,7 @@ export function initTournaments()
 		navto('/games')
 		return
 	}
+  isBracketInit = false
 	tournamentSocket = new WebSocket("ws://" + window.location.host + '/tournamentsApp/' + tournamentId)
 	//tournamentSocket = new WebSocket("wss://" + window.location.host + '/tournamentsApp/' + arg)
 	document.querySelector('.BTN_Leave').addEventListener('click', leaveTournament)
@@ -40,7 +42,6 @@ function initTournamentsStatus(data) {
 }
 
 async function initBracket(numberOfPlayers) {
-  // console.log(numberOfPlayers)
   let nbOfGame = 1
   let rounds = {1: 'Final', 2: '1/2 Final', 4: '1/4 Final', 8: 'Round of 8', 16: 'Round of 16',  32: 'Round of 32'}
   let bracketClass = {4: 'four', 8: 'eight', 16: 'sixteen', 32: 'thirtytwo', 64: 'sixtyfour'}
@@ -61,7 +62,6 @@ async function initBracket(numberOfPlayers) {
     })
   let bracket = document.querySelector(".bracket")
   bracket.classList.add(bracketClass[numberOfPlayers])
-  
   while (numberOfPlayers / nbOfGame > 1) {
     let roundElem = document.createElement("div")
     roundElem.classList.add("round", matchClass[nbOfGame])
@@ -73,6 +73,33 @@ async function initBracket(numberOfPlayers) {
     }
     nbOfGame *= 2
   }
+  isBracketInit = true  
+  queryMatchList()
+}
+
+async function queryMatchList() {
+	const csrf_token = document.querySelector('input[name="csrfmiddlewaretoken"]').value
+	let headers = new Headers()
+	headers.append('Content-Type', 'application/json')
+	headers.append('X-CSRFToken', csrf_token)
+  let matchList = await fetch(document.location.origin + '/tournaments/GetMatchList',
+    {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify({'tourId': tournamentId})
+    })
+  .then(Response => {
+    if (!Response.ok) 
+      throw new Error("Network response was not okay")
+    return Response.json()
+  })
+  .catch(error => {
+    console.error('Error:', error)
+    return undefined 
+  })
+  if (matchList == undefined)
+    return
+  PrintMatchs(matchList.matchs)
 }
 
 export function GoingAway()
@@ -154,7 +181,7 @@ function OnMessageTournament(e)
 			LoadGame(data);
 			break
 		case 'MSG_UpdateMatchList':
-			PrintMatchs(data)
+			PrintMatchs(data.matchList)
 			break
 	}
 }
@@ -202,41 +229,31 @@ async function PrintPlayers(data)
   // document.getElementById('players_in_tournaments').innerHTML = 'There is ' + data.player_in_tournament + ' in this ' + data.size_tournaments + ' players tournament.'
 }
 
-async function PrintMatchs(data)
+async function PrintMatchs(matchList)
 {
-  const nbPlayer = {
-    1: 4,
-    2: 8,
-    3: 16,
-    4: 32,
-    5: 64
-  }
-
-  // console.log(data)
-  if (data.matchList == 'None')
-  {
+  if (matchList == 'None' || isBracketInit == false)
     return
-  }
   const bracket = document.querySelector('.bracket')
-  if (bracket === undefined || bracket.children.length < nbPlayer[data.matchList.slice(-1)[0].X]) {
-    await initBracket(data.matchList.slice(-1)[0].X)
-  }
-  console.log(bracket)
-  const Matchs = data.matchList
-  Matchs.forEach(async (element) => {
+  if (bracket === undefined || bracket.children.length < matchList.slice(-1)[0].X + 1)
+    return
+  matchList.forEach(async (element) => {
     console.log(element) 
     const matchupEl = bracket.children[element.X].children[element.Y + 1]
     if (matchupEl === undefined)
       return
     if (matchupEl.querySelector('.player_profile').children.length == 0) {
-      if (element.User1.id != -1 && element.User1.id != 'Undefined')
+      if (element.User1.id != -1 && element.User1.id != 'Undefined') {
+        console.log('go user1')
         displayMatchPlayerHTML(0, element.User1, matchupEl)
-      if (element.User2.id != -1 && element.User2.id != 'Undefined')
+    }
+      if (element.User2.id != -1 && element.User2.id != 'Undefined') {
+        console.log('go user2')
         displayMatchPlayerHTML(1, element.User2, matchupEl)
+      }
     }
     if (element.Winner === 0) {
       matchupEl.children[0].classList.add("winner")
-      matchupEl.children[1].user2.classList.add("loser")
+      matchupEl.children[1].classList.add("loser")
     } else if (element.Winner === 1) {
       matchupEl.children[0].classList.add("loser")
       matchupEl.children[1].classList.add("winner")
@@ -248,6 +265,9 @@ async function PrintMatchs(data)
 
 async function displayMatchPlayerHTML(userNb, userData, matchupEl) {
   let user = matchupEl.children[userNb].children[0]
+  console.log(user)
+  if (user.children.length != 0)
+    return
   let userPP = await getProfilePicture({type: 'user', id: userData.id})
   if (userPP === 'image/null')
     userPP = "/static/assets/logo/user.png"

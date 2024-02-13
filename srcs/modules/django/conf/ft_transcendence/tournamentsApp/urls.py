@@ -11,5 +11,6 @@ urlpatterns = [
 	path('join_tournaments', views.join_tournaments),
 	path('Play/', views.Tournament_view),
     path('View/', views.TournamentSpectateView),
-    path('GetTournamentData', views.GetTournamentData)
+    path('GetTournamentData', views.GetTournamentData),
+    path('GetMatchList', views.GetMatchList)
 ]

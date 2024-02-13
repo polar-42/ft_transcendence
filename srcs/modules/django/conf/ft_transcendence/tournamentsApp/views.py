@@ -112,6 +112,22 @@ def GetTournamentData(request):
 					  "matchs" : 'None' if MatchMSG is None else MatchMSG
 					  })
 
+def GetMatchList(request):
+	ColorPrint.prGreen('Get match list')
+	if request.method != "POST":
+		return JsonResponse({'error': 'Method is invalid'})
+	data = json.loads(request.body)
+	ColorPrint.prGreen(data)
+	tournamentId = int(data.get('tourId'))
+	Tournament = T_Manager.Manager.GetTournament(tournamentId)
+	if (Tournament is None):
+		return JsonResponse({'error': 'Invalid Tournament ID'})
+	MatchMSG = Tournament.GetMatchList()
+	ColorPrint.prRed('Match list : {MatchMSG}'.format(MatchMSG=MatchMSG))
+	return JsonResponse({ "tournamentId" : tournamentId,
+					  "matchs" : 'None' if MatchMSG is None else MatchMSG
+					  })
+
 def get_tournaments(request):
 	tournamentL = T_Manager.Manager.GetTournaments()
 	dictionnary = []
