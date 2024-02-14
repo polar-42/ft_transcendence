@@ -8,7 +8,7 @@ import json, math, random
 
 class Tournament():
 
-	def __init__(self, tournamentId : str, creator : str, tournamentName : str, playerAmount : int, description : str, gameType : GameType, visibility : TournamentVisibility, obj):
+	def __init__(self, tournamentId : str, creator : int, tournamentName : str, playerAmount : int, description : str, gameType : GameType, visibility : TournamentVisibility, obj):
 		self.TournamentName = tournamentName
 		self.TournamentId = tournamentId
 		self.PlayerAmount = playerAmount
