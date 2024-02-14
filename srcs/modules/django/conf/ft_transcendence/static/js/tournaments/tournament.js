@@ -14,7 +14,9 @@ export function initTournaments()
 		navto('/games')
 		return
 	}
-  isBracketInit = false
+	if (document.querySelector('.tournament_page') == undefined)
+		return
+	isBracketInit = false
 	tournamentSocket = new WebSocket("ws://" + window.location.host + '/tournamentsApp/' + tournamentId)
 	//tournamentSocket = new WebSocket("wss://" + window.location.host + '/tournamentsApp/' + arg)
 	document.querySelector('.BTN_Leave').addEventListener('click', leaveTournament)

@@ -30,24 +30,22 @@ class TournamentMatch():
 			ColorPrint.prYellow("Warning! Tournament[{TId}].Match[{gameId}] : Can't add user {username}, already in match.".format(TId=self.TournamentId, gameId=self.GameId, username=user.Username))
 			return False
 		self.Users[position] = user
-		target = 0 if position == 1 else 0
-		if (self.Users[target] is None):
-			return True
-		if (self.Users[0] is not None and self.Users[1] is not None):
-			msg = json.dumps({
-			'type': "MSG_GameWaiting",
-			'tournamentId' : self.TournamentId
-			})
-			from chatApp.chatConsumer import UsersSockets
-			ColorPrint.prBlue(UsersSockets)
-			for alluser in self.Users:
-				if alluser.Position is UserPosition.Away and alluser is not user:
-					UsersSockets[alluser.SockUser.id].send(text_data=msg)
-			self.Timer = 30
-			self.Status = GameState.Waiting
 		return True
 
+	def startTimer(self):
+		msg = json.dumps({
+		'type': "MSG_GameWaiting",
+		'tournamentId' : self.TournamentId
+		})
+		from chatApp.chatConsumer import UsersSockets
+		for alluser in self.Users:
+			if alluser.Position is UserPosition.Away:
+				UsersSockets[alluser.SockUser.id].send(text_data=msg)
+		self.Timer = 120
+		self.Status = GameState.Waiting
+
 	def ChangeReadyState(self, user : TournamentUser):
+		ColorPrint.prBlue('user printed here')
 		if (user not in self.Users):
 			ColorPrint.prRed("Error! Tournament[{TId}].Match[{gameId}] : Can't change user {username} readyState, not in match.".format(TId=self.TournamentId, gameId=self.GameId, username=user.Username))
 			return False
