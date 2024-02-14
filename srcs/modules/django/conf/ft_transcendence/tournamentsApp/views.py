@@ -72,7 +72,7 @@ def get_tournaments_html(request):
 			'name': tour.TournamentName,
 			'typeGame': gameTypeUrl,
 			'numberPlayers': len(tour.PlayersList),
-			'creator': tour.Administrator.Username,
+            'creator': tour.Administrator if type(tour.Administrator) is int else tour.Administrator.UserId,
 			'private': tour.Visibility,
 			'description': tour.Description,
 			'joinable' : Joinable

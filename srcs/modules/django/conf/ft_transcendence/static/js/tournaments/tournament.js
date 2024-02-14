@@ -228,46 +228,75 @@ async function PrintPlayers(data)
     item.appendChild(txt)
     PL.appendChild(item)
   })
-  // document.getElementById('players_in_tournaments').innerHTML = 'There is ' + data.player_in_tournament + ' in this ' + data.size_tournaments + ' players tournament.'
 }
 
 async function PrintMatchs(matchList)
 {
+  let roundsDict = {
+    '0': 'Final',
+    '-1': '1/2 Final',
+    '-2': '1/4 Final',
+    '-3': 'Round of 16',
+    '-4': 'Round of 32',
+    '-5': 'Round of 64'
+  }
+  let lostStage = '' 
+  let selfId
   if (matchList == 'None' || isBracketInit == false)
     return
+  console.log(matchList)
+  let lastRound = matchList[matchList.length - 1].X
+  console.log(lastRound)
   const bracket = document.querySelector('.bracket')
   if (bracket === undefined || bracket.children.length < matchList.slice(-1)[0].X + 1)
     return
+  let Response = await fetch(document.location.origin + '/authApp/GET/userID',
+    {
+      method: 'GET'
+    })
+  if (Response.ok)
+    selfId = await Response.json()
+  else 
+    throw new Error('Error when fetching user datas')
   matchList.forEach(async (element) => {
     console.log(element) 
     const matchupEl = bracket.children[element.X].children[element.Y + 1]
     if (matchupEl === undefined)
       return
-    if (matchupEl.querySelector('.player_profile').children.length == 0) {
-      if (element.User1.id != -1 && element.User1.id != 'Undefined') {
-        console.log('go user1')
-        displayMatchPlayerHTML(0, element.User1, matchupEl)
+    if (element.User1.id != -1 && element.User1.id != 'Undefined') {
+      displayMatchPlayerHTML(0, element.User1, matchupEl, selfId.userID)
     }
-      if (element.User2.id != -1 && element.User2.id != 'Undefined') {
-        console.log('go user2')
-        displayMatchPlayerHTML(1, element.User2, matchupEl)
-      }
+    if (element.User2.id != -1 && element.User2.id != 'Undefined') {
+      displayMatchPlayerHTML(1, element.User2, matchupEl, selfId.userID)
     }
     if (element.Winner === 0) {
       matchupEl.children[0].classList.add("winner")
       matchupEl.children[1].classList.add("loser")
+      if (element.User1.id != selfId.userID && element.User2.id == selfId.userID) {
+        lostStage = roundsDict[element.X - lastRound] 
+      }
     } else if (element.Winner === 1) {
       matchupEl.children[0].classList.add("loser")
       matchupEl.children[1].classList.add("winner")
+      if (element.User2.id != selfId.userID && element.User1.id == selfId.userID) {
+        lostStage =  roundsDict[element.X - lastRound]
+      }
     }
   })
   document.querySelector(".waiting_screen").style.display = 'none'
-  document.querySelector('.next_match_wrapper').style.display = 'flex' 
+  console.log(lostStage)
+  if (lostStage != '') 
+    lostTournament(lostStage)
+  if (matchList[matchList.length - 1].Winner == -1)
+    document.querySelector('.next_match_wrapper').style.display = 'flex' 
+  else  {
+    console.log('fdsfd')
+    displayTournamentResult(matchList[matchList.length - 1])
+  }
 }
 
-async function displayMatchPlayerHTML(userNb, userData, matchupEl) {
+async function displayMatchPlayerHTML(userNb, userData, matchupEl, selfId) {
   let user = matchupEl.children[userNb].children[0]
-  console.log(user)
   if (user.children.length != 0)
     return
   let userPP = await getProfilePicture({type: 'user', id: userData.id})
@@ -281,25 +310,33 @@ async function displayMatchPlayerHTML(userNb, userData, matchupEl) {
   user.appendChild(document.createElement('p'))
   user.querySelector('p').textContent = userData.nickname
   user.setAttribute('id', userData.id)
+  if (userData.id == selfId) 
+    matchupEl.children[userNb].classList.add('own')
 }
 
-function waitForElm(selector) {
+function lostTournament(lostRound) {
+  let lostElm  = document.querySelector(".next_match_wrapper")
+  lostElm.style.display = 'flex'
+  lostElm.querySelector('button').style.display = 'none'
+  lostElm.children[0].textContent = "You lost in " + lostRound
+}
 
-  return new Promise(resolve => {
-    if (document.querySelector(selector)) {
-      return resolve(document.querySelector(selector))
-    }
-
-    const observer = new MutationObserver(mutations => {
-      if (document.querySelector(selector)) {
-        observer.disconnect()
-        resolve(document.querySelector(selector))
-      }
-    })
-
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true
-    })
-  })
+async function displayTournamentResult(lastMatch) {
+  document.querySelector('.next_match_wrapper').style.display = 'none'
+  let winner
+  if (lastMatch.Winner == 0)
+    winner = lastMatch.User1
+  else
+    winner = lastMatch.User2
+  let resultElm = document.querySelector('.tournament_result')
+  let winnerElm = resultElm.children[1]
+  winnerElm.querySelector('p').textContent = winner.nickname
+  let winnerPP = await getProfilePicture({'type': 'user', 'id': winner.id})
+    if (winnerPP.type == 'image/null')
+      winnerPP = '/static/assets/logo/user.png'
+    else
+      winnerPP = URL.createObjectURL(winnerPP)
+  winnerElm.querySelector('img').src = winnerPP
+  console.log(winnerElm)
+  resultElm.style.display = 'flex'
 }
