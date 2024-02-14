@@ -21,22 +21,23 @@ class TournamentMatch():
 
 	def AddUser(self, user : TournamentUser, position : int):
 		if (position != 0 and position != 1):
-			ColorPrint.prRed("Error! Tournament[{TId}].Match[{gameId}] : Can't add user {username}, Position {pos} invalid.".format(TId=self.TournamentId, gameId=self.GameId, username=user.Username, pos=position))
+			# ColorPrint.prRed("Error! Tournament[{TId}].Match[{gameId}] : Can't add user {username}, Position {pos} invalid.".format(TId=self.TournamentId, gameId=self.GameId, username=user.Username, pos=position))
 			return False
 		if (self.Users[position] is not None):
-			ColorPrint.prYellow("Warning! Tournament[{TId}].Match[{gameId}] : Can't add user {username}, match position \"{Mposition}\" is full.".format(TId=self.TournamentId, gameId=self.GameId, username=user.Username, Mposition=position))
+			# ColorPrint.prYellow("Warning! Tournament[{TId}].Match[{gameId}] : Can't add user {username}, match position \"{Mposition}\" is full.".format(TId=self.TournamentId, gameId=self.GameId, username=user.Username, Mposition=position))
 			return False
 		if (user in self.Users and user is not self.Tournament.UndefinedUser):
-			ColorPrint.prYellow("Warning! Tournament[{TId}].Match[{gameId}] : Can't add user {username}, already in match.".format(TId=self.TournamentId, gameId=self.GameId, username=user.Username))
+			# ColorPrint.prYellow("Warning! Tournament[{TId}].Match[{gameId}] : Can't add user {username}, already in match.".format(TId=self.TournamentId, gameId=self.GameId, username=user.Username))
 			return False
+		ColorPrint.prYellow('User: {user}; Position : {pos}'.format(user=user, pos=position))
 		self.Users[position] = user
 		return True
 
 	def startTimer(self):
 		msg = json.dumps({
-		'type': "MSG_GameWaiting",
-		'tournamentId' : self.TournamentId
-		})
+			'type': "MSG_GameWaiting",
+			'tournamentId' : self.TournamentId
+			})
 		from chatApp.chatConsumer import UsersSockets
 		for alluser in self.Users:
 			if alluser.Position is UserPosition.Away:
@@ -45,9 +46,9 @@ class TournamentMatch():
 		self.Status = GameState.Waiting
 
 	def ChangeReadyState(self, user : TournamentUser):
-		ColorPrint.prBlue('user printed here')
+		# ColorPrint.prBlue('user printed here')
 		if (user not in self.Users):
-			ColorPrint.prRed("Error! Tournament[{TId}].Match[{gameId}] : Can't change user {username} readyState, not in match.".format(TId=self.TournamentId, gameId=self.GameId, username=user.Username))
+			# ColorPrint.prRed("Error! Tournament[{TId}].Match[{gameId}] : Can't change user {username} readyState, not in match.".format(TId=self.TournamentId, gameId=self.GameId, username=user.Username))
 			return False
 		UserPos = 0 if self.Users[0] is user else 1
 		self.UserReadyState[UserPos] = True if self.UserReadyState[UserPos] is False else False
@@ -56,15 +57,15 @@ class TournamentMatch():
 		return True
 
 	def Start(self):
-		ColorPrint.prYellow("Debug! Tournament[{TId}].Match[{gameId}] : starting.".format(TId=self.TournamentId, gameId=self.GameId))
+		# ColorPrint.prYellow("Debug! Tournament[{TId}].Match[{gameId}] : starting.".format(TId=self.TournamentId, gameId=self.GameId))
 		if (self.Type is GameType.Battleship):
 			from battleshipApp import BS_MatchmakingManager
 			BS_MatchmakingManager.GameManager.CreateGame(BS_MatchmakingManager.GameManager, self.Users[0].SockUser, self.Users[1].SockUser, self.GameId, BS_Match.GameType.Tournament, self)
 			msg = json.dumps({
-			'type': "MSG_LoadGame",
-			'gameType': 'ship',
-			'gameId' : self.GameId
-			})
+				'type': "MSG_LoadGame",
+				'gameType': 'ship',
+				'gameId' : self.GameId
+				})
 			self.Users[0].SendMessage(msg)
 			self.Users[1].SendMessage(msg)
 		else:
@@ -73,7 +74,7 @@ class TournamentMatch():
 				'type': "MSG_LoadGame",
 				'gameType': 'pong',
 				'gameId' : self.GameId
-			})
+				})
 			self.Users[0].SendMessage(msg)
 			self.Users[1].SendMessage(msg)
 			pass
@@ -97,14 +98,14 @@ class TournamentMatch():
 		if (self.Timer == 0):
 			if (self.UserReadyState[0] == False and self.UserReadyState[1] == False):
 				self.HandleResult(None, True)
-				# ColorPrint.prGreen("Debug! Tournament[{TId}].Match[{gameId}] : Cancelled.".format(TId=self.TournamentId, gameId=self.GameId))
+				# # ColorPrint.prGreen("Debug! Tournament[{TId}].Match[{gameId}] : Cancelled.".format(TId=self.TournamentId, gameId=self.GameId))
 			else:
 				self.Status = GameState.Ended
 				if (self.UserReadyState[0] == False):
 					self.HandleResult(self.Users[1].UserId, True)
 				else:
 					self.HandleResult(self.Users[0].UserId, True)
-				# ColorPrint.prGreen("Debug! Tournament[{TId}].Match[{gameId}] : Ended with {username} as winner.".format(TId=self.TournamentId, gameId=self.GameId, username=self.Winner.Username))
+				# # ColorPrint.prGreen("Debug! Tournament[{TId}].Match[{gameId}] : Ended with {username} as winner.".format(TId=self.TournamentId, gameId=self.GameId, username=self.Winner.Username))
 
 	def __str__(self):
 		return "Tournament[{tID}].Match[{matchId}] = Users[0] = {User1}, Users[1] = {User2}".format(tID=self.TournamentId, matchId=self.GameId, User1=self.Users[0].Username if self.Users[0] is not None else None, User2=self.Users[1].Username if self.Users[1] is not None else None)
@@ -132,15 +133,15 @@ class TournamentMatch():
 		else:
 			WinnerUsr = -1
 		return {'MatchId' : self.GameId, 
-                'User1' : { 
-                    'id' : self.Users[0].UserId if self.Users[0] is not None else 'Undefined',
-                    'nickname' : self.Users[0].Username if self.Users[0] is not None else 'Undefined'
-                           }, 
-                'User2' : {
-                    'id' : self.Users[1].UserId if self.Users[1] is not None else 'Undefined',
-                    'nickname' : self.Users[1].Username if self.Users[1] is not None else 'Undefined'
-                           }, 
-                'Winner' : WinnerUsr, 
-                'X' : x, 
-                'Y' : y
-                }
+		  'User1' : { 
+			   'id' : self.Users[0].UserId if self.Users[0] is not None else 'Undefined',
+			   'nickname' : self.Users[0].Username if self.Users[0] is not None else 'Undefined'
+			   }, 
+		  'User2' : {
+			  'id' : self.Users[1].UserId if self.Users[1] is not None else 'Undefined',
+			  'nickname' : self.Users[1].Username if self.Users[1] is not None else 'Undefined'
+			  }, 
+		  'Winner' : WinnerUsr, 
+		  'X' : x, 
+		  'Y' : y
+		  }

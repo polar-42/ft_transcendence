@@ -31,13 +31,13 @@ class Tournament():
 
 		UserCounter = 0
 		random.shuffle(UsersList)
-		ColorPrint.prGreen(UsersList)
+		# ColorPrint.prGreen(UsersList)
 		for Match in self.Tree[0]:
 			Match.AddUser(UsersList[UserCounter], 0)
-			ColorPrint.prGreen("Debug! Status = {status}.".format(status=Match.Status))
+			# ColorPrint.prGreen("Debug! Status = {status}.".format(status=Match.Status))
 			Match.AddUser(UsersList[UserCounter + 1], 1)
 			UserCounter += 2
-			ColorPrint.prGreen("Debug! {match} ".format(match=str(Match)))
+			# ColorPrint.prGreen("Debug! {match} ".format(match=str(Match)))
 			Match.Status = GameState.Waiting
 		self.SendMatch(None)
 
@@ -48,7 +48,7 @@ class Tournament():
 		while (Counter > 1):
 			Branch = []
 			Pos2 = 0
-			ColorPrint.prYellow("Debug! Counter = {counter}.".format(counter=Counter))
+			# ColorPrint.prYellow("Debug! Counter = {counter}.".format(counter=Counter))
 			while (Pos2 < math.floor(Counter / 2)):
 				Branch.append(TournamentMatch(self.Type, "Tournament" + str(self.TournamentId) + "_" + str(Pos1) + "_" + str(Pos2), self.TournamentId, self))
 				Pos2 += 1
@@ -69,25 +69,22 @@ class Tournament():
 			'newRound' : self.curStep
 			})
 		for match in self.Tree[self.curStep]:
+			ColorPrint.prBlue(match.Users)
 			for user in match.Users:
 				user.SendMessage(msg)
 			match.startTimer()
 
 	def HandleMatchResult(self, MatchObj):
-		Pos1 = 0
+		PosX = 0
 		StepCount = len(self.Tree)
 		for Match in self.Tree:
-			Pos2 = 0
+			PosY = 0
 			for Match2 in Match:
 				if (Match2 is MatchObj):
-					if (Pos1 + 1 < StepCount):
-						PlayerPos = 0 if (Pos2 / 2) % 2 == 0 else 1
-						if (PlayerPos == 0):
-							self.Tree[Pos1 + 1][int(Pos2 / 2)].AddUser(Match2.Winner, PlayerPos)
-						else:
-							self.Tree[Pos1 + 1][int((Pos2 / 2) - 0.5)].AddUser(Match2.Winner, PlayerPos)
-						ColorPrint.prRed(Match2.Winner.UserId)
-						Target = 0 if Match2.Winner is [Match2.Users[1]] else 1
+					if (PosX + 1 < StepCount):
+						matchPos = 0 if PosY % 2 == 0 else 1
+						nextMatchPos = math.floor(PosY / 2)
+						self.Tree[PosX + 1][nextMatchPos].AddUser(Match2.Winner, matchPos)
 						ColorPrint.prGreen("Debug ! Winner = ".format(Match2.Winner.Username))
 						self.SendMatch(None)
 						self.CountStepEnd()
@@ -101,14 +98,14 @@ class Tournament():
 							Manager.closeTournament(self)
 							pass
 						else :
-							ColorPrint.prGreen("Debug ! Tournament[{tID}] ended. User {username} win".format(tID=self.TournamentId, username=self.Winner.Username))
+							# ColorPrint.prGreen("Debug ! Tournament[{tID}] ended. User {username} win".format(tID=self.TournamentId, username=self.Winner.Username))
 							self.CloseTimer = 10
 							self.Status = TournamentState.Ended
 							self.sendTournamentDB()
 							self.SendMatch(None)
 						return
-				Pos2 += 1
-			Pos1 += 1
+				PosY += 1
+			PosX += 1
 
 	def sendTournamentDB(self):
 		tabId = []
@@ -136,7 +133,7 @@ class Tournament():
 		tx = contract.functions.addTournament(str(self.Winner.UserId), str(self.obj.id)).build_transaction({
 			'from': os.environ.get('PUBLIC_KEY'),
 			'nonce': w3.eth.get_transaction_count(os.environ.get('PUBLIC_KEY'))
-		})
+			})
 		sign_tx = w3.eth.account.sign_transaction(tx, '0x' + os.environ.get('PRIVATE_KEY'))
 		tx_hash = w3.eth.send_raw_transaction(sign_tx.rawTransaction)
 		w3.eth.wait_for_transaction_receipt(tx_hash)
@@ -151,7 +148,7 @@ class Tournament():
 		for Match in self.Tree:
 			PosY = 0
 			for Match2 in Match:
-				ColorPrint.prYellow(Match2.Users)
+				# ColorPrint.prYellow(Match2.Users)
 				Jsoned = Match2.Objectify(PosX, PosY)
 				SendList.append(Jsoned)
 				PosY += 1
@@ -191,10 +188,10 @@ class Tournament():
 			User.SendMessage(msg)
 
 	def ChangeReadyState(self, user):
-		ColorPrint.prRed('user {user}'.format(user=user))
+		# ColorPrint.prRed('user {user}'.format(user=user))
 		usr = self.GetUserById(user.id)
 		if (usr is None):
-			ColorPrint.prRed("Error! Tournament {tournamentId} : User {username} trying to change readyState when not on Tournament.".format(tournamentId=self.TournamentId, username=user.username))
+			# ColorPrint.prRed("Error! Tournament {tournamentId} : User {username} trying to change readyState when not on Tournament.".format(tournamentId=self.TournamentId, username=user.username))
 			return False
 		if (usr.Position is not UserPosition.InTournament):
 			return False
@@ -230,7 +227,7 @@ class Tournament():
 		socket.accept()
 		self.SendUsers(user)
 		self.SendMatch(user)
-		ColorPrint.prGreen("Tournament {tournamentId} : User {username} reconnected.".format(tournamentId=self.TournamentId, username=user.Username))
+		# ColorPrint.prGreen("Tournament {tournamentId} : User {username} reconnected.".format(tournamentId=self.TournamentId, username=user.Username))
 
 	def CreateUser(self, user, socket):
 		if self.Status is not TournamentState.Created:
@@ -241,7 +238,7 @@ class Tournament():
 		if (usr.UserId == self.Administrator):
 			self.Administrator = usr
 		self.PlayersList.append(usr)
-		ColorPrint.prGreen("Tournament {tournamentId} : User {username} Created.".format(tournamentId=self.TournamentId, username=user.nickname))
+		# ColorPrint.prGreen("Tournament {tournamentId} : User {username} Created.".format(tournamentId=self.TournamentId, username=user.nickname))
 		self.SendUsers(None)
 		if (len(self.PlayersList) == self.PlayerAmount):
 			self.StartTournament()
@@ -253,11 +250,11 @@ class Tournament():
 			return
 		elif self.Status is TournamentState.Created:
 			self.PlayersList.remove(user)
-			ColorPrint.prGreen("Tournament {tournamentId} : User {username} deleted.".format(tournamentId=self.TournamentId, username=user.Username))
+			# ColorPrint.prGreen("Tournament {tournamentId} : User {username} deleted.".format(tournamentId=self.TournamentId, username=user.Username))
 			self.SendUsers(None)
 		elif self.Status is TournamentState.Ongoing:
 			user.Status = UserState.GivedUp
-			ColorPrint.prGreen("Tournament {tournamentId} : User {username} giveUp.".format(tournamentId=self.TournamentId, username=user.Username))
+			# ColorPrint.prGreen("Tournament {tournamentId} : User {username} giveUp.".format(tournamentId=self.TournamentId, username=user.Username))
 			pass
 		else:
 			pass
@@ -265,16 +262,16 @@ class Tournament():
 	def GoingAway(self, user):
 		usr = self.GetUserById(user.id)
 		if (usr is None):
-			ColorPrint.prRed("Error! Tournament {tournamentId} : User {username} trying to goingAway when not on Tournament.".format(tournamentId=self.TournamentId, username=user.username))
+			# ColorPrint.prRed("Error! Tournament {tournamentId} : User {username} trying to goingAway when not on Tournament.".format(tournamentId=self.TournamentId, username=user.username))
 			return False
 		if (usr.Position is UserPosition.InMatch):
 			usr.Position = UserPosition.Away
 			return True
 		if usr.Status is UserState.Dead:
-			ColorPrint.prGreen("CASSE LES COUILLEs")
+			# ColorPrint.prGreen("CASSE LES COUILLEs")
 			usr.Socket.close()
 			return True
-		ColorPrint.prGreen("Debug! Tournament {tournamentId} : User {username} going away.".format(tournamentId=self.TournamentId, username=usr.Username))
+		# ColorPrint.prGreen("Debug! Tournament {tournamentId} : User {username} going away.".format(tournamentId=self.TournamentId, username=usr.Username))
 		usr.Position = UserPosition.Away
 		return True
 

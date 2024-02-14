@@ -20,7 +20,7 @@ class TournamentsManager():
 			CreatorUser = tournament.GetUserById(creator.id)
 			if (CreatorUser is not None):
 				if (CreatorUser.Status is UserState.Alive):
-					ColorPrint.prYellow("Warning! User {username} : Try to create a tournament while already in one.".format(username=CreatorUser.Username))
+					# ColorPrint.prYellow("Warning! User {username} : Try to create a tournament while already in one.".format(username=CreatorUser.Username))
 					return False, -1
 
 		tournamentType = GameType.Pong if data.get('typeGame') == "Pong" else GameType.Battleship
@@ -46,7 +46,7 @@ class TournamentsManager():
 		if (tournament is None):
 			return
 		if (tournament not in self._Tournaments.values()):
-			ColorPrint.prYellow("Warning! Trying to close a non existing Tournament");
+			# ColorPrint.prYellow("Warning! Trying to close a non existing Tournament");
 			return
 		for User in tournament.PlayersList:
 			if User.Socket.Opened is not False:
@@ -56,11 +56,11 @@ class TournamentsManager():
 	def ConnectUser(self, user, socket, tournamentId : int):
 		tournamentId = int(tournamentId)
 		if tournamentId not in self._Tournaments:
-			ColorPrint.prYellow("Warning! User {username} : Try to join a non existing tournament ({tID}).".format(username=user.username, tID=tournamentId))
+			# ColorPrint.prYellow("Warning! User {username} : Try to join a non existing tournament ({tID}).".format(username=user.username, tID=tournamentId))
 			return False
 		User = self._Tournaments[tournamentId].GetUserById(user.id)
 		if User is not None:
-			ColorPrint.prGreen("DEBUG ! User {username} here.".format(username=User.Username))
+			# ColorPrint.prGreen("DEBUG ! User {username} here.".format(username=User.Username))
 			self._Tournaments[tournamentId].ReconnectUser(User, socket)
 			return True
 		for tournament in self._Tournaments.values():
@@ -73,18 +73,18 @@ class TournamentsManager():
 						tournament.DisconnectUser(User)
 					return self._Tournaments[tournamentId].CreateUser(user, socket)
 				else:
-					ColorPrint.prYellow("Warning! User {username} : Try to join a tournament while already in one.".format(username=User.Username))
+					# ColorPrint.prYellow("Warning! User {username} : Try to join a tournament while already in one.".format(username=User.Username))
 					return False
 			return self._Tournaments[tournamentId].CreateUser(user, socket)
 
 	def DisconnectUser(self, user, tournamentId : int, leave : bool):
 		tournamentId = int(tournamentId)
 		if tournamentId not in self._Tournaments:
-			ColorPrint.prYellow("Warning! User {username} : Try to leave a non existing tournament.".format(username=user.username))
+			# ColorPrint.prYellow("Warning! User {username} : Try to leave a non existing tournament.".format(username=user.username))
 			return False
 		User = self._Tournaments[tournamentId].GetUserById(user.id)
 		if (User is None):
-			ColorPrint.prYellow("Warning! User {username} : Try to leave a tournament when not inside.".format(username=user.username))
+			# ColorPrint.prYellow("Warning! User {username} : Try to leave a tournament when not inside.".format(username=user.username))
 			return False
 		else:
 			self._Tournaments[tournamentId].DisconnectUser(User, leave)

@@ -288,7 +288,7 @@ def getBattleshipTournamentStats(request):
     allBattleshipTournament = TournamentsModels.objects.filter(tournamentType=1).order_by('-id')
     allTournamentInvolve = []
     for tournament in allBattleshipTournament:
-        if str(userId) in tournament.playersId:
+        if tournament.playersId is not None and str(userId) in tournament.playersId:
             allTournamentInvolve.append(tournament)
 
     tournamentTab = []
