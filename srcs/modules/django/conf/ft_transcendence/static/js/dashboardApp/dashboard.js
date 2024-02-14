@@ -30,9 +30,9 @@ function getBattleshipStat()
 export function addPongClassicMatch()
 {
     let url = new URL(document.location.origin + '/dashboard/getPongClassicGameStats/')
-	if (arguments[0] != undefined)
+	if (window.location.search != '')
 	{
-        url.searchParams.append('userid', arguments[0]);
+        url.searchParams.append('userid', window.location.search.substring(window.location.search.indexOf('=') + 1));
 	}
 
     fetch(url, {
@@ -92,9 +92,9 @@ export function addPongClassicMatch()
 export function addPongTournamentStat()
 {
     let url = new URL(document.location.origin + '/dashboard/getPongTournamentStats/')
-	if (arguments[0] != undefined)
+	if (window.location.search != '')
 	{
-        url.searchParams.append('userid', arguments[0]);
+        url.searchParams.append('userid', window.location.search.substring(window.location.search.indexOf('=') + 1));
 	}
 
     fetch(url, {
@@ -155,9 +155,9 @@ export function addPongTournamentStat()
 export function addPongGlobalStat()
 {
     let url = new URL(document.location.origin + '/dashboard/getWinratePongGames/')
-	if (arguments[0] != undefined)
+	if (window.location.search != '')
 	{
-        url.searchParams.append('userid', arguments[0]);
+        url.searchParams.append('userid', window.location.search.substring(window.location.search.indexOf('=') + 1));
 	}
 
     fetch(url, {
@@ -214,9 +214,9 @@ export function addPongGlobalStat()
 export function addOtherPongStat()
 {
     let url = new URL(document.location.origin + '/dashboard/getOtherPongStats/')
-	if (arguments[0] != undefined)
+	if (window.location.search != '')
 	{
-        url.searchParams.append('userid', arguments[0]);
+        url.searchParams.append('userid', window.location.search.substring(window.location.search.indexOf('=') + 1));
 	}
 
     fetch(url, {
@@ -259,9 +259,9 @@ export function addOtherPongStat()
 export function addBattleshipClassicMatch()
 {
     let url = new URL(document.location.origin + '/dashboard/getBattlehipClassicGameStats/')
-	if (arguments[0] != undefined)
+	if (window.location.search != '')
 	{
-        url.searchParams.append('userid', arguments[0]);
+        url.searchParams.append('userid', window.location.search.substring(window.location.search.indexOf('=') + 1));
 	}
 
     fetch(url, {
@@ -324,9 +324,9 @@ export function addBattleshipClassicMatch()
 export function addBattleshipTournamentStat()
 {
     let url = new URL(document.location.origin + '/dashboard/getBattleshipTournamentStats/')
-	if (arguments[0] != undefined)
+	if (window.location.search != '')
 	{
-        url.searchParams.append('userid', arguments[0]);
+        url.searchParams.append('userid', window.location.search.substring(window.location.search.indexOf('=') + 1));
 	}
 
     fetch(url, {
@@ -387,9 +387,9 @@ export function addBattleshipTournamentStat()
 export function addBattleshipGlobalStat()
 {
     let url = new URL(document.location.origin + '/dashboard/getWinrateBattleshipGames/')
-	if (arguments[0] != undefined)
+	if (window.location.search != '')
 	{
-        url.searchParams.append('userid', arguments[0]);
+        url.searchParams.append('userid', window.location.search.substring(window.location.search.indexOf('=') + 1));
 	}
 
     fetch(url, {
@@ -447,9 +447,9 @@ export function addBattleshipGlobalStat()
 export function addOtherBattleshipStat()
 {
     let url = new URL(document.location.origin + '/dashboard/getOtherBatlleshipStats/')
-	if (arguments[0] != undefined)
+	if (window.location.search != '')
 	{
-        url.searchParams.append('userid', arguments[0]);
+        url.searchParams.append('userid', window.location.search.substring(window.location.search.indexOf('=') + 1));
 	}
 
     fetch(url, {
