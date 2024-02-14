@@ -210,7 +210,7 @@ class UserPong():
         self.connexionStatus = ConnexionState.NeverConnected
         self.id = user.id
         self.socket = None
-        self.username = user.user.nickname + '-' + user.user.id
+        self.username = user.user.nickname + '-' + str(user.user.id)
 
 class pongGame():
     is_running = False
