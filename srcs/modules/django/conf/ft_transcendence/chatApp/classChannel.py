@@ -76,10 +76,10 @@ class ChannelChat():
 		tab = self.ChanModel.users
 		if tab is None:
 			tab = []
-			tab.append(user.id)
+			tab.append(str(user.id))
 
-		elif user.id not in self.ChanModel.users:
-			tab.append(user.id)
+		elif str(user.id) not in self.ChanModel.users:
+			tab.append(str(user.id))
 
 		self.ChanModel.users = tab
 		self.ChanModel.save()

@@ -21,6 +21,7 @@ class Tournament():
 		self.Tree = None
 		self.UndefinedUser = TournamentUser(None, None, 'Undefined', -1)
 		self.obj = obj
+		self.curStep = 0
 
 	def StartTournament(self):
 		self.Tree = self.CreateMatchArray()
@@ -37,6 +38,7 @@ class Tournament():
 			Match.AddUser(UsersList[UserCounter + 1], 1)
 			UserCounter += 2
 			ColorPrint.prGreen("Debug! {match} ".format(match=str(Match)))
+			Match.Status = GameState.Waiting
 		self.SendMatch(None)
 
 	def CreateMatchArray(self):
@@ -55,6 +57,22 @@ class Tournament():
 			Counter = math.floor(Counter / 2)
 		return Root
 
+	def CountStepEnd(self):
+		match_y = 0
+		for match in self.Tree[self.curStep]:
+			if match.Winner == None:
+				return
+			match_y += 1
+		self.curStep += 1
+		msg = json.dumps({
+			'type' : 'MSG_RoundChange',
+			'newRound' : self.curStep
+			})
+		for match in self.Tree[self.curStep]:
+			for user in match.Users:
+				user.SendMessage(msg)
+			match.startTimer()
+
 	def HandleMatchResult(self, MatchObj):
 		Pos1 = 0
 		StepCount = len(self.Tree)
@@ -70,10 +88,9 @@ class Tournament():
 							self.Tree[Pos1 + 1][int((Pos2 / 2) - 0.5)].AddUser(Match2.Winner, PlayerPos)
 						ColorPrint.prRed(Match2.Winner.UserId)
 						Target = 0 if Match2.Winner is [Match2.Users[1]] else 1
-						# if Match2.Users[Target] is not self.UndefinedUser:
-							# Match2.Users[Target].Status = UserState.Dead
 						ColorPrint.prGreen("Debug ! Winner = ".format(Match2.Winner.Username))
 						self.SendMatch(None)
+						self.CountStepEnd()
 						return
 					else:
 						self.Winner = self.Tree[len(self.Tree) - 1][0].Winner

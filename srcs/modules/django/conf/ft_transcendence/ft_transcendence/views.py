@@ -19,10 +19,7 @@ def homepage_view(request):
 
 @isValidLoading
 def PNF_view(request):
-	if (request.method == "GET"):
-		return render(request, '404.html')
-	else:
-		return render(request, 'index.html')
+	return render(request, '404.html')
 
 @isValidLoading
 def NeedLog_view(request):

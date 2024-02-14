@@ -1,6 +1,6 @@
 import json
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import TournamentsModels
 from . import T_Manager
 
@@ -8,6 +8,8 @@ from .T_Enum import TournamentState, UserState
 
 from ft_transcendence.decorators import isValidLoading
 from ft_transcendence import ColorPrint
+from ft_transcendence import views as main_view
+
 
 # Create your views here.
 @isValidLoading
@@ -154,10 +156,19 @@ def view_JoinPage(request):
 
 @isValidLoading
 def Tournament_view(request):
-	if (request.method == "GET"):
+	try:
+		if (request.method != "GET"):
+			raise Exception("Invalid Request Method.")
+		_id = request.GET.get('id')
+		if _id == None:
+			raise Exception("No id given.")
+		if T_Manager.Manager._Tournaments.__contains__(int(_id)) == False:
+			ColorPrint.prBlue(T_Manager.Manager._Tournaments)
+			raise Exception("Tournament not found. : " + _id)
 		return render(request, 'tournaments/tournament.html')
-	else:
-		return render(request, 'index.html')
+	except Exception as error:
+		ColorPrint.prRed(error)
+		return redirect('/404/?Valid=true')
 
 def get_tournaments_manager():
 	return T_Manager.Manager

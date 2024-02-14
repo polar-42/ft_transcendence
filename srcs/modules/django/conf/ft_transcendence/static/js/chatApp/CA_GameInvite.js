@@ -261,6 +261,7 @@ export function showTMatchRequest(tId)
 		'<button class="BTN_GoToTournament">Go to tournament</button>' +
 		'</div>'
 	item.querySelector('.BTN_GoToTournament').addEventListener("click", event => {
+		item.parentElement.removeChild(item)
 		closeChatbox()
 		navto('/tournaments/Play/?id=' + tId)
 	})

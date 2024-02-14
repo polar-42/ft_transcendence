@@ -53,7 +53,6 @@ function getRoute(RoutePath)
 
   const Potentialroutes = routes.map(route =>
     {
-		// // console.log(document.location.origin + route.path)
       return {
         route: route,
         isMatch: RoutePath === (document.location.origin + route.path)
