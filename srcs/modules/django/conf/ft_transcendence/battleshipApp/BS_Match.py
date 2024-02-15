@@ -205,6 +205,8 @@ class BattleshipMatch():
 		return None
 
 	def GameEnd(self, usrID, Reason):
+		if (self.Gamestatus is GameState.Ending):
+			return
 		if (usrID == 2):
 			user = None
 		else:
@@ -224,7 +226,6 @@ class BattleshipMatch():
 			ColorPrint.prGreen("Debug! Game : {gameId}. Game is win by {username}.".format(gameId=self.gameId, username=user.Name))
 			self.Winner = user
 		self.Gamestatus = GameState.Ending
-
 
 	def CloseGame(self):
 		if (self.GameType is not GameType.Tournament):
