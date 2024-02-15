@@ -138,8 +138,8 @@
   border: 2px solid var(--secondary-bg-color);
   color: var(--secondary-bg-color);
   background: 
-		linear-gradient(135deg, rgba(0, 155, 217, 0.1), rgba(0, 155, 217, 0.4)),
-		white;
+  linear-gradient(135deg, rgba(0, 155, 217, 0.1), rgba(0, 155, 217, 0.4)),
+  white;
   cursor: pointer;
   transition: .5s ease-in-out;
 }
@@ -174,13 +174,13 @@
   height: 200px;
   display: flex;
   box-shadow: 0px 0px 10px 5px #c156f7;
+}
 
-  img {
-    display: block;
-    width: 80%;
-    height: 80%;
-    margin: auto;
-  }
+.tournament_wrapper .tournament_box .trophy_wrapper  img {
+  display: block;
+  width: 80%;
+  height: 80%;
+  margin: auto;
 }
 
 .tournament_wrapper .tournament_box .winner_container {
@@ -188,19 +188,19 @@
   margin: 20px auto;
   grid-template-columns: 1fr 2fr;
   grid-gap: 5px;
+}
 
-  img {
-    width: 70px;
-    height: 70px;
-    display: block;
-    margin: auto;
-  }
+.tournament_wrapper .tournament_box .winner_container  img {
+  width: 70px;
+  height: 70px;
+  display: block;
+  margin: auto;
+}
 
-  p {
-    font-size: 2em;
-    margin: auto;
-    font-weight: bolder;
-  }
+.tournament_wrapper .tournament_box .winner_container  p {
+  font-size: 2em;
+  margin: auto;
+  font-weight: bolder;
 }
 
 .tournament_wrapper .tournament_box .bracket {
@@ -233,25 +233,25 @@
 }
 
 .tournament_wrapper .tournament_box .bracket .player.winner {
-	background: radial-gradient(farthest-corner at 80% 72%, #7DDB80 5%, #5FDB14);
+  background: radial-gradient(farthest-corner at 80% 72%, #7DDB80 5%, #5FDB14);
   box-shadow: 2px 2px 2px 1px #7DDB80;
 }
 
 .tournament_wrapper .tournament_box .bracket .player.loser {
-	background: radial-gradient(farthest-corner at 20% 20%, #DB6B65 10%, #DB0038);
-	box-shadow: 2px 2px 5px 2px #DB0038;
+  background: radial-gradient(farthest-corner at 20% 20%, #DB6B65 10%, #DB0038);
+  box-shadow: 2px 2px 5px 2px #DB0038;
 }
 
 .tournament_wrapper .tournament_box .bracket .player .player_profile {
   display: flex;
+}
 
-  img {
-    width: 28px;
-    height: 28px;
-    display: block;
-    margin: auto 5px;
-		border-radius: 50%;
-  }
+.tournament_wrapper .tournament_box .bracket .player .player_profile  img {
+  width: 28px;
+  height: 28px;
+  display: block;
+  margin: auto 5px;
+  border-radius: 50%;
 }
 
 .tournament_wrapper .tournament_box .bracket .waiting_screen {
