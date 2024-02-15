@@ -525,7 +525,6 @@
   font-size: 0.7em
 }
 
-.main_box_header.private_message img,
 .main_box_header.channel img {
   height: 40px;
   width: auto;
@@ -754,12 +753,6 @@
   }
 }
 
-.AddToFriendContainer {
-	display: block;
-	margin: auto;
-	cursor: pointer;
-}
-
 .AddToFriendContainer.unknown {
 	display: none;
 }
@@ -823,6 +816,13 @@
 	font-size: 31px;
 	text-align: center;
 	height: 38px;
+}
+
+.main_box_header.private_message .blockUser svg {
+	width: 35px;
+	height: 35px;
+	display: block;
+	margin: 8px 0px 0px 0px;
 }
 
 .main_box_body.friendpage .chatbox_homepage_navbar {
@@ -909,4 +909,20 @@
 .main_box_body.homepage .conversation_list .TournamentInvit button {
 	width: 100%;
 	height: 20px;
+}
+
+.main_box_header.private_message img{
+	height: 40px;
+	width: auto;
+	display: block;
+	margin-top: auto;
+	margin-bottom: auto;
+	margin-right: 0;
+	cursor: pointer;
+}
+
+.AddToFriendContainer {
+	display: block;
+	margin: auto 0;
+	cursor: pointer;
 }
