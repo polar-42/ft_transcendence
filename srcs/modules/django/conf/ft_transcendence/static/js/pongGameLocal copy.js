@@ -35,43 +35,6 @@ let bSpeed;
 let bGravity;
 let gameStarted = false;
 
-class Element {
-	constructor(options) {
-		this.x = options.x;
-		this.y = options.y;
-		this.width = options.width;
-		this.height = options.height;
-		this.dx = options.dx;
-		this.dy = options.dy;
-	}
-}
-
-const playerOne = new Element({
-	x: -5.,
-	y: 0,
-	width: 0.2,
-	height: 2.,
-	gravity: 0.1,
-});
-
-/*Player two paddle*/
-const playerTwo = new Element({
-	x: 5.,
-	y: 0,
-	width: 0.2,
-	height: 2.,
-	gravity: 0.1,
-});
-
-/*Ball*/
-const Dball = new Element({
-	x: 0,
-	y: 0,
-	width: 0.15,
-	height: 0.15,
-	speed: 0,
-	gravity: 0,
-});
 
 export function exit()
 {
@@ -216,7 +179,7 @@ export function init_objects()
 
 export function animate() {
     requestAnimationFrame(animate);
-	if (scoreOne > 3 || scoreTwo > 3)
+	if (scoreOne > 3 || scoreTwo ? 3)
 		finishGame();
 	if (BcameraShake == true)
 	{
@@ -235,8 +198,10 @@ export function animate() {
 		}
 		frames_to_shake -= 1;
 	}
+
 	trail.update()
     renderer.render(scene, camera);
+	// labelrenderer.render(scene, camera);
 }
 
 export function cameraShake() {
@@ -267,8 +232,8 @@ export function initLocalGamePong()
 	isGamePause = false;
 	bSpeed = 0;
 	bGravity = 0;
-	Dball.x = 0;
-	Dball.y = 0;
+	ball.x = 0;
+	ball.y = 0;
 	playerOne.y = 0;
 	playerTwo.y = 0;
 	init_objects();
@@ -283,16 +248,14 @@ function getRandomInt(max) {
 	return Math.floor(Math.random() * max);
 }
 
-function doKeyUp(e) {}
-
 function doKeyDown(e) {
 	const key = e.key;
 	if (key == "Escape" && isGamePause == false) {
 		e.preventDefault();
 		bSpeed = ball.speed;
 		bGravity = ball.gravity;
-		Dball.speed = 0;
-		Dball.gravity = 0;
+		ball.speed = 0;
+		ball.gravity = 0;
 		playerOne.gravity = 0;
 		playerTwo.gravity = 0;
 		isGamePause = true;
@@ -301,20 +264,20 @@ function doKeyDown(e) {
 	if (key == "Enter" && isGameRunning == false) {
 		e.preventDefault();
 		if (getRandomInt(2) == 0) {
-			Dball.speed = 2;
+			ball.speed = 2;
 		} else {
-			Dball.speed = -2;
+			ball.speed = -2;
 		}
 		if (getRandomInt(2) == 0) {
-			Dball.gravity = 2;
+			ball.gravity = 2;
 		} else {
-			Dball.gravity = -2;
+			ball.gravity = -2;
 		}
 		isGameRunning = true;
 	} else if (key == "Enter" && isGamePause == true) {
 		e.preventDefault();
-		Dball.speed = bSpeed;
-		Dball.gravity = bGravity;
+		ball.speed = bSpeed;
+		ball.gravity = bGravity;
 		playerOne.gravity = 4;
 		playerTwo.gravity = 4;
 		isGamePause = false;
@@ -322,21 +285,55 @@ function doKeyDown(e) {
 
 	if (key == "w" && playerOne.y - playerOne.gravity > 6) {
 		e.preventDefault();
-		paddle1.position.y += playerOne.gravity;
+		playerOne.y -= playerOne.gravity * 5;
 	} else if (key == "s" && playerOne.y + playerOne.gravity < canvas.height - playerOne.height) {
 		e.preventDefault();
-		playerOne.y += playerOne.gravity;
+		playerOne.y += playerOne.gravity * 5;
 	}
 
 	if (key == "ArrowUp" && playerTwo.y - playerTwo.gravity > 0) {
 		e.preventDefault();
-		playerTwo.y -= playerTwo.gravity ;
+		playerTwo.y -= playerTwo.gravity * 5;
 	} else if (key == "ArrowDown" && playerTwo.y + playerTwo.gravity < canvas.height - playerTwo.height) {
 		e.preventDefault();
-		playerTwo.y += playerTwo.gravity;
+		playerTwo.y += playerTwo.gravity * 5;
 	}
-	animate();
 }
+
+/*Player one score text*/
+function displayScorePlayerOne() {
+	context.font = "18px Arial";
+	context.fillStyle = "#fff";
+	context.fillText(scoreOne, canvas.width / 2 - 60, 30);
+}
+
+/*Player two score text*/
+function displayScorePlayerTwo() {
+	context.font = "18px Arial";
+	context.fillStyle = "#";
+	context.fillText(scoreTwo, canvas.width / 2 + 60, 30);
+}
+
+/*Draw elements*/
+function drawElements() {
+	context.clearRect(0, 0, canvas.width, canvas.height);
+	drawElement(playerOne);
+	drawElement(playerTwo);
+	drawElement(ball);
+	displayScorePlayerOne();
+	displayScorePlayerTwo();
+	if (isGamePause == true) {
+		context.font = "25px Arial";
+		context.fillStyle = "#fff";
+		context.fillText("PAUSE", canvas.width / 2 - 30, canvas.height / 2 + 10);
+	}
+	if (isGameRunning == false) {
+		context.font = "25px Arial";
+		context.fillStyle = "#fff";
+		context.fillText("Press Enter to Play", canvas.width / 2 - 105, canvas.height / 2 - 50);
+	}
+}
+
 
 function finishGame(c) {
 	music.stop();
