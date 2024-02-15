@@ -316,7 +316,7 @@ class chatSocket(WebsocketConsumer):
 
 		userModel = userModels.User.objects.get(id=user)
 
-		if userModel.id == self.userId:
+		if userModel.id == self.id:
 			print(self.user.id, 'try to block himself') #TO DEL
 			return
 
@@ -325,8 +325,12 @@ class chatSocket(WebsocketConsumer):
 		if blockedUser is None:
 			blockedUser = []
 
-		if userModel.id not in blockedUser:
-			blockedUser.append(userModel.id)
+		if str(userModel.id) not in blockedUser:
+			blockedUser.append(str(userModel.id))
+			self.UserModel.blockedUser = blockedUser
+			self.UserModel.save()
+		else:
+			blockedUser.remove(str(userModel.id))
 			self.UserModel.blockedUser = blockedUser
 			self.UserModel.save()
 
@@ -343,7 +347,7 @@ class chatSocket(WebsocketConsumer):
 			print(self.user.id, 'try to unblock himself') #TO DEL
 			return
 
-		blockedUser = self.UserModel.blockedUser
+		blockedUser = self.UserModel.id
 
 		if blockedUser is None:
 			blockedUser = []
@@ -458,7 +462,7 @@ class chatSocket(WebsocketConsumer):
 		if userModels.User.objects.filter(id=user.id).exists():
 			blockedUser = self.UserModel.blockedUser
 
-			if blockedUser is not None and user.id in blockedUser:
+			if blockedUser is not None and str(user.id) in blockedUser:
 				return True
 
 		return False
@@ -467,7 +471,7 @@ class chatSocket(WebsocketConsumer):
 		if userModels.User.objects.filter(id=user.id).exists():
 			blockedUser = userModels.User.objects.get(id=user.id).blockedUser
 
-			if blockedUser is not None and self.id in blockedUser:
+			if blockedUser is not None and str(self.id) in blockedUser:
 				return True
 
 		return False
@@ -496,7 +500,8 @@ class chatSocket(WebsocketConsumer):
 			'id':  user.id,
 			'connexion_status': user.connexionStatus,
 			'conversation': user.allPrivateTalks,
-			'friend' : friendStatus
+			'friend' : friendStatus,
+			'blocked' : 'unblocked' if self.UserModel.blockedUser is None or str(user.id) not in self.UserModel.blockedUser else 'blocked'
 			})
 		)
 
@@ -973,13 +978,19 @@ class chatSocket(WebsocketConsumer):
 			'data': response
 			}))
 
+
 	def createChannel(self, channelName, channelDescription, privacyStatus, password, adminId):
 		if ChannelModels.objects.filter(channelName=channelName).exists() is False:
-			if (privacyStatus == 1):
-				password = password
-			else:
+			if (privacyStatus != 1):
 				password = None
 			print(channelName, channelDescription, privacyStatus, password,  adminId)
+			import re
+			if (re.search(r"[\<\>\'\"\{\}\[\]\\\|\(\)\/]", channelName) != None):
+				return
+			elif (re.search(r"[\<\>\'\"\{\}\[\]\\\|\(\)\/]", channelDescription) != None):
+				return
+			elif (password != None and (re.search(r"[\<\>\'\"\{\}\[\]\\\|\(\)\/]", password) != None)):
+				return
 			self.allChannels[channelName] = ChannelChat(channelName, channelDescription, privacyStatus, password,  adminId)
 			self.allChannels[channelName].joinChannel(self.UserModel)
 			self.joinChannel(channelName, False, None, 1)
