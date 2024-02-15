@@ -275,7 +275,8 @@
   color: var(--main-bg-color);
 }
 
-.main_box_body.homepage .invitation_box {
+.main_box_body.homepage .invitation_box,
+.main_box_body.friendpage .invitation_box {
   position: absolute;
   bottom: 50px;
   left: 10px;
