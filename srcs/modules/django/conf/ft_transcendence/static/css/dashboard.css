@@ -127,7 +127,7 @@
 .dashboard #statName {
 	grid-area: a;
 }
-;
+
 .dashboard .allStat {
 	grid-area: a;
 	display: flex;
