@@ -259,7 +259,7 @@ button[name="LogIn"]:hover {
   }
 
   .presentation p {
-    text-justify: distribute;
+    text-justify: inter-character;
     text-align: justify;
   }
 

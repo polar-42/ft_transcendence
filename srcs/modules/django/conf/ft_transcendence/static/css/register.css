@@ -11,90 +11,89 @@
   -2px -2px 5px var(--fourth),
   2px 2px 5px var(--fourth);
   border-radius: 5px;
+}
+.register_container  .container h1 {
+  text-align: center;
+  font-size: 2em;
+  font-weight: 700;
+}
 
-  .container h1 {
-    text-align: center;
-    font-size: 2em;
-    font-weight: 700;
-  }
+.register_container form {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
 
-  form {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-  }
+.register_container form .input-box {
+  margin-top: 12px;
+  width: calc(100% / 2 - 20px);
+}
 
-  form .input-box {
-    margin-top: 12px;
-    width: calc(100% / 2 - 20px);
-  }
+.register_container form .input-box label {
+  font-weight: 700;
+  margin-bottom: 5px;
+}
 
-  form .input-box label {
-    font-weight: 700;
-    margin-bottom: 5px;
-  }
+.register_container form .input-box input {
+  height: 45px;
+  width: 100%;
+  outline: none;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  border-bottom-width: 2px;
+  padding-left: 15px;
+  font-size: 18px;
+  transition: all .2s;
+}
 
-  form .input-box input {
-    height: 45px;
-    width: 100%;
-    outline: none;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    border-bottom-width: 2px;
-    padding-left: 15px;
-    font-size: 18px;
-    transition: all .2s;
-  }
+.register_container form .input-box input:focus {
+  border-color: var(--secondary); 
+}
 
-  form .input-box input:focus {
-    border-color: var(--secondary); 
-  }
+.register_container .submit {
+  display: flex;
+  flex-flow: column;
+  justify-content: space-around;
+  align-items: center;
+  margin-top: 20px;
+}
 
-  .submit {
-    display: flex;
-    flex-flow: column;
-    justify-content: space-around;
-    align-items: center;
-    margin-top: 20px;
-  }
+.register_container .submit button {
+  width: 100%;
+  letter-spacing: 2px;
+  background: 
+  linear-gradient(135deg, var(--secondary-bg-color),  var(--main-bg-color)),
+  var(--main-bg-color);
+  color: white;
+  font-size: 1.3em;
+  font-weight: 900;
+  padding: 5px 10px 5px 10px;
+  border: 1px solid  var(--main-bg-color);
+  border-radius: 5px;
+  transition: all .3s;
+}
 
-  .submit button {
-    width: 100%;
-    letter-spacing: 2px;
-    background: 
-    linear-gradient(135deg, var(--secondary-bg-color),  var(--main-bg-color)),
-    var(--main-bg-color);
-    color: white;
-    font-size: 1.3em;
-    font-weight: 900;
-    padding: 5px 10px 5px 10px;
-    border: 1px solid  var(--main-bg-color);
-    border-radius: 5px;
-    transition: all .3s;
-  }
+.register_container .submit button:hover {
+  background: 
+  linear-gradient(135deg, rgba(0, 155, 217, 0.1), rgba(0, 155, 217, 0.4)),
+  white;
+  color: var(--main-bg-color);
+  /* border: 1px solid var(--main-bg-color); */
+  cursor: pointer;
+}
 
-  .submit button:hover {
-    background: 
-    linear-gradient(135deg, rgba(0, 155, 217, 0.1), rgba(0, 155, 217, 0.4)),
-    white;
-    color: var(--main-bg-color);
-    /* border: 1px solid var(--main-bg-color); */
-    cursor: pointer;
-  }
+.register_container .submit p {
+  margin-top: 10px;
+  display: block;
+  height: 100%;
+  text-align: center;
+}
 
-  .submit p {
-    margin-top: 10px;
-    display: block;
-    height: 100%;
-    text-align: center;
-  }
+.register_container .submit a {
+  font-weight: 700;
+}
 
-  .submit a {
-    font-weight: 700;
-  }
-
-  .submit a:hover {
-    text-decoration: underline;
-    color: var(--third) !important;
-  }
+.register_container .submit a:hover {
+  text-decoration: underline;
+  color: var(--third) !important;
 }

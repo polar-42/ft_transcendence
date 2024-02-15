@@ -109,7 +109,7 @@
 .dashboard .dash_stats {
 	border: 1px solid var(--fourth);
 	background:
-		linear-gradient(to bottom, var(--secondary-bg-color) 0%, var(--main-bg-color) 65%),
+		linear-gradient(to bo;ttom, var(--secondary-bg-color) 0%, var(--main-bg-color) 65%),
 		var(--main-bg-color);
 	border-radius: 10px;
 	grid-column: 2 / 2;
@@ -127,7 +127,7 @@
 .dashboard #statName {
 	grid-area: a;
 }
-
+;
 .dashboard .allStat {
 	grid-area: a;
 	display: flex;

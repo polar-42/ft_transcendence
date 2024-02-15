@@ -101,7 +101,7 @@
   border: 2px solid var(--main-color);
   background: var(--secondary-bg-color);
   appearance: none;
-  transform: all .3s ease;
+  transition: all .3s ease;
 }
 
 .games_page .selection_wrapper label span {
@@ -204,12 +204,13 @@
   width: 40px;
   height: 40px;
   display: none;
-  img {
-    width: 20px;
-    height: auto;
-    position: relative;
-    top: -18px;
-  }
+}
+
+.games_page .games_selection .cancel_btn img {
+  width: 20px;
+  height: auto;
+  position: relative;
+  top: -18px;
 }
 
 .games_page .tournament_btn_wrapper {

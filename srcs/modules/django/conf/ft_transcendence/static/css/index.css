@@ -8,10 +8,7 @@
   padding: 0px;
   box-sizing: border-box;
   font-family: rajdhaniregular;
-
-  li {
-    list-style: none;
-  }
+  list-style: none;
 }
 
 html {

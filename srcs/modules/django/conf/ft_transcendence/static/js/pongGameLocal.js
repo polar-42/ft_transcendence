@@ -23,6 +23,7 @@ export function initLocalGamePong()
 	// console.log(gameStarted = false)
 	if (gameStarted == true)
 	{
+    console.log('here')
 		gameStarted = false
 		navto('/games');
 		return;
@@ -292,18 +293,19 @@ function finishGame(c) {
 	canvas = null;
 	context = null;
 
-	scoreOne = 0;
-	scoreTwo = 0;
-	isGameRunning = false;
-	isGamePause = false;
-	bSpeed = 0;
-	bGravity = 0;
+	scoreOne = 0
+	scoreTwo = 0
+	isGameRunning = false
+	isGamePause = false
+  gameStarted = false
+	bSpeed = 0
+	bGravity = 0
 
-	ball.x = 710 / 2;
-	ball.y = 450 / 2;
+	ball.x = 710 / 2
+	ball.y = 450 / 2
 
-	playerOne.y = 200;
-	playerTwo.y = 200;
+	playerOne.y = 200
+	playerTwo.y = 200
 
 	document.getElementById('gameMessage').innerHTML = message;
 }
