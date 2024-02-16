@@ -87,10 +87,20 @@ def get_match_html(request):
 
 @isValidLoading
 def TournamentSpectateView(request):
-	if (request.method == "GET"):
+	try:
+		if (request.method != "GET"):
+			raise Exception("Invalid Request Method.")
+		_id = request.GET.get('id')
+		ColorPrint.prBlue(_id)
+		if _id == None:
+			raise Exception("No id given.")
+		if T_Manager.Manager._Tournaments.__contains__(int(_id)) == False:
+			ColorPrint.prBlue(T_Manager.Manager._Tournaments)
+			raise Exception("Tournament not found. : " + _id)
 		return render(request, 'tournaments/tournamentView.html')
-	else:
-		return render(request, 'index.html')
+	except Exception as error:
+		ColorPrint.prRed(error)
+		return redirect('/404/?Valid=true')
 
 def GetTournamentData(request):
 	if request.method != "POST":
