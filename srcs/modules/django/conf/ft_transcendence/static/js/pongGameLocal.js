@@ -4,16 +4,30 @@ import { TrailRenderer } from "../threejs_addons/TrailRenderer.js";
 import { CSS2DRenderer, CSS2DObject } from "../threejs_addons/CSS2DRenderer.js";
 import * as THREE from 'https://threejs.org/build/three.module.js';
 
-const WIDTH = 720;
-const HEIGHT = 450;
+let WIDTH = document.body.clientWidth * 0.75;
+let HEIGHT = WIDTH * (9. / 16.);
+var three_box;
+window.onresize = function () {
+
+	WIDTH = document.body.clientWidth * 0.75;
+	HEIGHT = WIDTH * (9. / 16.);
+	three_box.style.width = WIDTH + 8 + "px";
+	three_box.style.height = HEIGHT + 8 + "px";
+	scoreDisplay.style.fontSize = HEIGHT / 33 + "px";
+	textElement.style.fontSize = HEIGHT / 10 + "px";
+	camera.aspect = WIDTH / HEIGHT;
+	camera.updateProjectionMatrix();
+
+	renderer.setSize( WIDTH, HEIGHT );
+
+};
+
 var frames_to_shake = 0;
 var BcameraShake = false;
 let canvas = null;
-let socketPongIA = null;
 var scene;
 var camera;
 var renderer;
-var labelrenderer;
 var paddle1;
 var paddle1_sound;
 var paddle2_sound;
@@ -23,16 +37,17 @@ var paddle2;
 var ball;
 var trail;
 var listener;
-
-let context = null;
-let requestId = null;
-
+var textElement;
+var scoreDisplay;
+var isCountingDown = false;
 let scoreOne;
 let scoreTwo;
 let isGameRunning;
 let isGamePause;
 let bSpeed;
 let bGravity;
+let bPlayerOne;
+let bPlayerTwo;
 let gameStarted = false;
 
 class Element {
@@ -43,6 +58,7 @@ class Element {
 		this.height = options.height;
 		this.dx = options.dx;
 		this.dy = options.dy;
+		this.speed = options.speed;
 	}
 }
 
@@ -54,7 +70,7 @@ const playerOne = new Element({
 	gravity: 0.1,
 });
 
-/*Player two paddle*/
+/*Player two paddle*/	
 const playerTwo = new Element({
 	x: 5.,
 	y: 0,
@@ -69,9 +85,33 @@ const Dball = new Element({
 	y: 0,
 	width: 0.15,
 	height: 0.15,
-	speed: 0,
-	gravity: 0,
+	dx: 0,
+	dy: 0,
+	speed: .1,
 });
+
+export function countdown()
+{
+	isCountingDown = true;
+	textElement.textContent = "3";
+	setTimeout(function(){
+		textElement.textContent = "2";
+	}, 1000);
+	setTimeout(function(){
+		textElement.textContent = "1";
+	}, 2000);
+	setTimeout(function(){
+		textElement.textContent = "GO!";
+	}, 3000);
+	setTimeout(function(){
+		textElement.textContent = "";
+	}, 4000);
+	setTimeout(function(){
+		Dball.dx = bSpeed;
+		Dball.dy = bGravity;
+		isCountingDown = false;
+	}, 4000);
+}
 
 export function exit()
 {
@@ -88,9 +128,6 @@ export function init_objects()
 	renderer = new THREE.WebGLRenderer();
 	renderer.setSize(WIDTH, HEIGHT);
 
-	// labelrenderer = new CSS2DRenderer();
-	// labelrenderer.setSize(WIDTH, HEIGHT);
-	// labelrenderer.domElement.style.position = 'absolute';
 
 	scene.background = new THREE.TextureLoader().load("../../static/js/sounds/corona_bk.png");
 
@@ -99,16 +136,16 @@ export function init_objects()
 	var wallGeometry = new THREE.PlaneGeometry(22, 3);
 
 	var wallUp = new Reflector( wallGeometry, {
-		textureWidth: 500 ,
-		textureHeight: 100 ,
+		textureWidth: 250 ,
+		textureHeight: 50 ,
 		color: new THREE.Color(0x7f7f7f)
 	} );
 	wallUp.position.y = 3.8;
 	wallUp.rotation.x = Math.PI / 180 * 90 ;
 
 	var wallDown = new Reflector( wallGeometry, {
-		textureWidth: 500 ,
-		textureHeight: 100 ,
+		textureWidth: 250 ,
+		textureHeight: 50 ,
 		color: new THREE.Color(0x7f7f7f)
 	} );
 	wallDown.position.y = -3.8;
@@ -214,13 +251,34 @@ export function init_objects()
 	// countdown();
 }
 
+export function normalize(dx, dy) {
+    var length = Math.sqrt(dx ** 2 + dy ** 2);
+    return [dx / length, dy / length];
+}
+
+export function randomDir() {
+    var dx = Math.random() - 0.5;
+    var dy = dx * (Math.random() - 0.5);
+    return [dx, dy];
+}
+
 export function animate() {
     requestAnimationFrame(animate);
-	if (scoreOne > 3 || scoreTwo > 3)
-		finishGame();
+	if (scoreOne >= 3 || scoreTwo >= 3)
+	{
+		scoreDisplay.textContent = "";
+		if (scoreOne == 3) {
+			textElement.textContent = "Blue wins\r\n";
+			textElement.textContent += scoreOne + " - " + scoreTwo;
+		} else {
+			textElement.textContent = "Red wins\r\n";
+			textElement.textContent += scoreOne + " - " + scoreTwo;
+		}
+		finishGame(canvas);
+	}
 	if (BcameraShake == true)
 	{
-		frames_to_shake = 10;
+		frames_to_shake = 5;
 		BcameraShake = false;
 	}
 	if (frames_to_shake > 0)
@@ -234,6 +292,65 @@ export function animate() {
 			camera.position.z = 6;
 		}
 		frames_to_shake -= 1;
+	}
+	if (paddle1.position.y + playerOne.gravity > -2.8 && paddle1.position.y + playerOne.gravity < 2.8)
+	{
+		paddle1.position.y += playerOne.gravity;
+	}
+	if (paddle2.position.y + playerTwo.gravity > -2.8 && paddle2.position.y + playerTwo.gravity < 2.8)
+	{
+		paddle2.position.y += playerTwo.gravity;
+	}
+	if (!(Dball.dx == undefined || Dball.dy == undefined))
+	{
+		if (( 3.8 - 0.15 < ball.position.y + Dball.dy * Dball.speed || ball.position.y + Dball.dy * Dball.speed <= -3.8 + 0.15))      
+            Dball.dy *= -1;
+		else if (paddle2.position.y + 1.07 >= ball.position.y && ball.position.y >= paddle2.position.y - 1.07 && ball.position.x >= paddle2.position.x - 0.25)
+		{
+			Dball.dx *= -1;
+			Dball.dy = ball.position.y - paddle2.position.y;
+			ball.position.x = paddle2.position.x - 0.17;
+			Dball.speed *= 1.08;
+			BcameraShake = true;
+		}
+		else if (paddle1.position.y + 1.07 >= ball.position.y && ball.position.y >= paddle1.position.y - 1.07 && ball.position.x <= paddle1.position.x + 0.25)
+		{
+			Dball.dx *= -1;
+			Dball.dy = ball.position.y - paddle1.position.y;
+			ball.position.x = paddle1.position.x + 0.17;
+			Dball.speed *= 1.08;
+			BcameraShake = true;
+		}
+		else if(ball.position.x >= paddle2.position.x)
+		{
+			scoreTwo += 1;
+			ball.position.x = 0;
+			ball.position.y = 0;
+			Dball.speed = 0.1;
+			Dball.dx = 0;
+			Dball.dy = 0;
+			isGameRunning = false;
+			textElement.textContent = "Press 'ENTER'";
+			scoreDisplay.textContent = scoreOne + " - " + scoreTwo;
+		}
+		else if(ball.position.x <= paddle1.position.x)
+		{
+			scoreOne += 1;
+			ball.position.x = 0;
+			ball.position.y = 0;
+			Dball.speed = 0.1;
+			Dball.dx = 0;
+			Dball.dy = 0;
+			isGameRunning = false;
+			textElement.textContent = "Press 'ENTER'";
+			scoreDisplay.textContent = scoreOne + " - " + scoreTwo;
+		}
+		if(Dball.dx != 0 && Dball.dy != 0)
+		{
+			let normalised_dir = normalize(Dball.dx, Dball.dy);
+			ball.position.x += normalised_dir[0] * Dball.speed;
+			ball.position.y += normalised_dir[1] * Dball.speed;
+		}
 	}
 	trail.update()
     renderer.render(scene, camera);
@@ -250,7 +367,6 @@ export function cameraShake() {
 
 export function initLocalGamePong()
 {
-	// console.log(gameStarted = false)
 	if (gameStarted == true)
 	{
     console.log('here')
@@ -270,87 +386,124 @@ export function initLocalGamePong()
 	Dball.x = 0;
 	Dball.y = 0;
 	playerOne.y = 0;
+	playerOne.gravity = 0.;
+	playerTwo.gravity = 0.;	
 	playerTwo.y = 0;
 	init_objects();
 	canvas = document.getElementById("app");
-	renderer.domElement.style.border = '4px solid #ccc';
-	canvas.appendChild(renderer.domElement);
-	console.log('Pong Game vs ia is launch');
+	three_box = document.createElement("div");
+	three_box.style.width = WIDTH + 8 + "px";
+	three_box.style.height = HEIGHT + 8 + "px";
+	three_box.style.border = '4px solid #ccc';
+	three_box.style.position = "relative";
+	three_box.appendChild(renderer.domElement);
+	canvas.appendChild(three_box);
+	textElement = document.createElement("div");
+	scoreDisplay = document.createElement("div");
+	scoreDisplay.textContent = "0 - 0";
+	scoreDisplay.style.whiteSpace = "pre";
+	scoreDisplay.style.textAlign = "center";
+	scoreDisplay.style.fontSize = HEIGHT / 33 + "px";
+	scoreDisplay.style.position = "absolute"; // Set position to absolute
+	scoreDisplay.style.textShadow = "1px 1px 1px #919191, 1px 2px 1px #919191, 1px 3px 1px #919191, 1px 4px 1px #919191, 1px 3px 1px #919191";
+	scoreDisplay.style.top = "10%"; // Center vertically
+	scoreDisplay.style.left = "50%"; // Center horizontally
+	scoreDisplay.style.transform = "translate(-50%, -50%)"; // Adjust position to center properly
+	scoreDisplay.style.zIndex = "1"; // Ensure it's above other content
+	scoreDisplay.style.padding = "10px"; // Example padding for better visualization
+	three_box.appendChild(scoreDisplay);
+	textElement.textContent = "Press 'ENTER'";
+	textElement.style.whiteSpace = "pre";
+	textElement.style.textAlign = "center";
+	textElement.style.fontSize = HEIGHT / 10 + "px";
+	textElement.style.position = "absolute"; // Set position to absolute
+	textElement.style.textShadow = "1px 1px 1px #919191, 1px 2px 1px #919191, 1px 3px 1px #919191, 1px 4px 1px #919191, 1px 3px 1px #919191";
+	textElement.style.top = "50%"; // Center vertically
+	textElement.style.left = "50%"; // Center horizontally
+	textElement.style.transform = "translate(-50%, -50%)"; // Adjust position to center properly
+	textElement.style.zIndex = "1"; // Ensure it's above other content
+	textElement.style.padding = "10px"; // Example padding for better visualization
+	
+	three_box.appendChild(textElement);
 	animate();
 }
 
-function getRandomInt(max) {
-	return Math.floor(Math.random() * max);
-}
 
-function doKeyUp(e) {}
+function doKeyUp(e) {
+	const key = e.key;
+	if (key == "w" || key == "s")
+	{
+		playerOne.gravity = 0;
+	}
+	if (key == "ArrowUp" || key == "ArrowDown")
+	{
+		playerTwo.gravity = 0;
+	}
+}
 
 function doKeyDown(e) {
 	const key = e.key;
-	if (key == "Escape" && isGamePause == false) {
+	if (key == "Escape" && isGamePause == false && isCountingDown == false) {
 		e.preventDefault();
-		bSpeed = ball.speed;
-		bGravity = ball.gravity;
-		Dball.speed = 0;
-		Dball.gravity = 0;
+		if (Dball.dx != 0){
+			bSpeed = Dball.dx;
+		}
+		if (Dball.dy != 0){
+			bGravity = Dball.dy;
+		}
+		bPlayerOne = playerOne.gravity;
+		bPlayerTwo = playerTwo.gravity;
+		Dball.dx = 0;
+		Dball.dy = 0;
+		Dball.speed = 0.1;
 		playerOne.gravity = 0;
 		playerTwo.gravity = 0;
 		isGamePause = true;
+		renderer.domElement.style.filter = "blur(5px)"
+		textElement.textContent = "Press 'ENTER'";
 	}
 
 	if (key == "Enter" && isGameRunning == false) {
 		e.preventDefault();
-		if (getRandomInt(2) == 0) {
-			Dball.speed = 2;
-		} else {
-			Dball.speed = -2;
-		}
-		if (getRandomInt(2) == 0) {
-			Dball.gravity = 2;
-		} else {
-			Dball.gravity = -2;
-		}
+		var randvec = randomDir();
+		var vector_start = normalize(randvec[0], randvec[1]);
+		bSpeed = vector_start[0];
+		bGravity = vector_start[1];
+		countdown();
 		isGameRunning = true;
+		isGamePause = false;
+		renderer.domElement.style.filter = ""
+
 	} else if (key == "Enter" && isGamePause == true) {
 		e.preventDefault();
-		Dball.speed = bSpeed;
-		Dball.gravity = bGravity;
-		playerOne.gravity = 4;
-		playerTwo.gravity = 4;
+		countdown();
+		playerOne.gravity = bPlayerOne;
+		playerTwo.gravity = bPlayerTwo;
+		renderer.domElement.style.filter = ""
 		isGamePause = false;
 	}
-
-	if (key == "w" && playerOne.y - playerOne.gravity > 6) {
+	if (isCountingDown == true || isGamePause == true || isGameRunning == false)
+		return;
+	if (key == "w") {
 		e.preventDefault();
-		paddle1.position.y += playerOne.gravity;
-	} else if (key == "s" && playerOne.y + playerOne.gravity < canvas.height - playerOne.height) {
+		playerOne.gravity = 0.1;
+	} else if (key == "s") {
 		e.preventDefault();
-		playerOne.y += playerOne.gravity;
+		playerOne.gravity = -0.1;
 	}
-
-	if (key == "ArrowUp" && playerTwo.y - playerTwo.gravity > 0) {
+	if (key == "ArrowUp") {
 		e.preventDefault();
-		playerTwo.y -= playerTwo.gravity ;
-	} else if (key == "ArrowDown" && playerTwo.y + playerTwo.gravity < canvas.height - playerTwo.height) {
+		playerTwo.gravity = 0.1;
+	} else if (key == "ArrowDown") {
 		e.preventDefault();
-		playerTwo.y += playerTwo.gravity;
+		playerTwo.gravity = -0.1;
 	}
-	animate();
 }
 
 function finishGame(c) {
 	music.stop();
-	c.style.display="none";
-
-	let message;
-	if (scoreOne == 3) {
-		message = "Game is finished, playerOne is the winner by the score of " + scoreOne + " to " + scoreTwo;
-	} else {
-		message = "Game is finished, playerTwo is the winner by the score of " + scoreTwo + " to " + scoreOne;
-	}
 
 	document.removeEventListener('keydown', doKeyDown);
 	document.removeEventListener('keyup', doKeyUp);
 
-	document.getElementById('gameMessage').innerHTML = message;
 }

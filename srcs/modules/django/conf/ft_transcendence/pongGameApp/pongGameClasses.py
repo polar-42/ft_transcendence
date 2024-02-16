@@ -69,7 +69,7 @@ class Player:
         return self.dy
 
     def change_pos(self, dy):
-        if (-3. <= self.y + dy <= 3.):
+        if (-2.7 <= self.y + dy <= 2.7):
             self.y += dy
 
     def add_point(self):

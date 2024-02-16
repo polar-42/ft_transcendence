@@ -18,7 +18,6 @@ var paddle1;
 var paddle1_sound;
 var paddle2_sound;
 var wall_sound;
-var music;
 var paddle2;
 var ball;
 var trail;
@@ -42,6 +41,7 @@ export function initGamePongIA()
 
 	document.addEventListener('keydown', doKeyDown);
 	document.addEventListener('keyup', doKeyUp);
+
 	socketPongIA.onopen = LaunchGame
 	socketPongIA.onclose = FinishGame
 	socketPongIA.onmessage = e => OnMessage(e)
@@ -51,6 +51,8 @@ export function initGamePongIA()
 export function unloadGamePongIA()
 {
 	// console.log('unloadGamePongIA');
+	cancelAnimationFrame(animationId);
+	renderer.dispose();
 	if (socketPongIA != null)
 	{
 		socketPongIA.close();
@@ -157,7 +159,6 @@ function init_objects()
 	paddle1_sound = new THREE.Audio(listener);
 	paddle2_sound = new THREE.Audio(listener);
 	wall_sound = new THREE.Audio(listener);
-	music = new THREE.Audio(listener);
 	var audioLoader = new THREE.AudioLoader();
 	audioLoader.load('../../static/js/sounds/bop_1.ogg', function(buffer) {
 		paddle1_sound.setBuffer(buffer);
@@ -167,12 +168,6 @@ function init_objects()
 	});
 	audioLoader.load('../../static/js/sounds/bop_3.ogg', function(buffer) {
 		wall_sound.setBuffer(buffer);
-	});
-	audioLoader.load('../../static/js/sounds/music.mp3', function(buffer) {
-		music.setBuffer(buffer);
-		music.setLoop(true);
-		music.setVolume(0.5);
-		music.play();
 	});
 
 
@@ -328,7 +323,6 @@ function LaunchGame()
 
 function FinishGame()
 {
-	music.stop();
 	console.log('Pong game is finish');
 }
 
