@@ -781,9 +781,12 @@ export function CP_Unload()
 {
 	if (battleshipSocket == null)
 		return
-	if(battleshipSocket.readyState != 3)
+	if(battleshipSocket.readyState != WebSocket.CLOSED)
 		battleshipSocket.close()
 	battleshipSocket = null
+	if (curInterval != undefined)
+		clearInterval(curInterval)
+	curInterval = undefined
 }
 
 //#endregion

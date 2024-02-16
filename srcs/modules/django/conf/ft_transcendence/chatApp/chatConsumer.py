@@ -40,10 +40,11 @@ class chatSocket(WebsocketConsumer):
 
 		self.UserModel = userModels.User.objects.get(id=self.id)
 		self.UserModel.connexionStatus = connexionStatus.Connected
+		self.UserModel.sessionCount += 1
 		self.UserModel.save()
 
 		self.id = self.UserModel.id
-
+		ColorPrint.prBlue(self.allUsers)
 		for user in self.allUsers:
 			async_to_sync(self.channel_layer.group_send)(
 				'chat_' + str(user),
@@ -98,7 +99,10 @@ class chatSocket(WebsocketConsumer):
 
 	def disconnect(self, code):
 		self.UserModel = userModels.User.objects.get(id=self.id)
-		self.UserModel.connexionStatus = connexionStatus.Disconnected
+		self.UserModel.sessionCount -= 1
+		# self.UserModel.connexionStatus = connexionStatus.Disconnected
+		self.UserModel.connexionStatus = connexionStatus.Connected if self.UserModel.sessionCount != 0 else connexionStatus.Disconnected
+
 		self.UserModel.save()
 
 		async_to_sync(self.channel_layer.group_discard)(
@@ -127,7 +131,7 @@ class chatSocket(WebsocketConsumer):
 				{
 					'type': 'updateStatus',
 					'id': self.id,
-					'status': connexionStatus.Disconnected
+					'status': self.UserModel.connexionStatus
 				}
 			)
 

@@ -18,7 +18,7 @@ class User(AbstractUser):
 	allPrivateTalks = ArrayField(models.CharField(), blank=True, null=True)
 
 	username = None
-
+	sessionCount = models.IntegerField(default=0)
 	USERNAME_FIELD = 'email'
 	REQUIRED_FIELDS = []
 	tfValidated = models.BooleanField(default=False)
