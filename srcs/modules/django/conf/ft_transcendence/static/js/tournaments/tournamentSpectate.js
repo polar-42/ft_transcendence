@@ -22,8 +22,14 @@ export function InitTournamentView()
 
 function GetData()
 {
-    const crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
 
+    var crsf_token = document.getElementsByName('csrfmiddlewaretoken')
+	if (crsf_token[0] == undefined)
+	{
+		clearInterval(curInterval)
+		return 
+	}
+	crsf_token = crsf_token[0].value
     var headers = new Headers()
     headers.append('Content-Type', 'application/json')
     headers.append('X-CSRFToken', crsf_token)
@@ -43,7 +49,6 @@ function GetData()
 	})
 	.then(data =>
 	{
-		// console.log(data)
 		PrintPlayers(data)
 		PrintMatchs(data)
 	})
@@ -57,7 +62,6 @@ function GetData()
 
 function PrintPlayers(data)
 {
-
 	const PL = document.getElementsByName("PlayerList")[0]
 	if (PL == null)
 		return
