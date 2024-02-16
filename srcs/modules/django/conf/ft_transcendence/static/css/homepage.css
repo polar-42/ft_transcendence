@@ -186,8 +186,18 @@ button[name="LogIn"]:hover {
 }
 
 .bio {
-  height: 100%;
   align-items: center;
+  margin-bottom: 20px;
+}
+
+.bio p {
+  height: 100%;
+  margin: auto;
+}
+
+.bio ul {
+  margin-top: 10px;
+  width: 100%;
 }
 
 .bio_wrapper .bio ul li {
@@ -214,6 +224,13 @@ button[name="LogIn"]:hover {
 
   .hero {
     font-size: 1.2em;
+  }
+}
+
+@media (max-width: 1080px) {
+  .bio_wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
   }
 }
 
@@ -263,16 +280,34 @@ button[name="LogIn"]:hover {
     text-align: justify;
   }
 
-  .bio_wrapper {
-    grid-area: b;
-  }
-
   .bio {
-    display: flex;
-    justify-content: space-evenly;
-    align-items: center;
     margin-left: 7%;
     margin-right: 7%;
+  }
+  
+  .bio .member {
+    display: flex;
+  }
+
+  .bio img {
+    width: 80px;
+    margin-right: 10px;
+  }
+
+  .bio p {
+    min-width: 130px;
+    font-size: 1em;
+  }
+}
+
+@media (max-width: 620px) {
+  .bio img {
+    width: 60px;
+  }
+
+  .bio p {
+    min-width: 100px;
+    font-size: 0.8em;
   }
 }
 
@@ -284,5 +319,22 @@ button[name="LogIn"]:hover {
   #login-signin button {
     font-size: 1.2em;
     padding: 5px;
+  }
+
+  .bio_wrapper {
+    font-size: 0.9em;
+  }
+  .bio p {
+    min-width: 80px;
+  }
+
+  .bio_wrapper .bio ul li {
+    margin-right: auto;
+  }
+}
+
+@media (max-width: 400px) {
+  .bio p {
+    min-width: 60px;
   }
 }

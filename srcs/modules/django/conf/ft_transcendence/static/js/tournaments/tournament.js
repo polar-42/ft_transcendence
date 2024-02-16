@@ -26,6 +26,7 @@ export function initTournaments()
 	tournamentSocket.onclose = e => quitTournamentSocket(e)
 	tournamentSocket.onmessage = e => OnMessageTournament(e)
 	document.querySelector('.BTN_Ready').addEventListener('click', ReadyBehavior)
+  document.querySelector('.BTN_Ready').disabled = true
 }
 
 function initTournamentsStatus(data) {
@@ -225,13 +226,14 @@ async function PrintPlayers(data)
     else
       avatar = URL.createObjectURL(avatar)
     const item = document.createElement('li')
+    const itemDiv = item.appendChild(document.createElement('div'))
     const avatarEl = document.createElement('img')
     avatarEl.src = avatar 
     avatarEl.alt = "User avatar"
     const txt = document.createElement('p')
     txt.textContent = element.userName
-    item.appendChild(avatarEl)
-    item.appendChild(txt)
+    itemDiv.appendChild(avatarEl)
+    itemDiv.appendChild(txt)
     PL.appendChild(item)
   })
 }
@@ -290,12 +292,16 @@ async function PrintMatchs(matchList)
     }
   })
   document.querySelector(".waiting_screen").style.display = 'none'
+  console.log(lostStage)
   if (lostStage != '') 
     lostTournament(lostStage)
-  if (matchList[matchList.length - 1].Winner == -1) {
-    console.log(isRoundFull(matchList))
-    if (isRoundFull(matchList) == true)
-      document.querySelector('.next_match_wrapper').style.display = 'flex' 
+  else if (matchList[matchList.length - 1].Winner == -1) {
+    if (isRoundFull(matchList) == true) {
+      if (document.querySelector('.BTN_Ready').classList.contains('disable')) {
+        document.querySelector('.BTN_Ready').classList.remove('disable') 
+        document.querySelector('.BTN_Ready').disabled = false 
+      }
+    }
   }
   else
     displayTournamentResult(matchList[matchList.length - 1])
@@ -336,14 +342,18 @@ async function displayMatchPlayerHTML(userNb, userData, matchupEl, selfId) {
 }
 
 function lostTournament(lostRound) {
+  console.log('fsdfdsdfas')
   let lostElm  = document.querySelector(".next_match_wrapper")
   lostElm.style.display = 'flex'
-  lostElm.querySelector('button').style.display = 'none'
-  lostElm.children[0].textContent = "You lost in " + lostRound
+  lostElm.querySelector('p').textContent = "You lost in " + lostRound
+  document.querySelector('.BTN_Ready').classList.add('disable')
+  document.querySelector('.BTN_Ready').disabled = true
 }
 
 async function displayTournamentResult(lastMatch) {
   document.querySelector('.next_match_wrapper').style.display = 'none'
+  document.querySelector('.BTN_Ready').classList.add('disable')
+  document.querySelector('.BTN_Ready').disabled = true
   let winner
   if (lastMatch.Winner == 0)
     winner = lastMatch.User1
