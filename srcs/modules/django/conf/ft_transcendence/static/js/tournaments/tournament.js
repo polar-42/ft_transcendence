@@ -4,6 +4,7 @@ import { navto } from '../index.js'
 let tournamentSocket = undefined
 var tournamentId = undefined
 let isBracketInit = false
+let roundCounter
 
 export function initTournaments()
 {
@@ -17,6 +18,7 @@ export function initTournaments()
 	if (document.querySelector('.tournament_page') == undefined)
 		return
 	isBracketInit = false
+  roundCounter = 0
 	tournamentSocket = new WebSocket("ws://" + window.location.host + '/tournamentsApp/' + tournamentId)
 	//tournamentSocket = new WebSocket("wss://" + window.location.host + '/tournamentsApp/' + arg)
 	document.querySelector('.BTN_Leave').addEventListener('click', leaveTournament)
@@ -175,6 +177,7 @@ function leaveTournament()
 function OnMessageTournament(e)
 {
 	const data = JSON.parse(e.data)
+  console.log(data)
 	switch (data.type) {
 		case 'MSG_UpdateUserList':
 			PrintPlayers(data)
@@ -185,6 +188,9 @@ function OnMessageTournament(e)
 		case 'MSG_UpdateMatchList':
 			PrintMatchs(data.matchList)
 			break
+    case 'MSG_RoundChange':
+      roundCounter = data.newRound
+      break
 	}
 }
 
@@ -284,15 +290,30 @@ async function PrintMatchs(matchList)
     }
   })
   document.querySelector(".waiting_screen").style.display = 'none'
-  console.log(lostStage)
   if (lostStage != '') 
     lostTournament(lostStage)
-  if (matchList[matchList.length - 1].Winner == -1)
-    document.querySelector('.next_match_wrapper').style.display = 'flex' 
-  else  {
-    console.log('fdsfd')
-    displayTournamentResult(matchList[matchList.length - 1])
+  if (matchList[matchList.length - 1].Winner == -1) {
+    console.log(isRoundFull(matchList))
+    if (isRoundFull(matchList) == true)
+      document.querySelector('.next_match_wrapper').style.display = 'flex' 
   }
+  else
+    displayTournamentResult(matchList[matchList.length - 1])
+}
+
+function isRoundFull(matchList) {
+  for (let i in matchList) {
+    if (matchList[i].User1.id == 'Undefined' || matchList[i].User2.id == 'Undefined') {
+      let round = matchList[i].X
+      let j = i
+      while (j < matchList.length && matchList[j].X == round) {
+        if (matchList[j].User1.id != 'Undefined' || matchList[j].User2.id != 'Undefined') 
+          return false
+        j++;
+      }
+    }
+  }
+  return true
 }
 
 async function displayMatchPlayerHTML(userNb, userData, matchupEl, selfId) {
