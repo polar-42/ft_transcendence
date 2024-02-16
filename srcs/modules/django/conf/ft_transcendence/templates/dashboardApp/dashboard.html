@@ -8,111 +8,111 @@
 
     <button class="buttonGame" id="buttonGameBattleship">BATTLESHIP</button>
   </div>
-
-  <div class="dashboardInformation">
-    <div class="dash_classicMatchs">
-      <h4 class="h4">
-        Classics Matchs
-      </h4>
-
-      <ul id="dash_listClassicMatch">
-        <li class="dash_classicMatch"></li>
-      </ul>
-    </div>
-
-    <div class="dash_tournaments">
-      <h4 class="h4">
-        Tournaments
-      </h4>
-      <ul id="dash_listTournaments">
-      </ul>
-    </div>
-
-    <div class="dash_stats">
-      <h4 class="h4" id="statName">
-        Stats
-      </h4>
-      <div class="allStat">
-        <div class="gameStats">
-          <div class="piechartGame">
-
-          </div>
-
-          <div class="piechartStatGame">
-            <p id="classicGameStat">Classics Games</p>
-            <p id="winGame">Win</p>
-            <p id="loseGame">Lose</p>
+  <div class="dashboard_wrapper">
+    <div class="dashboardInformation">
+      <div class="results_wrapper">
+        <div class="classicMatchs_wrapper">
+          <h3>Classics Matchs</h3>
+          <div class="dash_classicMatchs">
+            <ul id="dash_listClassicMatch">
+              <li class="dash_classicMatch"></li>
+            </ul>
           </div>
         </div>
-
-        <div class="tournamentStats">
-          <div class="piechartTournament">
-
-          </div>
-
-          <div class="piechartStatTournament">
-            <p id="classicTournamentStat">Tournaments</p>
-            <p id="winTournament">Win</p>
-            <p id="loseTournament">Lose</p>
+        <div class="tournaments_wrapper">
+          <h3>Tournaments</h3>
+          <div class="dash_tournaments">
+            <ul id="dash_listTournaments">
+            </ul>
           </div>
         </div>
       </div>
-      <div class="otherStat">
-        <ul id="otherStatLine">
-        </ul>
-      </div>
-    </div>
-  </div>
-  <div class="PopUp_wrapper">
-    <div class="GameStatPopUp">
-      {% csrf_token %}
-      <div class="specificGameStat">
-        <a id="closePopUp">x</a>
-        <div id="boxTime">
-          Today
-        </div>
-        <div id="playerVs">
-          <div id="player_1">
-            <div id="tooltip_player1">PLAYER1</div>
-            <img id="player_1_avatar" src="" alt="PLAYER1_image">
-          </div>
+      <div class="stats_wrapper">
+        <h3 id="statName">Stats</h3>
+        <div class="dash_stats">
+          <div class="allStat">
+            <div class="gameStats">
+              <div class="piechartGame">
 
-          <div id="playerVsText">
-            VS
+              </div>
+
+              <div class="piechartStatGame">
+                <p id="classicGameStat">Classics Games</p>
+                <p id="winGame">Win</p>
+                <p id="loseGame">Lose</p>
+              </div>
+            </div>
+
+            <div class="tournamentStats">
+              <div class="piechartTournament">
+
+              </div>
+
+              <div class="piechartStatTournament">
+                <p id="classicTournamentStat">Tournaments</p>
+                <p id="winTournament">Win</p>
+                <p id="loseTournament">Lose</p>
+              </div>
+            </div>
           </div>
-          <div id="player_2">
-            <div id="tooltip_player2">PLAYER2</div>
-            <img id="player_2_avatar" src="" alt="PLAYER2_image">
+          <div class="otherStat">
+            <ul id="otherStatLine">
+            </ul>
           </div>
-        </div>
-        <div id="boxScore">
-          1 - 3
-        </div>
-        <div id="ballTouch">
-          1 - 2
         </div>
       </div>
     </div>
-    <div class="TournamentStatPopUp">
-      {% csrf_token %}
-      <div class="specificTournamentStat">
-        <a id="closeTournamentPopUp">x</a>
-        <div id="boxTimeTournament">
-          DATE
-        </div>
-        <div id="tournamentDescription">
-          Description
-        </div>
-        <div id="winnerTextTournament">
-          Players
-        </div>
-        <div id="winnerImageTournament">
-          <div id="winnerName">
-            Winner:
+    <div class="PopUp_wrapper">
+      <div class="GameStatPopUp">
+        {% csrf_token %}
+        <div class="specificGameStat">
+          <a id="closePopUp">x</a>
+          <div id="boxTime">
+            Today
           </div>
-          <div id="tournamentWinner">
-            <img id="winnerTournamentImage" src="" alt="WINNER_image">
-            <div id="tooltip_winnerTournament">PLAYER1</div>
+          <div id="playerVs">
+            <div id="player_1">
+              <div id="tooltip_player1">PLAYER1</div>
+              <img id="player_1_avatar" src="" alt="PLAYER1_image">
+            </div>
+
+            <div id="playerVsText">
+              VS
+            </div>
+            <div id="player_2">
+              <div id="tooltip_player2">PLAYER2</div>
+              <img id="player_2_avatar" src="" alt="PLAYER2_image">
+            </div>
+          </div>
+          <div id="boxScore">
+            1 - 3
+          </div>
+          <div id="ballTouch">
+            1 - 2
+          </div>
+        </div>
+      </div>
+      <div class="TournamentStatPopUp">
+        {% csrf_token %}
+        <div class="specificTournamentStat">
+          <a id="closeTournamentPopUp">x</a>
+          <div id="boxTimeTournament">
+            DATE
+          </div>
+          <div id="tournamentDescription">
+            Description
+          </div>
+          <div id="winnerTextTournament">
+            Players
+          </div>
+          <div id="winnerImageTournament">
+            <div id="winnerName">
+              Winner:
+            </div>
+            <div id="tournamentWinner">
+              <img id="winnerTournamentImage" src="" alt="WINNER_image">
+              <div id="tooltip_winnerTournament">PLAYER1</div>
+            </div>
           </div>
         </div>
       </div>
