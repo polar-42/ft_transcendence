@@ -1,5 +1,5 @@
 import { navto } from "../index.js"
-import { addPongClassicMatch, addPongTournamentStat, addPongGlobalStat, addOtherPongStat, addBattleshipClassicMatch, addBattleshipTournamentStat, addBattleshipGlobalStat, addOtherBattleshipStat } from "../dashboardApp/dashboard.js"
+import { initDashboard, addPongClassicMatch, addPongTournamentStat, addPongGlobalStat, addOtherPongStat, addBattleshipClassicMatch, addBattleshipTournamentStat, addBattleshipGlobalStat, addOtherBattleshipStat } from "../dashboardApp/dashboard.js"
 
 let userid = undefined;
 
@@ -26,6 +26,10 @@ export async function initProfile()
 			getPongStat()
 			document.getElementById('buttonGamePong').addEventListener('click', getPongStat);
 			document.getElementById('buttonGameBattleship').addEventListener('click', getBattleshipStat);
+		}
+		else
+		{
+			initDashboard()
 		}
 	})
 }

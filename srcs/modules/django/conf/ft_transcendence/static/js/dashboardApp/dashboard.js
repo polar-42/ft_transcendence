@@ -834,7 +834,7 @@ export async function popUpTournamentStat(tournamentId) {
                 displayPlayerNickname(e, winner, 3, false)
             })
             img.addEventListener('click', function(e) {
-                navto("/profile/?id = " + winner_id)
+                navto("/profile/?id=" + winner_id)
             })
         }
     }
