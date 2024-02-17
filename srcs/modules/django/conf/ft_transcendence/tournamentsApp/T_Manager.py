@@ -70,7 +70,7 @@ class TournamentsManager():
 					continue
 				elif (User.Status is not UserState.Alive):
 					if (User.Status is UserState.Waiting):
-						tournament.DisconnectUser(User)
+						tournament.DisconnectUser(User, True)
 					return self._Tournaments[tournamentId].CreateUser(user, socket)
 				else:
 					# ColorPrint.prYellow("Warning! User {username} : Try to join a tournament while already in one.".format(username=User.Username))

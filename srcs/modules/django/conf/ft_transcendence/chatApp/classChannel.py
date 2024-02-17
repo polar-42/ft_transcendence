@@ -8,6 +8,7 @@ import time
 
 class ChannelChat():
 	def __init__(self, name, description, privacyStatus, password, creator):
+		from ft_transcendence import ColorPrint
 		if ChannelModels.objects.filter(channelName=name).exists():
 
 			self.ChanModel = ChannelModels.objects.get(channelName=name)
@@ -36,6 +37,7 @@ class ChannelChat():
 		if creator != None:
 			self.admin = userModels.User.objects.get(id=creator)
 			self.usersSocket.append(creator)
+			# self.usersSocket.append(creator)
 
 			print('admin: ',self.admin)
 			obj = ChannelModels.objects.create(
@@ -60,8 +62,9 @@ class ChannelChat():
 		self.ChanModel = obj
 		self.channelId = obj.id
 
-		self.joinChannel(self.admin)
-
+		# self.joinChannel(self.admin)
+		from ft_transcendence import ColorPrint
+		ColorPrint.prBlue(self.usersSocket)
 		print('channel is', obj.channelName, 'with', obj.users)
 
 
@@ -95,8 +98,8 @@ class ChannelChat():
 
 		if self.ChanModel.users is not None:
 			tab = self.ChanModel.users
-			if user.id in tab:
-				tab.remove(user.id)
+			if str(user.id) in tab:
+				tab.remove(str(user.id))
 				self.ChanModel.users = tab
 				self.ChanModel.save()
 

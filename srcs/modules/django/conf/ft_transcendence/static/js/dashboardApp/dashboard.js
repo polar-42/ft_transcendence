@@ -67,8 +67,10 @@ export function addPongClassicMatch()
               elem.classList.add('lose')
             }
             elem.appendChild(document.createElement('p'))
+            elem.lastChild.classList.add('players')
             elem.lastChild.textContent = element.player1 + ' vs ' + element.player2
             elem.appendChild(document.createElement('p'))
+            elem.lastChild.classList.add('score')
             elem.lastChild.textContent = element.player1_score + ' : ' + element.player2_score
             elem.appendChild(document.createElement('p'))
             elem.lastChild.textContent = element.date
@@ -303,8 +305,10 @@ export function addBattleshipClassicMatch()
               elem.classList.add('lose')
             }
             elem.appendChild(document.createElement('p'))
+            elem.lastChild.classList.add('players')
             elem.lastChild.textContent = element.player1 + ' vs ' + element.player2
             elem.appendChild(document.createElement('p'))
+            elem.lastChild.classList.add('score')
             elem.lastChild.textContent = element.player1_score + ' : ' + element.player2_score
             elem.appendChild(document.createElement('p'))
             elem.lastChild.textContent = element.date
@@ -829,7 +833,7 @@ export async function popUpTournamentStat(tournamentId) {
         displayPlayerNickname(e, winner, 3, false)
       })
       img.addEventListener('click', function(e) {
-        navto("/profile/?id = " + winner_id)
+        navto("/profile/?id=" + winner_id)
       })
     }
   }

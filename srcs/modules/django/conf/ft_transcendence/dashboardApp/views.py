@@ -270,6 +270,8 @@ def getBattlehipClassicGameStats(request):
 			'id': str(gameId),
 			'player1': player1,
 			'player2': player2,
+			'player1_score': game.player1_hit,
+			'player2_score': game.player2_hit,
 			'win': win,
 			'date': dateGame
 			})

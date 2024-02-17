@@ -1,18 +1,35 @@
 var tournamentId = undefined
 var curInterval = undefined
 
+
+tournamentId = undefined
+
 export function InitTournamentView()
 {
 
-    tournamentId = arguments[0][0]
+	if (window.location.search != '')
+		tournamentId = window.location.search.substring(window.location.search.indexOf('=') + 1)
+	if (tournamentId == undefined)
+	{
+		navto('/games')
+		return
+	}
+	if (document.querySelector('#players_in_tournaments') == undefined)
+		return
     GetData()
     curInterval = setInterval(GetData, 10000);
 }
 
 function GetData()
 {
-    const crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
 
+    var crsf_token = document.getElementsByName('csrfmiddlewaretoken')
+	if (crsf_token[0] == undefined)
+	{
+		clearInterval(curInterval)
+		return 
+	}
+	crsf_token = crsf_token[0].value
     var headers = new Headers()
     headers.append('Content-Type', 'application/json')
     headers.append('X-CSRFToken', crsf_token)
@@ -32,7 +49,6 @@ function GetData()
 	})
 	.then(data =>
 	{
-		// console.log(data)
 		PrintPlayers(data)
 		PrintMatchs(data)
 	})
@@ -46,7 +62,6 @@ function GetData()
 
 function PrintPlayers(data)
 {
-
 	const PL = document.getElementsByName("PlayerList")[0]
 	if (PL == null)
 		return
@@ -55,10 +70,11 @@ function PrintPlayers(data)
         PL.removeChild(child)
         child = PL.lastElementChild
     }
+	console.log(data)
 	const Players = data.users
 	Players.forEach(element => {
 		const txt = document.createElement('li')
-		txt.textContent = element
+		txt.textContent = element.userName
 		PL.appendChild(txt)
 	})
 	// document.getElementById('players_in_tournaments').innerHTML = 'There is ' + data.player_in_tournament + ' in this ' + data.size_tournaments + ' players tournament.'

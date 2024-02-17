@@ -86,8 +86,6 @@
 
 .dashboard .dash_classicMatch, 
 .dashboard .dash_tournament {
-  display: flex;
-  justify-content: space-between;
 	border-radius: 2px;
 	cursor: pointer;
   margin: 0 5px;
@@ -96,11 +94,39 @@
   transition: .3s ease;
 }
 
+.dashboard .dash_classicMatch {
+  display: grid;
+  grid-template-areas: 'a b c d';
+}
+
+.dashboard .dash_tournament {
+  display: flex;
+  justify-content: space-between;
+}
+
 .dashboard .dash_classicMatch img, 
 .dashboard .dash_tournament img {
   display: block;
   width: 26px;
   height: 26px;
+}
+
+.dashboard .dash_classicMatch p {
+  text-align: center;
+}
+
+.dashboard .dash_classicMatch .players {
+  width: 250px;
+}
+
+.dashboard .dash_classicMatch .score {
+  width: 80px;
+}
+
+.dashboard .dash_classicMatch p:last-child {
+  text-align: end;
+  align-self: end;
+  width: 210px;
 }
 
 .dashboard .dash_classicMatch.win, 

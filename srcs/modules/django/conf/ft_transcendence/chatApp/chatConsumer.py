@@ -40,10 +40,11 @@ class chatSocket(WebsocketConsumer):
 
 		self.UserModel = userModels.User.objects.get(id=self.id)
 		self.UserModel.connexionStatus = connexionStatus.Connected
+		self.UserModel.sessionCount += 1
 		self.UserModel.save()
 
 		self.id = self.UserModel.id
-
+		ColorPrint.prBlue(self.allUsers)
 		for user in self.allUsers:
 			async_to_sync(self.channel_layer.group_send)(
 				'chat_' + str(user),
@@ -98,7 +99,10 @@ class chatSocket(WebsocketConsumer):
 
 	def disconnect(self, code):
 		self.UserModel = userModels.User.objects.get(id=self.id)
-		self.UserModel.connexionStatus = connexionStatus.Disconnected
+		self.UserModel.sessionCount -= 1
+		# self.UserModel.connexionStatus = connexionStatus.Disconnected
+		self.UserModel.connexionStatus = connexionStatus.Connected if self.UserModel.sessionCount != 0 else connexionStatus.Disconnected
+
 		self.UserModel.save()
 
 		async_to_sync(self.channel_layer.group_discard)(
@@ -127,7 +131,7 @@ class chatSocket(WebsocketConsumer):
 				{
 					'type': 'updateStatus',
 					'id': self.id,
-					'status': connexionStatus.Disconnected
+					'status': self.UserModel.connexionStatus
 				}
 			)
 
@@ -196,6 +200,7 @@ class chatSocket(WebsocketConsumer):
 				self.RetrieveFriendInvitation()
 			case 'MSG_RetrieveFriendConversation':
 				self.RetrieveFriendConversation(data['limiter'])
+
 	def joinChannel(self, channelName, privacyStatus, password, atConnection):
 		if self.allChannels[channelName] is None:
 			return
@@ -992,8 +997,15 @@ class chatSocket(WebsocketConsumer):
 			elif (password != None and (re.search(r"[\<\>\'\"\{\}\[\]\\\|\(\)\/]", password) != None)):
 				return
 			self.allChannels[channelName] = ChannelChat(channelName, channelDescription, privacyStatus, password,  adminId)
-			self.allChannels[channelName].joinChannel(self.UserModel)
-			self.joinChannel(channelName, False, None, 1)
+			# self.allChannels[channelName].joinChannel(self.UserModel)
+			self.UserModel.channels.append(channelName)
+			self.UserModel.save()
+			async_to_sync(self.channel_layer.group_add)(
+				'channel_' + channelName,
+				self.channel_name
+			)
+			# self.joinChannel(channelName, False, None, 1)
+			ColorPrint.prBlue(self.allChannels[channelName].usersSocket)
 			self.send(json.dumps({
 				'type': 'channel_creation',
 				'state': 'success',
