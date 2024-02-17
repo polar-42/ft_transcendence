@@ -11,6 +11,7 @@ function getPongStat()
 {
 	document.getElementById('buttonGamePong').style.background = 'var(--fourth)'
 	document.getElementById('buttonGameBattleship').style.background = 'transparent'
+  cleanLists()
 	addPongClassicMatch();
 	addPongTournamentStat();
 	addPongGlobalStat();
@@ -21,6 +22,7 @@ function getBattleshipStat()
 {
 	document.getElementById('buttonGameBattleship').style.background = 'var(--fourth)'
 	document.getElementById('buttonGamePong').style.background = 'transparent'
+  cleanLists()
 	addBattleshipClassicMatch()
 	addBattleshipTournamentStat()
 	addBattleshipGlobalStat()
@@ -48,6 +50,7 @@ export function addPongClassicMatch()
 			})
 			.then(data =>
 				{
+          console.log(data)
 					let matchs = JSON.parse(data).classicMatchs
 					let matchList = document.getElementById('dash_listClassicMatch')
 					matchs.forEach(element => {
@@ -72,27 +75,11 @@ export function addPongClassicMatch()
 						elem.lastChild.textContent = element.date
 						elem.addEventListener('click', popUpPongGameStat.bind(null, element.id))
 						matchList.appendChild(elem)	
-						// htmlMatch += element.player1 + ' vs ' + element.player2 + ' | ' + element.player1_score + ' ' + element.player2_score + ' | ' + element.date + '</li>'
-						// htmlMatch += '<li class="dash_classicMatch" id="pongId_' + element.id + '">'
 					})
-
-					// document.getElementById('dash_listClassicMatch').innerHTML = htmlMatch
-					// let games = document.querySelectorAll('.dash_classicMatch');
-					//
-					// for (let i = 0; i < games.length; i++)
-					// {
-					// 	let gameId = 'pongId_' + matchs[i].id
-					// 	document.getElementById('pongId_' + matchs[i].id).addEventListener('click', function() {
-					// 		popUpPongGameStat(gameId);
-					// 	})
-					// }
 					if (matchs.length == 0)
-					{
 						document.getElementById('dash_listClassicMatch').innerHTML = '<li>No Data</li>'
-					}
 				})
-			.catch(error =>
-				{
+			.catch(error => {
 					console.error('Error:', error)
 				})
 }
@@ -119,18 +106,30 @@ export function addPongTournamentStat()
 			.then(data =>
 				{
 					let tournament = JSON.parse(data).tournaments
-					let htmlTournament = "";
+          let matchList = document.getElementById('dash_listTournaments')
 
 					tournament.forEach(element => {
-						htmlTournament += '<li class="dash_tournament" id="tournamentId_' + element.id + '">'
-						if (element.win == true)
-							htmlTournament += '🏆 '
-						else
-							htmlTournament += '❌ '
-						htmlTournament += element.name + ' win by ' + element.winner + ' | ' + element.date + '</li>'
+            let elem = document.createElement('li')
+						elem.classList.add('dash_tournament')
+						elem.setAttribute('id', 'tournamentId_' + element.id)
+						elem.appendChild(document.createElement('img'))
+						if (element.win == true) {
+							elem.firstChild.src = '/static/assets/logo/trophy.png'
+							elem.firstChild.alt = 'Trophy logo'
+							elem.classList.add('win')
+						} else {
+							elem.firstChild.src = '/static/assets/logo/red_cross.png'
+							elem.firstChild.alt = 'Lose logo'
+							elem.classList.add('lose')
+            }
+						elem.appendChild(document.createElement('p'))
+						elem.lastChild.textContent = element.name + ' win by ' + element.winner
+						elem.appendChild(document.createElement('p'))
+						elem.lastChild.textContent = element.date
+						elem.addEventListener('click', popUpTournamentStat.bind(null, element.id))
+						matchList.appendChild(elem)	
 					})
 
-					document.getElementById('dash_listTournaments').innerHTML = htmlTournament
 					let games = document.querySelectorAll('.dash_tournament');
 
 					for (let i = 0; i < games.length; i++)
@@ -281,43 +280,35 @@ export function addBattleshipClassicMatch()
 			})
 			.then(data =>
 				{
+          console.log(data)
 					let matchs = JSON.parse(data).classicMatchs
-					let htmlMatch = "";
+          let matchList = document.getElementById('dash_listClassicMatch')
 
 					matchs.forEach(element => {
-						htmlMatch += '<li class="dash_classicMatch" id="battleshipId_' + element.id + '">'
-						if (element.win == true)
-							htmlMatch += '🏆 '
-						else
-							htmlMatch += '❌ '
-						htmlMatch += element.player1 + ' vs ' + element.player2 + ' | ' + element.date + '</li>'
+						let elem = document.createElement('li')
+						elem.classList.add('dash_classicMatch')
+						elem.setAttribute('id', 'battleshipId_' + element.id)
+						elem.appendChild(document.createElement('img'))
+						if (element.win == true) {
+							elem.firstChild.src = '/static/assets/logo/trophy.png'
+							elem.firstChild.alt = 'Trophy logo'
+							elem.classList.add('win')
+						} else {
+							elem.firstChild.src = '/static/assets/logo/red_cross.png'
+							elem.firstChild.alt = 'Lose logo'
+							elem.classList.add('lose')
+            }
+						elem.appendChild(document.createElement('p'))
+						elem.lastChild.textContent = element.player1 + ' vs ' + element.player2
+						elem.appendChild(document.createElement('p'))
+						elem.lastChild.textContent = element.player1_score + ' : ' + element.player2_score
+						elem.appendChild(document.createElement('p'))
+						elem.lastChild.textContent = element.date
+						elem.addEventListener('click', popUpPongGameStat.bind(null, element.id))
+						matchList.appendChild(elem)	
 					})
-
-					document.getElementById('dash_listClassicMatch').innerHTML = htmlMatch
-					let games = document.querySelectorAll('.dash_classicMatch');
-
-
-					for (let i = 0; i < games.length; i++)
-					{
-						let gameId = 'battleshipId_' + matchs[i].id
-						document.getElementById('battleshipId_' + matchs[i].id).addEventListener('click', function() {
-							popUpBattleshipGameStat(gameId);
-						})
-
-						if (matchs[i].win == true)
-						{
-							games[i].style.background = 'linear-gradient(rgb(0, 255, 38) 0%, black 65%)';
-						}
-						else
-						{
-							games[i].style.background = 'linear-gradient(rgb(255, 0, 0) 0%, black 65%)';
-						}
-					}
-
 					if (matchs.length == 0)
-					{
 						document.getElementById('dash_listClassicMatch').innerHTML = '<li>No Data</li>'
-					}
 				})
 			.catch(error =>
 				{
@@ -347,40 +338,30 @@ export function addBattleshipTournamentStat()
 			.then(data =>
 				{
 					let tournament = JSON.parse(data).tournaments
-					let htmlTournament = "";
-
+          let matchList = document.getElementById('dash_listTournaments')
 					tournament.forEach(element => {
-						htmlTournament += '<li class="dash_tournament" id="tournamentId_' + element.id + '">'
-						if (element.win == true)
-							htmlTournament += '🏆 '
-						else
-							htmlTournament += '❌ '
-						htmlTournament += element.name + ' win by ' + element.winner + ' | ' + element.date + '</li>'
+            let elem = document.createElement('li')
+						elem.classList.add('dash_tournament')
+						elem.setAttribute('id', 'tournamentId_' + element.id)
+						elem.appendChild(document.createElement('img'))
+						if (element.win == true) {
+							elem.firstChild.src = '/static/assets/logo/trophy.png'
+							elem.firstChild.alt = 'Trophy logo'
+							elem.classList.add('win')
+						} else {
+							elem.firstChild.src = '/static/assets/logo/red_cross.png'
+							elem.firstChild.alt = 'Lose logo'
+							elem.classList.add('lose')
+            }
+						elem.appendChild(document.createElement('p'))
+						elem.lastChild.textContent = element.name + ' win by ' + element.winner
+						elem.appendChild(document.createElement('p'))
+						elem.lastChild.textContent = element.date
+						elem.addEventListener('click', popUpTournamentStat.bind(null, element.id))
+						matchList.appendChild(elem)	
 					})
-
-					document.getElementById('dash_listTournaments').innerHTML = htmlTournament
-					let games = document.querySelectorAll('.dash_tournament');
-
-					for (let i = 0; i < games.length; i++)
-					{
-						let tournamentId = 'tournamentId_' + tournament[i].id
-						document.getElementById('tournamentId_' + tournament[i].id).addEventListener('click', function() {
-							popUpTournamentStat(tournamentId);
-						})
-						if (tournament[i].win == true)
-						{
-							games[i].style.background = 'linear-gradient(rgb(0, 255, 38) 0%, black 65%)';
-						}
-						else
-						{
-							games[i].style.background = 'linear-gradient(rgb(255, 0, 0) 0%, black 65%)';
-						}
-					}
-
 					if (tournament.length == 0)
-					{
 						document.getElementById('dash_listTournaments').innerHTML = '<li>No Data</li>'
-					}
 				})
 			.catch(error =>
 				{
@@ -842,4 +823,10 @@ export async function popUpTournamentStat(tournamentId) {
 			})
 		}
 	}
+}
+
+function cleanLists() {
+  let lists = document.querySelectorAll('ul')
+  lists[0].innerHTML = ''
+  lists[1].innerHTML = ''
 }
