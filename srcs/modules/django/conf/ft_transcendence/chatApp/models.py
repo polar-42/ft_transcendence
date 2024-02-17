@@ -2,6 +2,9 @@ from .enumChat import channelPrivacy
 from django.db import models
 from authApp import models as authAppModels
 from django.contrib.postgres.fields import ArrayField
+from django.utils import timezone
+import datetime
+
 
 # Create your models here.
 class ChannelModels(models.Model):
@@ -10,9 +13,9 @@ class ChannelModels(models.Model):
     users = ArrayField(models.CharField(), blank=True, null=True)
     privacyStatus = models.IntegerField(default=channelPrivacy.Public)
     password = models.CharField(blank=True, default=None, null=True)
-    description = models.CharField(max_length=255, default="PAS2DESCRIPTION")
+    description = models.CharField(max_length=255, default="undefined")
     channelPicture = models.BinaryField(blank=True, default=None, null=True)
-    timeCreation = models.DateTimeField(auto_now=True)
+    timeCreation = models.DateTimeField(default=timezone.now)
 
 class MessageModels(models.Model):
     MESSAGE_TYPE = [
