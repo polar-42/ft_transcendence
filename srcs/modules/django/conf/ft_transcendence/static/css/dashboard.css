@@ -76,14 +76,45 @@
 
 .dashboard .dash_classicMatch, 
 .dashboard .dash_tournament {
+  display: flex;
+  justify-content: space-between;
 	border-radius: 2px;
 	cursor: pointer;
-  margin: 5px;
+  margin: 0 5px;
+  padding: 5px;
+  font-size: 1.2em;
+  transition: .3s ease;
 }
 
-.dashboard .dash_classicMatch:hover,
-.dashboard .dash_tournament:hover {
-	border: 1px solid var(--fourth);
+.dashboard .dash_classicMatch img, 
+.dashboard .dash_tournament img {
+  display: block;
+  width: 26px;
+  height: 26px;
+}
+
+.dashboard .dash_classicMatch.win, 
+.dashboard .dash_tournament.win {
+  background: linear-gradient(to bottom right, var(--secondary-bg-color) 43%, #099709);
+}
+
+.dashboard .dash_classicMatch.lose, 
+.dashboard .dash_tournament.lose {
+  background: linear-gradient(to bottom right, var(--secondary-bg-color) 43%, #970000);
+}
+
+.dashboard .dash_classicMatch.win:hover,
+.dashboard .dash_tournament.win:hover {
+  box-shadow: 0px 1px 5px 1px #099709;
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+
+.dashboard .dash_classicMatch.lose:hover,
+.dashboard .dash_tournament.lose:hover {
+  box-shadow: 0px 1px 5px 1px #970000;
+  margin-bottom: 5px;
+  margin-top: 5px;
 }
 
 .dashboard .tournaments_wrapper {
@@ -111,10 +142,14 @@
 	margin-top: 3%;
 	margin-right: 3%;
 	margin-bottom: 3%;
+}
+
+.dashboard .dash_stats {
 	display: grid;
-	grid-template-areas:'a'
-						'b';
-	grid-template-rows: repeat(auto-fit, minmax(100px,1fr));
+  grid-template-areas: 
+        'a'
+        'b';
+  grid-template-rows: 1fr 1fr;
 }
 
 .dashboard #statName {
@@ -128,13 +163,12 @@
 	justify-content: space-around;
 	align-content: center;
 	margin-top: 10px;
+
 }
 
-.dashboard .gameStats
-{
-	display: grid;
-	grid-template-areas: 'a b';
-	gap: 10px;
+.dashboard .gameStats,
+.dashboard .tournamentStats {
+  display: flex;
 }
 
 .dashboard .piechartGame {
