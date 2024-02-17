@@ -13,15 +13,10 @@ let socketPongIA = null;
 var scene;
 var camera;
 var renderer;
-var labelrenderer;
 var paddle1;
-var paddle1_sound;
-var paddle2_sound;
-var wall_sound;
 var paddle2;
 var ball;
 var trail;
-var listener;
 
 export function initGamePongIA()
 {
@@ -76,10 +71,6 @@ function init_objects()
 	renderer = new THREE.WebGLRenderer();
 	renderer.setSize(WIDTH, HEIGHT);
 
-	// labelrenderer = new CSS2DRenderer();
-	// labelrenderer.setSize(WIDTH, HEIGHT);
-	// labelrenderer.domElement.style.position = 'absolute';
-
 	scene.background = new THREE.TextureLoader().load("../../static/js/sounds/corona_bk.png");
 
 
@@ -87,16 +78,16 @@ function init_objects()
 	var wallGeometry = new THREE.PlaneGeometry(22, 3);
 
 	var wallUp = new Reflector( wallGeometry, {
-		textureWidth: 500 ,
-		textureHeight: 100 ,
+		textureWidth: 250 ,
+		textureHeight: 50 ,
 		color: new THREE.Color(0x7f7f7f)
 	} );
 	wallUp.position.y = 3.8;
 	wallUp.rotation.x = Math.PI / 180 * 90 ;
 
 	var wallDown = new Reflector( wallGeometry, {
-		textureWidth: 500 ,
-		textureHeight: 100 ,
+		textureWidth: 250 ,
+		textureHeight: 50 ,
 		color: new THREE.Color(0x7f7f7f)
 	} );
 	wallDown.position.y = -3.8;
@@ -153,22 +144,6 @@ function init_objects()
 	scene.add(ball);
 
 
-	
-	listener = new THREE.AudioListener();
-	camera.add(listener);
-	paddle1_sound = new THREE.Audio(listener);
-	paddle2_sound = new THREE.Audio(listener);
-	wall_sound = new THREE.Audio(listener);
-	var audioLoader = new THREE.AudioLoader();
-	audioLoader.load('../../static/js/sounds/bop_1.ogg', function(buffer) {
-		paddle1_sound.setBuffer(buffer);
-	});
-	audioLoader.load('../../static/js/sounds/bop_2.ogg', function(buffer) {
-		paddle2_sound.setBuffer(buffer);
-	});
-	audioLoader.load('../../static/js/sounds/bop_3.ogg', function(buffer) {
-		wall_sound.setBuffer(buffer);
-	});
 
 
 
@@ -217,7 +192,6 @@ function animate() {
 
 	trail.update()
     renderer.render(scene, camera);
-	// labelrenderer.render(scene, camera);
 }
 
 function cameraShake() {
@@ -240,19 +214,10 @@ function updateGameData(data)
 		if ( paddle1.position.y + 1. >= ball.position.y && ball.position.y >= paddle1.position.y - 1. && ball.position.x <= -5. + 0.25 )
 		{
 			BcameraShake = true;
-			paddle1_sound.stop();
-			paddle1_sound.play();
 		}
 		if (paddle2.position.y + 1. >= ball.position.y && ball.position.y >= paddle2.position.y - 1. && ball.position.x >= 5. - 0.25)
 		{
 			BcameraShake = true;
-			paddle2_sound.stop();
-			paddle2_sound.play();
-		}
-		if (( 3.6 < ball.position.y || ball.position.y < -3.6))
-		{
-			wall_sound.stop();
-			wall_sound.play();
 		}
 		let playerOne_score = data.playerone_score;
 		let playerTwo_score = data.playertwo_score;

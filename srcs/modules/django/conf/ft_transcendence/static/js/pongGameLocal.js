@@ -7,6 +7,7 @@ import * as THREE from 'https://threejs.org/build/three.module.js';
 let WIDTH = document.body.clientWidth * 0.75;
 let HEIGHT = WIDTH * (9. / 16.);
 var three_box;
+var isRendering = false;
 window.onresize = function () {
 
 	WIDTH = document.body.clientWidth * 0.75;
@@ -29,10 +30,6 @@ var scene;
 var camera;
 var renderer;
 var paddle1;
-var paddle1_sound;
-var paddle2_sound;
-var wall_sound;
-var music;
 var paddle2;
 var ball;
 var trail;
@@ -202,31 +199,6 @@ export function init_objects()
 	scene.add(ball);
 
 
-	
-	listener = new THREE.AudioListener();
-	camera.add(listener);
-	paddle1_sound = new THREE.Audio(listener);
-	paddle2_sound = new THREE.Audio(listener);
-	wall_sound = new THREE.Audio(listener);
-	music = new THREE.Audio(listener);
-	var audioLoader = new THREE.AudioLoader();
-	audioLoader.load('../../static/js/sounds/bop_1.ogg', function(buffer) {
-		paddle1_sound.setBuffer(buffer);
-	});
-	audioLoader.load('../../static/js/sounds/bop_2.ogg', function(buffer) {
-		paddle2_sound.setBuffer(buffer);
-	});
-	audioLoader.load('../../static/js/sounds/bop_3.ogg', function(buffer) {
-		wall_sound.setBuffer(buffer);
-	});
-	audioLoader.load('../../static/js/sounds/music.mp3', function(buffer) {
-		music.setBuffer(buffer);
-		music.setLoop(true);
-		music.setVolume(0.5);
-		music.play();
-	});
-
-
 
 	const light = new THREE.PointLight(0xffffff, 1000)
 	light.position.set(10, 10, 10)
@@ -263,16 +235,20 @@ export function randomDir() {
 }
 
 export function animate() {
+	if (isRendering == false)
+		return ;
     requestAnimationFrame(animate);
 	if (scoreOne >= 3 || scoreTwo >= 3)
 	{
 		scoreDisplay.textContent = "";
 		if (scoreOne == 3) {
 			textElement.textContent = "Blue wins\r\n";
-			textElement.textContent += scoreOne + " - " + scoreTwo;
+			textElement.textContent += scoreTwo + " - " + scoreOne;
+			three_box.style.border = '4px solid #0000ff';
 		} else {
 			textElement.textContent = "Red wins\r\n";
-			textElement.textContent += scoreOne + " - " + scoreTwo;
+			textElement.textContent += scoreTwo + " - " + scoreOne;
+			three_box.style.border = '4px solid #ff0000';
 		}
 		finishGame(canvas);
 	}
@@ -326,24 +302,28 @@ export function animate() {
 			scoreTwo += 1;
 			ball.position.x = 0;
 			ball.position.y = 0;
+			paddle1.position.y = 0;
+			paddle2.position.y = 0;
 			Dball.speed = 0.1;
 			Dball.dx = 0;
 			Dball.dy = 0;
 			isGameRunning = false;
 			textElement.textContent = "Press 'ENTER'";
-			scoreDisplay.textContent = scoreOne + " - " + scoreTwo;
+			scoreDisplay.textContent = scoreTwo + " - " + scoreOne;
 		}
 		else if(ball.position.x <= paddle1.position.x)
 		{
 			scoreOne += 1;
 			ball.position.x = 0;
+			paddle1.position.y = 0;
+			paddle2.position.y = 0;
 			ball.position.y = 0;
 			Dball.speed = 0.1;
 			Dball.dx = 0;
 			Dball.dy = 0;
 			isGameRunning = false;
 			textElement.textContent = "Press 'ENTER'";
-			scoreDisplay.textContent = scoreOne + " - " + scoreTwo;
+			scoreDisplay.textContent = scoreTwo + " - " + scoreOne;
 		}
 		if(Dball.dx != 0 && Dball.dy != 0)
 		{
@@ -425,6 +405,7 @@ export function initLocalGamePong()
 	textElement.style.padding = "10px"; // Example padding for better visualization
 	
 	three_box.appendChild(textElement);
+	isRendering = true;
 	animate();
 }
 
@@ -501,9 +482,15 @@ function doKeyDown(e) {
 }
 
 function finishGame(c) {
-	music.stop();
-
+	isRendering = false;
+	renderer.domElement.style.filter = "blur(5px)"
+	three_box.style
 	document.removeEventListener('keydown', doKeyDown);
 	document.removeEventListener('keyup', doKeyUp);
-
+	setTimeout(function(){
+		renderer.domElement.remove();
+		renderer.renderLists.dispose();
+		renderer.dispose()
+		renderer = null;
+	}, 1000);
 }
