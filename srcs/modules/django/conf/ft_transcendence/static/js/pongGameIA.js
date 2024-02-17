@@ -4,8 +4,8 @@ import { TrailRenderer } from "../threejs_addons/TrailRenderer.js";
 import { CSS2DRenderer, CSS2DObject } from "../threejs_addons/CSS2DRenderer.js";
 import * as THREE from 'https://threejs.org/build/three.module.js';
 
-const WIDTH = 720;
-const HEIGHT = 450;
+let WIDTH = document.body.clientWidth * 0.75;
+let HEIGHT = WIDTH * (9. / 16.);
 var frames_to_shake = 0;
 var BcameraShake = false;
 let canvas = null;
@@ -17,6 +17,31 @@ var paddle1;
 var paddle2;
 var ball;
 var trail;
+var three_box = null;
+var textElement;
+var scoreDisplay;
+var isCountingDown = false;
+
+export function countdown()
+{
+	isCountingDown = true;
+	textElement.textContent = "3";
+	setTimeout(function(){
+		textElement.textContent = "2";
+	}, 1000);
+	setTimeout(function(){
+		textElement.textContent = "1";
+	}, 2000);
+	setTimeout(function(){
+		textElement.textContent = "GO!";
+	}, 3000);
+	setTimeout(function(){
+		textElement.textContent = "";
+	}, 4000);
+	setTimeout(function(){
+		isCountingDown = false;
+	}, 4000);
+}
 
 export function initGamePongIA()
 {
@@ -46,7 +71,6 @@ export function initGamePongIA()
 export function unloadGamePongIA()
 {
 	// console.log('unloadGamePongIA');
-	cancelAnimationFrame(animationId);
 	renderer.dispose();
 	if (socketPongIA != null)
 	{
@@ -70,9 +94,14 @@ function init_objects()
 
 	renderer = new THREE.WebGLRenderer();
 	renderer.setSize(WIDTH, HEIGHT);
-
-	scene.background = new THREE.TextureLoader().load("../../static/js/sounds/corona_bk.png");
-
+	var originalWarning = console.warn; // back up the original method
+	console.warn = function(){};
+	var loader = new THREE.TextureLoader();
+	var texture = loader.load("../../static/js/sounds/corona_bk.png");
+	texture.minFilter = THREE.LinearMipmapLinearFilter;
+	texture.generateMipmaps = true;
+	scene.background = texture;
+	console.warn = originalWarning;
 
 
 	var wallGeometry = new THREE.PlaneGeometry(22, 3);
@@ -219,10 +248,7 @@ function updateGameData(data)
 		{
 			BcameraShake = true;
 		}
-		let playerOne_score = data.playerone_score;
-		let playerTwo_score = data.playertwo_score;
-
-		document.getElementById('score').innerHTML = playerOne_score + " - " + playerTwo_score;
+		scoreDisplay.textContent = data.playertwo_score + " - " + data.playerone_score;
 	}
 }
 
@@ -280,9 +306,54 @@ function LaunchGame()
 {
 	init_objects();
 	canvas = document.getElementById("app");
-	renderer.domElement.style.border = '4px solid #ccc';
-	canvas.appendChild(renderer.domElement);
+	three_box = document.createElement("div");
+	three_box.style.width = WIDTH + 8 + "px";
+	three_box.style.height = HEIGHT + 8 + "px";
+	three_box.style.border = '4px solid #ccc';
+	three_box.style.position = "relative";
+	three_box.appendChild(renderer.domElement);
+	canvas.appendChild(three_box);
+	textElement = document.createElement("div");
+	scoreDisplay = document.createElement("div");
+	scoreDisplay.textContent = "0 - 0";
+	scoreDisplay.style.whiteSpace = "pre";
+	scoreDisplay.style.textAlign = "center";
+	scoreDisplay.style.fontSize = HEIGHT / 33 + "px";
+	scoreDisplay.style.position = "absolute"; // Set position to absolute
+	scoreDisplay.style.textShadow = "1px 1px 1px #919191, 1px 2px 1px #919191, 1px 3px 1px #919191, 1px 4px 1px #919191, 1px 3px 1px #919191";
+	scoreDisplay.style.top = "10%"; // Center vertically
+	scoreDisplay.style.left = "50%"; // Center horizontally
+	scoreDisplay.style.transform = "translate(-50%, -50%)"; // Adjust position to center properly
+	scoreDisplay.style.zIndex = "1"; // Ensure it's above other content
+	scoreDisplay.style.padding = "10px"; // Example padding for better visualization
+	three_box.appendChild(scoreDisplay);
+	textElement.textContent = "";
+	textElement.style.whiteSpace = "pre";
+	textElement.style.textAlign = "center";
+	textElement.style.fontSize = HEIGHT / 10 + "px";
+	textElement.style.position = "absolute"; // Set position to absolute
+	textElement.style.textShadow = "1px 1px 1px #919191, 1px 2px 1px #919191, 1px 3px 1px #919191, 1px 4px 1px #919191, 1px 3px 1px #919191";
+	textElement.style.top = "50%"; // Center vertically
+	textElement.style.left = "50%"; // Center horizontally
+	textElement.style.transform = "translate(-50%, -50%)"; // Adjust position to center properly
+	textElement.style.zIndex = "1"; // Ensure it's above other content
+	textElement.style.padding = "10px"; // Example padding for better visualization
+	
+	three_box.appendChild(textElement);
 	console.log('Pong Game vs ia is launch');
+	window.onresize = function () {
+		WIDTH = document.body.clientWidth * 0.75;
+		HEIGHT = WIDTH * (9. / 16.);
+		three_box.style.width = WIDTH + 8 + "px";
+		three_box.style.height = HEIGHT + 8 + "px";
+		scoreDisplay.style.fontSize = HEIGHT / 33 + "px";
+		textElement.style.fontSize = HEIGHT / 10 + "px";
+		camera.aspect = WIDTH / HEIGHT;
+		camera.updateProjectionMatrix();
+	
+		renderer.setSize( WIDTH, HEIGHT );
+	
+	};
 	animate();
 }
 
@@ -295,9 +366,19 @@ function FinishGameByScore(data)
 {
 	console.log(data)
 	renderer.domElement.style.display = "none";
-	document.getElementById('score').style.display = "none";
-	let message = "Game is finished"; //+ data.winner + " is the winner by the score of " + data.playerone_score + " to " + data.playertwo_score;
-	document.getElementById('gameMessage').innerHTML = message;
+	if (data.playerone_score >= 3 || data.playertwo_score >= 3)
+	{
+		scoreDisplay.textContent = data.playertwo_score + " - " + data.playerone_score;
+		if (data.playerone_score) {
+			textElement.textContent = "Blue wins\r\n";
+			textElement.textContent += data.playertwo_score + " - " + data.playerone_score;
+			three_box.style.border = '4px solid #0000ff';
+		} else {
+			textElement.textContent = "Red wins\r\n";
+			textElement.textContent += data.playertwo_score + " - " + data.playerone_score;
+			three_box.style.border = '4px solid #ff0000';
+		}
+	}
 }
 
 function OnMessage(e)
@@ -308,6 +389,10 @@ function OnMessage(e)
 	{
 		// console.log('game_data is received');
 		updateGameData(data);
+	}
+	else if (data.type == 'countdown')
+	{
+		countdown();
 	}
 	else if (data.type == 'game_timer')
 	{

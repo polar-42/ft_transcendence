@@ -6,22 +6,8 @@ import * as THREE from 'https://threejs.org/build/three.module.js';
 
 let WIDTH = document.body.clientWidth * 0.75;
 let HEIGHT = WIDTH * (9. / 16.);
-var three_box;
+var three_box = null;
 var isRendering = false;
-window.onresize = function () {
-
-	WIDTH = document.body.clientWidth * 0.75;
-	HEIGHT = WIDTH * (9. / 16.);
-	three_box.style.width = WIDTH + 8 + "px";
-	three_box.style.height = HEIGHT + 8 + "px";
-	scoreDisplay.style.fontSize = HEIGHT / 33 + "px";
-	textElement.style.fontSize = HEIGHT / 10 + "px";
-	camera.aspect = WIDTH / HEIGHT;
-	camera.updateProjectionMatrix();
-
-	renderer.setSize( WIDTH, HEIGHT );
-
-};
 
 var frames_to_shake = 0;
 var BcameraShake = false;
@@ -33,7 +19,6 @@ var paddle1;
 var paddle2;
 var ball;
 var trail;
-var listener;
 var textElement;
 var scoreDisplay;
 var isCountingDown = false;
@@ -124,11 +109,14 @@ export function init_objects()
 
 	renderer = new THREE.WebGLRenderer();
 	renderer.setSize(WIDTH, HEIGHT);
-
-
-	scene.background = new THREE.TextureLoader().load("../../static/js/sounds/corona_bk.png");
-
-
+	var originalWarning = console.warn; // back up the original method
+	console.warn = function(){};
+	var loader = new THREE.TextureLoader();
+	var texture = loader.load("../../static/js/sounds/corona_bk.png");
+	texture.minFilter = THREE.LinearMipmapLinearFilter;
+	texture.generateMipmaps = true;
+	scene.background = texture;
+	console.warn = originalWarning;
 
 	var wallGeometry = new THREE.PlaneGeometry(22, 3);
 
@@ -405,6 +393,21 @@ export function initLocalGamePong()
 	textElement.style.padding = "10px"; // Example padding for better visualization
 	
 	three_box.appendChild(textElement);
+
+	window.onresize = function () {
+		WIDTH = document.body.clientWidth * 0.75;
+		HEIGHT = WIDTH * (9. / 16.);
+		three_box.style.width = WIDTH + 8 + "px";
+		three_box.style.height = HEIGHT + 8 + "px";
+		scoreDisplay.style.fontSize = HEIGHT / 33 + "px";
+		textElement.style.fontSize = HEIGHT / 10 + "px";
+		camera.aspect = WIDTH / HEIGHT;
+		camera.updateProjectionMatrix();
+	
+		renderer.setSize( WIDTH, HEIGHT );
+	
+	};
+
 	isRendering = true;
 	animate();
 }
@@ -488,9 +491,7 @@ function finishGame(c) {
 	document.removeEventListener('keydown', doKeyDown);
 	document.removeEventListener('keyup', doKeyUp);
 	setTimeout(function(){
-		renderer.domElement.remove();
 		renderer.renderLists.dispose();
 		renderer.dispose()
-		renderer = null;
 	}, 1000);
 }
