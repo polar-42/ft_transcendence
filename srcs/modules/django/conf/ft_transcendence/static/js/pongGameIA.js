@@ -71,16 +71,13 @@ export function initGamePongIA()
 export function unloadGamePongIA()
 {
 	// console.log('unloadGamePongIA');
+	renderer.domElement.style.filter = "blur(5px)"
 	renderer.dispose();
 	if (socketPongIA != null)
 	{
 		socketPongIA.close();
 	}
 	socketPongIA = null;
-	if (canvas != null)
-	{
-		canvas.style.display="none";
-	}
 	document.removeEventListener('keydown', doKeyDown);
 	document.removeEventListener('keyup', doKeyUp);
 }
@@ -248,7 +245,7 @@ function updateGameData(data)
 		{
 			BcameraShake = true;
 		}
-		scoreDisplay.textContent = data.playertwo_score + " - " + data.playerone_score;
+		scoreDisplay.textContent = data.playerone_score + " - " + data.playertwo_score;
 	}
 }
 
@@ -359,23 +356,24 @@ function LaunchGame()
 
 function FinishGame()
 {
+	scoreDisplay.remove()
+	renderer.domElement.style.filter = "blur(5px)"
 	console.log('Pong game is finish');
 }
 
 function FinishGameByScore(data)
 {
 	console.log(data)
-	renderer.domElement.style.display = "none";
 	if (data.playerone_score >= 3 || data.playertwo_score >= 3)
 	{
-		scoreDisplay.textContent = data.playertwo_score + " - " + data.playerone_score;
-		if (data.playerone_score) {
-			textElement.textContent = "Blue wins\r\n";
-			textElement.textContent += data.playertwo_score + " - " + data.playerone_score;
+		scoreDisplay.textContent = data.playerone_score + " - " + data.playertwo_score;
+		if (data.playerone_score < 3) {
+			textElement.textContent = "You lose...\r\n";
+			textElement.textContent += data.playerone_score + " - " + data.playertwo_score;
 			three_box.style.border = '4px solid #0000ff';
 		} else {
-			textElement.textContent = "Red wins\r\n";
-			textElement.textContent += data.playertwo_score + " - " + data.playerone_score;
+			textElement.textContent = "You Win!\r\n";
+			textElement.textContent += data.playerone_score + " - " + data.playertwo_score;
 			three_box.style.border = '4px solid #ff0000';
 		}
 	}
@@ -402,5 +400,9 @@ function OnMessage(e)
 	else if (data.type == 'game_ending')
 	{
 		FinishGameByScore(data);
+	}
+	else if (data.type == 'return_to_tournament')
+	{
+		returnToTournament(data.id)
 	}
 }

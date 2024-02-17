@@ -81,6 +81,9 @@ class Player:
     def get_pos(self):
         return self.x, self.y
 
+    def reset_pos(self):
+        self.y = 0
+
     def get_score(self):
         return self.score
 

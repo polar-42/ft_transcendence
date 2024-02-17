@@ -83,7 +83,7 @@ class pongGameLoop(threading.Thread):
                     ball_dx *= -1
                     ball_dy = ball_pos_y - player1_pos_y
                     ball_pos_x = player1_pos_x + 0.17
-                    ball_speed *= 1.08
+                    ball_speed *= 4.08
                     self.game.update_ball_touch(1)
                     
                 #UPDATE SCORE PLAYER1
@@ -97,6 +97,8 @@ class pongGameLoop(threading.Thread):
                     self.startGameBool = False
                     self.isCounting = False
                     self.game.update_ball_speed(0.1)
+                    self.game.playerOne.reset_pos()
+                    self.game.playerTwo.reset_pos()
 
                 #UPDATE SCORE PLAYER2
                 elif (ball_pos_x <= player1_pos_x) :
@@ -109,6 +111,8 @@ class pongGameLoop(threading.Thread):
                     self.startGameBool = False
                     self.isCounting = False
                     self.game.update_ball_speed(0.1)
+                    self.game.playerOne.reset_pos()
+                    self.game.playerTwo.reset_pos()
                 #BALL MOVEMENT
 
                 ball_pos_y += ball_dy * ball_speed
