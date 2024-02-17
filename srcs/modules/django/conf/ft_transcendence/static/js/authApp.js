@@ -93,11 +93,11 @@ export async function logout(event) {
 	if (Response.ok) {
 		var vari = await Response.json()
 		if (vari.success == false) {
-			location.reload()
+			// location.reload()
 			return false
 		}
 		initProfileButton(false)
-		location.reload()
+		// location.reload()
 		return true
 	}
 	else
@@ -334,6 +334,8 @@ export async function initProfileButton(connected) {
 		profiles.forEach((button) => {
 			button.classList.remove('connected')
 			button.children[2].textContent = 'Log In'
+			button.children[0].src = '/static/assets/logo/user.png'
+			button.children[1].src = '/static/assets/logo/user.png'
 		})
 	}
 }

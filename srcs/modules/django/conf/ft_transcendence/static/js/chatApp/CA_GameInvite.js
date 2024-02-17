@@ -253,6 +253,9 @@ export function showTMatchRequest(tId)
 {
 	openChatbox()
 	let conversation = document.querySelector(".conversation_list")
+	conversation.querySelectorAll('.TournamentInvit').forEach(element => {
+		element.parentElement.removeChild(element)
+	})
 	let item = document.createElement("li")
 	item.classList.add('TournamentInvit')
 	item.innerHTML =

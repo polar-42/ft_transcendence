@@ -2,7 +2,6 @@ import json, time, datetime
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from .enumChat import connexionStatus, channelPrivacy
-from django.db import models
 from authApp import models as userModels
 from .classChannel import ChannelChat
 from .models import MessageModels, ChannelModels
@@ -261,7 +260,7 @@ class chatSocket(WebsocketConsumer):
 	def sendPrivateMessage(self, receiver, message):
 		if len(message) <= 0:
 			return
-		if userModels.User.objects.filter(id=receiver).exists() is False or receiver == self.id:
+		if userModels.User.objects.filter(id=receiver).exists() is False or receiver == str(self.id):
 			print(self.user.id, 'try to send a message to', receiver, 'but he dont exist') #TO DEL
 			return
 
@@ -282,7 +281,8 @@ class chatSocket(WebsocketConsumer):
 			allMessages[0].isRead = True
 			allMessages[0].save()
 			print('allMessages[0]:', allMessages[0])
-
+		for messageB in allMessages:
+			ColorPrint.prBlue(messageB.timeCreation)
 		msg = MessageModels.objects.create(
 				message=message,
 				sender=self.id,
@@ -290,6 +290,9 @@ class chatSocket(WebsocketConsumer):
 				type='P'
 				)
 		msg.save()
+		for messageB in allMessages:
+			ColorPrint.prBlue(messageB.timeCreation)
+
 
 		print(msg.sender, ' send', msg.message, 'to', msg.receiver)
 		async_to_sync(self.channel_layer.group_send)(
@@ -419,7 +422,7 @@ class chatSocket(WebsocketConsumer):
 			friendStatus = 'friend'
 			if userModels.User.objects.get(id=contact).PendingInvite is not None and self.id in userModels.User.objects.get(id=contact).PendingInvite:
 				friendStatus = 'unknown'
-			elif self.UserModel.Friends is not None and contact in self.UserModel.Friends:
+			elif self.UserModel.Friends is not None and int(contact) in self.UserModel.Friends:
 				friendStatus = 'unknown'
 			msg = allMessages.filter(Q(sender=contactList[0]) | Q(receiver=contactList[0])).order_by('-id')[0]
 			connexionStatus = userModels.User.objects.get(id=contact).connexionStatus
@@ -428,7 +431,7 @@ class chatSocket(WebsocketConsumer):
 					(Q(sender=str(self.id)) & Q(receiver=contact)) |
 					(Q(receiver=str(self.id)) & Q(sender=contact))).order_by('-id')[0]
 
-			if lastMsg.sender == self.id:
+			if lastMsg.sender == str(self.id):
 				sender = "Me"
 				isRead = True
 			else:
@@ -812,6 +815,7 @@ class chatSocket(WebsocketConsumer):
 				})
 
 	def readMessage(self, data):
+		ColorPrint.prLGreen('Data = ' + str(data))
 		if MessageModels.objects.filter(receiver=data['receiver']).exists() is False:
 			return
 

@@ -61,3 +61,9 @@ class User():
 			if (len(boat.BoatArray) == len(boat.HittedArray)):
 				count += 1
 		return (count == len(self.BoatList))
+	
+	def RetrieveBoatResult(self):
+		boatResult = []
+		for boat in self.BoatList:
+			boatResult.append(boat.GetBoatStatus())
+		return boatResult
