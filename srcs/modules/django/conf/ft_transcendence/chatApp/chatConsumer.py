@@ -2,7 +2,6 @@ import json, time, datetime
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from .enumChat import connexionStatus, channelPrivacy
-from django.db import models
 from authApp import models as userModels
 from .classChannel import ChannelChat
 from .models import MessageModels, ChannelModels
@@ -261,7 +260,7 @@ class chatSocket(WebsocketConsumer):
 	def sendPrivateMessage(self, receiver, message):
 		if len(message) <= 0:
 			return
-		if userModels.User.objects.filter(id=receiver).exists() is False or receiver == self.id:
+		if userModels.User.objects.filter(id=receiver).exists() is False or receiver == str(self.id):
 			print(self.user.id, 'try to send a message to', receiver, 'but he dont exist') #TO DEL
 			return
 
@@ -428,7 +427,7 @@ class chatSocket(WebsocketConsumer):
 					(Q(sender=str(self.id)) & Q(receiver=contact)) |
 					(Q(receiver=str(self.id)) & Q(sender=contact))).order_by('-id')[0]
 
-			if lastMsg.sender == self.id:
+			if lastMsg.sender == str(self.id):
 				sender = "Me"
 				isRead = True
 			else:
@@ -812,6 +811,7 @@ class chatSocket(WebsocketConsumer):
 				})
 
 	def readMessage(self, data):
+		ColorPrint.prLGreen('Data = ' + str(data))
 		if MessageModels.objects.filter(receiver=data['receiver']).exists() is False:
 			return
 

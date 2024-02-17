@@ -56,9 +56,7 @@ def addToDb(battleshipGame: BattleshipMatch):
 			PlayerModel.BS_P_Hit += user.HitTaken
 			PlayerModel.BS_E_BoatsDestroyed += user.DestroyedBoat
 			PlayerModel.BS_P_BoatsDestroyed += user.CountDestroyedBoats()
-			ColorPrint.prGreen(PlayerModel.BS_GameCount)
 			PlayerModel.BS_GameCount = PlayerModel.BS_GameCount + 1
-			ColorPrint.prGreen(PlayerModel.BS_GameCount)
 			PlayerModel.save()
 
 	BattleshipGameModels.objects.create(
@@ -69,6 +67,10 @@ def addToDb(battleshipGame: BattleshipMatch):
 		player1_hit=battleshipGame.Users[0].BoatHit,
 		player2_hit=battleshipGame.Users[1].BoatHit,
 		winner=battleshipGame.Winner.sock_user.id,
-		tournamentId=battleshipGame.TournamentGame
+		tournamentId=battleshipGame.TournamentGame,
+		player1_boatCount=battleshipGame.Users[0].DestroyedBoat,
+		player2_boatCount=battleshipGame.Users[1].DestroyedBoat,
+		player1_boatsState=battleshipGame.Users[0].RetrieveBoatResult(),
+		player2_boatsState=battleshipGame.Users[1].RetrieveBoatResult()
 	)
 GameManager = BattleShipGameManager

@@ -40,8 +40,7 @@ class TournamentMatch():
 			})
 		from chatApp.chatConsumer import UsersSockets
 		for alluser in self.Users:
-			if alluser.Position is UserPosition.Away:
-				UsersSockets[alluser.SockUser.id].send(text_data=msg)
+			UsersSockets[alluser.SockUser.id].send(text_data=msg)
 		self.Timer = 120
 		self.Status = GameState.Waiting
 

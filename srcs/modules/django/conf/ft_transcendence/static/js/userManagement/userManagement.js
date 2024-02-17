@@ -387,7 +387,12 @@ function updateAccount(event) {
 			if (data.message) {
 				feedback.style.color = "green"
 				feedback.innerHTML = data.message
-				navto("/")
+				if (data.reload == true)
+				{
+					unsetChatbox()
+					initProfileButton(false)
+				}
+					navto("/")
 			}
 			else {
 				feedback.style.color = "red"

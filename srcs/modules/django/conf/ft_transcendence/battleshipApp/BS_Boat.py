@@ -23,3 +23,6 @@ class Boat():
 						return 2
 					return 1
 		return 0
+
+	def GetBoatStatus(self):
+		return (len (self.HittedArray) == len (self.BoatArray))
