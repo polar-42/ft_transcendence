@@ -230,7 +230,8 @@ def getOtherPongStats(request):
 					  'totalLose': totalLose,
 					  'totalGame': totalGame,
 					  'statusAI': statusAI,
-					  'percentageBallHit': percentageBallHit})
+					  'percentageBallHit': round(percentageBallHit, 2)
+					  })
 
 def getBattlehipClassicGameStats(request):
 	if request.user.is_authenticated is False or request.method != 'GET':
@@ -434,7 +435,7 @@ def getOtherBatlleshipStats(request):
 					  'totalBoatDestroy': totalBoatDestroy,
 					  'totalBoatGetDestroy': totalBoatGetDestroy,
 					  'totalGame': totalGame,
-					  'precision': precision,
+					  'precision': round(precision, 2)
 					  })
 
 def getPongSpecificGame(request):
@@ -554,3 +555,15 @@ def getTournamentStat(request):
 				})
 	else:
 		return JsonResponse({'null': None})
+
+def getPongStatHtml(request):
+	ColorPrint.prRed(request.method)
+	if (request.method == "GET"):
+		return render(request, 'dashboardApp/pongStats.html')
+	raise Exception('Invalid Request Method')
+
+def getBattleshipStatHtml(request):
+	if (request.method == "GET"):
+		return render(request, 'dashboardApp/battleshipStats.html')
+	raise Exception('Invalid Request Method')
+

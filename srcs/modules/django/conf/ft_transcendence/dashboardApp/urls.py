@@ -16,4 +16,6 @@ urlpatterns = [
 	path('getBattleshipSpecificGame/', views.getBattleshipSpecificGame),
 	path('getTournamentStat/', views.getTournamentStat),
 	path('getPlayerImage/', views.getPlayerImage),
+	path('getPongStatHtml/', views.getPongStatHtml),
+	path('getBattleshipStatHtml/', views.getBattleshipStatHtml)
 ]

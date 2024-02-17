@@ -127,6 +127,11 @@
   margin-top: 5px;
 }
 
+.dashboard .no_data {
+  text-align: center;
+  margin: 12% auto;
+  font-size: 2em;
+}
 .dashboard .tournaments_wrapper {
 	border: 1px solid var(--fourth);
 	background:
@@ -155,136 +160,88 @@
 
 .dashboard .dash_stats {
 	display: grid;
-  grid-template-areas: 
-        'a'
-        'b';
-  grid-template-rows: 1fr 1fr;
-}
-
-.dashboard #statName {
-	grid-area: a;
+  grid-template-rows: 2fr 3fr;
+  grid-gap: 70px;
 }
 
 .dashboard .allStat {
-	grid-area: a;
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: space-around;
 	align-content: center;
-	margin-top: 10px;
+  height: 162px;
+}
 
+.dashboard .allStat p {
+  margin-bottom: 5px;
 }
 
 .dashboard .gameStats,
 .dashboard .tournamentStats {
   display: flex;
+  width: 255px;
 }
 
+.dashboard .piechartTournament ,
 .dashboard .piechartGame {
-	grid-area: a;
-	width: 15vmin;
-  	height: 15vmin;
+	width: 100px;
+  height: 100px;
 	border-radius: 50%;
-	background-image: conic-gradient(
-		green 180deg,
-        red 0 180deg);
+	background-image: conic-gradient(green 180deg, red 0 180deg);
 }
 
-.dashboard .piechartStatGame {
-	grid-area: b;
-	display: grid;
-	grid-template-areas:
-					'a'
-					'b'
-					'c';
-	grid-gap: 5px;
-	width: 15vmin;
-  	height: 15vmin;
-	justify-content: center;
-	align-content: center;
-	text-align: center;
+
+.dashboard .piechartStatGame ,
+.dashboard .piechartStatTournament {
 	font-size: 1em;
+  margin-left: 10px;
+  display: flex;
+  flex-flow: column;
+  justify-content: space-around;
+  text-align: center;
 }
 
 .dashboard #classicGameStat {
 	color: white;
-	grid-area: a;
 }
 
 .dashboard #winGame {
 	color: green;
-	grid-area: b;
 }
 
 .dashboard #loseGame {
 	color: red;
-	grid-area: c;
-}
-
-.dashboard .tournamentStats {
-	display: grid;
-	grid-template-areas: 'a b';
-	gap: 10px;
-}
-
-.dashboard .piechartTournament {
-	grid-area: a;
-	margin-top: 5px;
-	width: 15vmin;
-  	height: 15vmin;
-	border-radius: 50%;
-	background-image: conic-gradient(
-		green 180deg,
-        red 0 180deg);
-}
-
-.dashboard .piechartStatTournament {
-	grid-area: b;
-	display: grid;
-	grid-template-areas:
-					'a'
-					'b'
-					'c';
-	grid-gap: 10px;
-	width: 15vmin;
-  	height: 15vmin;
-	justify-content: center;
-	align-content: center;
-	text-align: center;
-	font-size: 1em;
 }
 
 .dashboard #classicTournamentStat {
 	color: white;
-	grid-area: a;
 }
 
 .dashboard #winTournament {
 	color: green;
-	grid-area: b;
 }
 
 .dashboard #loseTournament {
 	color: red;
-	grid-area: c;
 }
 
-.dashboard .otherStat {
-	grid-area: b;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-content: center;
+.dashboard .otherStatLine {
+	columns: 2;
+  column-gap: 55px;
+	margin: auto 5%;
+  width: auto;
 }
 
-.dashboard #otherStatLine {
-	grid-area: b;
-	column-count: 2;
-	margin-left: 5%;
-}
-
-.dashboard #otherStatRow {
+.dashboard .otherStatRow {
 	margin-bottom: 8%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.dashboard .otherStatRow p:last-child {
+  width: 86px;
+  text-align: end;
+  border-bottom: 1px solid var(--fourth);
 }
 
 .dashboard .PopUp_wrapper {
