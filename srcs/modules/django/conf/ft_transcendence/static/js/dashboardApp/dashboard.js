@@ -490,22 +490,17 @@ export async function addOtherBattleshipStat()
 
 export async function popUpPongGameStat(gameId)
 {
-  document.querySelectorAll('.PopUp_wrapper')[0].style.display = 'block';
-  document.querySelectorAll('.GameStatPopUp')[0].style.display = 'block';
+  document.querySelector('.PopUp_wrapper').style.display = 'block';
 
   document.getElementById('closePopUp').addEventListener('click', function() {
-    document.querySelectorAll('.PopUp_wrapper')[0].style.display = 'none';
-    document.querySelectorAll('.GameStatPopUp')[0].style.display = 'none';
+    document.querySelector('.PopUp_wrapper').style.display = 'none';
   })
 
-  let gameIdForm = new FormData();
-  gameIdForm.append('gameId', gameId);
-
+  let data = {'gameId': gameId};
   var crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
   let feedback = document.querySelector('.feedback')
   var headers = new Headers()
   headers.append('X-CSRFToken', crsf_token)
-
   let player1 = "";
   let player2 = "";
   let player1_id = "";
@@ -514,7 +509,7 @@ export async function popUpPongGameStat(gameId)
   fetch(document.location.origin + '/dashboard/getPongSpecificGame/', {
     method: 'POST',
     headers: headers,
-    body: gameIdForm,
+    body: JSON.stringify(data),
   })
     .then(Response =>
       {
@@ -532,22 +527,23 @@ export async function popUpPongGameStat(gameId)
           player1_id = data.player1_id
           player2_id = data.player2_id
 
-          document.getElementById('boxTime').innerText = 'Date: ' + data.date
-          document.getElementById('boxScore').innerText = 'Score: ' + data.player1_score + ' | ' + data.player2_score
-          document.getElementById('ballTouch').innerText = 'Ball touch: ' + data.player1_number_ball_touch + ' vs ' + data.player2_number_ball_touch
+          document.querySelector('#boxTime p').innerText = data.date
+          document.querySelector('.players_score').children[0].innerText = data.player1_score 
+          document.querySelector('.players_score').children[2].innerText = data.player2_score
+          document.querySelector('.players_touched').children[0].innerText = data.player1_number_ball_touch
+          document.querySelector('.players_touched').children[2].innerText = data.player2_number_ball_touch
         })
       .catch(error =>
         {
           console.error('Error:', error)
-          //navto("/")
+          return
         })
-
-  gameIdForm.append('player', '1')
-  gameIdForm.append('typeGame', '0')
+  document.getElementById('player1_name').textContent = player1
+  document.getElementById('player2_name').textContent = player2
   let res = await fetch(document.location.origin + '/dashboard/getPlayerImage/', {
     method: 'POST',
     headers: headers,
-    body: gameIdForm,
+    body: JSON.stringify({'gameId': gameId, 'playerNumber': '1', 'typeGame': '0'})
   })
   if (res.ok)
   {
@@ -556,27 +552,16 @@ export async function popUpPongGameStat(gameId)
     {
       let img = document.getElementById('player_1_avatar')
       img.src = URL.createObjectURL(vari)
-      img.style.borderRadius = '50%'
-      img.style.cursor = 'pointer'
-      img.style.width = '100px'
-      img.style.height = '100px'
-      img.addEventListener('mouseover', function(e) {
-        displayPlayerNickname(e, player1, 1, true)
-      })
-      img.addEventListener('mouseout', function(e) {
-        displayPlayerNickname(e, player1, 1, false)
-      })
       img.addEventListener('click', function(e) {
         navto("/profile/?id="+ player1_id)
       })
     }
   }
 
-  gameIdForm.set('player', '2')
   res = await fetch(document.location.origin + '/dashboard/getPlayerImage/', {
     method: 'POST',
     headers: headers,
-    body: gameIdForm,
+    body: JSON.stringify({'gameId': gameId, 'playerNumber': '2', 'typeGame': '0'}),
   })
   if (res.ok)
   {
@@ -585,16 +570,6 @@ export async function popUpPongGameStat(gameId)
     {
       let img = document.getElementById('player_2_avatar')
       img.src = URL.createObjectURL(vari)
-      img.style.borderRadius = '50%'
-      img.style.cursor = 'pointer'
-      img.style.width = '100px'
-      img.style.height = '100px'
-      img.addEventListener('mouseover', function(e) {
-        displayPlayerNickname(e, player2, 2, true)
-      })
-      img.addEventListener('mouseout', function(e) {
-        displayPlayerNickname(e, player2, 2, false)
-      })
       img.addEventListener('click', function(e) {
         navto("/profile/?id=" + player2_id)
       })

@@ -56,54 +56,58 @@
     <div class="PopUp_wrapper">
       <div class="GameStatPopUp">
         {% csrf_token %}
-        <div class="specificGameStat">
-          <a id="closePopUp">x</a>
-          <div id="boxTime">
-            Today
+        <a id="closePopUp">x</a>
+        <div id="boxTime">
+          <h4>Date</h4>
+          <p>
+        </div>
+        <div id="playerVs">
+          <div id="player_1">
+            <img id="player_1_avatar" src="" alt="PLAYER1_image">
+            <p id="player1_name"></p>
           </div>
-          <div id="playerVs">
-            <div id="player_1">
-              <div id="tooltip_player1">PLAYER1</div>
-              <img id="player_1_avatar" src="" alt="PLAYER1_image">
-            </div>
-
-            <div id="playerVsText">
-              VS
-            </div>
-            <div id="player_2">
-              <div id="tooltip_player2">PLAYER2</div>
-              <img id="player_2_avatar" src="" alt="PLAYER2_image">
-            </div>
+          <div id="playerVsText">
+            VS
           </div>
-          <div id="boxScore">
-            1 - 3
+          <div id="player_2">
+            <img id="player_2_avatar" src="" alt="PLAYER2_image">
+            <p id="player2_name"></p>
           </div>
-          <div id="ballTouch">
-            1 - 2
+        </div>
+        <div id="boxScore">
+          <div class='players_score'>
+            <p></p>
+            <h4>Score</h4>
+            <p></p>
+          </div>
+        </div>
+        <div id="ballTouch">
+          <div class='players_touched'>
+            <p></p>
+            <h4>Touched balls</h4>
+            <p></p>
           </div>
         </div>
       </div>
       <div class="TournamentStatPopUp">
         {% csrf_token %}
-        <div class="specificTournamentStat">
-          <a id="closeTournamentPopUp">x</a>
-          <div id="boxTimeTournament">
-            DATE
+        <a id="closeTournamentPopUp">x</a>
+        <div id="boxTimeTournament">
+          DATE
+        </div>
+        <div id="tournamentDescription">
+          Description
+        </div>
+        <div id="winnerTextTournament">
+          Players
+        </div>
+        <div id="winnerImageTournament">
+          <div id="winnerName">
+            Winner:
           </div>
-          <div id="tournamentDescription">
-            Description
-          </div>
-          <div id="winnerTextTournament">
-            Players
-          </div>
-          <div id="winnerImageTournament">
-            <div id="winnerName">
-              Winner:
-            </div>
-            <div id="tournamentWinner">
-              <img id="winnerTournamentImage" src="" alt="WINNER_image">
-              <div id="tooltip_winnerTournament">PLAYER1</div>
-            </div>
+          <div id="tournamentWinner">
+            <img id="winnerTournamentImage" src="" alt="WINNER_image">
+            <div id="tooltip_winnerTournament">PLAYER1</div>
           </div>
         </div>
       </div>

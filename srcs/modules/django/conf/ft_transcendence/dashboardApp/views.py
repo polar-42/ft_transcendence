@@ -441,34 +441,33 @@ def getOtherBatlleshipStats(request):
 					  })
 
 def getPongSpecificGame(request):
-	if (request.method == "GET" and request.GET["valid"] == "True") or (request.method == "POST"):
-		if request.method == "POST":
-			gameId = request.POST.get('gameId')
+	if request.method == "POST":
+		data = json.loads(request.body)
+		ColorPrint.prRed(data['gameId'])		
+		game = PongGameModels.objects.get(id=data['gameId'])
+		player1 = User.objects.get(id=int(game.player1))
+		player2 = User.objects.get(id=int(game.player2))
+		winner = User.objects.get(id=int(game.winner))
+		player1_score = game.score_player1
+		player2_score = game.score_player2
+		player1_number_ball_touch = game.number_ball_touch_player1
+		player2_number_ball_touch = game.number_ball_touch_player2
 
-			game = PongGameModels.objects.get(id=int(gameId[7:]))
-			player1 = User.objects.get(id=int(game.player1))
-			player2 = User.objects.get(id=int(game.player2))
-			winner = User.objects.get(id=int(game.winner))
-			player1_score = game.score_player1
-			player2_score = game.score_player2
-			player1_number_ball_touch = game.number_ball_touch_player1
-			player2_number_ball_touch = game.number_ball_touch_player2
+		dateGameTab = str(game.time).split(' ')
+		dateGame = dateGameTab[0] + ' ' + dateGameTab[1][:5]
 
-			dateGameTab = str(game.time).split(' ')
-			dateGame = dateGameTab[0] + ' ' + dateGameTab[1][:5]
-
-			return JsonResponse({
-				'player1': player1.nickname,
-				'player2': player2.nickname,
-				'player1_id': player1.id,
-				'player2_id': player2.id,
-				'winner': winner.nickname,
-				'player1_score': player1_score,
-				'player2_score': player2_score,
-				'player1_number_ball_touch': player1_number_ball_touch,
-				'player2_number_ball_touch': player2_number_ball_touch,
-				'date': dateGame
-				})
+		return JsonResponse({
+			'player1': player1.nickname,
+			'player2': player2.nickname,
+			'player1_id': player1.id,
+			'player2_id': player2.id,
+			'winner': winner.nickname,
+			'player1_score': player1_score,
+			'player2_score': player2_score,
+			'player1_number_ball_touch': player1_number_ball_touch,
+			'player2_number_ball_touch': player2_number_ball_touch,
+			'date': dateGame
+			})
 	else:
 		return JsonResponse({'null': None})
 
@@ -477,9 +476,8 @@ def getPongSpecificGame(request):
 def getBattleshipSpecificGame(request):
 	if (request.method == "GET" and request.GET["valid"] == "True") or (request.method == "POST"):
 		if request.method == "POST":
-			gameId = request.POST.get('gameId')
-
-			game = BattleshipGameModels.objects.get(id=int(gameId[13:]))
+			data = json.loads(request.body)
+			game = BattleshipGameModels.objects.get(id=int(data['gameId']))
 			player1 = User.objects.get(id=int(game.player1))
 			player2 = User.objects.get(id=int(game.player2))
 			winner = User.objects.get(id=int(game.winner))
@@ -509,22 +507,18 @@ def getBattleshipSpecificGame(request):
 def getPlayerImage(request):
 	if (request.method == "GET" and request.GET["valid"] == "True") or (request.method == "POST"):
 		if request.method == "POST":
-
-			gameId = request.POST.get('gameId')
-			playerNumber = request.POST.get('player')
-			typeGame = request.POST.get('typeGame')
-
-			if typeGame == '0':
-				game = PongGameModels.objects.get(id=int(gameId[7:]))
-			elif typeGame == '1':
-				game = BattleshipGameModels.objects.get(id=int(gameId[13:]))
+			data = json.loads(request.body)	
+			if data['typeGame'] == '0':
+				game = PongGameModels.objects.get(id=data['gameId'])
+			elif data['typeGame'] == '1':
+				game = BattleshipGameModels.objects.get(id=data['gameId'])
 			else:
 				tournamentId = request.POST.get('tournamentId')
 				winnerId = TournamentsModels.objects.get(id=int(tournamentId[13:])).winner
 				avatar = User.objects.get(id=int(winnerId))
 				return HttpResponse(avatar.avatarImage, content_type='image/png')
 
-			if playerNumber == '1':
+			if data['playerNumber'] == '1':
 				avatar = User.objects.get(id=int(game.player1))
 			else:
 				avatar = User.objects.get(id=int(game.player2))
