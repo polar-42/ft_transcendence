@@ -824,135 +824,148 @@
 }
 
 .main_box_body.friendpage .conversation_list li.game_invitation {
-	display: block;
+  display: block;
 }
 
 .main_box_header.friendpage input {
-	width: 70%;
+  width: 70%;
 }
 
 .main_box_header.friendpage img.back_arrow {
-	cursor: pointer;
+  cursor: pointer;
 }
 
 .main_box_body.friendpage {
-	background: var(--main-bg-color);
-	position: relative;
-	top: 0;
-	height: 360px;
+  background: var(--main-bg-color);
+  position: relative;
+  top: 0;
+  height: 360px;
 }
 
 .main_box_body.friendpage h2 {
-	font-size: 31px;
-	text-align: center;
-	height: 38px;
+  font-size: 31px;
+  text-align: center;
+  height: 38px;
 }
 
 .main_box_header.private_message .blockUser svg {
-	width: 35px;
-	height: 35px;
-	display: block;
-	margin: 8px 0px 0px 0px;
+  width: 35px;
+  height: 35px;
+  display: block;
+  margin: 8px 0px 0px 0px;
 }
 
 .main_box_body.friendpage .chatbox_homepage_navbar {
-	height: 15%;
-	background: var(--secondary-bg-color);
-	display: flex;
-	justify-content: space-evenly;
-	padding-top: 8px;
-	padding-bottom: 8px;
-	border-top: 1px solid var(--main-bg-color);
-	width: auto;
+  height: 15%;
+  background: var(--secondary-bg-color);
+  display: flex;
+  justify-content: space-evenly;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  border-top: 1px solid var(--main-bg-color);
+  width: auto;
 }
 
 .main_box_body.friendpage .chatbox_homepage_navbar button {
-	border-radius: 3px;
-	margin: 0;
-	padding-left: 0.5em;
-	padding-right: 0.5em;
-	width: 80px;
-	transition: .3s ease;
-	background: transparent;
-	border: 1px solid var(--fourth);
-	color: var(--fourth);
-	cursor: pointer;
+  border-radius: 3px;
+  margin: 0;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  width: 80px;
+  transition: .3s ease;
+  background: transparent;
+  border: 1px solid var(--fourth);
+  color: var(--fourth);
+  cursor: pointer;
 }
 
 .main_box_body.friendpage .chatbox_homepage_navbar button:hover {
-	background: var(--fourth);
-	border: 1px solid var(--main-bg-color);
-	color: var(--main-bg-color);
+  background: var(--fourth);
+  border: 1px solid var(--main-bg-color);
+  color: var(--main-bg-color);
 }
 
 .main_box_body.friendpage .conversation_list {
-	height: 75%;
-	overflow-y: scroll;
-	scrollbar-color: var(--third) transparent;
+  height: 75%;
+  overflow-y: scroll;
+  scrollbar-color: var(--third) transparent;
 }
 
 .game_invitation {
-	margin-left: 10%;
-	padding: 10px;
-	background: radial-gradient(ellipse at bottom, #4c77e6 5%, #7f4af5);
-	border-radius: 10px;
+  margin-left: 10%;
+  padding: 10px;
+  background: radial-gradient(ellipse at bottom, #4c77e6 5%, #7f4af5);
+  border-radius: 10px;
 }
 
 .game_invitation .acceptation_wrapper {
-	display: flex;
-	justify-content: space-evenly;
+  display: flex;
+  justify-content: space-evenly;
 }
 
 .game_invitation .acceptation_wrapper button {
-	display: block;
-	color: var(--main-bg-color);
-	border: none;
-	margin: 5px auto 0 auto;
-	padding: 2px 5px 2px 5px;
-	font-size: 0.9em;
-	transition: .3s ease;
+  display: block;
+  color: var(--main-bg-color);
+  border: none;
+  margin: 5px auto 0 auto;
+  padding: 2px 5px 2px 5px;
+  font-size: 0.9em;
+  transition: .3s ease;
 }
 
 .game_invitation .acceptation_wrapper .accept_btn {
-	background: #63AB24;
+  background: #63AB24;
 }
 
 .game_invitation .acceptation_wrapper .refuse_btn {
-	background: #CF331F;
+  background: #CF331F;
 }
 
 .game_invitation .acceptation_wrapper button:hover {
-	background: var(--main-bg-color);
-	color: var(--fourth);
-	cursor: pointer;
+  background: var(--main-bg-color);
+  color: var(--fourth);
+  cursor: pointer;
 }
 
 .main_box_body.homepage .conversation_list .TournamentInvit {
-	display: block;
-	margin: 8px 11px 15px 5px;
+  display: block;
+  margin: 8px 11px 15px 5px;
 }
 
 .main_box_body.homepage .conversation_list .TournamentInvit p {
-	width: 100%;
+  width: 100%;
 }
 
 .main_box_body.homepage .conversation_list .TournamentInvit button {
-	width: 100%;
-	height: 20px;
+  width: 100%;
+  height: 20px;
 }
 
 .main_box_header.private_message img{
-	height: 40px;
-	width: auto;
-	display: block;
-	margin-top: auto;
-	margin-bottom: auto;
-	margin-right: 0;
-	cursor: pointer;
+  height: 40px;
+  width: auto;
+  display: block;
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-right: 0;
+  cursor: pointer;
 }
 
 .AddToFriendContainer {
-	display: block;
-	margin: auto 0;
-	cursor: pointer;
+  display: block;
+  margin: auto 0;
+  cursor: pointer;
+}
+
+.game_invite_opponent {
+  display: flex;
+}
+
+#image_auto_complete {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin-top: 2px;
+  margin-left: 2px;
+  margin-right: 2px;
 }

@@ -56,6 +56,7 @@ class chatSocket(WebsocketConsumer):
 
 		self.allUsers[self.id] = self.user
 		self.chatId = 'chat_' + str(self.id)
+		self.lastSearch = None
 
 		print(self.user.id, 'is connected to chat socket with chatId =', self.chatId) #TO DEL
 
@@ -115,13 +116,13 @@ class chatSocket(WebsocketConsumer):
 		)
 
 		self.allUsers.pop(self.id)
-  
+
 		self.updateConnexionStatus()
 		global UsersSockets
 		del UsersSockets[self.id]
 		ColorPrint.prBlue(UsersSockets)
 		self.close()
-  
+
 	def updateConnexionStatus(self):
 		print('updateConnexionStatus')
 		for user in self.allUsers:
@@ -631,6 +632,8 @@ class chatSocket(WebsocketConsumer):
 		if ChannelModels.objects.filter(channelName=channelTarget).exists() is False:
 			return
 
+		print('msgId =', msgId)
+
 		if int(msgId) == 0:
 			self.send(json.dumps({
 				'type': 'actualize_channel_history',
@@ -670,6 +673,8 @@ class chatSocket(WebsocketConsumer):
 			isStillUnreadMessage = True
 		else:
 			isStillUnreadMessage = False
+
+		print('response =', response)
 
 		self.send(json.dumps({
 			'type': type,
@@ -717,13 +722,13 @@ class chatSocket(WebsocketConsumer):
 			return
 
 		async_to_sync(self.channel_layer.group_send)(
-				'chat_' + str(receiver),
-				{
-					'type': 'receiveInvitationPong',
-					'sender': self.UserModel.nickname,
-					'sender_id': self.id
-					}
-				)
+			'chat_' + str(receiver),
+			{
+				'type': 'receiveInvitationPong',
+				'sender': self.UserModel.nickname,
+				'sender_id': self.id
+				}
+			)
 
 	def inviteBattleship(self, receiver):
 		if userModels.User.objects.filter(id=receiver).exists() is False:
@@ -745,13 +750,13 @@ class chatSocket(WebsocketConsumer):
 			return
 
 		async_to_sync(self.channel_layer.group_send)(
-				'chat_' + str(receiver),
-				{
-					'type': 'receiveInvitationBattleship',
-					'sender': self.UserModel.nickname,
-					'sender_id': self.id
-					}
-				)
+			'chat_' + str(receiver),
+			{
+				'type': 'receiveInvitationBattleship',
+				'sender': self.UserModel.nickname,
+				'sender_id': self.id
+				}
+			)
 
 	def acceptInvitationPong(self, sender):
 		senderModel = userModels.User.objects.get(id=sender)
@@ -901,7 +906,7 @@ class chatSocket(WebsocketConsumer):
 			'message': message,
 			'time': time.strftime("%Y-%m-%d %X")
 			}))
-  
+
 	def updateStatus(self, event):
 		userId = event['id']
 		newStatus = event['status']
@@ -917,6 +922,13 @@ class chatSocket(WebsocketConsumer):
 		allUsers = userModels.User.objects.exclude(Q(id=5) | Q(id = self.UserModel.id))
 		print('allUsers: ', allUsers)
 		response = []
+
+		if self.lastSearch is not None and input in self.lastSearch:
+			self.send(json.dumps({
+				'type': 'search_conv',
+				'data': self.lastSearch[input]
+			}))
+			return
 
 		for chan in self.allChannels.keys():
 			print('channel: ', self.allChannels[chan])
@@ -981,7 +993,9 @@ class chatSocket(WebsocketConsumer):
 			return(conv['name'].lower())
 
 		response.sort(key = getConvName)
-		print(response)
+		self.lastSearch = {
+			input: response
+		}
 		self.send(json.dumps({
 			'type': 'search_conv',
 			'data': response
@@ -1143,7 +1157,7 @@ class chatSocket(WebsocketConsumer):
 		if self.UserModel.PendingInvite is None or sender not in self.UserModel.PendingInvite:
 			ColorPrint.prYellow("{usrID} try answering a friendship request from {targetID} but invite not exisiting.".format(usrID=self.user.id, targetID=sender))
 			return
-		
+
 		senderModel = userModels.User.objects.get(id=sender)
 
 		if self.isBlock(senderModel):
@@ -1178,7 +1192,7 @@ class chatSocket(WebsocketConsumer):
 			for invit in self.UserModel.PendingInvite:
 				invitList.append({
 					'senderNick' : userModels.User.objects.get(id=invit).nickname,
-					'id' : invit  
+					'id' : invit
 				})
 		self.send(text_data=json.dumps({
 			'type': 'ReceiveFriendshipPendingInvit',
@@ -1188,7 +1202,7 @@ class chatSocket(WebsocketConsumer):
 	def RetrieveFriendConversation(self, limiter):
 		allMessages = MessageModels.objects.filter(type='P').filter(Q(sender=self.id) | Q(receiver=self.id)).order_by('-id').values()
 		allUsers = userModels.User.objects.exclude(Q(id=5) | Q(id = self.user.id))
-		
+
 		contactList = []
 		for msg in allMessages:
 			if (msg['sender'] == self.id):
@@ -1232,7 +1246,7 @@ class chatSocket(WebsocketConsumer):
 					'isRead': isRead,
 					'friend': 'unknown',
 					})
-			
+
 		def cmpTimeStamp(msg):
 			return msg['timestamp']
 

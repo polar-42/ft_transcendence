@@ -48,6 +48,9 @@ def updateAccount(request):
             if len(newUsername) == 0 and len(newEmail) == 0 and len(newPassword) == 0 and len(newPasswordConfirmation) == 0 and avatarImage is None:
                 return JsonResponse({'error': 'All field are empty', 'reload' : False})
 
+            if re.search(r"[\<\>\'\"\{\}\[\]\\\|\(\)\/]", newUsername) != None or re.search(r"[\<\>\'\"\{\}\[\]\\\|\(\)\/]", newEmail) != None:
+                return JsonResponse({'error': 'Invalid character used'})
+
             if len(newUsername) > 0 and len(newUsername) < 3 or len(newUsername) > 16:
                 return JsonResponse({'error': 'Username length is too small or to big', 'reload' : False})
             elif len(newUsername) != 0 and userModel.nickname != newUsername:

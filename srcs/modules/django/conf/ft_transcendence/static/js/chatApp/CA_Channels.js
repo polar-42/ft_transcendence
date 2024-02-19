@@ -1,5 +1,7 @@
 import { initChatHomepage, getProfilePicture, cleanMainBox, sleep, chatSocket } from "./CA_General.js"
 import { navto } from "../index.js"
+import { initGameInvitiation } from "./CA_GameInvite.js"
+import { initFriendsPage } from "./CA_Friends.js"
 
 export function clickJoinChan(event) {
 	let item = event.target.parentElement
@@ -445,12 +447,13 @@ export async function actualizeChannelHistory(data) {
 
 			let profilePicture = await getProfilePicture({ 'type': 'user', 'id': data[i].senderID })
 			let ppUrl
+
 			if (profilePicture.type == 'image/null')
 				ppUrl = "/static/assets/logo/user.png"
 			else
 				ppUrl = URL.createObjectURL(profilePicture)
 
-			if (data[i].senderID !== userData.userID) {
+			if (data[i].senderID === userData.userID) {
 				received = 'own'
 				sender = ''
 			} else {
@@ -516,6 +519,9 @@ export function initCreateChannel() {
 
 	navbar.insertAdjacentHTML("afterend", html)
 	navbarBTN.removeEventListener("click", initCreateChannel)
+
+	document.querySelector("button[name='invitations']").removeEventListener("click", initGameInvitiation)
+	document.querySelector("button[name='friends']").removeEventListener("click", initFriendsPage)
 	navbarBTN.addEventListener("click", closeChannelCreationBox)
 	document.querySelector(".channel_creation_box button").addEventListener("click", createChannel)
 	document.querySelectorAll(".channel_creation_box input").forEach((inputBox) => {
@@ -556,6 +562,8 @@ export function initCreateChannel() {
 		let navbarBTN = document.querySelector("button[name='create_channel']")
 		navbarBTN.removeEventListener("click", closeChannelCreationBox)
 		navbarBTN.addEventListener("click", initCreateChannel)
+		document.querySelector("button[name='invitations']").addEventListener("click", initGameInvitiation)
+		document.querySelector("button[name='friends']").addEventListener("click", initFriendsPage)
 	}
 }
 

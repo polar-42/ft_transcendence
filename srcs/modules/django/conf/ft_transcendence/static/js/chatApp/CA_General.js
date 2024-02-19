@@ -51,7 +51,7 @@ export function openChatbox() {
 		document.querySelector(".chatbox_wrapper").classList.add("open")
 		chatHeader.removeEventListener("click", openChatbox)
 		chatHeader.addEventListener("click", closeChatbox)
-	}	
+	}
 }
 
 export function closeChatbox() {

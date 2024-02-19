@@ -1,6 +1,7 @@
-import { chatSocket, cleanMainBox, initChatHomepage } from './CA_General.js'
+import { chatSocket, cleanMainBox, initChatHomepage, getProfilePicture } from './CA_General.js'
 import { goToConv } from './CA_Private.js'
-import { getProfilePicture } from './CA_General.js'
+import { initCreateChannel } from './CA_Channels.js'
+import { initGameInvitiation } from './CA_GameInvite.js'
 
 
 export function AddToFriend(id, element) {
@@ -17,6 +18,10 @@ export function AddToFriend(id, element) {
 
 export function initFriendsPage()
 {
+	document.querySelector("button[name='create_channel']").removeEventListener("click", initCreateChannel)
+	document.querySelector("button[name='invitations']").removeEventListener("click", initGameInvitiation)
+	document.querySelector("button[name='friends']").addEventListener("click", initFriendsPage)
+
 	const mainBoxBody = document.querySelector(".main_box_body")
 	const mainBoxHeader = document.querySelector(".main_box_header")
 	let child = mainBoxBody.children[1].lastElementChild
@@ -96,7 +101,7 @@ function HandleFriendInvitation(send_id, result, item, send_nick)
 	chatSocket.send(JSON.stringify({
 		'type': 'responseFriendInvitation',
 		'result': result,
-		'sender': send_id 
+		'sender': send_id
 	}))
 }
 
@@ -149,7 +154,7 @@ async function createConversation(conversation)
 		'<div class="conversation_name">' +
 		'<p>' + conversation.name + '</p>' +
 		'<div class="connection_point ' + isConnected + '"></div>' +
-		'</div>' + 
+		'</div>' +
 		'<p class="last_msg">' + lastMsg + '</p>' +
 		'</div>' +
 		'<div class="AddToFriendContainer ' + conversation.friend + '">' +
