@@ -56,6 +56,7 @@ class chatSocket(WebsocketConsumer):
 
 		self.allUsers[self.id] = self.user
 		self.chatId = 'chat_' + str(self.id)
+		self.lastSearch = None
 
 		print(self.user.id, 'is connected to chat socket with chatId =', self.chatId) #TO DEL
 
@@ -922,6 +923,13 @@ class chatSocket(WebsocketConsumer):
 		print('allUsers: ', allUsers)
 		response = []
 
+		if self.lastSearch is not None and input in self.lastSearch:
+			self.send(json.dumps({
+				'type': 'search_conv',
+				'data': self.lastSearch[input]
+			}))
+			return
+
 		for chan in self.allChannels.keys():
 			print('channel: ', self.allChannels[chan])
 			if chan.find(input) >= 0:
@@ -985,7 +993,9 @@ class chatSocket(WebsocketConsumer):
 			return(conv['name'].lower())
 
 		response.sort(key = getConvName)
-		print(response)
+		self.lastSearch = {
+			input: response
+		}
 		self.send(json.dumps({
 			'type': 'search_conv',
 			'data': response
