@@ -191,7 +191,6 @@ function FP_UnLoad()
 	canvas.removeEventListener('click', FP_mouseClick)
 	document.removeEventListener('mousedown', FP_mouseDown)
 	document.removeEventListener('mousemove', FP_mouseMove)
-	console.log("42 omg")
 	if (curInterval != undefined)
 		clearInterval(curInterval)
 	curInterval = undefined
@@ -460,6 +459,8 @@ function placeBoat(x, y) {
 	boatToPlace.position.z = boat_y;
 	boatToPlace.self.ArrayX = boat_x;
 	boatToPlace.self.ArrayY = boat_y;
+	boatToPlace.self.x = boat_x;
+	boatToPlace.self.y = boat_y;
   }
 
   function rotateBoat() {
@@ -467,14 +468,17 @@ function placeBoat(x, y) {
 	  return;
 	}
 	boatToPlace.orientation = !boatToPlace.orientation;
+	boatToPlace.self.horizontal = !boatToPlace.self.horizontal;
 	if (!boatToPlace.orientation && boatToPlace.width + boatToPlace.pos[1] > 10) {
 	  boatToPlace.orientation = !boatToPlace.orientation;
+	  boatToPlace.self.horizontal = !boatToPlace.self.horizontal;
 	  return;
 	} else if (
 	  boatToPlace.orientation &&
 	  boatToPlace.width + boatToPlace.pos[0] > 10
 	) {
 	  boatToPlace.orientation = !boatToPlace.orientation;
+	  boatToPlace.self.horizontal = !boatToPlace.self.horizontal;
 	  return;
 	}
 	let offset_center = (boatToPlace.width - 1) / 2;
@@ -482,12 +486,16 @@ function placeBoat(x, y) {
 	  boatToPlace.position.x -= offset_center;
 	  boatToPlace.position.z += offset_center;
 	  boatToPlace.self.ArrayX -= offset_center
-	  boatToPlace.self.ArrayY = offset_center;
+	  boatToPlace.self.ArrayY += offset_center;
+	  boatToPlace.self.x -= offset_center;
+	  boatToPlace.self.y += offset_center;
 	} else {
 	  boatToPlace.position.x += offset_center;
 	  boatToPlace.position.z -= offset_center;
-	  boatToPlace.self.ArrayX += offset_center
+	  boatToPlace.self.ArrayX += offset_center;
 	  boatToPlace.self.ArrayY -= offset_center;
+	  boatToPlace.self.x += offset_center;
+	  boatToPlace.self.y -= offset_center;
 	}
 	boatToPlace.rotation.y += 1.57;
   }
