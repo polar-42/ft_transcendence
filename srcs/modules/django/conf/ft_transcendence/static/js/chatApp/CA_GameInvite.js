@@ -1,6 +1,8 @@
 import { navto } from "../index.js"
 import { chatSocket, closeChatbox, openChatbox, sleep, getProfilePicture } from "./CA_General.js"
 import { goToConv } from "./CA_Private.js"
+import { initCreateChannel } from './CA_Channels.js'
+import { initFriendsPage } from './CA_Friends.js'
 
 export async function initGameInvitiation() {
 	Response = await fetch(document.location.origin + '/chatApp/getAllUsers', {
@@ -9,6 +11,10 @@ export async function initGameInvitiation() {
 	if (!Response.ok) {
 		return
 	}
+
+	document.querySelector("button[name='create_channel']").removeEventListener("click", initCreateChannel)
+	document.querySelector("button[name='friends']").removeEventListener("click", initFriendsPage)
+
 	let usrListJson = await Response.json()
 	let html =
 		'<div class="invitation_box">' +
@@ -110,6 +116,9 @@ export async function initGameInvitiation() {
 		document.querySelector(".invitation_box").remove()
 		invitationButton.addEventListener("click", initGameInvitiation)
 		invitationButton.removeEventListener("click", closeInvitationBox)
+
+		document.querySelector("button[name='create_channel']").addEventListener("click", initCreateChannel)
+		document.querySelector("button[name='friends']").addEventListener("click", initFriendsPage)
 	}
 }
 
