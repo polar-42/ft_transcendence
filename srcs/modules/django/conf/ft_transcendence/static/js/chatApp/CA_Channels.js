@@ -445,12 +445,13 @@ export async function actualizeChannelHistory(data) {
 
 			let profilePicture = await getProfilePicture({ 'type': 'user', 'id': data[i].senderID })
 			let ppUrl
+
 			if (profilePicture.type == 'image/null')
 				ppUrl = "/static/assets/logo/user.png"
 			else
 				ppUrl = URL.createObjectURL(profilePicture)
 
-			if (data[i].senderID !== userData.userID) {
+			if (data[i].senderID === userData.userID) {
 				received = 'own'
 				sender = ''
 			} else {

@@ -12,8 +12,8 @@ class BattleshipGameModels(models.Model):
 	winner = models.CharField(max_length=255, default="None")
 	tournamentId = models.CharField(max_length=255, default="-1")
 	time = models.DateTimeField(auto_now=True)
-	player1_boatsState = ArrayField(models.BooleanField(default=False), size=5)
-	player2_boatsState = ArrayField(models.BooleanField(default=False), size=5)
+	player1_boatsState = ArrayField(models.BooleanField(default=False), default=None, size=5)
+	player2_boatsState = ArrayField(models.BooleanField(default=False), default=None, size=5)
 	player1_boatCount = models.IntegerField(
 		default=0,
 		validators=[
