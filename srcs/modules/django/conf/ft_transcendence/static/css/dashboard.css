@@ -280,8 +280,9 @@
   width: 100%;
 }
 
-.dashboard .GameStatPopUp {
-  display: block;
+.dashboard .GameStatPopUp,
+.dashboard .TournamentStatPopUp{
+  display: none;
   position: absolute;
   top: 15%;
   left: 25%;
@@ -291,6 +292,7 @@
   border-radius: 5px;
   box-shadow: 0px 0px 20px var(--fourth);
   font-size: 1.5em;
+	text-align: center;
 }
 
 .dashboard #boxTime {
@@ -353,80 +355,79 @@
 }
 
 .dashboard .TournamentStatPopUp {
-  display: none;
-  position: absolute;
-  top: 15%;
-  left: 25%;
-  justify-content: center;
-  align-items: center;
-  width: 50%;
-  height: 50%;
-  background-color: var(--third);
-  border-radius: 5px;
+	height: 600px;
 }
 
-.dashboard .specificTournamentStat {
-  display: grid;
-  grid-template-areas:
-  'a a a'
-  'b b b'
-  'c c c'
-  'd d d';
-  justify-content: center;
-  align-items: center;
-  height: 90%;
-}
-
-.dashboard #boxTimeTournament,
-.dashboard #tournamentDescription,
-.dashboard #winnerTextTournament,
-.dashboard #winnerImageTournament {
-  text-align: center;
+.dashboard .tournament_name {
+	margin-bottom: -5px;
 }
 
 .dashboard #boxTimeTournament {
-  grid-area: a;
+	font-size: 0.8em;
+	font-style: italic;
 }
 
 .dashboard #tournamentDescription {
-  grid-area: b;
+	margin: 20px auto;
+	font-size: 0.9em;
 }
 
-.dashboard #winnerTextTournament {
-  grid-area: c;
+.dashboard .players_list_wrapper h4 {
+	margin-bottom: 20px;
+}
+
+.dashboard .players_list {
+	display: flex;
+	flex-wrap: wrap;
+	margin:  auto;
+	width: 450px;
+}
+
+.dashboard .players_list li {
+	flex-basis: 50%;
+	display: flex;
+	margin-bottom: 10px;
+}
+
+.dashboard .players_list li img {
+	width: 40px;
+	height: auto;
+	border-radius: 50%;
+	margin-right: 10px;
+}
+
+.dashboard .players_list li p {
+	height: 100%;
+	margin: auto 0;
 }
 
 .dashboard #winnerImageTournament {
-  grid-area: d;
-  display: grid;
-  justify-content: center;
-  grid-template-areas:
-  'a'
-  'b';
-  row-gap: 5px;
+	margin-top: 30px;
 }
 
-.dashboard #winnerTournamentImage {
-  grid-area: b;
-  align-items: center;
+
+.dashboard #winnerImageTournament img {
+	width: 130px;
+	height: auto;
 }
 
 .dashboard #tournamentWinner {
-  justify-content: center;
   display: flex;
+  justify-content: space-evenly;
+	width: 300px;
+	margin: auto;
 }
 
-.dashboard #tooltip_winnerTournament {
-  display: none;
-  width: auto;
-  min-width: 75px;
-  background-color: var(--fourth);
-  color: #fff;
-  border-radius: 6px;
-  position: absolute;
-  z-index: 1;
-  justify-content: center;
-  margin-top: -25px;
+.dashboard #tournamentWinner img {
+	border-radius: 50%;
+	width: 80px;
+	height: auto;
+	cursor: pointer;
+}
+
+.dashboard #tournamentWinner p {
+	height: 100%;
+	margin: auto 0;
 }
 
 .dashboard #closeTournamentPopUp {
