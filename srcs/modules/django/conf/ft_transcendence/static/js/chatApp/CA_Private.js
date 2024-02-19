@@ -296,6 +296,8 @@ function sendMessage(message, targetUser) {
 		date.getMinutes(),
 		date.getSeconds()
 	]
+	if (datevalues[5] < 10)
+		datevalues[5] = '0' + datevalues[5]
 	let timestamp = `${datevalues[0]}-${datevalues[1]}-${datevalues[2]} ${datevalues[3]}:${datevalues[4]}:${datevalues[5]}`
 	let html =
 		'<li class="message_item own">' +
