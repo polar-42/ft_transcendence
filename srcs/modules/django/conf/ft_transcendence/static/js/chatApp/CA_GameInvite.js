@@ -134,6 +134,10 @@ export async function receivePongInvitation(data) {
 		goToConv(data.sender_id)
 		await sleep(100)
 	}
+	if (document.querySelector(".game_invitation") != undefined)
+	{
+		return
+	}
 	let conversation = document.querySelector(".conversation")
 	let item = document.createElement("li")
 	item.classList.add("message_item", "game_invitation")
