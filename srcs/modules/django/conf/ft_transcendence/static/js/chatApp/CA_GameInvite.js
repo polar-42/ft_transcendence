@@ -1,5 +1,5 @@
 import { navto } from "../index.js"
-import { chatSocket, closeChatbox, openChatbox } from "./CA_General.js"
+import { chatSocket, closeChatbox, openChatbox, sleep } from "./CA_General.js"
 import { goToConv } from "./CA_Private.js"
 
 export async function initGameInvitiation() {
@@ -126,14 +126,14 @@ function sendGameInvitation(usrList) {
 	goToConv(user.id)
 }
 
-export function receivePongInvitation(data) {
-	if (data.sender_id !== parseInt(document.querySelector(".main_box_header .contact_wrapper").getAttribute("userid")))
+export async function receivePongInvitation(data) {
+	if (document.querySelector(".main_box_header .contact_wrapper") == undefined || data.sender_id !== parseInt(document.querySelector(".main_box_header .contact_wrapper").getAttribute("userid")))
 	{
-		console.log(data.sender_id)
-		console.log(document.querySelector(".main_box_header .contact_wrapper").getAttribute("userid"))
-		return // notif
+		openChatbox()
+		console.log(data)
+		goToConv(data.sender_id)
+		await sleep(100)
 	}
-
 	let conversation = document.querySelector(".conversation")
 	let item = document.createElement("li")
 	item.classList.add("message_item", "game_invitation")
@@ -183,9 +183,14 @@ async function refusePongInvitation(senderName, senderId) {
 	}))
 }
 
-export function receiveBattleshipInvitation(data) {
-	if (data.sender_id !== parseInt(document.querySelector(".main_box_header .contact_wrapper").getAttribute("userid")))
-		return // notif
+export async function receiveBattleshipInvitation(data) {
+	if (document.querySelector(".main_box_header .contact_wrapper") == undefined || data.sender_id !== parseInt(document.querySelector(".main_box_header .contact_wrapper").getAttribute("userid")))
+	{
+		openChatbox()
+		console.log(data)
+		goToConv(data.sender_id)
+		await sleep(100)
+	}
 
 	let conversation = document.querySelector(".conversation")
 	let item = document.createElement("li")

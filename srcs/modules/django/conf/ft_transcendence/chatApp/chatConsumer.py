@@ -722,13 +722,13 @@ class chatSocket(WebsocketConsumer):
 			return
 
 		async_to_sync(self.channel_layer.group_send)(
-				'chat_' + str(receiver),
-				{
-					'type': 'receiveInvitationPong',
-					'sender': self.UserModel.nickname,
-					'sender_id': self.id
-					}
-				)
+			'chat_' + str(receiver),
+			{
+				'type': 'receiveInvitationPong',
+				'sender': self.UserModel.nickname,
+				'sender_id': self.id
+				}
+			)
 
 	def inviteBattleship(self, receiver):
 		if userModels.User.objects.filter(id=receiver).exists() is False:
@@ -750,13 +750,13 @@ class chatSocket(WebsocketConsumer):
 			return
 
 		async_to_sync(self.channel_layer.group_send)(
-				'chat_' + str(receiver),
-				{
-					'type': 'receiveInvitationBattleship',
-					'sender': self.UserModel.nickname,
-					'sender_id': self.id
-					}
-				)
+			'chat_' + str(receiver),
+			{
+				'type': 'receiveInvitationBattleship',
+				'sender': self.UserModel.nickname,
+				'sender_id': self.id
+				}
+			)
 
 	def acceptInvitationPong(self, sender):
 		senderModel = userModels.User.objects.get(id=sender)
