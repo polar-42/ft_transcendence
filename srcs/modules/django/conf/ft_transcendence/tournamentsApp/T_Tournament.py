@@ -117,7 +117,7 @@ class Tournament():
 		self.obj.save()
 
 		print('Tournament', self.obj.tournamentsName, ', id =', self.obj.id, ', winnerid =', self.obj.winner, 'is add to DB')
-		#self.addToBlockchain()
+		self.addToBlockchain()
 
 	def addToBlockchain(self):
 		from web3 import Web3

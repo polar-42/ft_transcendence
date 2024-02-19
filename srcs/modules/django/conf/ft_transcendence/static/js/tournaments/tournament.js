@@ -20,7 +20,7 @@ export function initTournaments()
 	isBracketInit = false
 	roundCounter = 0
 	// tournamentSocket = new WebSocket("ws://" + window.location.host + '/tournamentsApp/' + tournamentId)
-	tournamentSocket = new WebSocket("wss://" + window.location.host + '/tournamentsApp/' + arg)
+	tournamentSocket = new WebSocket("wss://" + window.location.host + '/tournamentsApp/' + tournamentId)
 	document.querySelector('.BTN_Leave').addEventListener('click', leaveTournament)
 	tournamentSocket.onopen = launchTournamentSocket
 	tournamentSocket.onclose = e => quitTournamentSocket(e)

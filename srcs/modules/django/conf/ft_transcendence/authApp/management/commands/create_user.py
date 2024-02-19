@@ -124,7 +124,6 @@ class Command(BaseCommand):
 			print('User created successfully')
 		else:
 			print('User already exists')
-
 		counter = 1
 		password = make_password('123456789')
 		Mail = '***@***.***'
@@ -132,11 +131,19 @@ class Command(BaseCommand):
 		while (counter <= 8):
 			TmpMail = Mail.replace('*', str(counter))
 			TmpUsername = Username.replace('*', str(counter))
+			img = Image.open("./static/assets/pictures/studs/mjuin.jpg")
+			new_img = img.resize((300, 300))
+			img_buff = io.BytesIO()
+			new_img.save(img_buff, format='JPEG')
+			img_buff.seek(0)
+			avatarImage = img_buff
+
 			if not User.objects.filter(email=TmpMail).exists():
 				User.objects.create(	
 					nickname=TmpUsername,
 					email=TmpMail,
-					password=password
+					password=password,
+					avatarImage=avatarImage.read()
 				)
 				print('User {username} created successfully.'.format(username=TmpUsername))
 			else:

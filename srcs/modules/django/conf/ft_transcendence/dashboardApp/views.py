@@ -83,15 +83,15 @@ def getPongTournamentStats(request):
 	tournamentTab = []
 	for tournament in allTournamentInvolve:
 
-		#w3 = Web3(Web3.HTTPProvider('http://' + os.environ.get('IP_NODE') + ':8545'))
-		#file = open('/var/blockchain/TranscendenceTournamentHistory.json')
-		#jsonFile = json.load(file)
-		#abi = jsonFile['abi']
+		w3 = Web3(Web3.HTTPProvider('http://' + os.environ.get('IP_NODE') + ':8545'))
+		file = open('/var/blockchain/TranscendenceTournamentHistory.json')
+		jsonFile = json.load(file)
+		abi = jsonFile['abi']
 
-		#contract_address = os.environ.get('CONTRACT_ADDRESS')
-		#contract = w3.eth.contract(address=contract_address, abi=abi)
+		contract_address = os.environ.get('CONTRACT_ADDRESS')
+		contract = w3.eth.contract(address=contract_address, abi=abi)
 
-		#winnerId = contract.functions.getWinnerTournament(str(tournament.id)).call()
+		winnerId = contract.functions.getWinnerTournament(str(tournament.id)).call()
 
 		winner = User.objects.get(id=tournament.winner)
 		win = False
@@ -298,15 +298,15 @@ def getBattleshipTournamentStats(request):
 	tournamentTab = []
 	for tournament in allTournamentInvolve:
 
-		#w3 = Web3(Web3.HTTPProvider('http://' + os.environ.get('IP_NODE') + ':8545'))
-		#file = open('/var/blockchain/TranscendenceTournamentHistory.json')
-		#jsonFile = json.load(file)
-		#abi = jsonFile['abi']
+		w3 = Web3(Web3.HTTPProvider('http://' + os.environ.get('IP_NODE') + ':8545'))
+		file = open('/var/blockchain/TranscendenceTournamentHistory.json')
+		jsonFile = json.load(file)
+		abi = jsonFile['abi']
 
-		#contract_address = os.environ.get('CONTRACT_ADDRESS')
-		#contract = w3.eth.contract(address=contract_address, abi=abi)
+		contract_address = os.environ.get('CONTRACT_ADDRESS')
+		contract = w3.eth.contract(address=contract_address, abi=abi)
 
-		#winnerId = contract.functions.getWinnerTournament(str(tournament.id)).call()
+		winnerId = contract.functions.getWinnerTournament(str(tournament.id)).call()
 
 		winner = User.objects.get(id=int(tournament.winner))
 		win = False
