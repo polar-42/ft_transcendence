@@ -30,9 +30,6 @@ services:
       - db:/var/db
       - django_v:/var/conf
       - blockchain:/var/blockchain
-    #depends_on:
-    #  postgresql:
-    #    condition: service_healthy
     ports:
       - 8000
 
@@ -49,13 +46,6 @@ services:
       - db:/var/db
     ports:
       - "5432"
-    # environment:
-      # - DB_HOST_LINUX="${DB_HOST_LINUX}"
-    #healthcheck:
-    #  test: ["CMD", "pg_isready", "-h", "localhost", "-p", "5432"]
-    #  interval: 10s
-    #  timeout: 30s
-    #  retries: 5
 
   ganache:
    build: modules/blockchain/ganache

@@ -7,13 +7,6 @@ reload = True
 
 #region Log Handler
 
-accesslog = "-"
-errorlog = "-"
-
-capture_output = True
-
-loglevel = "debug"
-
 # endregion
 
 worker_class = 'uvicorn.workers.UvicornWorker'

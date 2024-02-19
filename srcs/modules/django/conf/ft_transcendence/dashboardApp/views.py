@@ -531,6 +531,7 @@ def getTournamentStat(request):
 		if request.method == "POST":
 			tournamentId = request.POST.get('tournamentId')
 
+			ColorPrint.prLGreen(tournamentId)
 			game = TournamentsModels.objects.get(id=int(tournamentId[13:]))
 			winner = User.objects.get(id=int(game.winner))
 			playersId = game.playersId

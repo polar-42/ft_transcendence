@@ -121,7 +121,6 @@ class chatSocket(WebsocketConsumer):
 		global UsersSockets
 		del UsersSockets[self.id]
 		ColorPrint.prBlue(UsersSockets)
-		self.close()
 
 	def updateConnexionStatus(self):
 		print('updateConnexionStatus')
