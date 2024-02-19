@@ -29,7 +29,7 @@ export function initGamePong()
 	}
 	// console.log("GameID = " + gameId);
 	// console.log("ws://" + window.location.host + '/pongGame/RemoteGame/' + arg);
-	pongGameSocket = new WebSocket("wss://" + window.location.host + '/pongGame/RemoteGame/' + srg);
+	pongGameSocket = new WebSocket("wss://" + window.location.host + '/pongGame/RemoteGame/' + arg);
 	// pongGameSocket = new WebSocket("ws://" + window.location.host + '/pongGame/RemoteGame/' + arg);
 	// console.log(pongGameSocket);
 
