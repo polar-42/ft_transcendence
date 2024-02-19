@@ -100,6 +100,6 @@ python manage.py create_user
 # gunicorn -c /usr/src/app/gunicornConf.py ft_transcendence.asgi:application
 
 # daphne ft_transcendence.asgi:application --host 0.0.0.0 --port 8000 --reload
-# uvicorn ft_transcendence.asgi:application --host 0.0.0.0 --port 8000 --reload --access-log --use-colors
+uvicorn ft_transcendence.asgi:application --host 0.0.0.0 --port 8000 --reload --access-log --use-colors
 
-python3 manage.py runserver 0.0.0.0:8000
+# python3 manage.py runserver 0.0.0.0:8000

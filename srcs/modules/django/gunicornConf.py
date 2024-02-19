@@ -22,4 +22,4 @@ reload_engine = 'auto'
 
 reload_dirs = ['/var/conf/ft_transcendence/']
 
-timeout = 1
+# timeout = 1

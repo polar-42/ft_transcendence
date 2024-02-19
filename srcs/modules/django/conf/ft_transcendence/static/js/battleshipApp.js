@@ -11,8 +11,8 @@ export function JoinMatchmaking()
 {
 	if(matchmakingSocket != null && matchmakingSocket.readyState != WebSocket.CLOSED)
 		return
-		//matchmakingSocket = new WebSocket("wss://" + window.location.host + "/battleshipApp/Matchmaking/")
-		matchmakingSocket = new WebSocket("ws://" + window.location.host + "/battleshipApp/Matchmaking/")
+		matchmakingSocket = new WebSocket("wss://" + window.location.host + "/battleshipApp/Matchmaking/")
+		// matchmakingSocket = new WebSocket("ws://" + window.location.host + "/battleshipApp/Matchmaking/")
 	matchmakingSocket.onmessage = e => OnMessage(e)
 }
 

@@ -113,7 +113,8 @@ function initHomepageBody() {
 }
 
 function startChatConnexion() {
-	chatSocket = new WebSocket("ws://" + window.location.host + '/chat/');
+	// chatSocket = new WebSocket("ws://" + window.location.host + '/chat/');
+	chatSocket = new WebSocket("wss://" + window.location.host + '/chat/');
 
 	chatSocket.onopen = initChatHomepage
 	chatSocket.onclose = closeChatSocket;

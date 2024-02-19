@@ -38,8 +38,8 @@ export function initGamePongIA()
 		return;
 	}
 	// console.log("ws://" + window.location.host + '/pongGame/gameVsIA');
-	socketPongIA = new WebSocket("ws://" + window.location.host + '/pongGame/gameVsIA');
-	//socketPongIA = new WebSocket("wss://" + window.location.host + '/pongGame/gameVsIA');
+	// socketPongIA = new WebSocket("ws://" + window.location.host + '/pongGame/gameVsIA');
+	socketPongIA = new WebSocket("wss://" + window.location.host + '/pongGame/gameVsIA');
 
 	document.addEventListener('keydown', doKeyDown);
 	document.addEventListener('keyup', doKeyUp);

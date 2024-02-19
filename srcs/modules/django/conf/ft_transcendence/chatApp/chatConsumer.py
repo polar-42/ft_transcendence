@@ -22,15 +22,15 @@ class chatSocket(WebsocketConsumer):
 	allUsers = {}
 
 
-	def initAllChannels(allChannelsDict):
+	def initAllChannels(self, allChannelsDict):
 		allChannelsSet = ChannelModels.objects.all()
 		for item in allChannelsSet:
 			channelName = item.channelName
 			allChannelsDict[channelName] = ChannelChat(channelName, item.description, item.privacyStatus, item.password, item.admin)
 
 
-	initAllChannels(allChannels)
 	def connect(self):
+		self.initAllChannels(self.allChannels)
 		if len(self.allChannels) <= 0:
 			createGeneralChat(self.allChannels)
 

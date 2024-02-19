@@ -59,8 +59,8 @@ export function initGame()
 		}
 		navto('/games')
 	}
-	//battleshipSocket = new WebSocket("wss://" + window.location.host + '/battleshipApp/Game/' + arg)
-	battleshipSocket = new WebSocket("ws://" + window.location.host + '/battleshipApp/Game/' + arg)
+	battleshipSocket = new WebSocket("wss://" + window.location.host + '/battleshipApp/Game/' + arg)
+	// battleshipSocket = new WebSocket("ws://" + window.location.host + '/battleshipApp/Game/' + arg)
 	battleshipSocket.onclose = (event) => {
 		if (event.code == 3001)
 		{
