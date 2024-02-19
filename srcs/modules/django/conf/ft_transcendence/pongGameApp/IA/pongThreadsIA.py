@@ -265,8 +265,9 @@ class pongGame():
    		}))
 
         if player1_score >= 3 or player2_score >= 3:
+            print(player1.player_id)
             if player1_score >= 3:
-                winner = player1.player_id
+                winner = player1.player_id.id
             else:
                 winner = 'AI'
 

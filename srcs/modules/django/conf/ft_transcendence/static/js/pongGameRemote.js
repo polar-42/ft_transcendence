@@ -177,7 +177,17 @@ function init_objects()
 	
 
 	var g_ball = new THREE.SphereGeometry(0.15, 32, 16)
-	var m_ball = new THREE.MeshBasicMaterial({ color: 0xff00ff,});
+	var m_ball = new THREE.MeshPhysicalMaterial({
+		reflectivity : 0.1,
+		transmission : 0.5,
+		roughness : 0.8,
+		clearcoat : 0.5,
+		clearcoatRoughness : 0.35,
+		ior : 1.2,
+		thickness : 10.0,
+		side : THREE.BackSide,
+		color : new THREE.Color(0xffaaff),
+	});
 	ball = new THREE.Mesh(g_ball, m_ball);
 	ball.layers.enableAll();
 	scene.add(ball);

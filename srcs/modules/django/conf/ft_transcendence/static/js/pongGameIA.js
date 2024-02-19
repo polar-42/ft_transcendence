@@ -108,6 +108,7 @@ function init_objects()
 		textureHeight: 50 ,
 		color: new THREE.Color(0x7f7f7f)
 	} );
+	// var wallUp = new THREE.Mesh(wallGeometry, new THREE.MeshBasicMaterial({color:0xaaaaaa}));
 	wallUp.position.y = 3.8;
 	wallUp.rotation.x = Math.PI / 180 * 90 ;
 
@@ -116,6 +117,7 @@ function init_objects()
 		textureHeight: 50 ,
 		color: new THREE.Color(0x7f7f7f)
 	} );
+	// var wallDown = new THREE.Mesh(wallGeometry, new THREE.MeshBasicMaterial({color:0xaaaaaa}));
 	wallDown.position.y = -3.8;
 	wallDown.rotation.x = Math.PI / 180 * -90 ;
 
@@ -164,7 +166,17 @@ function init_objects()
 	
 
 	var g_ball = new THREE.SphereGeometry(0.15, 32, 16)
-	var m_ball = new THREE.MeshBasicMaterial({ color: 0xff00ff,});
+	var m_ball = new THREE.MeshPhysicalMaterial({
+		reflectivity : 0.1,
+		transmission : 0.5,
+		roughness : 0.8,
+		clearcoat : 0.5,
+		clearcoatRoughness : 0.35,
+		ior : 1.2,
+		thickness : 10.0,
+		side : THREE.BackSide,
+		color : new THREE.Color(0xffaaff),
+	});
 	ball = new THREE.Mesh(g_ball, m_ball);
 	ball.layers.enableAll();
 	scene.add(ball);
