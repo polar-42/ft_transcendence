@@ -23,6 +23,7 @@ var paddle2;
 var ball;
 var trail;
 var listener;
+var animation;
 
 export function initGamePongIA()
 {
@@ -56,10 +57,10 @@ export function unloadGamePongIA()
 		socketPongIA.close();
 	}
 	socketPongIA = null;
-	if (canvas != null)
-	{
-		canvas.style.display="none";
-	}
+	//if (canvas != null)
+	//{
+	//	canvas.style.display="none";
+	//}
 	document.removeEventListener('keydown', doKeyDown);
 	document.removeEventListener('keyup', doKeyUp);
 }
@@ -142,7 +143,7 @@ function init_objects()
 	paddle2.rotation.x = Math.PI / 180 * 90;
 	scene.add(paddle2);
 
-	
+
 
 	var g_ball = new THREE.SphereGeometry(0.15, 32, 16)
 	var m_ball = new THREE.MeshBasicMaterial({ color: 0xff00ff,});
@@ -151,7 +152,7 @@ function init_objects()
 	scene.add(ball);
 
 
-	
+
 	listener = new THREE.AudioListener();
 	camera.add(listener);
 	paddle1_sound = new THREE.Audio(listener);
@@ -186,14 +187,14 @@ function init_objects()
 
 
 	const trailHeadGeometry = [];
-	trailHeadGeometry.push( 
-	new THREE.Vector3( -0.1, -0.1, -0.1 ), 
-	new THREE.Vector3( 0.0, 0.0, 0.0 ), 
-	new THREE.Vector3( 0.1, 0.1, 0.1 ) 
+	trailHeadGeometry.push(
+	new THREE.Vector3( -0.1, -0.1, -0.1 ),
+	new THREE.Vector3( 0.0, 0.0, 0.0 ),
+	new THREE.Vector3( 0.1, 0.1, 0.1 )
 	);
 	trail = new TrailRenderer( scene, false );
 	trail.setAdvanceFrequency(30);
-	const trailMaterial = TrailRenderer.createBaseMaterial();	
+	const trailMaterial = TrailRenderer.createBaseMaterial();
 	const trailLength = 10;
 	trail.initialize( trailMaterial, trailLength, false, 0, trailHeadGeometry, ball );
 	trail.activate();
@@ -201,7 +202,7 @@ function init_objects()
 }
 
 function animate() {
-    requestAnimationFrame(animate);
+    animation = requestAnimationFrame(animate);
 	if (BcameraShake == true)
 	{
 		frames_to_shake = 10;
@@ -330,6 +331,7 @@ function FinishGame()
 {
 	music.stop();
 	console.log('Pong game is finish');
+	cancelAnimationFrame(animation);
 }
 
 function FinishGameByScore(data)
@@ -339,6 +341,7 @@ function FinishGameByScore(data)
 	document.getElementById('score').style.display = "none";
 	let message = "Game is finished"; //+ data.winner + " is the winner by the score of " + data.playerone_score + " to " + data.playertwo_score;
 	document.getElementById('gameMessage').innerHTML = message;
+	cancelAnimationFrame(animation);
 }
 
 function OnMessage(e)
