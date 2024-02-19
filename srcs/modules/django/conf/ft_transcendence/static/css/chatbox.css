@@ -796,11 +796,11 @@
   .main_box_body.friendpage .conversation_list li.game_invitation {
 	display: block;
   }
-  
+
   .main_box_header.friendpage input {
 	width: 70%;
   }
-  
+
   .main_box_header.friendpage img.back_arrow {
 	cursor: pointer;
   }
@@ -835,7 +835,7 @@
 	border-top: 1px solid var(--main-bg-color);
 	width: auto;
   }
-  
+
   .main_box_body.friendpage .chatbox_homepage_navbar button {
 	border-radius: 3px;
 	margin: 0;
@@ -848,7 +848,7 @@
 	color: var(--fourth);
 	cursor: pointer;
   }
-  
+
   .main_box_body.friendpage .chatbox_homepage_navbar button:hover {
 	background: var(--fourth);
 	border: 1px solid var(--main-bg-color);
@@ -925,4 +925,17 @@
 	display: block;
 	margin: auto 0;
 	cursor: pointer;
+}
+
+.game_invite_opponent {
+  display: flex;
+}
+
+#image_auto_complete {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin-top: 2px;
+  margin-left: 2px;
+  margin-right: 2px;
 }

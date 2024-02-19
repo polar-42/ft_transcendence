@@ -1,5 +1,5 @@
 import { navto } from "../index.js"
-import { chatSocket, closeChatbox, openChatbox, sleep } from "./CA_General.js"
+import { chatSocket, closeChatbox, openChatbox, sleep, getProfilePicture } from "./CA_General.js"
 import { goToConv } from "./CA_Private.js"
 
 export async function initGameInvitiation() {
@@ -57,7 +57,7 @@ export async function initGameInvitiation() {
 	})
 	document.querySelector(".invitation_box .submit_BTN").addEventListener("click", sendGameInvitation.bind(null, usrListJson))
 
-	function onInputChange() {
+	async function onInputChange() {
 		let autocompleteList = document.querySelector(".autocomplete-list")
 		let inputBox = document.querySelector(".opponent_selection_box input")
 		let input = inputBox.value.toLowerCase()
@@ -72,10 +72,25 @@ export async function initGameInvitiation() {
 			return
 		}
 		for (let i = 0; i < filterUsers.length; i++) {
+
+			let profilePicture = await getProfilePicture(filterUsers[i])
+			let ppUrl
+			if (profilePicture.type == 'image/null')
+				ppUrl = "/static/assets/logo/user.png"
+			else
+				ppUrl = URL.createObjectURL(profilePicture)
+
 			let item = document.createElement("li")
+			item.setAttribute('class', 'game_invite_opponent')
+
+			item.appendChild(document.createElement('img'))
+			item.children[0].setAttribute("id", 'image_auto_complete')
+			item.children[0].setAttribute('src', ppUrl)
+
 			item.appendChild(document.createElement('button'))
-			item.firstChild.textContent = filterUsers[i].name
-			item.firstChild.setAttribute("id", filterUsers[i].id)
+			item.children[1].textContent = filterUsers[i].name
+			item.children[1].setAttribute("id", filterUsers[i].id)
+
 			item.addEventListener("click", onButtonClick)
 			autocompleteList.appendChild(item)
 		}
@@ -194,6 +209,10 @@ export async function receiveBattleshipInvitation(data) {
 		console.log(data)
 		goToConv(data.sender_id)
 		await sleep(100)
+	}
+	if (document.querySelector(".game_invitation") != undefined)
+	{
+		return
 	}
 
 	let conversation = document.querySelector(".conversation")
