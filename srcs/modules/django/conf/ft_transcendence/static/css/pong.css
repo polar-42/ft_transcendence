@@ -1,6 +1,7 @@
 .pongWindow {
 	display: grid;
 	justify-content: center;
+	background-color: var(--fourth);
 }
 
 .gameData {
@@ -8,12 +9,16 @@
 	justify-content: space-around;
 }
 
-#gamePlayer, #gamePlayer1, #gamePlayer2 {
+#gamePlayer, #gamePlayer1, #gamePlayer2, #gameType {
     background-color: var(--secondary);
 	border-radius: 5px;
 	padding: 5px;
 	margin: 5px;
 	display: flex;
+}
+
+#gameType {
+	font-weight: bold;
 }
 
 #pongGame {
