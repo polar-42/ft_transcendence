@@ -13,6 +13,7 @@ import { initChat, unsetChatbox } from "./chatApp/CA_General.js"
 import { InitTournamentView } from "./tournaments/tournamentSpectate.js"
 import { initUpdateAccount } from "./userManagement/userManagement.js"
 import { initProfile } from "./userProfileApp/profile.js"
+import { initNeedLogPage } from "./needlog.js"
 
 export function navto(urlpath)
 {
@@ -34,7 +35,7 @@ function getRoute(RoutePath)
 
     { path: "/", init: initHomePage, unload: null, title:"Home", LogStatus: 2},
     { path: "/404", init: null, unload: null, title:"404", LogStatus: 2},
-    { path: "/needlog", init: null, unload: null, title:"Login required", LogStatus: 0},
+    { path: "/needlog", init: initNeedLogPage, unload: null, title:"Login required", LogStatus: 0},
     { path: "/dashboard", init: initDashboard, unload: null, title:"Home", LogStatus: 1},
     { path: "/games", init: initGames, unload: null, title:"Games", LogStatus: 1},
     { path: "/battleship/", init: initGame, unload: CP_Unload, title:"Battleship", LogStatus: 1},
@@ -107,7 +108,6 @@ const router = async () =>
 		actualRoute += '?Valid=true'
 	else if (actualRoute.includes('Valid=') == false)
 		actualRoute += '&Valid=true'
-	// console.log(actualRoute)
 	fetch(actualRoute)
 	.then(Response => {
 		document.title = match.route.title

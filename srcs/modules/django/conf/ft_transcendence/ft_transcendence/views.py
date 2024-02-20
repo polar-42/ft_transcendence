@@ -23,10 +23,7 @@ def PNF_view(request):
 
 @isValidLoading
 def NeedLog_view(request):
-	if (request.method == "GET"):
-		return render(request, 'needlog.html')
-	else:
-		return render(request, 'index.html')
+	return render(request, 'needlog.html')
 
 @isValidLoading
 def games_view(request):

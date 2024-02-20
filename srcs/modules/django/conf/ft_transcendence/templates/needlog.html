@@ -1,5 +1,9 @@
 <!-- game.html -->
 {% load static %}
-<script type="module" src="{% static '/js/loading.js' %}"></script>
-<h1>You need to  be logged to access this page</h1>
-<a href="/authApp/login" data-link>Go to log page</a>
+<div class="error_401">
+	<div class="error_message">
+		<p class="error_code">Error 401</p>
+		<p class="error_text">User not Connected !</p>
+		<button class="login_btn">Login</button>
+	</div>
+</div>

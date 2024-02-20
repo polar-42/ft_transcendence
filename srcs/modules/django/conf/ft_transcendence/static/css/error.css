@@ -1,0 +1,54 @@
+.error_404,
+.error_401 {
+	display: flex;
+	justify-content: center;
+	font-weight: bold;
+}
+
+/* .error_404 {
+	height: 100%;
+	margin: auto;
+	font-size: larger;
+} */
+
+.error_message .error_code {
+	font-size: 500%;
+}
+
+.error_message .error_text {
+	font-size: 200%;
+}
+
+.error_message {
+    margin-top: 15vh;
+    margin-bottom: 19vh;
+    background: var(--fourth);
+    padding: 5%;
+    border-radius: 2px;
+	text-align: center;
+	width: 650px;
+	height: 400px;
+}
+
+.error_401 button {
+	font-size: 1.5em;
+	border-radius: 2px;
+	margin: 40px auto auto auto;
+	padding: 0.2em;
+	width: 10ch;
+	height: auto;
+	text-align: center;
+	overflow: visible;
+	border: 2px solid var(--main-color);
+	color: var(--main-color);
+	background: var(--secondary-bg-color);
+	cursor: pointer;
+	transition: .5s ease;
+  }
+
+.error_401 button:hover {
+	box-shadow:
+	2px 2px 5px var(--main-color)
+	-2px -2px 5px var(--main-color);
+	background: var(--main-bg-color);
+  }
