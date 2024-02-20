@@ -3,7 +3,7 @@
 {% load static %}
   <script type="module" src="{% static '/js/loading.js' %}"></script>
 {% block content %}
-  <section class="register_container">
+  <section class="settings_container">
     <h1>Modify your transcendental account</h1>
     <form>
       {% csrf_token %}
@@ -27,19 +27,28 @@
         <label for="Input_pwd">Actual Password</label><br/>
         <input type="password" id="Input_pwd" required placeholder="Enter your new password" pattern="\S.*"><br/>
       </div>
-      <div class="input-box">
+      <div class="input-box avatar_box">
         <label for="Input_avatar">Choose a new profile picture: (optional)</label>
-        <input type="file" id="newAvatar" name="avatar" accept="image/png, image/jpeg"/>
-        <img id="avatar_preview"></img>
+        <input type="file" id="Input_avatar" name="avatar" accept="image/png, image/jpeg"/>
+        <div class='preview'>
+          <div class='avatar'>
+            <button type='button' class='upload_button' aria-label='upload-image' aria-describedby='image'>
+              <img src='/static/assets/logo/upload.png' alt='upload button'>
+            </button>
+          </div>
+        </div>
       </div>
     </form>
-    <label class="switch">
-      <input type="checkbox">
-      <span class="slider round"></span>
-    </label>
+    <div class="input-box TFA_switch">
+      <label for='2FA_input'>Activate Two Factor Identification</label>
+      <div class="switch">
+        <input type="checkbox">
+        <span class="slider round"></span>
+      </div>
+    </div>
     <div class="submit">
       <button class="submit_BTN">Submit</button>
       <p class="feedback"></p>
     </div>
   </section>
-{% endblock content %}
+  {% endblock content %}
