@@ -78,7 +78,7 @@ async function initBracket(numberOfPlayers) {
     }
     nbOfGame *= 2
   }
-  isBracketInit = true  
+  isBracketInit = true
   queryMatchList()
 }
 
@@ -94,13 +94,13 @@ async function queryMatchList() {
       body: JSON.stringify({'tourId': tournamentId})
     })
   .then(Response => {
-    if (!Response.ok) 
+    if (!Response.ok)
       throw new Error("Network response was not okay")
     return Response.json()
   })
   .catch(error => {
     console.error('Error:', error)
-    return undefined 
+    return undefined
   })
   if (matchList == undefined)
     return
@@ -109,7 +109,7 @@ async function queryMatchList() {
 
 export function GoingAway()
 {
-	// console.log(tournamentSocket)	
+	// console.log(tournamentSocket)
 	if (tournamentSocket == undefined)
 		return
 	if (tournamentSocket.readyState == WebSocket.CLOSED)
@@ -226,7 +226,7 @@ async function PrintPlayers(data)
 		item.setAttribute('id', element.userId)
     const itemDiv = item.appendChild(document.createElement('div'))
     const avatarEl = document.createElement('img')
-    avatarEl.src = avatar 
+    avatarEl.src = avatar
     avatarEl.alt = "User avatar"
     const txt = document.createElement('p')
     txt.textContent = element.userName
@@ -256,7 +256,7 @@ async function PrintMatchs(matchList)
     '-4': 'Round of 32',
     '-5': 'Round of 64'
   }
-  let lostStage = '' 
+  let lostStage = ''
   let selfId
   if (matchList == 'None' || isBracketInit == false)
     return
@@ -272,10 +272,10 @@ async function PrintMatchs(matchList)
     })
   if (Response.ok)
     selfId = await Response.json()
-  else 
+  else
     throw new Error('Error when fetching user datas')
   matchList.forEach(async (element) => {
-    console.log(element) 
+    console.log(element)
     const matchupEl = bracket.children[element.X].children[element.Y + 1]
     if (matchupEl === undefined)
       return
@@ -289,7 +289,7 @@ async function PrintMatchs(matchList)
       matchupEl.children[0].classList.add("winner")
       matchupEl.children[1].classList.add("loser")
       if (element.User1.id != selfId.userID && element.User2.id == selfId.userID) {
-        lostStage = roundsDict[element.X - lastRound] 
+        lostStage = roundsDict[element.X - lastRound]
       }
     } else if (element.Winner === 1) {
       matchupEl.children[0].classList.add("loser")
@@ -301,13 +301,13 @@ async function PrintMatchs(matchList)
   })
   document.querySelector(".waiting_screen").style.display = 'none'
   console.log(lostStage)
-  if (lostStage != '') 
+  if (lostStage != '')
     lostTournament(lostStage)
   else if (matchList[matchList.length - 1].Winner == -1) {
     if (isRoundFull(matchList) == true) {
       if (document.querySelector('.BTN_Ready').classList.contains('disable')) {
-        document.querySelector('.BTN_Ready').classList.remove('disable') 
-        document.querySelector('.BTN_Ready').disabled = false 
+        document.querySelector('.BTN_Ready').classList.remove('disable')
+        document.querySelector('.BTN_Ready').disabled = false
       }
     }
   }
@@ -321,7 +321,7 @@ function isRoundFull(matchList) {
       let round = matchList[i].X
       let j = i
       while (j < matchList.length && matchList[j].X == round) {
-        if (matchList[j].User1.id != 'Undefined' || matchList[j].User2.id != 'Undefined') 
+        if (matchList[j].User1.id != 'Undefined' || matchList[j].User2.id != 'Undefined')
           return false
         j++;
       }
@@ -345,7 +345,7 @@ async function displayMatchPlayerHTML(userNb, userData, matchupEl, selfId) {
   user.appendChild(document.createElement('p'))
   user.querySelector('p').textContent = userData.nickname
   user.setAttribute('id', userData.id)
-  if (userData.id == selfId) 
+  if (userData.id == selfId)
     matchupEl.children[userNb].classList.add('own')
 }
 

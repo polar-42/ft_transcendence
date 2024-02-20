@@ -72,7 +72,7 @@ def get_tournaments_html(request):
 			'name': tour.TournamentName,
 			'typeGame': gameTypeUrl,
 			'numberPlayers': len(tour.PlayersList),
-            'creator': tour.Administrator if type(tour.Administrator) is int else tour.Administrator.UserId,
+            'creator': tour.Administrator if type(tour.Administrator) is int else tour.Administrator.Username,
 			'private': tour.Visibility,
 			'description': tour.Description,
 			'joinable' : Joinable
@@ -116,11 +116,11 @@ def GetTournamentData(request):
 	MatchMSG = Tournament.GetMatchList()
 	ColorPrint.prRed(Tournament.TournamentName)
 	ColorPrint.prRed(Tournament.Type)
-	return JsonResponse({ "tournamentName" : Tournament.TournamentName, 
-					  "tournamentType" : Tournament.Type, 
+	return JsonResponse({ "tournamentName" : Tournament.TournamentName,
+					  "tournamentType" : Tournament.Type,
 					  "tournamentDescription": Tournament.Description,
 					  "numberPlayers": Tournament.PlayerAmount,
-					  "users" : UserMSG, 
+					  "users" : UserMSG,
 					  "matchs" : 'None' if MatchMSG is None else MatchMSG
 					  })
 
