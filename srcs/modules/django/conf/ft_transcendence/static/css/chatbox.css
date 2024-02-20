@@ -633,20 +633,20 @@
 	font-size: 0.9em;
 }
 
-.main_box_body.private_message .conversation .sender .message,
-.main_box_body.channel .conversation .sender .message {
+.main_box_body.private_message .conversation .message,
+.main_box_body.channel .conversation .message {
 	overflow-wrap: break-word;
 }
 
-.main_box_body.private_message .conversation .sender .timestamp,
-.main_box_body.channel .conversation .sender .timestamp {
+.main_box_body.private_message .conversation .timestamp,
+.main_box_body.channel .conversation .timestamp {
 	font-size: 0.7em;
 	font-style: italic;
 	text-align: right;
 }
 
-.main_box_body.private_message .conversation .sender .message_item.own,
-.main_box_body.channel .conversation .sender .message_item.own {
+.main_box_body.private_message .conversation .message_item.own,
+.main_box_body.channel .conversation .message_item.own {
 	background: linear-gradient(to bottom, #4c77e6 5%, #7f4af5);
 	float: right;
 }

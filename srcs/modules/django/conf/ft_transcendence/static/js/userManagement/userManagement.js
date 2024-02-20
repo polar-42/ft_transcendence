@@ -45,7 +45,6 @@ export function initUpdateAccount() {
 }
 
 function Handle2FaToggle(checkbox) {
-  console.log('coucou')
 	const TFARequestType = 1 ? checkbox.checked == true : 2
 	fetch(window.location.origin + "/authApp/TFA/ShowPopUp")
 	.then(Response => {
@@ -331,7 +330,6 @@ function avatarButtonFunction() {
       avatar.setAttribute('aria-label', file.name)
       avatar.style.background = `url(${reader.result}) center center/cover`
       imgFile = reader.result
-      console.log(imgFile)
     }
   })
 }
