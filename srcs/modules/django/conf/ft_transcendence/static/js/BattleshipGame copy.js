@@ -1,20 +1,13 @@
 import { navto } from "./index.js"
-import * as THREE from 'https://threejs.org/build/three.module.js';
-import { OrbitControls } from "../threejs_addons/OrbitControls.js";
-
-let WIDTH = document.body.clientWidth * 0.75;
-let HEIGHT = WIDTH * (9. / 16.);
 
 let canvas = null
 let ctx = null
 
 const gridSizeX = 10
 const gridSizeY = 10
-const boxSize = 1;
+
 const offsetX = 10
 const offsetY = 100
-
-let mouse = new THREE.Vector2();
 
 const FP_BTN_Validate =
 {
@@ -31,8 +24,6 @@ let BoardCases = []
 
 let BoatList = []
 
-let Boatm = []
-
 let BoardArray = []
 
 let validated = false
@@ -41,9 +32,6 @@ var battleshipSocket = null
 var gameId = null
 
 var curInterval = undefined
-
-let CURRENT_SELECTION = null;
-let CURRENT_COLOR = null;
 
 export function initGame()
 {
@@ -69,8 +57,8 @@ export function initGame()
 		}
 		navto('/games')
 	}
-	battleshipSocket = new WebSocket("wss://" + window.location.host + '/battleshipApp/Game/' + arg)
-	// battleshipSocket = new WebSocket("ws://" + window.location.host + '/battleshipApp/Game/' + arg)
+	//battleshipSocket = new WebSocket("wss://" + window.location.host + '/battleshipApp/Game/' + arg)
+	battleshipSocket = new WebSocket("ws://" + window.location.host + '/battleshipApp/Game/' + arg)
 	battleshipSocket.onclose = (event) => {
 		if (event.code == 3001)
 		{
@@ -95,14 +83,16 @@ function OnMessage(e)
 			break
 		case 'StartTurn':
 			SP_drawTitle("Your Turn")
-			document.addEventListener('mousemove', SP_mouseMove)
-			document.addEventListener('click', SP_mouseClick)
+			canvas.addEventListener('mousemove', SP_mouseMove)
+			canvas.addEventListener('click', SP_mouseClick)
 			break
 		case 'StartEnemyTurn':
 			SP_drawTitle(data.playerName + " Turn")
+			SP_selected = undefined
+			SP_hovered = undefined
 			SP_Draw()
-			document.removeEventListener('mousemove', SP_mouseMove)
-			document.removeEventListener('click', SP_mouseClick)
+			canvas.removeEventListener('mousemove', SP_mouseMove)
+			canvas.removeEventListener('click', SP_mouseClick)
 			break
 		case 'GameStop':
 			RP_GameStop(data.message, data.tournamentId)
@@ -189,9 +179,10 @@ function RP_Win(other, userBoat, otherBoat)
 function FP_UnLoad()
 {
 	canvas.removeEventListener('click', FP_mouseClick)
-	document.removeEventListener('mousedown', FP_mouseDown)
-	document.removeEventListener('mousemove', FP_mouseMove)
-	console.log("42 omg")
+	canvas.removeEventListener('contextmenu', FP_mouseRightClick)
+	canvas.removeEventListener('mousedown', FP_mouseDown)
+	canvas.removeEventListener('mousemove', FP_mouseMove)
+	canvas.removeEventListener('mouseup', FP_mouseUp)
 	if (curInterval != undefined)
 		clearInterval(curInterval)
 	curInterval = undefined
@@ -207,136 +198,84 @@ function FP_Timer()
 const boardGroup = new THREE.Group();
 const boardSizeX = 10;
 const boardSizeY = 10;
- // Adjust as needed
+const boxSize = 1; // Adjust as needed
 const boardOffsetX = 0; // Adjust as needed
 const boardOffsetY = 0; // Adjust as needed
-let boatToPlace = null;
-let scene;
-let camera;
-let renderer;
-let controls;
-let raycaster;
-let INTERSECTED = null;
-
-
-function boatCreate() {
-	BoatList = [
-	  {
-		name: "Carrier",
-		x: 0,
-		y: 0,
-		ArrayX: 0,
-		ArrayY: 11,
-		size: 5,
-		horizontal: true,
-	  },
-	  {
-		name: "BattleShip",
-		x: 0,
-		y: 0,
-		ArrayX: 8,
-		ArrayY: 11,
-		size: 4,
-		horizontal: true,
-	  },
-	  {
-		name: "Destroyer",
-		x: 0,
-		y: 0,
-		ArrayX: 4,
-		ArrayY: 13,
-		size: 3,
-		horizontal: true,
-	  },
-	  {
-		name: "Submarine",
-		x: 0,
-		y: 0,
-		ArrayX: 0,
-		ArrayY: 13,
-		size: 3,
-		horizontal: true,
-	  },
-	  {
-		name: "PatrolBoat",
-		x: 0,
-		y: 0,
-		ArrayX: 8,
-		ArrayY: 13,
-		size: 2,
-		horizontal: true,
-	  },
-	];
-	for (let i = 0; i < BoatList.length; i++) {
-	  const geometry = new THREE.BoxGeometry(BoatList[i].size, 1, 1);
-	  const material = new THREE.MeshBasicMaterial({ color: 0x550055 });
-	  const boat = new THREE.Mesh(geometry, material);
-	  boat.self = BoatList[i];
-	  Boatm.push(boat);
-	  boat.position.x = BoatList[i].ArrayX + 1;
-	  boat.position.z = BoatList[i].ArrayY;
-	  boat.position.y = 1;
-	  boat.width = BoatList[i].size;
-	  boat.type = "boat";
-	  boat.pos = [-1, -1];
-	  boat.orientation = BoatList[i].horizontal;
-	  scene.add(boat);
-	}
-  }
 
 function FP_Init()
 {
-	scene = new THREE.Scene();
-	camera = new THREE.PerspectiveCamera(
-		75,
-		window.innerWidth / window.innerHeight,
-		0.1,
-		1000
-	);
-	camera.position.z = 17;
-	camera.position.x = 8;
-	camera.position.y = 12;
-	renderer = new THREE.WebGLRenderer({ antialiasing: true });
-	raycaster = new THREE.Raycaster()
-	renderer.setSize(WIDTH, HEIGHT);
-	controls = new OrbitControls(camera, renderer.domElement);
-	controls.target.set(5, 0, 5);
-	controls.minDistance = 10;
-	controls.maxDistance = 42;
-	controls.maxPolarAngle = 1.5; // radians
-	controls.update();
-	controls.enablePan = false;
-	controls.enableRotate = true;
-
-	boatCreate();
+	BoatList = [
+		{
+		  name: "Carrier",
+		  x: 0,
+		  y: 0,
+		  ArrayX: 0,
+		  ArrayY: 0,
+		  size: 5,
+		  horizontal: true,
+		},
+		{
+		  name: "BattleShip",
+		  x: 0,
+		  y: 0,
+		  ArrayX: 8,
+		  ArrayY: 0,
+		  size: 4,
+		  horizontal: true,
+		},
+		{
+		  name: "Destroyer",
+		  x: 0,
+		  y: 0,
+		  ArrayX: 4,
+		  ArrayY: 2,
+		  size: 3,
+		  horizontal: true,
+		},
+		{
+		  name: "Submarine",
+		  x: 0,
+		  y: 0,
+		  ArrayX: 0,
+		  ArrayY: 2,
+		  size: 3,
+		  horizontal: true,
+		},
+		{
+		  name: "PatrolBoat",
+		  x: 0,
+		  y: 0,
+		  ArrayX: 8,
+		  ArrayY: 2,
+		  size: 2,
+		  horizontal: true,
+		},
+	  ];
 	for (let y = 0; y < boardSizeY; y++) {
 		for (let x = 0; x < boardSizeX; x++) {
-		const geometry = new THREE.BoxGeometry(boxSize, boxSize, boxSize);
-		const material = new THREE.MeshBasicMaterial({ color: 0x6fc2fc });
-		const cube = new THREE.Mesh(geometry, material);
-		cube.position.set(x + boardOffsetX, 0, y + boardOffsetY);
-		cube.type = "cube";
-		scene.add(cube);
-		const edges = new THREE.EdgesGeometry(geometry);
-		const lineMaterial = new THREE.LineBasicMaterial({
-			color: 0x000000,
-			linewidth: 2,
-		});
-		const lines = new THREE.LineSegments(edges, lineMaterial);
-		lines.position.set(x + boardOffsetX, 0, y + boardOffsetY);
-		boardGroup.add(lines);
+			const geometry = new THREE.BoxGeometry(boxSize, boxSize, boxSize);
+			const material = new THREE.MeshBasicMaterial({ color: 0x6fc2fc });
+			const cube = new THREE.Mesh(geometry, material);
+			cube.position.set(x + boardOffsetX, 0, y + boardOffsetY);
+			cube.type = "cube";
+			scene.add(cube);
+			const edges = new THREE.EdgesGeometry(geometry);
+			const lineMaterial = new THREE.LineBasicMaterial({
+				color: 0x000000,
+				linewidth: 2,
+			});
+			const lines = new THREE.LineSegments(edges, lineMaterial);
+			lines.position.set(x + boardOffsetX, 0, y + boardOffsetY);
+			boardGroup.add(lines);
 		}
 	}
 	scene.add(boardGroup);
-
 	validated = false
-	canvas = document.getElementById("app")
-	canvas.appendChild(renderer.domElement);
 	canvas = document.getElementById("myCanvas")
 	ctx = canvas.getContext("2d")
-	canvas.addEventListener('click', FP_mouseClick)
-	document.addEventListener('mousedown', FP_mouseDown)
-	document.addEventListener('mousemove', FP_mouseMove)
+	canvas.addEventListener('contextmenu', FP_mouseRightClick)
+	canvas.addEventListener('mousedown', FP_mouseDown)
+	canvas.addEventListener('mousemove', FP_mouseMove)
 	for ( let y = 0; y < gridSizeY; y++)
 	{
 		BoardArray[y] = []
@@ -348,7 +287,7 @@ function FP_Init()
 		element.y = element.startY
 	})
 	curInterval = setInterval(FP_Timer, 1000)
-	animate()
+	FP_draw()
 }
 
 function FP_drawTitle()
@@ -358,7 +297,7 @@ function FP_drawTitle()
 	ctx.fillStyle = "#0095DD"
 	let placedBoat = 0
 	BoatList.forEach(element => {
-		if (element.ArrayY < 10)
+		if (element.ArrayX != -1)
 			placedBoat++
 	})
 	if (validated == false)
@@ -367,36 +306,67 @@ function FP_drawTitle()
 		ctx.fillText(`Please, wait for your opponent`, canvas.width / 2 , 65)
 }
 
+function FP_isHover(element, mouseX, mouseY)
+{
+	if (element.horizontal == true)
+	{
+		if (mouseX > element.x && mouseX < element.x + element.size * boxSize && mouseY > element.y && mouseY < element.y + boxSize)
+			return true
+		return false
+	}
+	if (mouseX > element.x && mouseX < element.x + boxSize && mouseY > element.y && mouseY < element.y + element.size * boxSize)
+		return true
+	return false
+}
+
+let FP_tmpBoat = {x : 0, y : 0, horizontal : true}
+
 function FP_mouseDown(e)
 {
-	if (e.which == 3) {
-		rotateBoat();
-	  }
-	  if (e.which == 1 && INTERSECTED && INTERSECTED != CURRENT_SELECTION) {
-		if (INTERSECTED.type == "cube" && boatToPlace != null) {
-		  placeBoat(INTERSECTED.position.x, INTERSECTED.position.z);
-		}
-		if (INTERSECTED.type == "boat") {
-		  boatToPlace = INTERSECTED;
-		}
-		INTERSECTED.scale.set(1, 1, 1);
-		INTERSECTED.material.color.setHex(0xff0000);
+	if (e.button != 0 || validated == true)
+		return
+	const mouseX = e.clientX - canvas.getBoundingClientRect().left
+	const mouseY = e.clientY - canvas.getBoundingClientRect().top
 
-		if (CURRENT_SELECTION != null) {
-		  CURRENT_SELECTION.material.color.setHex(CURRENT_COLOR);
+	BoatList.forEach(element => {
+		if (FP_isHover(element, mouseX, mouseY) == true)
+		{
+			FP_tmpBoat.x = element.x
+			FP_tmpBoat.y = element.y
+			FP_tmpBoat.horizontal = element.horizontal
+			if (element.ArrayX != -1)
+			{
+				if (element.horizontal == true)
+				{
+					for (let i = 0; i < element.size; i++)
+					{
+						if (BoardArray[element.ArrayY][element.ArrayX + i] == 1)
+							BoardArray[element.ArrayY][element.ArrayX + i] = 0
+					}
+				}
+				else
+				{
+					for (let i = 0; i < element.size; i++)
+					{
+						if (BoardArray[element.ArrayY + i][element.ArrayX] == 1)
+							BoardArray[element.ArrayY + i][element.ArrayX] = 0
+					}
+				}
+			}
+			// Start dragging
+			element.isDragging = true
+
+			// Save the offset to adjust the position while dragging
+			element.offsetX = mouseX - element.x
+			element.offsetY = mouseY - element.y
+
+			// Change cursor style while dragging
+			canvas.style.cursor = 'grabbing'
 		}
-		CURRENT_COLOR = INTERSECTED.currentHex;
-		CURRENT_SELECTION = INTERSECTED;
-		INTERSECTED = null;
-	}
+	})
 }
 
 function FP_mouseMove(e) {
-	const rect = renderer.domElement.getBoundingClientRect();
-	const x = e.clientX - rect.left;
-	const y = e.clientY - rect.top;
-	mouse.x = (x / WIDTH) * 2 - 1;
-	mouse.y = -(y / HEIGHT) * 2 + 1;
 	BoatList.forEach(element => {
 		if (element.isDragging) {
 			const mouseX = e.clientX - canvas.getBoundingClientRect().left
@@ -416,12 +386,57 @@ function FP_mouseMove(e) {
 	})
 }
 
+function FP_mouseUp(e) {
+	if (e.button != 0)
+		return
+	BoatList.forEach(element => {
+		if (element.isDragging == true) {
+			element.isDragging = false
+			if (element.x > offsetX - boxSize / 2 && element.x < (offsetX + gridSizeX * boxSize) - boxSize / 2 && element.y > offsetY - boxSize / 2 && element.y < (offsetY + gridSizeY * boxSize) - boxSize / 2) {
+				if (FP_isValidPos(element) == true) {
+
+					element.ArrayX = Math.round((element.x - offsetX) / boxSize)
+					element.ArrayY = Math.round((element.y - offsetY) / boxSize)
+					element.x = element.ArrayX * boxSize + offsetX
+					element.y = element.ArrayY * boxSize + offsetY
+					if (element.horizontal == true) {
+						for (let i = 0; i < element.size; i++) {
+							if (BoardArray[element.ArrayY][element.ArrayX + i] == 0)
+								BoardArray[element.ArrayY][element.ArrayX + i] = 1
+						}
+					}
+					else {
+						for (let i = 0; i < element.size; i++) {
+							if (BoardArray[element.ArrayY + i][element.ArrayX] == 0)
+								BoardArray[element.ArrayY + i][element.ArrayX] = 1
+						}
+					}
+				}
+				else {
+					element.x = FP_tmpBoat.x
+					element.y = FP_tmpBoat.y
+					element.horizontal = FP_tmpBoat.horizontal
+				}
+			}
+			else {
+				element.horizontal = true
+				element.x = element.startX
+				element.y = element.startY
+				element.ArrayX = -1
+				element.ArrayY = -1
+			}
+			FP_draw()
+		}
+		// Change cursor style back to default
+		canvas.style.cursor = 'grab'
+	})
+}
 
 function FP_SendBoats()
 {
 	var count = 0
 	BoatList.forEach(element => {
-		if (element.ArrayY < 10)
+		if (element.ArrayPosX != -1)
 			count++
 	})
 
@@ -435,85 +450,8 @@ function FP_SendBoats()
 	return true
 }
 
-function placeBoat(x, y) {
-	let offset_center = (boatToPlace.width - 1) / 2;
-	let offset_other = 0;
-	let boat_x;
-	let boat_y;
-	if (boatToPlace.width % 2 == 1) {
-	  offset_center = (boatToPlace.width - 1) / 2;
-	}
-	boat_x = x + offset_center;
-	boat_y = y + offset_other;
-	if (!boatToPlace.orientation) {
-	  boat_y = y + offset_center;
-	  boat_x = x + offset_other;
-	}
-	if (!boatToPlace.orientation && boatToPlace.width + y > 10) {
-	  return;
-	} else if (boatToPlace.orientation && boatToPlace.width + x > 10) {
-	  return;
-	}
-	boatToPlace.pos = [x, y];
-	console.log(boatToPlace.pos);
-	boatToPlace.position.x = boat_x;
-	boatToPlace.position.z = boat_y;
-	boatToPlace.self.ArrayX = boat_x;
-	boatToPlace.self.ArrayY = boat_y;
-  }
-
-  function rotateBoat() {
-	if (boatToPlace == null) {
-	  return;
-	}
-	boatToPlace.orientation = !boatToPlace.orientation;
-	if (!boatToPlace.orientation && boatToPlace.width + boatToPlace.pos[1] > 10) {
-	  boatToPlace.orientation = !boatToPlace.orientation;
-	  return;
-	} else if (
-	  boatToPlace.orientation &&
-	  boatToPlace.width + boatToPlace.pos[0] > 10
-	) {
-	  boatToPlace.orientation = !boatToPlace.orientation;
-	  return;
-	}
-	let offset_center = (boatToPlace.width - 1) / 2;
-	if (!boatToPlace.orientation) {
-	  boatToPlace.position.x -= offset_center;
-	  boatToPlace.position.z += offset_center;
-	  boatToPlace.self.ArrayX -= offset_center
-	  boatToPlace.self.ArrayY = offset_center;
-	} else {
-	  boatToPlace.position.x += offset_center;
-	  boatToPlace.position.z -= offset_center;
-	  boatToPlace.self.ArrayX += offset_center
-	  boatToPlace.self.ArrayY -= offset_center;
-	}
-	boatToPlace.rotation.y += 1.57;
-  }
-
 function FP_mouseClick(e)
 {
-	if (e.which == 3) {
-		rotateBoat();
-	  }
-	  if (e.which == 1 && INTERSECTED && INTERSECTED != CURRENT_SELECTION) {
-		if (INTERSECTED.type == "cube" && boatToPlace != null) {
-		  placeBoat(INTERSECTED.position.x, INTERSECTED.position.z);
-		}
-		if (INTERSECTED.type == "boat") {
-		  boatToPlace = INTERSECTED;
-		}
-		INTERSECTED.scale.set(1, 1, 1);
-		INTERSECTED.material.color.setHex(0xff0000);
-
-		if (CURRENT_SELECTION != null) {
-		  CURRENT_SELECTION.material.color.setHex(CURRENT_COLOR);
-		}
-		CURRENT_COLOR = INTERSECTED.currentHex;
-		CURRENT_SELECTION = INTERSECTED;
-		INTERSECTED = null;
-	  }
 	if (e.button != 0)
 		return
 	const mouseX = e.clientX - canvas.getBoundingClientRect().left
@@ -525,6 +463,62 @@ function FP_mouseClick(e)
 		validated = !validated
 		FP_draw()
 	}
+}
+
+function FP_mouseRightClick(e)
+{
+	// Prevent the default context menu behavior
+    e.preventDefault()
+	const mouseX = e.clientX - canvas.getBoundingClientRect().left
+    const mouseY = e.clientY - canvas.getBoundingClientRect().top
+	BoatList.forEach(element =>
+	{
+		if (element.isDragging)
+		{
+			element.x =  mouseX
+			element.y =  mouseY
+			element.offsetX = mouseX - element.x
+			element.offsetY = mouseY - element.y
+			element.horizontal = !element.horizontal
+			FP_draw()
+		}
+	})
+}
+
+function FP_drawBoats( dragging )
+{
+	BoatList.forEach(element =>
+	{
+		if (element.isDragging == false || dragging == true)
+		{
+			ctx.beginPath()
+			if (element.horizontal == true)
+				ctx.rect(element.x, element.y, element.size * boxSize, boxSize)
+			else
+				ctx.rect(element.x, element.y, boxSize, element.size * boxSize)
+			ctx.fillStyle = "blue"
+			ctx.fill()
+			ctx.closePath()
+		}
+	})
+}
+
+function FP_drawDragged()
+{
+	BoatList.forEach(element =>
+		{
+			if (element.isDragging == true)
+			{
+				ctx.beginPath()
+				if (element.horizontal == true)
+					ctx.rect(element.x, element.y, element.size * boxSize, boxSize)
+				else
+					ctx.rect(element.x, element.y, boxSize, element.size * boxSize)
+				ctx.fillStyle = "red"
+				ctx.fill()
+				ctx.closePath()
+			}
+		})
 }
 
 function FP_drawValidateButton()
@@ -550,7 +544,42 @@ function FP_drawValidateButton()
 
 function FP_draw()
 {
+	ctx.clearRect(0, 0, canvas.width, canvas.height)
 	drawTimer()
+	drawGrid(2)
+	FP_drawBoats(false)
+	drawGrid(1)
+	FP_drawTitle()
+	FP_drawDragged()
+	FP_drawValidateButton()
+}
+
+function FP_isValidPos(element)
+{
+	let X = Math.round((element.x - offsetX) / boxSize)
+	let Y = Math.round((element.y - offsetY) / boxSize)
+
+	if (element.horizontal == true)
+	{
+		if (X + element.size - 1  >= gridSizeX)
+			return false
+		for (let i = 0; i < element.size; i++)
+		{
+			if (BoardArray[Y][X + i] == 1)
+				return false
+		}
+	}
+	else
+	{
+		if (Y + element.size - 1  >= gridSizeY)
+			return false
+		for (let i = 0; i < element.size; i++)
+		{
+			if (BoardArray[Y + i][X] == 1)
+				return false
+		}
+	}
+	return true
 }
 
 //#endregion
@@ -581,11 +610,6 @@ function SP_HitCase(Tcase, result, boat)
 
 function SP_mouseMove(event)
 {
-	const rect = renderer.domElement.getBoundingClientRect();
-	const x = e.clientX - rect.left;
-	const y = e.clientY - rect.top;
-	mouse.x = (x / WIDTH) * 2 - 1;
-	mouse.y = -(y / HEIGHT) * 2 + 1;
 	const mouseX = event.clientX - canvas.getBoundingClientRect().left
 	const mouseY = event.clientY - canvas.getBoundingClientRect().top
 	const ArrayPos = CP_getArrayPos(mouseX, mouseY)
@@ -663,12 +687,11 @@ function SP_Load()
 {
 	curInterval = setInterval(SP_Timer, 1000)
 	BoatList = [
-		{ name : 'PatrolBoat', x : 700, y : 500, size : 2, status : true},
+		// { name : 'Carrier', x : 700, y : 100, size : 5, status : true},
+		// { name : 'BattleShip', x : 700, y : 200, size : 4, status : true},
 		// { name : 'Destroyer', x : 700, y : 300, size : 3, status : true},
 		// { name : 'Submarine', x : 700, y : 400, size : 3, status : true},
-		// { name : 'BattleShip', x : 700, y : 200, size : 4, status : true},
-		// { name : 'Carrier', x : 700, y : 100, size : 5, status : true},
-
+		{ name : 'PatrolBoat', x : 700, y : 500, size : 2, status : true},
 	]
 	SP_drawEnemyBoats()
 	SP_Draw()
@@ -684,6 +707,7 @@ function SP_Timer()
 function SP_Draw()
 {
 	ctx.clearRect(offsetX, offsetY, gridSizeX * boxSize, gridSizeY * boxSize)
+	drawGrid(0)
 	SP_drawSendBTN()
 }
 
@@ -752,6 +776,52 @@ function drawTimer()
 	ctx.closePath()
 }
 
+function CreateABox(x, y)
+{
+	let Box = {
+		ArrayPosX : x,
+		ArrayPosY : y,
+		status: 0
+	}
+	return Box
+}
+
+function drawGrid(drawPart)
+{
+	BoardCases.forEach(element => {
+		if(drawPart == 1 || drawPart == 0)
+		{
+			ctx.beginPath()
+			ctx.rect(offsetX + element.ArrayPosX * boxSize, offsetY + element.ArrayPosY * boxSize, 2, boxSize)
+			ctx.rect(offsetX + element.ArrayPosX * boxSize, offsetY + element.ArrayPosY * boxSize, boxSize, 2)
+			ctx.rect(offsetX + element.ArrayPosX * boxSize + boxSize, offsetY + element.ArrayPosY * boxSize, 2, boxSize)
+			ctx.rect(offsetX + element.ArrayPosX * boxSize, offsetY + element.ArrayPosY * boxSize + boxSize, boxSize, 2)
+			ctx.fillStyle = "green"
+			ctx.fill()
+			ctx.closePath()
+		}
+		if(drawPart == 0 || drawPart == 2)
+		{
+			ctx.beginPath()
+			ctx.rect(offsetX + (element.ArrayPosX * boxSize) + 2, offsetY + (element.ArrayPosY * boxSize) + 2, boxSize - 2, boxSize - 2)
+			if (element.status != 0)
+			{
+				if (element.status == 1)
+					ctx.fillStyle = "blue"
+				else if (element.status == -1)
+					ctx.fillStyle = "rgb(155, 155, 3)"
+			}
+			else if (SP_selected != undefined && SP_selected == element)
+				ctx.fillStyle = "grey"
+			else if (SP_hovered != undefined && SP_hovered == element)
+				ctx.fillStyle = "red"
+			else
+				ctx.fillStyle = "rgb(186, 252, 3)"
+			ctx.fill()
+			ctx.closePath()
+		}
+	})
+}
 
 function CP_getArrayPos(mouseX, mouseY)
 {
@@ -766,45 +836,9 @@ export function CP_Unload()
 {
 	if (battleshipSocket == null)
 		return
-	if(battleshipSocket.readyState != WebSocket.CLOSED)
+	if(battleshipSocket.readyState != 3)
 		battleshipSocket.close()
 	battleshipSocket = null
-	if (curInterval != undefined)
-		clearInterval(curInterval)
-	curInterval = undefined
 }
 
 //#endregion
-
-function animate() {
-	requestAnimationFrame(animate);
-	controls.update();
-	FP_drawTitle()
-	intersect();
-	FP_drawValidateButton()
-	renderer.render(scene, camera);
-}
-
-  function intersect() {
-	raycaster.setFromCamera(mouse, camera);
-	const intersects = raycaster.intersectObjects(scene.children, false);
-	if (intersects.length > 0) {
-	  if (INTERSECTED != intersects[0].object) {
-		if (INTERSECTED) {
-		  INTERSECTED.material.color.setHex(INTERSECTED.currentHex);
-		  INTERSECTED.scale.set(1, 1, 1);
-		}
-		INTERSECTED = intersects[0].object;
-		INTERSECTED.currentHex = INTERSECTED.material.color.getHex();
-		INTERSECTED.currentScale = INTERSECTED.scale.x;
-		INTERSECTED.material.color.setHex(0xff0000);
-		INTERSECTED.scale.set(1.1, 1.1, 1.1);
-	  }
-	} else {
-	  if (INTERSECTED) {
-		INTERSECTED.material.color.setHex(INTERSECTED.currentHex);
-		INTERSECTED.scale.set(1, 1, 1);
-	  }
-	  INTERSECTED = null;
-	}
-  }

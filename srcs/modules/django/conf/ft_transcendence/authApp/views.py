@@ -88,7 +88,9 @@ def UserRegistration(request):
 	if len(username) == 0 or len(email) == 0 or len(password) == 0 or len(passwordConfirmation) == 0:
 		return JsonResponse({'error': 'One of the field is empty'})
 	if password != passwordConfirmation:
-			return JsonResponse({'error': 'Password do not match'})
+		return JsonResponse({'error': 'Password do not match'})
+	if re.search(r"[\<\>\'\"\{\}\[\]\\\|\(\)\/]", username) != None or re.search(r"[\<\>\'\"\{\}\[\]\\\|\(\)\/]", email) != None:
+		return JsonResponse({'error': 'Invalid character used'})
 	if len(username) < 3:
 		return JsonResponse({'error': 'Username length is too small'})
 	elif len(username) > 16:

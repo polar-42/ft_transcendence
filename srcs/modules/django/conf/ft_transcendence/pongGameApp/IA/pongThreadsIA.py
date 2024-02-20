@@ -24,6 +24,7 @@ class pongGameLoop(threading.Thread):
         self.startGameBool = False
         self.threadIA = None
         self.isThreadRunning = False
+        self.isCounting = False
 
     def run_async(self):
         send_data_ia_async(self.pongThreadIA, self.game, self.isThreadRunning)
@@ -31,14 +32,18 @@ class pongGameLoop(threading.Thread):
         y = 0
         sec = 3
         while not self.stop_flag.is_set():
+            player1, player2 = self.game.get_players()
             if self.startGameBool == False:
 
+                if (self.isCounting == False and player1.get_score() < 3 and player2.get_score() < 3) :
+                    send_countdown_async(self.pong, self.game)
+                    self.isCounting = True
                 send_timer_async(self.pong, self.game, sec)
                 time.sleep(0.03)
 
                 y += 1
 
-                if y > 30:
+                if y > 35:
                     sec -= 1
                     y = 0
                     send_data_ia_async(self.pongThreadIA, self.game, self.isThreadRunning)
@@ -55,7 +60,6 @@ class pongGameLoop(threading.Thread):
                 ball_pos_x, ball_pos_y = game.get_pos()
                 ball_dx, ball_dy = game.get_direction()
                 ball_speed = game.get_speed()
-                player1, player2 = self.game.get_players()                
                 player1_pos_x, player1_pos_y = player1.get_pos()
                 player2_pos_x, player2_pos_y = player2.get_pos()
 
@@ -63,7 +67,7 @@ class pongGameLoop(threading.Thread):
                 player2_score = player2.get_score()
 
          	    #BALL COLISIONS WITH WALLS
-                if not( 3.8 - 0.15 >= ball_pos_y + ball_dy * ball_speed >= -3.8 + 0.15) :
+                if not(3.8 - 0.15 >= ball_pos_y + ball_dy * ball_speed >= -3.8 + 0.15):
                     ball_dy *= -1
 
                 #BALL COLLISION WITH PLAYER2
@@ -75,13 +79,13 @@ class pongGameLoop(threading.Thread):
                     self.game.update_ball_touch(2)
 
                 #BALL COLLISION WITH PLAYER1
-                elif (player1_pos_y + 1.07 >= ball_pos_y >= player1_pos_y - 1.07     and ball_pos_x <= player1_pos_x + 0.25) :
+                elif (player1_pos_y + 1.07 >= ball_pos_y >= player1_pos_y - 1.07 and ball_pos_x <= player1_pos_x + 0.25) :
                     ball_dx *= -1
                     ball_dy = ball_pos_y - player1_pos_y
                     ball_pos_x = player1_pos_x + 0.17
                     ball_speed *= 1.08
                     self.game.update_ball_touch(1)
-                    
+
                 #UPDATE SCORE PLAYER1
                 elif (ball_pos_x >= player2_pos_x) :
                     player1_score = player1_score + 1
@@ -91,7 +95,10 @@ class pongGameLoop(threading.Thread):
                     ball_dx, ball_dy = randomDir()
                     self.game.update_score(1)
                     self.startGameBool = False
+                    self.isCounting = False
                     self.game.update_ball_speed(0.1)
+                    self.game.playerOne.reset_pos()
+                    self.game.playerTwo.reset_pos()
 
                 #UPDATE SCORE PLAYER2
                 elif (ball_pos_x <= player1_pos_x) :
@@ -102,7 +109,10 @@ class pongGameLoop(threading.Thread):
                     ball_dx, ball_dy = randomDir()
                     self.game.update_score(2)
                     self.startGameBool = False
+                    self.isCounting = False
                     self.game.update_ball_speed(0.1)
+                    self.game.playerOne.reset_pos()
+                    self.game.playerTwo.reset_pos()
                 #BALL MOVEMENT
 
                 ball_pos_y += ball_dy * ball_speed
@@ -114,7 +124,7 @@ class pongGameLoop(threading.Thread):
 
                 time.sleep(0.03)
 
-                if x >= 2:
+                if x >= 30:
                     send_data_ia_async(self.pongThreadIA, self.game, self.isThreadRunning)
                     x = 0
                 x = x + 1
@@ -156,6 +166,9 @@ class pongGameLoop(threading.Thread):
 
 def send_data_async(ping_game_instance, game):
     ping_game_instance.sendDataFromGame(game)
+
+def send_countdown_async(ping_game_instance, game):
+    ping_game_instance.sendCountdown(game)
 
 def send_data_ia_async(threadIA, game, isRunning):
     threadIA.receiveDataFromGameIA(game, isRunning)
@@ -222,6 +235,12 @@ class pongGame():
             'second_left': secondLeft,
         }))
 
+    def sendCountdown(self, pongGame):
+        self.socket.send(text_data=json.dumps({
+   			'type': 'countdown',
+   		}))
+
+
     def sendDataFromGame(self, pongGame):
         game = pongGame.get_ball()
         ball_pos_x, ball_pos_y = game.get_pos()
@@ -246,8 +265,9 @@ class pongGame():
    		}))
 
         if player1_score >= 3 or player2_score >= 3:
+            print(player1.player_id)
             if player1_score >= 3:
-                winner = player1.player_id
+                winner = player1.player_id.id
             else:
                 winner = 'AI'
 

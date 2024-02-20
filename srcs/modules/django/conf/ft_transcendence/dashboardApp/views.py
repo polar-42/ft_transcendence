@@ -270,8 +270,8 @@ def getBattlehipClassicGameStats(request):
 			'id': str(gameId),
 			'player1': player1,
 			'player2': player2,
-			'player1_score': game.player1_hit,
-			'player2_score': game.player2_hit,
+			'player1_score': game.player1_boatCount,
+			'player2_score': game.player2_boatCount,
 			'win': win,
 			'date': dateGame
 			})
@@ -481,14 +481,14 @@ def getBattleshipSpecificGame(request):
 			player1 = User.objects.get(id=int(game.player1))
 			player2 = User.objects.get(id=int(game.player2))
 			winner = User.objects.get(id=int(game.winner))
-			player1_score = game.player1_hit
-			player2_score = game.player2_hit
-			#player1_number_ball_touch = game.number_ball_touch_player1
-			#player2_number_ball_touch = game.number_ball_touch_player2
+			player1_score = game.player1_boatCount
+			player2_score = game.player2_boatCount
 
 			dateGameTab = str(game.time).split(' ')
 			dateGame = dateGameTab[0] + ' ' + dateGameTab[1][:5]
-
+			player1_accuracy = 	(game.player1_hit/game.player1_try) * 100
+			player2_accuracy = 	(game.player2_hit/game.player2_try) * 100
+			
 			return JsonResponse({
 				'player1': player1.nickname,
 				'player2': player2.nickname,
@@ -497,59 +497,57 @@ def getBattleshipSpecificGame(request):
 				'winner': winner.nickname,
 				'player1_score': player1_score,
 				'player2_score': player2_score,
-				'player1_number_ball_touch': "0",
-				'player2_number_ball_touch': "0",
+				'player1_accuracy': round(player1_accuracy, 2),
+				'player2_accuracy': round(player2_accuracy, 2),
 				'date': dateGame
 				})
 	else:
 		return JsonResponse({'null': None})
 
 def getPlayerImage(request):
-	if (request.method == "GET" and request.GET["valid"] == "True") or (request.method == "POST"):
-		if request.method == "POST":
-			data = json.loads(request.body)	
-			if data['typeGame'] == '0':
-				game = PongGameModels.objects.get(id=data['gameId'])
-			elif data['typeGame'] == '1':
-				game = BattleshipGameModels.objects.get(id=data['gameId'])
-			else:
-				tournamentId = request.POST.get('tournamentId')
-				winnerId = TournamentsModels.objects.get(id=int(tournamentId[13:])).winner
-				avatar = User.objects.get(id=int(winnerId))
-				return HttpResponse(avatar.avatarImage, content_type='image/png')
-
-			if data['playerNumber'] == '1':
-				avatar = User.objects.get(id=int(game.player1))
-			else:
-				avatar = User.objects.get(id=int(game.player2))
+	if request.method == "POST":
+		data = json.loads(request.body)	
+		if data['typeGame'] == '0':
+			game = PongGameModels.objects.get(id=data['gameId'])
+		elif data['typeGame'] == '1':
+			game = BattleshipGameModels.objects.get(id=data['gameId'])
+		else:
+			tournamentId = request.POST.get('tournamentId')
+			winnerId = TournamentsModels.objects.get(id=data['tournamentId']).winner
+			avatar = User.objects.get(id=int(winnerId))
 			return HttpResponse(avatar.avatarImage, content_type='image/png')
+
+		if data['playerNumber'] == '1':
+			avatar = User.objects.get(id=int(game.player1))
+		else:
+			avatar = User.objects.get(id=int(game.player2))
+		return HttpResponse(avatar.avatarImage, content_type='image/png')
 	else:
 		return JsonResponse({'null': None})
 
 def getTournamentStat(request):
-	if (request.method == "GET" and request.GET["valid"] == "True") or (request.method == "POST"):
-		if request.method == "POST":
-			tournamentId = request.POST.get('tournamentId')
+	if request.method == "POST":
+		data = json.loads(request.body)
+		tournament = TournamentsModels.objects.get(id=data['tournamentId'])
+		winner = User.objects.get(id=int(tournament.winner))
+		playersId = tournament.playersId
+		players = []
 
-			ColorPrint.prLGreen(tournamentId)
-			game = TournamentsModels.objects.get(id=int(tournamentId[13:]))
-			winner = User.objects.get(id=int(game.winner))
-			playersId = game.playersId
-			players = []
+		for player in playersId:
+			name = User.objects.get(id=int(player)).nickname
+			players.append({'id': player, 'name': name})
 
-			for player in playersId:
-				players.append(User.objects.get(id=int(player)).nickname)
+		dateTournamentTab = str(tournament.creationTime).split(' ')
+		dateTournament = dateTournamentTab[0] + ' ' + dateTournamentTab[1][:5]
 
-			dateGameTab = str(game.creationTime).split(' ')
-			dateGame = dateGameTab[0] + ' ' + dateGameTab[1][:5]
-
-			return JsonResponse({
-				'players': players,
-				'description': game.description,
-				'winner': winner.nickname,
-				'winner_id': winner.id,
-				'date': dateGame
-				})
+		return JsonResponse({
+			'name': tournament.tournamentsName,
+			'players': players,
+			'description': tournament.description,
+			'winner': winner.nickname,
+			'winner_id': winner.id,
+			'date': dateTournament
+			})
 	else:
 		return JsonResponse({'null': None})
 

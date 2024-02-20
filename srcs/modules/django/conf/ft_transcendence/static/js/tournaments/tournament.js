@@ -212,20 +212,18 @@ async function PrintPlayers(data)
 	const PL = document.querySelector(".player_list")
 	if (PL == null)
 		return
-	let child = PL.lastElementChild
-	while (child) {
-		PL.removeChild(child)
-		child = PL.lastElementChild
-	}
 
   const Players = data.usrList
   Players.forEach(async element =>  {
+		if (isAlreadyInList(element.userId) == true)
+			return
     let avatar = await getProfilePicture({'type': 'user', 'id': element.userId})
     if (avatar.type == 'image/null')
       avatar = '/static/assets/logo/user.png'
     else
       avatar = URL.createObjectURL(avatar)
     const item = document.createElement('li')
+		item.setAttribute('id', element.userId)
     const itemDiv = item.appendChild(document.createElement('div'))
     const avatarEl = document.createElement('img')
     avatarEl.src = avatar 
@@ -236,6 +234,16 @@ async function PrintPlayers(data)
     itemDiv.appendChild(txt)
     PL.appendChild(item)
   })
+}
+
+function isAlreadyInList(id) {
+	let list = document.querySelector('.player_list').children
+
+	for (const child of list) {
+		if (child.getAttribute('id') == id)
+			return true
+	}
+	return false
 }
 
 async function PrintMatchs(matchList)

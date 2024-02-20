@@ -1,3 +1,4 @@
+import { getProfilePicture } from "../chatApp/CA_General.js";
 import { navto } from "../index.js"
 
 export function initDashboard()
@@ -130,25 +131,8 @@ export function addPongTournamentStat()
             elem.addEventListener('click', popUpTournamentStat.bind(null, element.id))
             matchList.appendChild(elem)	
           })
-
-          let games = document.querySelectorAll('.dash_tournament');
-
-          for (let i = 0; i < games.length; i++)
-          {
-            let tournamentId = 'tournamentId_' + tournament[i].id
-            document.getElementById('tournamentId_' + tournament[i].id).addEventListener('click', function() {
-              popUpTournamentStat(tournamentId);
-            })
-            if (tournament[i].win == true)
-              games[i].classList.add('win')
-            else
-              games[i].classList.add('lose')
-          }
-
           if (tournament.length == 0)
-          {
             document.getElementById('dash_listTournaments').innerHTML = '<li class="no_data">No Data</li>'
-          }
         })
       .catch(error =>
         {
@@ -252,8 +236,23 @@ export async function addOtherPongStat()
       console.error('Error', error)
       return
     })
+  let currentStreakSuffix
+  if (data.currentStreak < 0) {
+    if (data.currentStreak == -1)
+      currentStreakSuffix = ' lose'
+    else
+      currentStreakSuffix = ' loses'
+  } else if (data.currentStreak > 0) {
+    if (data.currentStreak == 1)
+      currentStreakSuffix = ' win' 
+    else
+      currentStreakSuffix = ' wins'
+  }
+  else 
+    currentStreakSuffix = ''
+
   document.querySelector('.otherStat').innerHTML = statList
-  document.getElementById('currentStreak').children[1].textContent = data.currentStreak.toString()
+  document.getElementById('currentStreak').children[1].textContent = Math.abs(data.currentStreak).toString() + currentStreakSuffix
   document.getElementById('longestWinStreak').children[1].textContent = data.longestWinStreak.toString()
   document.getElementById('longestLoseStreak').children[1].textContent = data.longestLoseStreak.toString()
   document.getElementById('pointsScored').children[1].textContent = data.totalPointSet.toString()
@@ -286,7 +285,6 @@ export function addBattleshipClassicMatch()
       })
       .then(data =>
         {
-          console.log(data)
           let matchs = JSON.parse(data).classicMatchs
           let matchList = document.getElementById('dash_listClassicMatch')
 
@@ -312,7 +310,7 @@ export function addBattleshipClassicMatch()
             elem.lastChild.textContent = element.player1_score + ' : ' + element.player2_score
             elem.appendChild(document.createElement('p'))
             elem.lastChild.textContent = element.date
-            elem.addEventListener('click', popUpPongGameStat.bind(null, element.id))
+            elem.addEventListener('click', popUpBattleshipGameStat.bind(null, element.id))
             matchList.appendChild(elem)	
           })
           if (matchs.length == 0)
@@ -439,7 +437,6 @@ export function addBattleshipGlobalStat()
 
 export async function addOtherBattleshipStat()
 {
-  console.log('akecoucou')
   let url = new URL(document.location.origin + '/dashboard/getOtherBatlleshipStats/')
   if (window.location.search != '')
   {
@@ -476,8 +473,22 @@ export async function addOtherBattleshipStat()
       console.error('Error', error)
       return
     })
+  let currentStreakSuffix
+  if (data.currentStreak < 0) {
+    if (data.currentStreak == -1)
+      currentStreakSuffix = ' lose'
+    else
+      currentStreakSuffix = ' loses'
+  } else if (data.currentStreak > 0) {
+    if (data.currentStreak == 1)
+      currentStreakSuffix = ' win' 
+    else
+      currentStreakSuffix = ' wins'
+  }
+  else 
+    currentStreakSuffix = ''
   document.querySelector('.otherStat').innerHTML = statList
-  document.getElementById('currentStreak').children[1].textContent = data.currentStreak.toString()
+  document.getElementById('currentStreak').children[1].textContent = Math.abs(data.currentStreak).toString() + currentStreakSuffix
   document.getElementById('longestWinStreak').children[1].textContent = data.longestWinStreak.toString()
   document.getElementById('longestLoseStreak').children[1].textContent = data.longestLoseStreak.toString()
   document.getElementById('totalHit').children[1].textContent = data.totalShoot.toString()
@@ -490,10 +501,10 @@ export async function addOtherBattleshipStat()
 
 export async function popUpPongGameStat(gameId)
 {
-  document.querySelector('.PopUp_wrapper').style.display = 'block';
 
   document.getElementById('closePopUp').addEventListener('click', function() {
     document.querySelector('.PopUp_wrapper').style.display = 'none';
+    document.querySelector('.GameStatPopUp').style.display = 'none';
   })
 
   let data = {'gameId': gameId};
@@ -527,11 +538,12 @@ export async function popUpPongGameStat(gameId)
           player1_id = data.player1_id
           player2_id = data.player2_id
 
-          document.querySelector('#boxTime p').innerText = data.date
-          document.querySelector('.players_score').children[0].innerText = data.player1_score 
-          document.querySelector('.players_score').children[2].innerText = data.player2_score
-          document.querySelector('.players_touched').children[0].innerText = data.player1_number_ball_touch
-          document.querySelector('.players_touched').children[2].innerText = data.player2_number_ball_touch
+          document.querySelector('#boxTime p').textContent = data.date
+          document.querySelector('.players_score').children[0].textContent = data.player1_score 
+          document.querySelector('.players_score').children[2].textContent = data.player2_score
+          document.querySelector('.players_touched').children[1].textContent = 'Touched balls'
+          document.querySelector('.players_touched').children[0].textContent = data.player1_number_ball_touch
+          document.querySelector('.players_touched').children[2].textContent = data.player2_number_ball_touch
         })
       .catch(error =>
         {
@@ -575,12 +587,12 @@ export async function popUpPongGameStat(gameId)
       })
     }
   }
+  document.querySelector('.PopUp_wrapper').style.display = 'block';
+  document.querySelector('.GameStatPopUp').style.display = 'block';
 }
 
 export async function popUpBattleshipGameStat(gameId)
 {
-  document.querySelectorAll('.PopUp_wrapper')[0].style.display = 'block';
-  document.querySelectorAll('.GameStatPopUp')[0].style.display = 'block';
 
   document.getElementById('closePopUp').addEventListener('click', function() {
     document.querySelectorAll('.PopUp_wrapper')[0].style.display = 'none';
@@ -588,8 +600,6 @@ export async function popUpBattleshipGameStat(gameId)
   })
 
 
-  let gameIdForm = new FormData();
-  gameIdForm.append('gameId', gameId);
 
   var crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
   let feedback = document.querySelector('.feedback')
@@ -604,7 +614,7 @@ export async function popUpBattleshipGameStat(gameId)
   fetch(document.location.origin + '/dashboard/getBattleshipSpecificGame/', {
     method: 'POST',
     headers: headers,
-    body: gameIdForm,
+    body: JSON.stringify({'gameId': gameId}),
   })
     .then(Response =>
       {
@@ -622,9 +632,12 @@ export async function popUpBattleshipGameStat(gameId)
           player1_id = data.player1_id
           player2_id = data.player2_id
 
-          document.getElementById('boxTime').innerText = 'Date: ' + data.date
-          document.getElementById('boxScore').innerText = 'Number hit: ' + data.player1_score + ' | ' + data.player2_score
-          document.getElementById('ballTouch').innerText = '????: ' + data.player1_number_ball_touch + ' vs ' + data.player2_number_ball_touch
+          document.querySelector('#boxTime p').textContent = data.date
+          document.querySelector('.players_score').children[0].textContent = data.player1_score 
+          document.querySelector('.players_score').children[2].textContent = data.player2_score
+          document.querySelector('.players_touched').children[1].textContent = 'Accuracy'
+          document.querySelector('.players_touched').children[0].textContent = data.player1_accuracy + '%'
+          document.querySelector('.players_touched').children[2].textContent = data.player2_accuracy + '%'
         })
       .catch(error =>
         {
@@ -632,12 +645,10 @@ export async function popUpBattleshipGameStat(gameId)
           //navto("/")
         })
 
-  gameIdForm.append('player', '1')
-  gameIdForm.append('typeGame', '1')
   let res = await fetch(document.location.origin + '/dashboard/getPlayerImage/', {
     method: 'POST',
     headers: headers,
-    body: gameIdForm,
+    body: JSON.stringify({'gameId': gameId, 'playerNumber': '1', 'typeGame': '1'})
   })
   if (res.ok)
   {
@@ -646,27 +657,16 @@ export async function popUpBattleshipGameStat(gameId)
     {
       let img = document.getElementById('player_1_avatar')
       img.src = URL.createObjectURL(vari)
-      img.style.borderRadius = '50%'
-      img.style.cursor = 'pointer'
-      img.style.width = '100px'
-      img.style.height = '100px'
-      img.addEventListener('mouseover', function(e) {
-        displayPlayerNickname(e, player1, 1, true)
-      })
-      img.addEventListener('mouseout', function(e) {
-        displayPlayerNickname(e, player1, 1, false)
-      })
       img.addEventListener('click', function(e) {
         navto("/profile/?id=" + player1_id)
       })
     }
   }
 
-  gameIdForm.set('player', '2')
   res = await fetch(document.location.origin + '/dashboard/getPlayerImage/', {
     method: 'POST',
     headers: headers,
-    body: gameIdForm,
+    body: JSON.stringify({'gameId': gameId, 'playerNumber': '2', 'typeGame': '1'}),
   })
   if (res.ok)
   {
@@ -675,21 +675,13 @@ export async function popUpBattleshipGameStat(gameId)
     {
       let img = document.getElementById('player_2_avatar')
       img.src = URL.createObjectURL(vari)
-      img.style.borderRadius = '50%'
-      img.style.cursor = 'pointer'
-      img.style.width = '100px'
-      img.style.height = '100px'
-      img.addEventListener('mouseover', function(e) {
-        displayPlayerNickname(e, player2, 2, true)
-      })
-      img.addEventListener('mouseout', function(e) {
-        displayPlayerNickname(e, player2, 2, false)
-      })
       img.addEventListener('click', function(e) {
         navto("/profile/?id=" + player2_id)
       })
     }
   }
+  document.querySelectorAll('.PopUp_wrapper')[0].style.display = 'block';
+  document.querySelectorAll('.GameStatPopUp')[0].style.display = 'block';
 }
 
 export function displayPlayerNickname(e, playerNickname, num, value)
@@ -723,19 +715,14 @@ export function displayPlayerNickname(e, playerNickname, num, value)
 
 export async function popUpTournamentStat(tournamentId) {
 
-  document.querySelectorAll('.PopUp_wrapper')[0].style.display = 'block';
-  document.querySelectorAll('.TournamentStatPopUp')[0].style.display = 'block';
 
   document.getElementById('closeTournamentPopUp').addEventListener('click', function() {
     document.querySelectorAll('.PopUp_wrapper')[0].style.display = 'none';
     document.querySelectorAll('.TournamentStatPopUp')[0].style.display = 'none';
   })
 
-  let tournamentIdForm = new FormData();
-  tournamentIdForm.append('tournamentId', tournamentId);
 
   var crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
-  let feedback = document.querySelector('.feedback')
   var headers = new Headers()
   headers.append('X-CSRFToken', crsf_token)
 
@@ -745,7 +732,7 @@ export async function popUpTournamentStat(tournamentId) {
   fetch(document.location.origin + '/dashboard/getTournamentStat/', {
     method: 'POST',
     headers: headers,
-    body: tournamentIdForm,
+    body: JSON.stringify({tournamentId: tournamentId}),
   })
     .then(Response =>
       {
@@ -760,59 +747,59 @@ export async function popUpTournamentStat(tournamentId) {
           data = JSON.parse(data)
           winner = data.winner
           winner_id = data.winner_id
-
-          let players = "";
-          let i = 0;
-
-          data.players.forEach(element => {
-            players += element;
-            if (i + 2 < data.players.length)
-              players += ", ";
-            else if (i + 1 < data.players.length)
-              players += " and ";
-            i++;
-          })
-
-          document.getElementById('boxTimeTournament').innerText = 'Date: ' + data.date
-          document.getElementById('tournamentDescription').innerText = 'Decription: ' + data.description
-          document.getElementById('winnerTextTournament').innerText = 'Participants: ' + players
+          
+          document.querySelector('.tournament_name').textContent = data.name
+          document.getElementById('boxTimeTournament').textContent = data.date
+          document.getElementById('tournamentDescription').textContent = data.description
+          document.querySelector('#tournamentWinner p').textContent = data.winner
+          displayPlayerList(data.players)
         })
       .catch(error =>
         {
           console.error('Error:', error)
-          //navto("/")
+          return
         })
 
-  tournamentIdForm.append('typeGame', '2')
-  tournamentIdForm.append('tournamentId', tournamentId)
   let res = await fetch(document.location.origin + '/dashboard/getPlayerImage/', {
     method: 'POST',
     headers: headers,
-    body: tournamentIdForm,
+    body: JSON.stringify({tournamentId: tournamentId, 'typeGame': '2'})
   })
   if (res.ok)
   {
     var vari = await res.blob()
     if (vari.type == "image/png")
     {
-      let img = document.getElementById('winnerTournamentImage')
+      let img = document.querySelector('#tournamentWinner img')
       img.src = URL.createObjectURL(vari)
-      img.style.borderRadius = '50%'
-      img.style.cursor = 'pointer'
-      img.style.width = '150px'
-      img.style.height = '150px'
-      img.addEventListener('mouseover', function(e) {
-        displayPlayerNickname(e, winner, 3, true)
-      })
-      img.addEventListener('mouseout', function(e) {
-        displayPlayerNickname(e, winner, 3, false)
-      })
       img.addEventListener('click', function(e) {
         navto("/profile/?id=" + winner_id)
       })
     }
   }
+  document.querySelectorAll('.PopUp_wrapper')[0].style.display = 'block';
+  document.querySelectorAll('.TournamentStatPopUp')[0].style.display = 'block';
 }
+
+async function displayPlayerList(players) {
+  let playerList = document.querySelector('.players_list')
+
+  for (let i in players) {
+    let avatar = await getProfilePicture({'type': 'user', 'id': players[i].id})
+    if (avatar.type == 'image/null')
+      avatar = 'static/assets/logo/user.png'
+    else
+      avatar = URL.createObjectURL(avatar)
+
+    let elem = document.createElement('li')
+    elem.appendChild(document.createElement('img'))
+    elem.children[0].src = avatar
+    elem.children[0].alt = 'Player avatar'
+    elem.appendChild(document.createElement('p'))
+    elem.children[1].textContent = players[i].name
+    playerList.appendChild(elem)
+  }
+} 
 
 function cleanStats() {
   let lists = document.querySelectorAll('ul')
