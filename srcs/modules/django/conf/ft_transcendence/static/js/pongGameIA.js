@@ -378,6 +378,8 @@ async function getNameAndPPAI()
 		ppUrl = "../static/assets/logo/user.png"
 	else
 		ppUrl = URL.createObjectURL(profilePicture)
+	if (document.getElementById('ppPlayer1') == undefined)
+		return
 	document.getElementById('ppPlayer1').src = ppUrl;
 
 	profilePicture = await getProfilePicture({ 'type': 'user', 'id': '5' })
@@ -386,6 +388,8 @@ async function getNameAndPPAI()
 		ppUrl = "../static/assets/logo/user.png"
 	else
 		ppUrl = URL.createObjectURL(profilePicture)
+	if (document.getElementById('ppPlayer1') == undefined)
+		return
 	document.getElementById('ppPlayer2').src = ppUrl;
 
 	console.log(document.getElementById('gamePlayer1').innerHTML += document.querySelectorAll('.profile_dropdown')[0].querySelectorAll('.nav__link')[0].textContent)
