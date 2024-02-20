@@ -55,6 +55,11 @@ def addToDb(player1_id, player2_id, player1_score, player2_score, winner, n_ball
 
 	obj.save()
 
+	print('player1_id', player1_id)
+	print('player2_id', player2_id)
+	print('player1_id', str(player1_id))
+	print('player2_id', str(player2_id))
+
 	player1Model = User.objects.get(id=int(player1_id))
 	player2Model = User.objects.get(id=int(player2_id))
 

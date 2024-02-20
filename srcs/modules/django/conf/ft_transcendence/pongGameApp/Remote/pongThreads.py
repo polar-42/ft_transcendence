@@ -67,7 +67,7 @@ class pongGameLoop(threading.Thread):
                 game = self.game.get_ball()
                 ball_pos_x, ball_pos_y = game.get_pos()
                 ball_dx, ball_dy = game.get_direction()
-                ball_speed = game.get_speed()              
+                ball_speed = game.get_speed()
                 player1_pos_x, player1_pos_y = player1.get_pos()
                 player2_pos_x, player2_pos_y = player2.get_pos()
 
@@ -297,9 +297,7 @@ class pongGame():
             else:
                 self.winner = self.users[1]
 
-            p1, p2 = pongGame.get_players()
-
-            self.stat = StatGame(p1.get_id(), p2.get_id(), player1_score, player2_score, number_ball_touch_player1, number_ball_touch_player2, 'score')
+            self.stat = StatGame(self.users[0].id, self.users[1].id, player1_score, player2_score, number_ball_touch_player1, number_ball_touch_player2, 'score')
 
             if self.tournament is None:
                 async_to_sync(self.channel_layer.group_send)(
@@ -346,13 +344,14 @@ class pongGame():
 
         self.Status = GameState.Ending
 
-        print('player', player.user, 'leave the game')
         if player.id == self.users[0].id:
             p1_score = 0
             p2_score = 3
+            youare = 'p2'
         else:
             p1_score = 3
             p2_score = 0
+            youare = 'p1'
 
         if self.tournament is not None:
             tournamentId = self.tournament.TournamentId
@@ -361,10 +360,12 @@ class pongGame():
 
         self.stat = StatGame(self.users[0].id, self.users[1].id, p1_score, p2_score, p1_score, p2_score, 'disconnexion', tournamentId)
 
-        if player == self.users[0].socket:
+        if player.id == self.users[0].id:
             self.winner = self.users[1]
         else:
             self.winner = self.users[0]
+
+
         from . import pongGameManager
         pongGameManager.Manager.closeGame(self.channelName)
 
@@ -380,11 +381,12 @@ class pongGame():
         else:
             self.winner.socket.send(text_data=json.dumps({
                 'type': 'game_ending',
-				'winner': self.winner.username,
+                'youare': youare,
+				'winner': 'you',
 				'reason': 'disconnexion',
-				'playerone_score': 3,
-				'playertwo_score': 0,
-				'playerone_username': self.winner.username,
-				'playertwo_username': player.user.nickname,
+				'playerone_score': p1_score,
+				'playertwo_score': p2_score,
+				'playerone_username': self.users[0].username,
+				'playertwo_username': self.users[1].username,
             }))
 
