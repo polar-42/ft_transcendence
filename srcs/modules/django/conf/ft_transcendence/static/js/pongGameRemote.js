@@ -330,8 +330,6 @@ function doKeyUp(e)
 
 function LaunchGame()
 {
-	getPlayersData()
-
 	init_objects();
 	canvas = document.querySelector(".pongWindow");
 	three_box = document.createElement("div");
@@ -385,15 +383,19 @@ function LaunchGame()
 	animate();
 }
 
-async function getPlayersData()
+let player1_id = undefined;
+let player2_id = undefined;
+
+async function getPlayersData(player1, player2)
 {
-	if (pongGameSocket == undefined || pongGameSocket.readyState !== WebSocket.OPEN)
+	if (pongGameSocket == undefined || pongGameSocket.readyState !== WebSocket.OPEN || player1_id != undefined || player2_id != undefined)
 	{
 		return
 	}
-	var argParse = arg.split('_')
+	player1_id = player1
+	player2_id = player2
 
-	let profilePicture = await getProfilePicture({ 'type': 'user', 'id': argParse[1] })
+	let profilePicture = await getProfilePicture({ 'type': 'user', 'id': player1 })
 	let ppUrl
 	if (profilePicture.type == 'image/null')
 		ppUrl = "../static/assets/logo/user.png"
@@ -403,7 +405,7 @@ async function getPlayersData()
 		return
 	document.getElementById('ppPlayer1').src = ppUrl;
 
-	profilePicture = await getProfilePicture({ 'type': 'user', 'id': argParse[2] })
+	profilePicture = await getProfilePicture({ 'type': 'user', 'id': player2 })
 	if (profilePicture.type == 'image/null')
 		ppUrl = "../static/assets/logo/user.png"
 	else
@@ -413,7 +415,7 @@ async function getPlayersData()
 	document.getElementById('ppPlayer2').src = ppUrl;
 
 	let url = new URL(document.location.origin + '/authApp/GET/getUserNameById')
-	url.searchParams.append('userId', argParse[1]);
+	url.searchParams.append('userId', player1);
     let res = await fetch(url, {
         method: 'GET'
     })
@@ -427,7 +429,7 @@ async function getPlayersData()
 	}
 
 	url = new URL(document.location.origin + '/authApp/GET/getUserNameById')
-	url.searchParams.append('userId', argParse[2]);
+	url.searchParams.append('userId', player2);
     res = await fetch(url, {
         method: 'GET'
     })
@@ -499,6 +501,7 @@ function OnMessage(e)
 	}
 	else if (data.type == 'countdown')
 	{
+		getPlayersData(data.player1_id, data.player2_id)
 		countdown();
 	}
 	else if (data.type == 'game_timer')

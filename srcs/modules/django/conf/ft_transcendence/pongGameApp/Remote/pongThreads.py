@@ -265,6 +265,8 @@ class pongGame():
         for x in self.users:
             x.socket.send(text_data=json.dumps({
                 'type': 'countdown',
+                'player1_id': self.users[0].id,
+                'player2_id': self.users[1].id,
             }))
 
     def sendDataFromGame(self, pongGame):
