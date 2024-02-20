@@ -116,11 +116,11 @@ def GetTournamentData(request):
 	MatchMSG = Tournament.GetMatchList()
 	ColorPrint.prRed(Tournament.TournamentName)
 	ColorPrint.prRed(Tournament.Type)
-	return JsonResponse({ "tournamentName" : Tournament.TournamentName, 
-					  "tournamentType" : Tournament.Type, 
+	return JsonResponse({ "tournamentName" : Tournament.TournamentName,
+					  "tournamentType" : Tournament.Type,
 					  "tournamentDescription": Tournament.Description,
 					  "numberPlayers": Tournament.PlayerAmount,
-					  "users" : UserMSG, 
+					  "users" : UserMSG,
 					  "matchs" : 'None' if MatchMSG is None else MatchMSG
 					  })
 
