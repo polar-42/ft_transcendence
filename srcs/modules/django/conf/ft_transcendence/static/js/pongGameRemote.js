@@ -455,6 +455,8 @@ async function FinishGame(event)
 		return
 	}
 	isCountingDown = false
+	player1_id = undefined;
+	player2_id = undefined;
 }
 
 function FinishGameByScore(data)
@@ -481,7 +483,9 @@ function FinishGameByScore(data)
 			three_box.style.border = '4px solid #0000ff';
 		}
 	}
-	pongGameSocket = null
+	pongGameSocket = null;
+	player1_id = undefined;
+	player2_id = undefined;
 }
 
 function returnToTournament(id)

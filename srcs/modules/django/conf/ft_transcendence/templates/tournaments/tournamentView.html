@@ -1,9 +1,44 @@
 {% load static %}
 <script type="module" src="{% static '/js/loading.js' %}"></script>
 
-<p>
-    {% csrf_token %}
-    <p id="players_in_tournaments"></p>
-    <ul name="PlayerList"></ul><br><br>
-    <ul name="MatchList"></ul><br><br>
-</p>
+<div class="tournament_page">
+  {% csrf_token %}
+
+  <div class="tournament_name_wrapper">
+    <img class="tournament_type">
+    <h2 class="tournament_name"></h2>
+  </div>
+
+  <div class="tournament_wrapper">
+    <div class="tournament_box">
+      <div class="description_wrapper">
+        <h3>Description:</h3>
+        <p class="tournament_description"></p>
+      </div>
+      <div class="tournament_info_wrapper">
+        <div class="player_list_wrapper">
+          <h3>Players list:</h3>
+          <ul class="player_list"></ul>
+        </div>
+      </div>
+      <div class="next_match_wrapper">
+        <p class="lost_message"></p>
+      </div>
+      <div class="tournament_result">
+        <div class="trophy_wrapper">
+          <img src='/static/assets/logo/trophy.png' alt="Trophy">
+        </div>
+        <div class="winner_container">
+          <img src='' alt='winner profile picture'>
+          <p></p>
+        </div>
+      </div>
+      <div class="bracket">
+        <div class="waiting_screen">
+          <p>Waiting for other players...</p>
+        </div>
+      </div>
+      <!-- <canvas id="pongCanvas" width="720" height="450"></canvas> -->
+    </div>
+  </div>
+</div>
