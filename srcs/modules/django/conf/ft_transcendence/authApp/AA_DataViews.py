@@ -2,7 +2,7 @@ from django.http import JsonResponse, HttpResponse
 from .models import User
 from chatApp.models import ChannelModels
 from ft_transcendence import ColorPrint
-	
+
 def check_connexion(request):
     if (request.user.is_authenticated):
         return JsonResponse({'connexionStatus': True})
@@ -12,6 +12,15 @@ def check_connexion(request):
 def getUserName(request):
     if request.user.is_authenticated:
         return JsonResponse({'userName': request.user.nickname})
+    else:
+        return JsonResponse({'userName': 'LOG IN'})
+
+def getUserNameById(request):
+    if request.user.is_authenticated:
+        userId = request.GET.get('userId', None)
+        if User.objects.filter(id=int(userId)).exists() is False:
+            return JsonResponse({'userName': 'LOG IN'})
+        return JsonResponse({'userName': str(User.objects.get(id=int(userId)).nickname)})
     else:
         return JsonResponse({'userName': 'LOG IN'})
 

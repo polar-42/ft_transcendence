@@ -4,7 +4,8 @@ import { TrailRenderer } from "../threejs_addons/TrailRenderer.js";
 import { CSS2DRenderer, CSS2DObject } from "../threejs_addons/CSS2DRenderer.js";
 import * as THREE from 'https://threejs.org/build/three.module.js';
 
-let WIDTH = document.body.clientWidth * 0.75;
+//let WIDTH = document.body.clientWidth * 0.75;
+let WIDTH = document.body.clientWidth * 0.62;
 let HEIGHT = WIDTH * (9. / 16.);
 var three_box = null;
 var isRendering = false;
@@ -52,7 +53,7 @@ const playerOne = new Element({
 	gravity: 0.1,
 });
 
-/*Player two paddle*/	
+/*Player two paddle*/
 const playerTwo = new Element({
 	x: 5.,
 	y: 0,
@@ -178,7 +179,7 @@ export function init_objects()
 	paddle2.rotation.x = Math.PI / 180 * 90;
 	scene.add(paddle2);
 
-	
+
 
 	var g_ball = new THREE.SphereGeometry(0.15, 32, 16)
 	var m_ball = new THREE.MeshPhysicalMaterial({
@@ -207,14 +208,14 @@ export function init_objects()
 
 
 	const trailHeadGeometry = [];
-	trailHeadGeometry.push( 
-	new THREE.Vector3( -0.1, -0.1, -0.1 ), 
-	new THREE.Vector3( 0.0, 0.0, 0.0 ), 
-	new THREE.Vector3( 0.1, 0.1, 0.1 ) 
+	trailHeadGeometry.push(
+	new THREE.Vector3( -0.1, -0.1, -0.1 ),
+	new THREE.Vector3( 0.0, 0.0, 0.0 ),
+	new THREE.Vector3( 0.1, 0.1, 0.1 )
 	);
 	trail = new TrailRenderer( scene, false );
 	trail.setAdvanceFrequency(30);
-	const trailMaterial = TrailRenderer.createBaseMaterial();	
+	const trailMaterial = TrailRenderer.createBaseMaterial();
 	const trailLength = 10;
 	trail.initialize( trailMaterial, trailLength, false, 0, trailHeadGeometry, ball );
 	trail.activate();
@@ -277,7 +278,7 @@ export function animate() {
 	}
 	if (!(Dball.dx == undefined || Dball.dy == undefined))
 	{
-		if (( 3.8 - 0.15 < ball.position.y + Dball.dy * Dball.speed || ball.position.y + Dball.dy * Dball.speed <= -3.8 + 0.15))      
+		if (( 3.8 - 0.15 < ball.position.y + Dball.dy * Dball.speed || ball.position.y + Dball.dy * Dball.speed <= -3.8 + 0.15))
             Dball.dy *= -1;
 		else if (paddle2.position.y + 1.07 >= ball.position.y && ball.position.y >= paddle2.position.y - 1.07 && ball.position.x >= paddle2.position.x - 0.25)
 		{
@@ -365,14 +366,15 @@ export function initLocalGamePong()
 	Dball.y = 0;
 	playerOne.y = 0;
 	playerOne.gravity = 0.;
-	playerTwo.gravity = 0.;	
+	playerTwo.gravity = 0.;
 	playerTwo.y = 0;
 	init_objects();
-	canvas = document.getElementById("app");
+	canvas = document.querySelector(".pongWindow");
 	three_box = document.createElement("div");
+	three_box.setAttribute("id", 'pongGame')
 	three_box.style.width = WIDTH + 8 + "px";
 	three_box.style.height = HEIGHT + 8 + "px";
-	three_box.style.border = '4px solid #ccc';
+	//three_box.style.border = '4px solid #ccc';
 	three_box.style.position = "relative";
 	three_box.appendChild(renderer.domElement);
 	canvas.appendChild(three_box);
@@ -401,11 +403,12 @@ export function initLocalGamePong()
 	textElement.style.transform = "translate(-50%, -50%)"; // Adjust position to center properly
 	textElement.style.zIndex = "1"; // Ensure it's above other content
 	textElement.style.padding = "10px"; // Example padding for better visualization
-	
+
 	three_box.appendChild(textElement);
 
 	window.onresize = function () {
-		WIDTH = document.body.clientWidth * 0.75;
+		//WIDTH = document.body.clientWidth * 0.75;
+		WIDTH = document.body.clientWidth * 0.62;
 		HEIGHT = WIDTH * (9. / 16.);
 		three_box.style.width = WIDTH + 8 + "px";
 		three_box.style.height = HEIGHT + 8 + "px";
@@ -413,9 +416,9 @@ export function initLocalGamePong()
 		textElement.style.fontSize = HEIGHT / 10 + "px";
 		camera.aspect = WIDTH / HEIGHT;
 		camera.updateProjectionMatrix();
-	
+
 		renderer.setSize( WIDTH, HEIGHT );
-	
+
 	};
 
 	isRendering = true;

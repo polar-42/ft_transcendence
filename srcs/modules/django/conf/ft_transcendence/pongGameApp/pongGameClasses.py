@@ -64,7 +64,7 @@ class Player:
 
     def change_dy(self, dy):
         self.dy = dy
-    
+
     def get_dy(self):
         return self.dy
 
