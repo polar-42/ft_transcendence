@@ -48,6 +48,7 @@ cd $SITE_NAME
 
 python manage.py makemigrations
 python manage.py migrate
+python manage.py db_check
 python manage.py create_user
 
 # daphne ft_transcendence.asgi:application --host 0.0.0.0 --port 8000 --reload

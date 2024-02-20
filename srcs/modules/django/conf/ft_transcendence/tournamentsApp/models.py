@@ -10,5 +10,5 @@ class TournamentsModels(models.Model):
 	privateGame = models.IntegerField(default=0)
 	description = models.TextField(default="Description")
 	tournamentType = models.IntegerField(default=-1)
-	winner = models.CharField(default='gpasquet')
+	winner = models.CharField(default='None')
 	creationTime = models.DateTimeField(auto_now=True)

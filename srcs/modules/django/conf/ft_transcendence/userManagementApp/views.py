@@ -1,17 +1,10 @@
-import json, re, base64, os
+import re
 from django.shortcuts import render
-from django.contrib.auth import authenticate, login, logout
-from django.http import JsonResponse, FileResponse
+from django.http import JsonResponse
 from authApp.models import User
 from django.contrib.auth.hashers import make_password
-from authApp.management.commands.create_user import getRandString
-from django.core.files.base import ContentFile
-from django.conf import settings
-from django.http import HttpResponse
 from django.contrib.auth.hashers import check_password
-from django.db import models
 
-from ft_transcendence import ColorPrint
 from ft_transcendence.decorators import isValidLoading
 
 regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
