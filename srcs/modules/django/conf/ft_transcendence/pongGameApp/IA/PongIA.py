@@ -1,4 +1,4 @@
-import threading, asyncio, time
+import threading, time
 
 class pongGameIA(threading.Thread):
 
@@ -24,8 +24,6 @@ class pongGameIA(threading.Thread):
 				else:
 					self.gameThread.inputGame('StopMovementDown', 1)
 					self.gameThread.inputGame('StopMovementUp', 1)
-
-				print('self.ia_pos_y =', self.ia_pos_y, 'self.ball_pos_y =', self.ball_pos_y)
 
 			time.sleep(0.03)
 
@@ -62,4 +60,4 @@ class pongGameIA(threading.Thread):
 			i += 1
 
 		player, ia = game.get_players()
-		ia_pos_x, self.ia_pos_y = ia.get_pos()
+		self.ia_pos_x, self.ia_pos_y = ia.get_pos()

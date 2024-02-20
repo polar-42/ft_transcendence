@@ -82,12 +82,12 @@
 }
 
 .dashboard #dash_listClassicMatch,
-.dashboard #dash_listTournaments {  
+.dashboard #dash_listTournaments {
   height: 90%;
 	overflow-y: scroll;
 }
 
-.dashboard .dash_classicMatch, 
+.dashboard .dash_classicMatch,
 .dashboard .dash_tournament {
 	border-radius: 2px;
 	cursor: pointer;
@@ -107,7 +107,7 @@
   justify-content: space-between;
 }
 
-.dashboard .dash_classicMatch img, 
+.dashboard .dash_classicMatch img,
 .dashboard .dash_tournament img {
   display: block;
   width: 26px;
@@ -132,12 +132,12 @@
   width: 210px;
 }
 
-.dashboard .dash_classicMatch.win, 
+.dashboard .dash_classicMatch.win,
 .dashboard .dash_tournament.win {
   background: linear-gradient(to bottom right, transparent 43%, #099709);
 }
 
-.dashboard .dash_classicMatch.lose, 
+.dashboard .dash_classicMatch.lose,
 .dashboard .dash_tournament.lose {
   background: linear-gradient(to bottom right, transparent 43%, #970000);
 }
