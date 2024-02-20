@@ -17,7 +17,6 @@ var paddle1;
 var paddle2;
 var ball;
 var trail;
-var animation;
 var three_box = null;
 var textElement;
 var scoreDisplay;
@@ -79,10 +78,6 @@ export function unloadGamePongIA()
 		socketPongIA.close();
 	}
 	socketPongIA = null;
-	//if (canvas != null)
-	//{
-	//	canvas.style.display="none";
-	//}
 	document.removeEventListener('keydown', doKeyDown);
 	document.removeEventListener('keyup', doKeyUp);
 }
@@ -188,29 +183,6 @@ function init_objects()
 
 
 
-	listener = new THREE.AudioListener();
-	camera.add(listener);
-	paddle1_sound = new THREE.Audio(listener);
-	paddle2_sound = new THREE.Audio(listener);
-	wall_sound = new THREE.Audio(listener);
-	music = new THREE.Audio(listener);
-	var audioLoader = new THREE.AudioLoader();
-	audioLoader.load('../../static/js/sounds/bop_1.ogg', function(buffer) {
-		paddle1_sound.setBuffer(buffer);
-	});
-	audioLoader.load('../../static/js/sounds/bop_2.ogg', function(buffer) {
-		paddle2_sound.setBuffer(buffer);
-	});
-	audioLoader.load('../../static/js/sounds/bop_3.ogg', function(buffer) {
-		wall_sound.setBuffer(buffer);
-	});
-	audioLoader.load('../../static/js/sounds/music.mp3', function(buffer) {
-		music.setBuffer(buffer);
-		music.setLoop(true);
-		music.setVolume(0.5);
-		music.play();
-	});
-
 
 
 	const light = new THREE.PointLight(0xffffff, 1000)
@@ -237,7 +209,7 @@ function init_objects()
 }
 
 function animate() {
-    animation = requestAnimationFrame(animate);
+    requestAnimationFrame(animate);
 	if (BcameraShake == true)
 	{
 		frames_to_shake = 10;
@@ -399,16 +371,24 @@ function FinishGame()
 	scoreDisplay.remove()
 	renderer.domElement.style.filter = "blur(5px)"
 	console.log('Pong game is finish');
-	cancelAnimationFrame(animation);
 }
 
 function FinishGameByScore(data)
 {
 	console.log(data)
-	renderer.domElement.style.display = "none";
-	document.getElementById('score').style.display = "none";
-	let message = "Game is finished"; //+ data.winner + " is the winner by the score of " + data.playerone_score + " to " + data.playertwo_score;
-	document.getElementById('gameMessage').innerHTML = message;
+	if (data.playerone_score >= 3 || data.playertwo_score >= 3)
+	{
+		scoreDisplay.textContent = data.playerone_score + " - " + data.playertwo_score;
+		if (data.playerone_score < 3) {
+			textElement.textContent = "You lose...\r\n";
+			textElement.textContent += data.playerone_score + " - " + data.playertwo_score;
+			three_box.style.border = '4px solid #0000ff';
+		} else {
+			textElement.textContent = "You Win!\r\n";
+			textElement.textContent += data.playerone_score + " - " + data.playertwo_score;
+			three_box.style.border = '4px solid #ff0000';
+		}
+	}
 }
 
 function OnMessage(e)
