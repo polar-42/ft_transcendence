@@ -3,11 +3,10 @@ import { initChat  } from "../chatApp/CA_General.js";
 import { initProfileButton } from "../authApp.js";
 import { unsetChatbox } from "../chatApp/CA_General.js";
 
-var toto = undefined
-
 export function initUpdateAccount() {
 	avatarButtonFunction() //TO CHANGE
 
+  const feedback = document.querySelector('.feedback')
 	let submitBtn = document.getElementsByClassName("submit_BTN")[0];
 	submitBtn.addEventListener("click", updateAccount)
 	let inputArray = document.querySelectorAll("input");
@@ -35,15 +34,18 @@ export function initUpdateAccount() {
 		})
 		.catch(error => {
 			console.error('Error:', error)
-			feedback.innerHTML = data.message
 		})
 	let checkbox = document.querySelector('input[type="checkbox"]')
+  document.querySelector('.slider').addEventListener('click', () => {
+    checkbox.click()
+  })
 	checkbox.addEventListener('change', function () {
 		Handle2FaToggle(checkbox)
 	})
 }
 
 function Handle2FaToggle(checkbox) {
+  console.log('coucou')
 	const TFARequestType = 1 ? checkbox.checked == true : 2
 	fetch(window.location.origin + "/authApp/TFA/ShowPopUp")
 	.then(Response => {
@@ -309,47 +311,30 @@ function SendQrAnswer(content, codeInput)
 let imgFile = undefined
 
 function avatarButtonFunction() {
-	const input = document.getElementById("newAvatar");
-	input.addEventListener("change", function () {
+  const avatarInput = document.querySelector('#Input_avatar')
+  const avatarButton = document.querySelector('.upload_button')
+  const avatar =  document.querySelector('.avatar')
 
-		const file = input.files[0]
+  avatarButton.addEventListener('click', () => {
+    avatarInput.click()
+  })
 
-		if (file) {
-			const reader = new FileReader()
+  avatarInput.addEventListener('change', event => {
+    const file = event.target.files[0]
+    if (file == undefined)
+      return
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
 
-			reader.onload = function (e) {
-				const img = new Image()
-				img.src = e.target.result;
 
-				img.onload = function () {
-					const canvas = document.createElement('canvas');
-					const ctx = canvas.getContext('2d');
-
-					let targetSize = 150
-
-					const scaleFactor = Math.min(targetSize / img.width, targetSize / img.height);
-
-					canvas.width = targetSize
-					canvas.height = targetSize
-
-					const scaledWidth = img.width * scaleFactor;
-					const scaledHeight = img.height * scaleFactor;
-
-					const offsetX = img.width > img.height ? (img.width - img.height) / 2 : 0;
-					const offsetY = img.height > img.width ? (img.height - img.width) / 2 : 0;
-
-					ctx.drawImage(img, offsetX, offsetY, Math.min(img.width, img.height), Math.min(img.width, img.height), 0, 0, targetSize, targetSize);
-
-					const croppedDataURL = canvas.toDataURL('image/png');
-					imgFile = croppedDataURL;
-					document.getElementById('avatar_preview').src = croppedDataURL;
-				}
-			}
-			reader.readAsDataURL(file);
-		}
-	});
+    reader.onloadend = () => {
+      avatar.setAttribute('aria-label', file.name)
+      avatar.style.background = `url(${reader.result}) center center/cover`
+      imgFile = reader.result
+      console.log(imgFile)
+    }
+  })
 }
-
 
 function updateAccount(event) {
 	event.preventDefault()
@@ -370,7 +355,6 @@ function updateAccount(event) {
 	var headers = new Headers()
 	headers.append('X-CSRFToken', crsf_token)
 
-  	// unsetChatbox()
 	fetch(document.location.origin + "/userManagement/updateAccount",
 		{
 			method: 'POST',
@@ -401,7 +385,6 @@ function updateAccount(event) {
 		})
 		.catch(error => {
 			console.error('Error:', error)
-			feedback.innerHTML = data.message
 			return
 		})
 }

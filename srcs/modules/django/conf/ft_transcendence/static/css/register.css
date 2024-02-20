@@ -1,10 +1,6 @@
 .register_container {
-  max-width: 750px;
-  margin:
-  80px    
-  calc((100vw - 500px) / 2)
-  80px
-  calc((100vw - 500px) / 2);
+  width: 570px;
+  margin: auto;
   padding: 30px;
   background: var(--main-color);
   box-shadow: 
