@@ -312,7 +312,7 @@ async function displaySearchResult(data) {
 
 	if (document.querySelector(".main_box_header").children.length === 2)
 	{
-		document.querySelector(".main_box_header").insertAdjacentHTML("beforeend", '<img src="../static/assets/logo/arrow-back-regular-60.png" alt="return back button" class="back_arrow">')
+		document.querySelector(".main_box_header").insertAdjacentHTML("beforeend", '<img src="/static/assets/logo/arrow-back-regular-60.png" alt="return back button" class="back_arrow">')
 
 		document.querySelector(".main_box_header img.back_arrow").addEventListener("click", () => {
 			cleanMainBox()
