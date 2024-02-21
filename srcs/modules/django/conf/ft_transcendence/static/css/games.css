@@ -5,11 +5,11 @@
 }
 
 .games_page .wrapper {
-  margin: 30px 20% 90px 20%;
+  margin: 30px 20% 30px 20%;
   display: flex;
   justify-content: space-evenly;
   font-size: 1.4rem;
-  min-height: 70vh;
+  min-height: 620px;
 }
 
 .games_page .games_selection {
@@ -95,8 +95,8 @@
   cursor: pointer;
   position: relative;
   transform:
-  rotate(45deg)
-  translateY(4px);
+    rotate(45deg)
+    translateY(4px);
   width: 20px;
   height: 20px;
   border: 2px solid var(--main-color);

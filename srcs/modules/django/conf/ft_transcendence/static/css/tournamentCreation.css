@@ -10,8 +10,14 @@
 }
 
 .tournament_creation .form_wrapper {
-  padding: 30px 30% 30px 30%;
+  padding-top: 30px;
+  padding-bottom: 30px;
   background: var(--fourth);
+}
+
+.tournament_creation .form_wrapper > * {
+  width: 750px;
+  margin: auto;
 }
 
 .tournament_creation .form_wrapper label {
@@ -125,13 +131,13 @@
   margin: auto;
 }
 
-.tournament_creation .form_wrapper .game_type_selection_wrapper {
+.tournament_creation .form_wrapper .button_selection_wrapper {
   display: flex;
   justify-content: space-evenly;
   margin-top: 10px;
 }
 
-.tournament_creation .form_wrapper .game_type_selection_wrapper button {
+.tournament_creation .form_wrapper .button_selection_wrapper button {
   background: var(--secondary-bg-color);
   border: 1px solid var(--secondary-bg-color);
   border-radius: 50%;
@@ -140,23 +146,22 @@
   cursor: pointer;
 }
 
-.tournament_creation .form_wrapper .game_type_selection_wrapper button:hover {
+.tournament_creation .form_wrapper .button_selection_wrapper button:hover {
   border: 3px solid var(--main-bg-color);
   box-shadow:
       1px 1px 5px var(--secondary-bg-color),
       -1px -1px 5px var(--secondary-bg-color);
 }
 
-.tournament_creation .form_wrapper .game_type_selection_wrapper button.selected {
+.tournament_creation .form_wrapper .button_selection_wrapper button.selected {
   background: var(--main-bg-color);
   border: 5px solid #6c5af0;
   box-shadow:
       2px 2px 10px var(--secondary-bg-color),
       -2px -2px 10px var(--secondary-bg-color);
-
 }
 
-.tournament_creation .form_wrapper .game_type_selection_wrapper img {
+.tournament_creation .form_wrapper .button_selection_wrapper img {
   width: 100px;
   height: auto;
 }
@@ -164,7 +169,6 @@
 .tournament_creation .form_wrapper .submitButtonCreateTournaments {
     display: block;
     margin: 30px auto auto auto;
-    width: 80%;
     letter-spacing: 2px;
     background: 
     linear-gradient(135deg, var(--secondary-bg-color),  var(--main-bg-color)),
@@ -189,4 +193,70 @@
 .tournament_creation #messageCreationTournaments {
   text-align: center;
   color: red;
+}
+
+@media (max-width: 1000px) {
+  .tournament_creation {
+    font-size: 25px;
+  }
+
+  .tournament_creation .form_wrapper > * {
+    width: 600px;
+  }
+}
+
+@media (max-width: 720px) {
+  .tournament_creation {
+    font-size: 20px;
+  }
+
+  .tournament_creation .form_wrapper > * {
+    width: 500px;
+  }
+  
+  .tournament_creation .form_wrapper .button_selection_wrapper button {
+    width: 120px;
+    height: 120px;
+  }
+
+  .tournament_creation .form_wrapper .button_selection_wrapper img {
+    width: 80px;
+    height: auto;
+  }
+}
+
+@media (max-width: 650px) {
+  .tournament_creation {
+    font-size: 20px;
+  }
+
+  .tournament_creation .form_wrapper > * {
+    width: 400px;
+  }
+  
+  .tournament_creation .form_wrapper .button_selection_wrapper button {
+    width: 120px;
+    height: 120px;
+  }
+
+  .tournament_creation .form_wrapper .button_selection_wrapper img {
+    width: 80px;
+    height: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .tournament_creation .form_wrapper > * {
+    width: 300px;
+  }
+  
+  .tournament_creation .form_wrapper .button_selection_wrapper button {
+    width: 120px;
+    height: 120px;
+  }
+
+  .tournament_creation .form_wrapper .button_selection_wrapper img {
+    width: 80px;
+    height: auto;
+  }
 }

@@ -25,45 +25,45 @@
       let FF_FOUC_FIX;
     </script>
   </head>
-  <header>
-    <a href="/" class="nav__link home_btn" data-link>ft_transcendence</a>
-   <nav>
-      <a href="/dashboard" class="nav__link" data-link>Dashboard</a>
-      <a href="/games" class="nav__link" data-link>Play</a>
-      <div class="profile_dropdown">
-        <div class="profile_button">
-          <img class="user_logo" src="{% static '/assets/logo/user.png' %}">
-          <img class="user_logo" src="{% static '/assets/logo/blue_user.png' %}">
-          <a href="" class="nav__link" data-link>Log in</a>
-          <img id="angle" src="{% static '/assets/logo/angle_down.png' %}">
-          <img id="blue_angle" src="{% static '/assets/logo/blue_angle_down.png' %}">
-        </div>
-        <div class="profile_menu">
-          <li><a href="/userManagement" class="nav__link" data-link>Settings</a></li>
-          <li><button name="logout">Log out</button><li>
-        </div>
-      </div>
-    </nav>
-    <img src="{% static '/assets/logo/hamburger.png' %}" alt="Navigation Menu" class="menu_btn">
-    <div class="dropdown_menu">
-      <li><a href="/dashboard" class="menu_link nav__link" data-link>Dashboard</a></li>
-      <li><a href="/games" class="menu_link" data-link>Play</a></li>
-      <div class="profile_dropdown">
-        <div class="profile_button">
-          <img class="user_logo" src="{% static '/assets/logo/user.png' %}">
-          <img class="user_logo" src="{% static '/assets/logo/blue_user.png' %}">
-          <a href="" class="nav__link" data-link>Log in</a>
-          <img id="angle" src="{% static '/assets/logo/angle_down.png' %}">
-          <img id="blue_angle" src="{% static '/assets/logo/blue_angle_down.png' %}">
-        </div>
-        <div class="profile_menu">
-          <li><a href="/userManagement" class="nav__link" data-link>Settings</a></li>
-          <li><button name="logout">Log out</button></li>
-        </div>
-      </div>
-    </div>
-  </header>
   <body>
+    <header>
+      <a href="/" class="nav__link home_btn" data-link>ft_transcendence</a>
+      <nav>
+        <a href="/dashboard" class="nav__link" data-link>Dashboard</a>
+        <a href="/games" class="nav__link" data-link>Play</a>
+        <div class="profile_dropdown">
+          <div class="profile_button">
+            <img class="user_logo" src="{% static '/assets/logo/user.png' %}">
+            <img class="user_logo" src="{% static '/assets/logo/blue_user.png' %}">
+            <a href="" class="nav__link" data-link>Log in</a>
+            <img id="angle" src="{% static '/assets/logo/angle_down.png' %}">
+            <img id="blue_angle" src="{% static '/assets/logo/blue_angle_down.png' %}">
+          </div>
+          <div class="profile_menu">
+            <li><a href="/userManagement" class="nav__link" data-link>Settings</a></li>
+            <li><button name="logout">Log out</button><li>
+          </div>
+        </div>
+      </nav>
+      <img src="{% static '/assets/logo/hamburger.png' %}" alt="Navigation Menu" class="menu_btn">
+      <div class="dropdown_menu">
+        <li><a href="/dashboard" class="menu_link nav__link" data-link>Dashboard</a></li>
+        <li><a href="/games" class="menu_link" data-link>Play</a></li>
+        <div class="profile_dropdown">
+          <div class="profile_button">
+            <img class="user_logo" src="{% static '/assets/logo/user.png' %}">
+            <img class="user_logo" src="{% static '/assets/logo/blue_user.png' %}">
+            <a href="" class="nav__link" data-link>Log in</a>
+            <img id="angle" src="{% static '/assets/logo/angle_down.png' %}">
+            <img id="blue_angle" src="{% static '/assets/logo/blue_angle_down.png' %}">
+          </div>
+          <div class="profile_menu">
+            <li><a href="/userManagement" class="nav__link" data-link>Settings</a></li>
+            <li><button name="logout">Log out</button></li>
+          </div>
+        </div>
+      </div>
+    </header>
     <div id="app"></div>
     <div class="chatbox_wrapper">
       <div id="pop_up_unread_chatbox"></div>
@@ -85,10 +85,10 @@
         </div>
       </div>
     </div>
+    <footer            >
+      <a href="/#about" class="foot_link">About</a>
+      <a href="" class="foot_link" data-link>Contact</a>
+    </footer>
     <script type="module" src="{% static '/js/index.js' %}"></script>
   </body>
-  <footer            >
-    <a href="/#about" class="foot_link">About</a>
-    <a href="" class="foot_link" data-link>Contact</a>
-  </footer>
 </html>
