@@ -139,7 +139,7 @@ header a:visited {
 }
 
 .profile_button img {
-  width: auto;
+  width: 1em;
   height: 1em;
   margin: 5px 10px;
   transition: 0.3s ease;
