@@ -55,7 +55,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CSRF_TRUSTED_ORIGINS = ['https://localhost/*']
+
+print('HOST = ' + os.environ.get('HostIp'))
+
+CSRF_TRUSTED_ORIGINS = ['https://' + os.environ.get('HostIp') + '/*',
+						'https://localhost/*'
+						]
 
 ROOT_URLCONF = 'ft_transcendence.urls'
 

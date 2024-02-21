@@ -23,6 +23,8 @@ services:
     image: image_django
     env_file:
       - .env
+    environment:
+      - HostIp=${HOSTED}
     networks:
       - transcendence_network
     restart: on-failure

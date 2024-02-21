@@ -1,13 +1,5 @@
 #!/bin/sh
 
-export SITE_NAME="ft_transcendence";
-export APP_NAME="Dashboard";
-
-export DB_NAME="transcendence_db"
-export DB_USER="user_db"
-export DB_PASSWORD="password_db"
-export DB_PORT="5432"
-
 #CHECK IF POSTGRES IS LAUNCH AND TRANSCENDENCE_DB EXIST
 while true ; do
 
@@ -44,7 +36,7 @@ export CONTRACT_ADDRESS=$(cat /var/blockchain/contract_address.txt)
 
 
 ln -s /var/conf/ft_transcendence .
-cd $SITE_NAME
+cd ft_transcendence
 
 python manage.py makemigrations
 python manage.py migrate

@@ -133,11 +133,13 @@ async function connect(event) {
 	var headers = new Headers()
 	headers.append('Content-Type', 'application/json')
 	headers.append('X-CSRFToken', crsf_token)
+	console.log(crsf_token)
 	await fetch(document.location.origin + "/authApp/Connexion",
 		{
 			method: 'POST',
 			headers: headers,
 			body: JSON.stringify(data),
+			credentials: "same-origin"
 		})
 		.then(Response => {
 			if (!Response.ok) {
