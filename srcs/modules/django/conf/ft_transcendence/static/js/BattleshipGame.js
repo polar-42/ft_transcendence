@@ -35,6 +35,7 @@ let Boatm = []
 
 let BoardArray = []
 
+
 let validated = false
 
 var battleshipSocket = null
@@ -96,13 +97,13 @@ function OnMessage(e)
 		case 'StartTurn':
 			SP_drawTitle("Your Turn")
 			document.addEventListener('mousemove', SP_mouseMove)
-			document.addEventListener('click', SP_mouseClick)
+			document.addEventListener('mousedown', SP_mouseClick)
 			break
 		case 'StartEnemyTurn':
 			SP_drawTitle(data.playerName + " Turn")
 			SP_Draw()
 			document.removeEventListener('mousemove', SP_mouseMove)
-			document.removeEventListener('click', SP_mouseClick)
+			document.removeEventListener('mousedown', SP_mouseClick)
 			break
 		case 'GameStop':
 			RP_GameStop(data.message, data.tournamentId)
@@ -142,7 +143,7 @@ function OnMessage(e)
 
 function RP_GameStop(message, id)
 {
-	// console.log("Tournament Match = " + id)
+
 	if (curInterval != undefined)
 		clearInterval(curInterval)
 	curInterval = undefined
@@ -220,42 +221,42 @@ let INTERSECTED = null;
 
 function boatCreate() {
 	BoatList = [
-	  {
-		name: "Carrier",
-		x: 0,
-		y: 0,
-		ArrayX: 0,
-		ArrayY: 11,
-		size: 5,
-		horizontal: true,
-	  },
-	  {
-		name: "BattleShip",
-		x: 0,
-		y: 0,
-		ArrayX: 8,
-		ArrayY: 11,
-		size: 4,
-		horizontal: true,
-	  },
-	  {
-		name: "Destroyer",
-		x: 0,
-		y: 0,
-		ArrayX: 4,
-		ArrayY: 13,
-		size: 3,
-		horizontal: true,
-	  },
-	  {
-		name: "Submarine",
-		x: 0,
-		y: 0,
-		ArrayX: 0,
-		ArrayY: 13,
-		size: 3,
-		horizontal: true,
-	  },
+	//   {
+	// 	name: "Carrier",
+	// 	x: 0,
+	// 	y: 0,
+	// 	ArrayX: 0,
+	// 	ArrayY: 11,
+	// 	size: 5,
+	// 	horizontal: true,
+	//   },
+	//   {
+	// 	name: "BattleShip",
+	// 	x: 0,
+	// 	y: 0,
+	// 	ArrayX: 8,
+	// 	ArrayY: 11,
+	// 	size: 4,
+	// 	horizontal: true,
+	//   },
+	//   {
+	// 	name: "Destroyer",
+	// 	x: 0,
+	// 	y: 0,
+	// 	ArrayX: 4,
+	// 	ArrayY: 13,
+	// 	size: 3,
+	// 	horizontal: true,
+	//   },
+	//   {
+	// 	name: "Submarine",
+	// 	x: 0,
+	// 	y: 0,
+	// 	ArrayX: 0,
+	// 	ArrayY: 13,
+	// 	size: 3,
+	// 	horizontal: true,
+	//   },
 	  {
 		name: "PatrolBoat",
 		x: 0,
@@ -311,6 +312,25 @@ function FP_Init()
 	for (let y = 0; y < boardSizeY; y++) {
 		for (let x = 0; x < boardSizeX; x++) {
 		const geometry = new THREE.BoxGeometry(boxSize, boxSize, boxSize);
+		const material = new THREE.MeshBasicMaterial({ color: 0xfcc26f });
+		const cube = new THREE.Mesh(geometry, material);
+		cube.position.set(x + boardOffsetX, 0, y + boardOffsetY + 20);
+		cube.type = "ennemy_cube";
+		scene.add(cube);
+		const edges = new THREE.EdgesGeometry(geometry);
+		const lineMaterial = new THREE.LineBasicMaterial({
+			color: 0x000000,
+			linewidth: 2,
+		});
+		const lines = new THREE.LineSegments(edges, lineMaterial);
+		lines.position.set(x + boardOffsetX, 0, y + boardOffsetY + 20);
+		boardGroup.add(lines);
+		BoardCases.push(CreateABox(x, y, cube))
+		}
+	}
+	for (let y = 0; y < boardSizeY; y++) {
+		for (let x = 0; x < boardSizeX; x++) {
+		const geometry = new THREE.BoxGeometry(boxSize, boxSize, boxSize);
 		const material = new THREE.MeshBasicMaterial({ color: 0x6fc2fc });
 		const cube = new THREE.Mesh(geometry, material);
 		cube.position.set(x + boardOffsetX, 0, y + boardOffsetY);
@@ -336,11 +356,11 @@ function FP_Init()
 	canvas.addEventListener('click', FP_mouseClick)
 	document.addEventListener('mousedown', FP_mouseDown)
 	document.addEventListener('mousemove', FP_mouseMove)
-	for ( let y = 0; y < gridSizeY; y++)
+	for ( let x = 0; x < gridSizeY; x++)
 	{
-		BoardArray[y] = []
-		for ( let x = 0; x < gridSizeX; x++)
-			BoardArray[y][x] = 0
+		BoardArray[x]= []
+		for ( let y = 0; y < gridSizeX; y++)
+			BoardArray[x][y] = 0
 	}
 	BoatList.forEach(element => {
 		element.x = element.startX
@@ -396,23 +416,6 @@ function FP_mouseMove(e) {
 	const y = e.clientY - rect.top;
 	mouse.x = (x / WIDTH) * 2 - 1;
 	mouse.y = -(y / HEIGHT) * 2 + 1;
-	BoatList.forEach(element => {
-		if (element.isDragging) {
-			const mouseX = e.clientX - canvas.getBoundingClientRect().left
-			const mouseY = e.clientY - canvas.getBoundingClientRect().top
-
-			// Update the position of the draggable item
-			element.x = mouseX - element.offsetX
-			element.y = mouseY - element.offsetY
-
-			// Clear the canvas and redraw the draggable item
-			ctx.clearRect(0, 0, canvas.width, canvas.height)
-			FP_draw()
-
-			// Change cursor style while dragging
-			canvas.style.cursor = 'grabbing'
-		}
-	})
 }
 
 
@@ -426,11 +429,18 @@ function FP_SendBoats()
 
 	if (count != BoatList.length)
 		return false
-
+	BoatList.forEach(element => {
+			element.ArrayX = Math.floor(element.ArrayX)
+			element.ArrayY = Math.floor(element.ArrayY)
+			element.x = Math.floor(element.x)
+			element.y = Math.floor(element.y)
+		})
+	
 	battleshipSocket.send(JSON.stringify({
 		'function': 'sendBoats',
 		'input': BoatList
 	}))
+	console.log("a",BoatList)
 	return true
 }
 
@@ -453,34 +463,139 @@ function placeBoat(x, y) {
 	} else if (boatToPlace.orientation && boatToPlace.width + x > 10) {
 	  return;
 	}
+	if (!boatToPlace.orientation && boatToPlace.pos[0] != -1)
+	{
+		for (let i = 0; i < boatToPlace.width; i++)
+		{
+			BoardArray[boatToPlace.pos[0]][boatToPlace.pos[1] + i] = 0
+		}
+	}
+	else if (boatToPlace.pos[0] != -1)
+	{
+		for (let i = 0; i < boatToPlace.width; i++)
+		{
+			BoardArray[boatToPlace.pos[0] + i][boatToPlace.pos[1]] = 0
+		}
+	}
+	if (!boatToPlace.orientation)
+	{
+		for (let i = 0; i < boatToPlace.width; i++)
+		{
+			if (BoardArray[x][y + i] == 1)
+			{
+				for (let i = 0; i < boatToPlace.width; i++)
+				{
+					BoardArray[boatToPlace.pos[0]][boatToPlace.pos[1] + i] = 1
+				}
+				return ;
+			}
+		}
+	}
+	else
+	{
+		for (let i = 0; i < boatToPlace.width; i++)
+		{
+			if (BoardArray[x + i][y] == 1)
+			{
+				for (let j = 0; j < boatToPlace.width; j++)
+				{
+					BoardArray[boatToPlace.pos[0] + j][boatToPlace.pos[1]] = 1
+				}
+				return ;
+			}
+		}
+	}
 	boatToPlace.pos = [x, y];
-	console.log(boatToPlace.pos);
 	boatToPlace.position.x = boat_x;
 	boatToPlace.position.z = boat_y;
 	boatToPlace.self.ArrayX = boat_x;
 	boatToPlace.self.ArrayY = boat_y;
 	boatToPlace.self.x = boat_x;
 	boatToPlace.self.y = boat_y;
+	if (!boatToPlace.orientation)
+	{
+		for (let i = 0; i < boatToPlace.width; i++)
+		{
+			BoardArray[x][y + i] = 1
+		}
+	}
+	else
+	{
+		for (let i = 0; i < boatToPlace.width; i++)
+		{
+			BoardArray[x + i][y] = 1
+		}
+	}
   }
 
   function rotateBoat() {
 	if (boatToPlace == null) {
 	  return;
 	}
+	if (boatToPlace.pos[0] == -1)
+	{
+		return ;
+	}
+	if (boatToPlace.orientation && boatToPlace.width + boatToPlace.pos[1] > 10) {
+		return;
+	  } else if (
+		!boatToPlace.orientation &&
+		boatToPlace.width + boatToPlace.pos[0] > 10
+	  ) {
+		return;
+	  }
+	if (!boatToPlace.orientation && boatToPlace.pos[0] != -1)
+	{
+		for (let i = 0; i < boatToPlace.width; i++)
+		{
+			BoardArray[boatToPlace.pos[0]][boatToPlace.pos[1] + i] = 0
+		}
+	}
+	else if (boatToPlace.pos[0] != -1)
+	{
+		for (let i = 0; i < boatToPlace.width; i++)
+		{
+			BoardArray[boatToPlace.pos[0] + i][boatToPlace.pos[1]] = 0
+		}
+	}
+	if (!boatToPlace.orientation)
+	{
+		for (let i = 0; i < boatToPlace.width; i++)
+		{
+			if (BoardArray[boatToPlace.pos[0] + i][boatToPlace.pos[1]] == 1)
+			{
+				if (boatToPlace.pos[0] != -1)
+				{
+					return
+				}
+				for (let j = 0; j < boatToPlace.width; j++)
+				{
+					BoardArray[boatToPlace.pos[0]][boatToPlace.pos[1] + j] = 1
+				}
+				return ;
+			}
+		}
+	}
+	else
+	{
+		for (let i = 0; i < boatToPlace.width; i++)
+		{
+			if (BoardArray[boatToPlace.pos[0]][boatToPlace.pos[1] + i] == 1)
+			{
+				if (boatToPlace.pos[0] != -1)
+				{
+					return
+				}
+				for (let j = 0; j < boatToPlace.width; j++)
+				{
+					BoardArray[boatToPlace.pos[0] + j][boatToPlace.pos[1]] = 1
+				}
+				return ;
+			}
+		}
+	}
 	boatToPlace.orientation = !boatToPlace.orientation;
 	boatToPlace.self.horizontal = !boatToPlace.self.horizontal;
-	if (!boatToPlace.orientation && boatToPlace.width + boatToPlace.pos[1] > 10) {
-	  boatToPlace.orientation = !boatToPlace.orientation;
-	  boatToPlace.self.horizontal = !boatToPlace.self.horizontal;
-	  return;
-	} else if (
-	  boatToPlace.orientation &&
-	  boatToPlace.width + boatToPlace.pos[0] > 10
-	) {
-	  boatToPlace.orientation = !boatToPlace.orientation;
-	  boatToPlace.self.horizontal = !boatToPlace.self.horizontal;
-	  return;
-	}
 	let offset_center = (boatToPlace.width - 1) / 2;
 	if (!boatToPlace.orientation) {
 	  boatToPlace.position.x -= offset_center;
@@ -498,6 +613,20 @@ function placeBoat(x, y) {
 	  boatToPlace.self.y -= offset_center;
 	}
 	boatToPlace.rotation.y += 1.57;
+	if (!boatToPlace.orientation)
+	{
+		for (let i = 0; i < boatToPlace.width; i++)
+		{
+			BoardArray[boatToPlace.pos[0]][boatToPlace.pos[1] + i] = 1
+		}
+	}
+	else
+	{
+		for (let i = 0; i < boatToPlace.width; i++)
+		{
+			BoardArray[boatToPlace.pos[0] + i][boatToPlace.pos[1]] = 1
+		}
+	}
   }
 
 function FP_mouseClick(e)
@@ -570,11 +699,20 @@ var SP_hovered = undefined
 
 function SP_HitCase(Tcase, result, boat)
 {
+	console.log("???")
+	console.log(Tcase);
 	BoardCases.forEach(element => {
 		if (element.ArrayPosX == Tcase.ArrayPosX && element.ArrayPosY == Tcase.ArrayPosY)
 		{
 			element.status = result == false ? -1 : 1
-
+			if (element.status == -1)
+			{
+				element.object.material.color.setHex(0xffffff)
+			}
+			else if (element.status == 1)
+			{
+				element.object.material.color.setHex(0xffaaaa)
+			}
 		}
 	})
 	if (boat != "None")
@@ -590,39 +728,19 @@ function SP_HitCase(Tcase, result, boat)
 function SP_mouseMove(event)
 {
 	const rect = renderer.domElement.getBoundingClientRect();
-	const x = e.clientX - rect.left;
-	const y = e.clientY - rect.top;
+	const x = event.clientX - rect.left;
+	const y = event.clientY - rect.top;
 	mouse.x = (x / WIDTH) * 2 - 1;
 	mouse.y = -(y / HEIGHT) * 2 + 1;
 	const mouseX = event.clientX - canvas.getBoundingClientRect().left
 	const mouseY = event.clientY - canvas.getBoundingClientRect().top
-	const ArrayPos = CP_getArrayPos(mouseX, mouseY)
-	if (ArrayPos.x == - 1)
-	{
-		if (SP_hovered != undefined)
-		{
-			SP_hovered = undefined
-			SP_Draw()
-		}
-	}
-	else
-	{
-		BoardCases.forEach( element => {
-			if (element.ArrayPosX == ArrayPos.x && element.ArrayPosY == ArrayPos.y)
-				if (SP_hovered != element)
-				{
-					SP_hovered = element
-					SP_Draw()
-				}
-				return
-			})
-	}
 }
 
 function SP_SendSelected()
 {
 	if (SP_selected == undefined)
 		return false
+	console.log(SP_selected);
 	battleshipSocket.send(JSON.stringify({
 		'function': 'HitCase',
 		'input': SP_selected
@@ -632,51 +750,104 @@ function SP_SendSelected()
 
 function SP_mouseClick(event)
 {
+	if (event.which == 3) {
+		rotateBoat();
+	  }
+	  if (event.which == 1 && INTERSECTED && INTERSECTED != CURRENT_SELECTION) {
+		if (INTERSECTED.type == "cube" && boatToPlace != null) {
+		  placeBoat(INTERSECTED.position.x, INTERSECTED.position.z);
+		}
+		if (INTERSECTED.type == "boat") {
+		  boatToPlace = INTERSECTED;
+		}
+		INTERSECTED.scale.set(1, 1, 1);
+	
+		if (CURRENT_SELECTION != null) {
+		}
+		CURRENT_SELECTION = INTERSECTED;
+		INTERSECTED = null;
+	}
 	const mouseX = event.clientX - canvas.getBoundingClientRect().left
 	const mouseY = event.clientY - canvas.getBoundingClientRect().top
 
-	const ArrayPos = CP_getArrayPos(mouseX, mouseY)
+	const ArrayPos = getPos()
 
-	if (ArrayPos.x == - 1)
+
+
+	if (mouseX > FP_BTN_Validate.x && mouseX < FP_BTN_Validate.x + FP_BTN_Validate.w && mouseY > FP_BTN_Validate.y && mouseY < FP_BTN_Validate.y + FP_BTN_Validate.h)
 	{
-		if (mouseX > FP_BTN_Validate.x && mouseX < FP_BTN_Validate.x + FP_BTN_Validate.w && mouseY > FP_BTN_Validate.y && mouseY < FP_BTN_Validate.y + FP_BTN_Validate.h)
-		{
-			SP_SendSelected()
-		}
-		else if (SP_selected != undefined)
-		{
-			SP_selected = undefined
-			SP_Draw()
-			SP_drawSendBTN()
-		}
+		SP_SendSelected()
 	}
-	else
-	{
-		BoardCases.forEach( element => {
-			if (element.ArrayPosX == ArrayPos.x && element.ArrayPosY == ArrayPos.y)
+	BoardCases.forEach( element => {
+		if (element.ArrayPosX == ArrayPos.x && element.ArrayPosY == ArrayPos.y)
+		{
+			if (SP_selected != element)
 			{
-				if (SP_selected != element)
-				{
-					if (element.status == 0)
-						SP_selected = element
-					SP_Draw()
-				}
+				if (element.status == 0)
+					SP_selected = element
+				SP_Draw()
 			}
-			return
-		})
-	}
+		}
+		return
+	})
+}
+
+function getPos()
+{
+	return{x : CURRENT_SELECTION.position.x, y : CURRENT_SELECTION.position.z - 20}
 }
 
 function SP_Load()
 {
 	curInterval = setInterval(SP_Timer, 1000)
+	controls.target.set( 5, 0 , 5 + 20);
 	BoatList = [
-		// { name : 'Carrier', x : 700, y : 100, size : 5, status : true},
-		// { name : 'BattleShip', x : 700, y : 200, size : 4, status : true},
-		// { name : 'Destroyer', x : 700, y : 300, size : 3, status : true},
-		// { name : 'Submarine', x : 700, y : 400, size : 3, status : true},
-		{ name : 'PatrolBoat', x : 700, y : 500, size : 2, status : true},
-	]
+		// {
+		//   name: "Carrier",
+		//   x: 0,
+		//   y: 0,
+		//   ArrayX: 0,
+		//   ArrayY: 11,
+		//   size: 5,
+		//   horizontal: true,
+		// },
+		// {
+		//   name: "BattleShip",
+		//   x: 0,
+		//   y: 0,
+		//   ArrayX: 8,
+		//   ArrayY: 11,
+		//   size: 4,
+		//   horizontal: true,
+		// },
+		// {
+		//   name: "Destroyer",
+		//   x: 0,
+		//   y: 0,
+		//   ArrayX: 4,
+		//   ArrayY: 13,
+		//   size: 3,
+		//   horizontal: true,
+		// },
+		// {
+		//   name: "Submarine",
+		//   x: 0,
+		//   y: 0,
+		//   ArrayX: 0,
+		//   ArrayY: 13,
+		//   size: 3,
+		//   horizontal: true,
+		// },
+		{
+		  name: "PatrolBoat",
+		  x: 0,
+		  y: 0,
+		  ArrayX: 8,
+		  ArrayY: 13,
+		  size: 2,
+		  horizontal: true,
+		},
+	  ];
 	SP_drawEnemyBoats()
 	SP_Draw()
 }
@@ -812,3 +983,15 @@ function animate() {
 	  INTERSECTED = null;
 	}
   }
+
+
+function CreateABox(x, y, hello)
+{
+	let Box = {
+		ArrayPosX : x,
+		ArrayPosY : y,
+		status: 0,
+		object: hello
+	}
+	return Box
+}
