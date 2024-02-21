@@ -207,7 +207,7 @@
 }
 
 .main_box_body.homepage .conversation_list .join_channel_box img,
-.main_box_body.friendpage .conversation_list .join_channel_box img { 
+.main_box_body.friendpage .conversation_list .join_channel_box img {
 	width: 20px;
 	height: 20px;
 }
@@ -434,7 +434,7 @@
 	margin-left: 5px;
 	margin-right: 5px;
 }
- 
+
 .main_box_body.homepage .channel_creation_box .privacy_checkbox_wrapper .checkbox_wrapper label {
 	font-size: 0.8em;
 }
@@ -507,7 +507,7 @@
 .main_box_header.channel .contact_wrapper img {
 	border-radius: 50%;
 	width: 40px;
-	height: auto;
+	height: 40px;
 	margin-left: 10px;
 	border-radius: 50%;
 }
@@ -621,7 +621,7 @@
 .main_box_body.private_message .conversation .sender img,
 .main_box_body.channel .conversation .sender img {
 	width: 25px;
-	height: auto;
+	height: 25px;
 	margin-right: 10px;
 	border-radius: 50%;
 	cursor: pointer;
@@ -754,7 +754,7 @@
 .main_box_body.channel .sidebar img {
 	display: block;
 	width: 25px;
-	height: auto;
+	height: 25px;
 	margin: auto;
 	border-radius: 50%;
 	cursor: pointer;
