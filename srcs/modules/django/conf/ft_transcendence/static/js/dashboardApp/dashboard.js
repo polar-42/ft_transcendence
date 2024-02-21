@@ -74,6 +74,7 @@ export function addPongClassicMatch()
             elem.lastChild.classList.add('score')
             elem.lastChild.textContent = element.player1_score + ' : ' + element.player2_score
             elem.appendChild(document.createElement('p'))
+						elem.lastChild.classList.add('timestamp')
             elem.lastChild.textContent = element.date
             elem.addEventListener('click', popUpPongGameStat.bind(null, element.id))
             matchList.appendChild(elem)	
@@ -125,8 +126,10 @@ export function addPongTournamentStat()
               elem.classList.add('lose')
             }
             elem.appendChild(document.createElement('p'))
+						elem.lastChild.classList.add('tournament_result')
             elem.lastChild.textContent = element.name + ' win by ' + element.winner
             elem.appendChild(document.createElement('p'))
+						elem.lastChild.classList.add('timestamp')
             elem.lastChild.textContent = element.date
             elem.addEventListener('click', popUpTournamentStat.bind(null, element.id))
             matchList.appendChild(elem)	
@@ -311,6 +314,7 @@ export function addBattleshipClassicMatch()
             elem.lastChild.classList.add('score')
             elem.lastChild.textContent = element.player1_score + ' : ' + element.player2_score
             elem.appendChild(document.createElement('p'))
+						elem.lastChild.classList.add('timestamp')
             elem.lastChild.textContent = element.date
             elem.addEventListener('click', popUpBattleshipGameStat.bind(null, element.id))
             matchList.appendChild(elem)	
@@ -364,6 +368,7 @@ export function addBattleshipTournamentStat()
             elem.appendChild(document.createElement('p'))
             elem.lastChild.textContent = element.name + ' win by ' + element.winner
             elem.appendChild(document.createElement('p'))
+						elem.lastChild.classList.add('timestamp')
             elem.lastChild.textContent = element.date
             elem.addEventListener('click', popUpTournamentStat.bind(null, element.id))
             matchList.appendChild(elem)	
@@ -589,7 +594,7 @@ export async function popUpPongGameStat(gameId)
 			})
 		}
 	}
-	document.querySelector('.PopUp_wrapper').style.display = 'block';
+	document.querySelector('.PopUp_wrapper').style.display = 'flex';
 	document.querySelector('.GameStatPopUp').style.display = 'block';
 }
 
@@ -684,37 +689,8 @@ export async function popUpBattleshipGameStat(gameId)
 			})
 		}
 	}
-	document.querySelectorAll('.PopUp_wrapper')[0].style.display = 'block';
+	document.querySelectorAll('.PopUp_wrapper')[0].style.display = 'flex';
 	document.querySelectorAll('.GameStatPopUp')[0].style.display = 'block';
-}
-
-export function displayPlayerNickname(e, playerNickname, num, value)
-{
-	if (value == true)
-	{
-		if (num == 1)
-		{
-			let tooltip = document.getElementById('tooltip_player1')
-			tooltip.style.display = 'inline-block'
-			tooltip.innerText = playerNickname
-		}
-		else if (num == 2)
-		{
-			document.getElementById('tooltip_player2').style.display = 'inline-block'
-			document.getElementById('tooltip_player2').innerText = playerNickname
-		}
-		else
-		{
-			document.getElementById('tooltip_winnerTournament').style.display = 'block'
-			document.getElementById('tooltip_winnerTournament').innerText = playerNickname
-		}
-	}
-	else
-	{
-		document.getElementById('tooltip_player1').style.display = 'none'
-		document.getElementById('tooltip_player2').style.display = 'none'
-		document.getElementById('tooltip_winnerTournament').style.display = 'none'
-	}
 }
 
 export async function popUpTournamentStat(tournamentId) {
@@ -781,7 +757,7 @@ export async function popUpTournamentStat(tournamentId) {
 			})
 		}
 	}
-	document.querySelectorAll('.PopUp_wrapper')[0].style.display = 'block';
+	document.querySelectorAll('.PopUp_wrapper')[0].style.display = 'flex';
 	document.querySelectorAll('.TournamentStatPopUp')[0].style.display = 'block';
 }
 
