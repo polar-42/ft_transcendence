@@ -27,11 +27,6 @@
   opacity: 0;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  /*background: #6E6E6E;*/
-  opacity: 0;
-}
-
 html {
   color: white;
   font-size: 20px;

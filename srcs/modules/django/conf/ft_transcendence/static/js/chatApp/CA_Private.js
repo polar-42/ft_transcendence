@@ -81,16 +81,18 @@ export function displayPrivMsg(data) {
 			'<div class="connection_point ' + isConnected + '"></div>' +
 			'</div>' +
 			'</div>' +
+      '<div class="contact_option_wrapper">' +
 			'<div class="AddToFriendContainer ' + data.friend + '">' +
 			'<img class="FriendShip_BTN" src="/static/assets/logo/AddToFriendIcon.svg" alt="Add to friend">' +
 			'</div>' +
 			'<div class="blockUser ' + data.blocked + '">' +
 			'<svg></svg>' +
 			'</div>' +
+      '</div>' +
 			'<img src="/static/assets/logo/arrow-back-regular-60.png" alt="return arrow button">'
 
 		document.querySelector(".main_box_header").innerHTML = html
-		mainBoxHeader.children[3].addEventListener("click", () => {
+		mainBoxHeader.children[2].addEventListener("click", () => {
 			mainBoxHeader.classList.remove("private_message")
 			mainBoxBody.classList.remove("private_message")
 			cleanMainBox()
@@ -103,7 +105,7 @@ export function displayPrivMsg(data) {
 		element.addEventListener("click", () => {
 			AddToFriend(data.id, element)
 		})
-		const svg = mainBoxHeader.children[2].children[0]
+		const svg = mainBoxHeader.querySelector('svg')
 		updateblockIcon(svg.parentElement)
 		svg.addEventListener("click", () => {
 			BlockUser(data.id, svg.parentElement)
@@ -112,7 +114,7 @@ export function displayPrivMsg(data) {
 
 	function updateblockIcon(parent)
 	{
-		if (parent.classList.contains('blocked'))
+		if (parent.classList.contains('blocked')) 
 			parent.children[0].innerHTML = '<svg viewBox="0 0 24 24" style="fill: rgba(0, 255, 0, 1);transform: ;msFilter:; xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.144"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M5.63604 18.364C9.15076 21.8787 14.8492 21.8787 18.364 18.364C21.8787 14.8492 21.8787 9.15076 18.364 5.63604C14.8492 2.12132 9.15076 2.12132 5.63604 5.63604C2.12132 9.15076 2.12132 14.8492 5.63604 18.364ZM7.80749 17.6067C10.5493 19.6623 14.4562 19.4433 16.9497 16.9497C19.4433 14.4562 19.6623 10.5493 17.6067 7.80749L14.8284 10.5858C14.4379 10.9763 13.8047 10.9763 13.4142 10.5858C13.0237 10.1953 13.0237 9.5621 13.4142 9.17157L16.1925 6.39327C13.4507 4.33767 9.54384 4.55666 7.05025 7.05025C4.55666 9.54384 4.33767 13.4507 6.39327 16.1925L9.17157 13.4142C9.5621 13.0237 10.1953 13.0237 10.5858 13.4142C10.9763 13.8047 10.9763 14.4379 10.5858 14.8284L7.80749 17.6067Z" fill="#2ec27e"></path> </g></svg>'
 		else
 			parent.children[0].innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="fill: rgba(255, 0, 0, 1);transform: ;msFilter:;"><path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zM4 12c0-1.846.634-3.542 1.688-4.897l11.209 11.209A7.946 7.946 0 0 1 12 20c-4.411 0-8-3.589-8-8zm14.312 4.897L7.103 5.688A7.948 7.948 0 0 1 12 4c4.411 0 8 3.589 8 8a7.954 7.954 0 0 1-1.688 4.897z"></path></svg>'
@@ -139,7 +141,7 @@ export function displayPrivMsg(data) {
 
 	function initPrvMsgBody(id) {
 		let html =
-			'<div class="conversation_wrapper">' +
+			'<div class="conversation_body">' +
 			'<ul class="conversation"></ul>' +
 			'</div>' +
 			'<div class="sendbox">' +
