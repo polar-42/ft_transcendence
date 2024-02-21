@@ -108,7 +108,7 @@ export function init_objects()
 	camera = new THREE.PerspectiveCamera(75, WIDTH / HEIGHT, 0.1, 1000);
 	camera.position.z = 6;
 
-	renderer = new THREE.WebGLRenderer();
+	renderer = new THREE.WebGLRenderer( { antialias : false } );
 	renderer.setSize(WIDTH, HEIGHT);
 	var originalWarning = console.warn; // back up the original method
 	console.warn = function(){};
@@ -119,21 +119,48 @@ export function init_objects()
 	scene.background = texture;
 	console.warn = originalWarning;
 
-	var wallGeometry = new THREE.PlaneGeometry(22, 3);
+	var wallGeometry = new THREE.BoxGeometry(22, 3);
+// 
+	// var wallUp = new Reflector( wallGeometry, {
+		// textureWidth: 250 ,
+		// textureHeight: 50 ,
+		// color: new THREE.Color(0x7f7f7f)
+	// } );
 
-	var wallUp = new Reflector( wallGeometry, {
-		textureWidth: 250 ,
-		textureHeight: 50 ,
-		color: new THREE.Color(0x7f7f7f)
-	} );
+	var wall_m = new THREE.MeshPhysicalMaterial({
+		reflectivity : 0.3,
+		transmission : 1.0,
+		roughness : 0.8,
+		clearcoat : 0.3,
+		clearcoatRoughness : 0.25,
+		ior : 1.2,
+		thickness : 10.0,
+		side : THREE.BackSide,
+		color : new THREE.Color(0x1000000),
+	});
+
+	var wallUp = new THREE.Mesh(wallGeometry, wall_m)
 	wallUp.position.y = 3.8;
 	wallUp.rotation.x = Math.PI / 180 * 90 ;
-
-	var wallDown = new Reflector( wallGeometry, {
-		textureWidth: 250 ,
-		textureHeight: 50 ,
-		color: new THREE.Color(0x7f7f7f)
-	} );
+	wallUp.renderOrder = 1
+	// var wallDown = new Reflector( wallGeometry, {
+		// textureWidth: 250 ,
+		// textureHeight: 50 ,
+		// color: new THREE.Color(0x7f7f7f)
+	// } );
+	// var wallDown_m = new THREE.MeshPhysicalMaterial({
+		// reflectivity : 0.3,
+		// transmission : 1.0,
+		// roughness : 0.8,
+		// clearcoat : 0.3,
+		// clearcoatRoughness : 0.25,
+		// ior : 1.2,
+		// thickness : 10.0,
+		// side : THREE.BackSide,
+		// color : new THREE.Color(0xff0000),
+	// });
+	var wallDown = new THREE.Mesh(wallGeometry, wall_m)
+	wallDown.renderOrder = 1
 	wallDown.position.y = -3.8;
 	wallDown.rotation.x = Math.PI / 180 * -90 ;
 
@@ -144,8 +171,8 @@ export function init_objects()
 
 	var g_paddle1 = new THREE.BoxGeometry(0.2, 2., 2.);
 	var g_paddle2 = new THREE.BoxGeometry(0.2, 2., 2.);
-	var m_paddle1 = 	new THREE.MeshPhysicalMaterial({
-		reflectivity : 0.3,
+	var m_paddle1 = new THREE.MeshPhysicalMaterial({
+		// reflectivity : 0.3,
 		transmission : 1.0,
 		roughness : 0.8,
 		clearcoat : 0.3,
@@ -162,7 +189,7 @@ export function init_objects()
 	scene.add(paddle1);
 
 	var m_paddle2 = 	new THREE.MeshPhysicalMaterial({
-		reflectivity : 0.3,
+		// reflectivity : 0.3,
 		side : THREE.BackSide,
 		transmission : 1.0,
 		roughness : 0.8,
@@ -183,7 +210,7 @@ export function init_objects()
 
 	var g_ball = new THREE.SphereGeometry(0.15, 32, 16)
 	var m_ball = new THREE.MeshPhysicalMaterial({
-		reflectivity : 0.1,
+		// reflectivity : 0.1,
 		transmission : 0.5,
 		roughness : 0.8,
 		clearcoat : 0.5,
@@ -333,6 +360,7 @@ export function animate() {
 	}
 	trail.update()
     renderer.render(scene, camera);
+	console.log("Number of Triangles :", renderer.info.render.triangles);
 }
 
 export function cameraShake() {
