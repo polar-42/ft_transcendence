@@ -545,267 +545,269 @@ export async function popUpPongGameStat(gameId)
           document.querySelector('.players_score').children[2].textContent = data.player2_score
           document.querySelector('.players_touched').children[1].textContent = 'Touched balls'
           document.querySelector('.players_touched').children[0].textContent = data.player1_number_ball_touch
-          document.querySelector('.players_touched').children[2].textContent = data.player2_number_ball_touch
-        })
-      .catch(error =>
-        {
-          console.error('Error:', error)
-          return
-        })
-  document.getElementById('player1_name').textContent = player1
-  document.getElementById('player2_name').textContent = player2
-  let res = await fetch(document.location.origin + '/dashboard/getPlayerImage/', {
-    method: 'POST',
-    headers: headers,
-    body: JSON.stringify({'gameId': gameId, 'playerNumber': '1', 'typeGame': '0'})
-  })
-  if (res.ok)
-  {
-    var vari = await res.blob()
-    if (vari.type == "image/png")
-    {
-      let img = document.getElementById('player_1_avatar')
-      img.src = URL.createObjectURL(vari)
-      img.addEventListener('click', function(e) {
-        navto("/profile/?id="+ player1_id)
-      })
-    }
-  }
+					document.querySelector('.players_touched').children[2].textContent = data.player2_number_ball_touch
+					document.getElementById('player1_name').textContent = player1
+					document.getElementById('player2_name').textContent = player2
+				})
+			.catch(error =>
+				{
+					console.error('Error:', error)
+					return
+				})
+	let res = await fetch(document.location.origin + '/dashboard/getPlayerImage/', {
+		method: 'POST',
+		headers: headers,
+		body: JSON.stringify({'gameId': gameId, 'playerNumber': '1', 'typeGame': '0'})
+	})
+	if (res.ok)
+	{
+		var vari = await res.blob()
+		if (vari.type == "image/png")
+		{
+			let img = document.getElementById('player_1_avatar')
+			img.src = URL.createObjectURL(vari)
+			img.addEventListener('click', function(e) {
+				navto("/profile/?id="+ player1_id)
+			})
+		}
+	}
 
-  res = await fetch(document.location.origin + '/dashboard/getPlayerImage/', {
-    method: 'POST',
-    headers: headers,
-    body: JSON.stringify({'gameId': gameId, 'playerNumber': '2', 'typeGame': '0'}),
-  })
-  if (res.ok)
-  {
-    var vari = await res.blob()
-    if (vari.type == "image/png")
-    {
-      let img = document.getElementById('player_2_avatar')
-      img.src = URL.createObjectURL(vari)
-      img.addEventListener('click', function(e) {
-        navto("/profile/?id=" + player2_id)
-      })
-    }
-  }
-  document.querySelector('.PopUp_wrapper').style.display = 'block';
-  document.querySelector('.GameStatPopUp').style.display = 'block';
+	res = await fetch(document.location.origin + '/dashboard/getPlayerImage/', {
+		method: 'POST',
+		headers: headers,
+		body: JSON.stringify({'gameId': gameId, 'playerNumber': '2', 'typeGame': '0'}),
+	})
+	if (res.ok)
+	{
+		var vari = await res.blob()
+		if (vari.type == "image/png")
+		{
+			let img = document.getElementById('player_2_avatar')
+			img.src = URL.createObjectURL(vari)
+			img.addEventListener('click', function(e) {
+				navto("/profile/?id=" + player2_id)
+			})
+		}
+	}
+	document.querySelector('.PopUp_wrapper').style.display = 'block';
+	document.querySelector('.GameStatPopUp').style.display = 'block';
 }
 
 export async function popUpBattleshipGameStat(gameId)
 {
 
-  document.getElementById('closePopUp').addEventListener('click', function() {
-    document.querySelectorAll('.PopUp_wrapper')[0].style.display = 'none';
-    document.querySelectorAll('.GameStatPopUp')[0].style.display = 'none';
-  })
+	document.getElementById('closePopUp').addEventListener('click', function() {
+		document.querySelectorAll('.PopUp_wrapper')[0].style.display = 'none';
+		document.querySelectorAll('.GameStatPopUp')[0].style.display = 'none';
+	})
 
 
 
-  var crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
-  let feedback = document.querySelector('.feedback')
-  var headers = new Headers()
-  headers.append('X-CSRFToken', crsf_token)
+	var crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
+	let feedback = document.querySelector('.feedback')
+	var headers = new Headers()
+	headers.append('X-CSRFToken', crsf_token)
 
-  let player1 = "";
-  let player2 = "";
-  let player1_id = "";
-  let player2_id = "";
+	let player1 = "";
+	let player2 = "";
+	let player1_id = "";
+	let player2_id = "";
 
-  fetch(document.location.origin + '/dashboard/getBattleshipSpecificGame/', {
-    method: 'POST',
-    headers: headers,
-    body: JSON.stringify({'gameId': gameId}),
-  })
-    .then(Response =>
-      {
-        if (!Response.ok)
-        {
-          throw new Error('Network response was not okay')
-        }
-        return Response.text()
-      })
-      .then(data =>
-        {
-          data = JSON.parse(data)
-          player1 = data.player1
-          player2 = data.player2
-          player1_id = data.player1_id
-          player2_id = data.player2_id
+	fetch(document.location.origin + '/dashboard/getBattleshipSpecificGame/', {
+		method: 'POST',
+		headers: headers,
+		body: JSON.stringify({'gameId': gameId}),
+	})
+		.then(Response =>
+			{
+				if (!Response.ok)
+				{
+					throw new Error('Network response was not okay')
+				}
+				return Response.text()
+			})
+			.then(data =>
+				{
+					data = JSON.parse(data)
+					player1 = data.player1
+					player2 = data.player2
+					player1_id = data.player1_id
+					player2_id = data.player2_id
 
-          document.querySelector('#boxTime p').textContent = data.date
-          document.querySelector('.players_score').children[0].textContent = data.player1_score 
-          document.querySelector('.players_score').children[2].textContent = data.player2_score
-          document.querySelector('.players_touched').children[1].textContent = 'Accuracy'
-          document.querySelector('.players_touched').children[0].textContent = data.player1_accuracy + '%'
-          document.querySelector('.players_touched').children[2].textContent = data.player2_accuracy + '%'
-        })
-      .catch(error =>
-        {
-          console.error('Error:', error)
-          //navto("/")
-        })
+					document.querySelector('#player1_name').textContent = player1
+					document.querySelector('#player2_name').textContent = player2
+					document.querySelector('#boxTime p').textContent = data.date
+					document.querySelector('.players_score').children[0].textContent = data.player1_score 
+					document.querySelector('.players_score').children[2].textContent = data.player2_score
+					document.querySelector('.players_touched').children[1].textContent = 'Accuracy'
+					document.querySelector('.players_touched').children[0].textContent = data.player1_accuracy + '%'
+					document.querySelector('.players_touched').children[2].textContent = data.player2_accuracy + '%'
+				})
+			.catch(error =>
+				{
+					console.error('Error:', error)
+					//navto("/")
+				})
 
-  let res = await fetch(document.location.origin + '/dashboard/getPlayerImage/', {
-    method: 'POST',
-    headers: headers,
-    body: JSON.stringify({'gameId': gameId, 'playerNumber': '1', 'typeGame': '1'})
-  })
-  if (res.ok)
-  {
-    var vari = await res.blob()
-    if (vari.type == "image/png")
-    {
-      let img = document.getElementById('player_1_avatar')
-      img.src = URL.createObjectURL(vari)
-      img.addEventListener('click', function(e) {
-        navto("/profile/?id=" + player1_id)
-      })
-    }
-  }
+	let res = await fetch(document.location.origin + '/dashboard/getPlayerImage/', {
+		method: 'POST',
+		headers: headers,
+		body: JSON.stringify({'gameId': gameId, 'playerNumber': '1', 'typeGame': '1'})
+	})
+	if (res.ok)
+	{
+		var vari = await res.blob()
+		if (vari.type == "image/png")
+		{
+			let img = document.getElementById('player_1_avatar')
+			img.src = URL.createObjectURL(vari)
+			img.addEventListener('click', function(e) {
+				navto("/profile/?id=" + player1_id)
+			})
+		}
+	}
 
-  res = await fetch(document.location.origin + '/dashboard/getPlayerImage/', {
-    method: 'POST',
-    headers: headers,
-    body: JSON.stringify({'gameId': gameId, 'playerNumber': '2', 'typeGame': '1'}),
-  })
-  if (res.ok)
-  {
-    var vari = await res.blob()
-    if (vari.type == "image/png")
-    {
-      let img = document.getElementById('player_2_avatar')
-      img.src = URL.createObjectURL(vari)
-      img.addEventListener('click', function(e) {
-        navto("/profile/?id=" + player2_id)
-      })
-    }
-  }
-  document.querySelectorAll('.PopUp_wrapper')[0].style.display = 'block';
-  document.querySelectorAll('.GameStatPopUp')[0].style.display = 'block';
+	res = await fetch(document.location.origin + '/dashboard/getPlayerImage/', {
+		method: 'POST',
+		headers: headers,
+		body: JSON.stringify({'gameId': gameId, 'playerNumber': '2', 'typeGame': '1'}),
+	})
+	if (res.ok)
+	{
+		var vari = await res.blob()
+		if (vari.type == "image/png")
+		{
+			let img = document.getElementById('player_2_avatar')
+			img.src = URL.createObjectURL(vari)
+			img.addEventListener('click', function(e) {
+				navto("/profile/?id=" + player2_id)
+			})
+		}
+	}
+	document.querySelectorAll('.PopUp_wrapper')[0].style.display = 'block';
+	document.querySelectorAll('.GameStatPopUp')[0].style.display = 'block';
 }
 
 export function displayPlayerNickname(e, playerNickname, num, value)
 {
-  if (value == true)
-  {
-    if (num == 1)
-    {
-      let tooltip = document.getElementById('tooltip_player1')
-      tooltip.style.display = 'inline-block'
-      tooltip.innerText = playerNickname
-    }
-    else if (num == 2)
-    {
-      document.getElementById('tooltip_player2').style.display = 'inline-block'
-      document.getElementById('tooltip_player2').innerText = playerNickname
-    }
-    else
-    {
-      document.getElementById('tooltip_winnerTournament').style.display = 'block'
-      document.getElementById('tooltip_winnerTournament').innerText = playerNickname
-    }
-  }
-  else
-  {
-    document.getElementById('tooltip_player1').style.display = 'none'
-    document.getElementById('tooltip_player2').style.display = 'none'
-    document.getElementById('tooltip_winnerTournament').style.display = 'none'
-  }
+	if (value == true)
+	{
+		if (num == 1)
+		{
+			let tooltip = document.getElementById('tooltip_player1')
+			tooltip.style.display = 'inline-block'
+			tooltip.innerText = playerNickname
+		}
+		else if (num == 2)
+		{
+			document.getElementById('tooltip_player2').style.display = 'inline-block'
+			document.getElementById('tooltip_player2').innerText = playerNickname
+		}
+		else
+		{
+			document.getElementById('tooltip_winnerTournament').style.display = 'block'
+			document.getElementById('tooltip_winnerTournament').innerText = playerNickname
+		}
+	}
+	else
+	{
+		document.getElementById('tooltip_player1').style.display = 'none'
+		document.getElementById('tooltip_player2').style.display = 'none'
+		document.getElementById('tooltip_winnerTournament').style.display = 'none'
+	}
 }
 
 export async function popUpTournamentStat(tournamentId) {
 
 
-  document.getElementById('closeTournamentPopUp').addEventListener('click', function() {
-    document.querySelectorAll('.PopUp_wrapper')[0].style.display = 'none';
-    document.querySelectorAll('.TournamentStatPopUp')[0].style.display = 'none';
-  })
+	document.getElementById('closeTournamentPopUp').addEventListener('click', function() {
+		document.querySelectorAll('.PopUp_wrapper')[0].style.display = 'none';
+		document.querySelectorAll('.TournamentStatPopUp')[0].style.display = 'none';
+	})
 
 
-  var crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
-  var headers = new Headers()
-  headers.append('X-CSRFToken', crsf_token)
+	var crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
+	var headers = new Headers()
+	headers.append('X-CSRFToken', crsf_token)
 
-  let winner = "";
-  let winner_id = "";
+	let winner = "";
+	let winner_id = "";
 
-  fetch(document.location.origin + '/dashboard/getTournamentStat/', {
-    method: 'POST',
-    headers: headers,
-    body: JSON.stringify({tournamentId: tournamentId}),
-  })
-    .then(Response =>
-      {
-        if (!Response.ok)
-        {
-          throw new Error('Network response was not okay')
-        }
-        return Response.text()
-      })
-      .then(data =>
-        {
-          data = JSON.parse(data)
-          winner = data.winner
-          winner_id = data.winner_id
-          
-          document.querySelector('.tournament_name').textContent = data.name
-          document.getElementById('boxTimeTournament').textContent = data.date
-          document.getElementById('tournamentDescription').textContent = data.description
-          document.querySelector('#tournamentWinner p').textContent = data.winner
-          displayPlayerList(data.players)
-        })
-      .catch(error =>
-        {
-          console.error('Error:', error)
-          return
-        })
+	fetch(document.location.origin + '/dashboard/getTournamentStat/', {
+		method: 'POST',
+		headers: headers,
+		body: JSON.stringify({tournamentId: tournamentId}),
+	})
+		.then(Response =>
+			{
+				if (!Response.ok)
+				{
+					throw new Error('Network response was not okay')
+				}
+				return Response.text()
+			})
+			.then(data =>
+				{
+					data = JSON.parse(data)
+					winner = data.winner
+					winner_id = data.winner_id
 
-  let res = await fetch(document.location.origin + '/dashboard/getPlayerImage/', {
-    method: 'POST',
-    headers: headers,
-    body: JSON.stringify({tournamentId: tournamentId, 'typeGame': '2'})
-  })
-  if (res.ok)
-  {
-    var vari = await res.blob()
-    if (vari.type == "image/png")
-    {
-      let img = document.querySelector('#tournamentWinner img')
-      img.src = URL.createObjectURL(vari)
-      img.addEventListener('click', function(e) {
-        navto("/profile/?id=" + winner_id)
-      })
-    }
-  }
-  document.querySelectorAll('.PopUp_wrapper')[0].style.display = 'block';
-  document.querySelectorAll('.TournamentStatPopUp')[0].style.display = 'block';
+					document.querySelector('.tournament_name').textContent = data.name
+					document.getElementById('boxTimeTournament').textContent = data.date
+					document.getElementById('tournamentDescription').textContent = data.description
+					document.querySelector('#tournamentWinner p').textContent = data.winner
+					displayPlayerList(data.players)
+				})
+			.catch(error =>
+				{
+					console.error('Error:', error)
+					return
+				})
+
+	let res = await fetch(document.location.origin + '/dashboard/getPlayerImage/', {
+		method: 'POST',
+		headers: headers,
+		body: JSON.stringify({tournamentId: tournamentId, 'typeGame': '2'})
+	})
+	if (res.ok)
+	{
+		var vari = await res.blob()
+		if (vari.type == "image/png")
+		{
+			let img = document.querySelector('#tournamentWinner img')
+			img.src = URL.createObjectURL(vari)
+			img.addEventListener('click', function(e) {
+				navto("/profile/?id=" + winner_id)
+			})
+		}
+	}
+	document.querySelectorAll('.PopUp_wrapper')[0].style.display = 'block';
+	document.querySelectorAll('.TournamentStatPopUp')[0].style.display = 'block';
 }
 
 async function displayPlayerList(players) {
-  let playerList = document.querySelector('.players_list')
+	let playerList = document.querySelector('.players_list')
 
-  for (let i in players) {
-    let avatar = await getProfilePicture({'type': 'user', 'id': players[i].id})
-    if (avatar.type == 'image/null')
-      avatar = 'static/assets/logo/user.png'
-    else
-      avatar = URL.createObjectURL(avatar)
+	for (let i in players) {
+		let avatar = await getProfilePicture({'type': 'user', 'id': players[i].id})
+		if (avatar.type == 'image/null')
+			avatar = 'static/assets/logo/user.png'
+		else
+			avatar = URL.createObjectURL(avatar)
 
-    let elem = document.createElement('li')
-    elem.appendChild(document.createElement('img'))
-    elem.children[0].src = avatar
-    elem.children[0].alt = 'Player avatar'
-    elem.appendChild(document.createElement('p'))
-    elem.children[1].textContent = players[i].name
-    playerList.appendChild(elem)
-  }
+		let elem = document.createElement('li')
+		elem.appendChild(document.createElement('img'))
+		elem.children[0].src = avatar
+		elem.children[0].alt = 'Player avatar'
+		elem.appendChild(document.createElement('p'))
+		elem.children[1].textContent = players[i].name
+		playerList.appendChild(elem)
+	}
 } 
 
 export function cleanStats() {
-  let lists = document.querySelectorAll('ul')
-  lists[0].innerHTML = ''
-  lists[1].innerHTML = ''
-  document.querySelector('.otherStat').firstChild.remove()
+	let lists = document.querySelectorAll('ul')
+	lists[0].innerHTML = ''
+	lists[1].innerHTML = ''
+	document.querySelector('.otherStat').firstChild.remove()
 }

@@ -486,9 +486,15 @@ def getBattleshipSpecificGame(request):
 
 			dateGameTab = str(game.time).split(' ')
 			dateGame = dateGameTab[0] + ' ' + dateGameTab[1][:5]
-			player1_accuracy = 	(game.player1_hit/game.player1_try) * 100
-			player2_accuracy = 	(game.player2_hit/game.player2_try) * 100
-			
+			if (game.player1_try != 0):
+				player1_accuracy = 	(game.player1_hit/game.player1_try) * 100
+			else:
+				player1_accuracy = 0
+			if (game.player2_try != 0):
+				player2_accuracy = 	(game.player2_hit/game.player2_try) * 100
+			else:
+				player2_accuracy = 0
+
 			return JsonResponse({
 				'player1': player1.nickname,
 				'player2': player2.nickname,
