@@ -271,6 +271,7 @@ export function addBattleshipClassicMatch()
   {
     url.searchParams.append('userid', window.location.search.substring(window.location.search.indexOf('=') + 1));
   }
+  console.log(url)
 
   fetch(url, {
     method: 'GET'
@@ -285,6 +286,7 @@ export function addBattleshipClassicMatch()
       })
       .then(data =>
         {
+          console.log(data)
           let matchs = JSON.parse(data).classicMatchs
           let matchList = document.getElementById('dash_listClassicMatch')
 
@@ -801,7 +803,7 @@ async function displayPlayerList(players) {
   }
 } 
 
-function cleanStats() {
+export function cleanStats() {
   let lists = document.querySelectorAll('ul')
   lists[0].innerHTML = ''
   lists[1].innerHTML = ''

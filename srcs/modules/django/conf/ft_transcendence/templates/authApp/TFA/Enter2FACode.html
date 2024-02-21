@@ -1,7 +1,8 @@
 {% block Login_TFA_Auth %}
 {% csrf_token %}
-<div class="input-box">
-	<!-- <input type="text" > -->
-    <input type="text" id="Input_code" required placeholder="auth code" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');" /><br />
+<div class="input-box TFA">
+  <!-- <input type="text" > -->
+  <label for='2FA_code'>Authentification code</label>
+  <input type="text" id="Input_code" name="2FA_code" required placeholder="Authentification code" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');" /><br />
 </div>
 {% endblock Login_TFA_Auth %}

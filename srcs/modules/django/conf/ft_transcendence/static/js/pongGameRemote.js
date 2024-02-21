@@ -3,11 +3,12 @@ import { Reflector } from "../threejs_addons/Reflector.js";
 import { TrailRenderer } from "../threejs_addons/TrailRenderer.js";
 import { CSS2DRenderer, CSS2DObject } from "../threejs_addons/CSS2DRenderer.js";
 import * as THREE from 'https://threejs.org/build/three.module.js';
+import { getProfilePicture, sleep } from "./chatApp/CA_General.js";
 
 var pongGameSocket = null;
 var gameId = null;
 
-let WIDTH = document.body.clientWidth * 0.75;
+let WIDTH = document.body.clientWidth * 0.62;
 let HEIGHT = WIDTH * (9. / 16.);
 var frames_to_shake = 0;
 var BcameraShake = false;
@@ -27,23 +28,30 @@ var isCountingDown = false;
 export function countdown()
 {
 	isCountingDown = true;
-	textElement.textContent = "3";
+	if (isCountingDown == true)
+		textElement.textContent = "3";
 	setTimeout(function(){
-		textElement.textContent = "2";
+		if (isCountingDown == true)
+			textElement.textContent = "2";
 	}, 1000);
 	setTimeout(function(){
-		textElement.textContent = "1";
+		if (isCountingDown == true)
+			textElement.textContent = "1";
 	}, 2000);
 	setTimeout(function(){
-		textElement.textContent = "GO!";
+		if (isCountingDown == true)
+			textElement.textContent = "GO!";
 	}, 3000);
 	setTimeout(function(){
-		textElement.textContent = "";
+		if (isCountingDown == true)
+			textElement.textContent = "";
 	}, 4000);
 	setTimeout(function(){
 		isCountingDown = false;
 	}, 4000);
 }
+
+var arg = null;
 
 export function initGamePong()
 {
@@ -57,7 +65,7 @@ export function initGamePong()
 		navto('/games')
 		return
 	}
-	var arg = null
+	arg = null
 	if (window.location.search != '')
 		arg = window.location.search.substring(window.location.search.indexOf('=') + 1)
 	if (arg == null)
@@ -174,7 +182,7 @@ function init_objects()
 	paddle2.rotation.x = Math.PI / 180 * 90;
 	scene.add(paddle2);
 
-	
+
 
 	var g_ball = new THREE.SphereGeometry(0.15, 32, 16)
 	var m_ball = new THREE.MeshPhysicalMaterial({
@@ -205,14 +213,14 @@ function init_objects()
 
 
 	const trailHeadGeometry = [];
-	trailHeadGeometry.push( 
-	new THREE.Vector3( -0.1, -0.1, -0.1 ), 
-	new THREE.Vector3( 0.0, 0.0, 0.0 ), 
-	new THREE.Vector3( 0.1, 0.1, 0.1 ) 
+	trailHeadGeometry.push(
+	new THREE.Vector3( -0.1, -0.1, -0.1 ),
+	new THREE.Vector3( 0.0, 0.0, 0.0 ),
+	new THREE.Vector3( 0.1, 0.1, 0.1 )
 	);
 	trail = new TrailRenderer( scene, false );
 	trail.setAdvanceFrequency(30);
-	const trailMaterial = TrailRenderer.createBaseMaterial();	
+	const trailMaterial = TrailRenderer.createBaseMaterial();
 	const trailLength = 10;
 	trail.initialize( trailMaterial, trailLength, false, 0, trailHeadGeometry, ball );
 	trail.activate();
@@ -323,11 +331,11 @@ function doKeyUp(e)
 function LaunchGame()
 {
 	init_objects();
-	canvas = document.getElementById("app");
+	canvas = document.querySelector(".pongWindow");
 	three_box = document.createElement("div");
 	three_box.style.width = WIDTH + 8 + "px";
 	three_box.style.height = HEIGHT + 8 + "px";
-	three_box.style.border = '4px solid #ccc';
+	//three_box.style.border = '4px solid #ccc';
 	three_box.style.position = "relative";
 	three_box.appendChild(renderer.domElement);
 	canvas.appendChild(three_box);
@@ -356,11 +364,11 @@ function LaunchGame()
 	textElement.style.transform = "translate(-50%, -50%)"; // Adjust position to center properly
 	textElement.style.zIndex = "1"; // Ensure it's above other content
 	textElement.style.padding = "10px"; // Example padding for better visualization
-	
+
 	three_box.appendChild(textElement);
 	console.log('Pong Game vs ia is launch');
 	window.onresize = function () {
-		WIDTH = document.body.clientWidth * 0.75;
+		WIDTH = document.body.clientWidth * 0.62;
 		HEIGHT = WIDTH * (9. / 16.);
 		three_box.style.width = WIDTH + 8 + "px";
 		three_box.style.height = HEIGHT + 8 + "px";
@@ -368,44 +376,116 @@ function LaunchGame()
 		textElement.style.fontSize = HEIGHT / 10 + "px";
 		camera.aspect = WIDTH / HEIGHT;
 		camera.updateProjectionMatrix();
-	
+
 		renderer.setSize( WIDTH, HEIGHT );
-	
+
 	};
 	animate();
 }
 
-function FinishGame(event)
+let player1_id = undefined;
+let player2_id = undefined;
+
+async function getPlayersData(player1, player2)
+{
+	if (pongGameSocket == undefined || pongGameSocket.readyState !== WebSocket.OPEN || player1_id != undefined || player2_id != undefined)
+	{
+		return
+	}
+	player1_id = player1
+	player2_id = player2
+
+	let profilePicture = await getProfilePicture({ 'type': 'user', 'id': player1 })
+	let ppUrl
+	if (profilePicture.type == 'image/null')
+		ppUrl = "../static/assets/logo/user.png"
+	else
+		ppUrl = URL.createObjectURL(profilePicture)
+	if (document.getElementById('ppPlayer1') == undefined)
+		return
+	document.getElementById('ppPlayer1').src = ppUrl;
+
+	profilePicture = await getProfilePicture({ 'type': 'user', 'id': player2 })
+	if (profilePicture.type == 'image/null')
+		ppUrl = "../static/assets/logo/user.png"
+	else
+		ppUrl = URL.createObjectURL(profilePicture)
+	if (document.getElementById('ppPlayer2') == undefined)
+		return
+	document.getElementById('ppPlayer2').src = ppUrl;
+
+	let url = new URL(document.location.origin + '/authApp/GET/getUserNameById')
+	url.searchParams.append('userId', player1);
+    let res = await fetch(url, {
+        method: 'GET'
+    })
+	if (res.ok)
+    {
+        var vari = await res.json()
+		console.log(vari.userName)
+		if (document.getElementById('gamePlayer1') == undefined)
+			return
+		document.getElementById('gamePlayer1').innerHTML += vari.userName;
+	}
+
+	url = new URL(document.location.origin + '/authApp/GET/getUserNameById')
+	url.searchParams.append('userId', player2);
+    res = await fetch(url, {
+        method: 'GET'
+    })
+	if (res.ok)
+    {
+        var vari = await res.json()
+		console.log(vari.userName)
+		if (document.getElementById('gamePlayer2') == undefined)
+			return
+		document.getElementById('gamePlayer2').innerHTML += vari.userName;
+	}
+}
+
+async function FinishGame(event)
 {
 	scoreDisplay.remove()
 	renderer.domElement.style.filter = "blur(5px)"
 	console.log('Pong game is finish');
-		
 	if (event.code == 3001)
 	{
 		pongGameSocket = null;
 		navto('/games')
 		return
 	}
+	isCountingDown = false
+	player1_id = undefined;
+	player2_id = undefined;
 }
 
 function FinishGameByScore(data)
 {
 	console.log(data)
+	isCountingDown = false
 	if (data.playerone_score >= 3 || data.playertwo_score >= 3)
 	{
 		scoreDisplay.textContent = data.playertwo_score + " - " + data.playerone_score;
-		if (data.playerone_score == 3) {
-			textElement.textContent = "You lose...\r\n";
-			textElement.textContent += data.playertwo_score + " - " + data.playerone_score;
-			three_box.style.border = '4px solid #0000ff';
-		} else {
+		if (data.winner == 'you') {
 			textElement.textContent = "You Win!\r\n";
-			textElement.textContent += data.playertwo_score + " - " + data.playerone_score;
+			if (data.youare == 'p1')
+				textElement.textContent += data.playerone_score + " - " + data.playertwo_score;
+			else
+				textElement.textContent += data.playertwo_score + " - " + data.playerone_score;
 			three_box.style.border = '4px solid #ff0000';
+		} else {
+			textElement.textContent = "You lose...\r\n";
+			if (data.youare == 'p1')
+				textElement.textContent += data.playerone_score + " - " + data.playertwo_score;
+			else
+				textElement.textContent += data.playertwo_score + " - " + data.playerone_score;
+			three_box.style.border = '4px solid #ff0000';
+			three_box.style.border = '4px solid #0000ff';
 		}
 	}
-	pongGameSocket = null
+	pongGameSocket = null;
+	player1_id = undefined;
+	player2_id = undefined;
 }
 
 function returnToTournament(id)
@@ -425,6 +505,7 @@ function OnMessage(e)
 	}
 	else if (data.type == 'countdown')
 	{
+		getPlayersData(data.player1_id, data.player2_id)
 		countdown();
 	}
 	else if (data.type == 'game_timer')

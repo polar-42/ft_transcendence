@@ -115,7 +115,8 @@ class chatSocket(WebsocketConsumer):
 				self.channel_name
 		)
 
-		self.allUsers.pop(self.id)
+		if self.id in self.allUsers.keys():
+			self.allUsers.pop(self.id)
 
 		self.updateConnexionStatus()
 		global UsersSockets

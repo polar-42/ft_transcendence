@@ -170,7 +170,6 @@ async function connect(event) {
 
 function TFALogin() {
 	const crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
-
 	var headers = new Headers()
 	headers.append('Content-Type', 'application/json')
 	headers.append('X-CSRFToken', crsf_token)
@@ -188,10 +187,15 @@ function TFALogin() {
 			const container = document.querySelector(".login_container")
 			container.querySelector("form").remove()
 			container.firstElementChild.insertAdjacentHTML("afterend", text)
+      container.querySelector('#Input_code').focus()
 			container.querySelector(".submit_BTN").removeEventListener("click", connect)
 			container.querySelector(".submit_BTN").addEventListener("click", () => {
 				sendTFACode(container)
 			})
+      container.querySelector("#Input_code").addEventListener('keypress', (e) => {
+        if (e.key == 'Enter')
+          sendTFACode(container)
+      })
 		})
 }
 

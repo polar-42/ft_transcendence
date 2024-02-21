@@ -1,7 +1,7 @@
 import { navto } from "../index.js"
 import { initChat  } from "../chatApp/CA_General.js";
 import { initProfileButton } from "../authApp.js";
-import { unsetChatbox } from "../chatApp/CA_General.js";
+import { unsetChatbox, sleep } from "../chatApp/CA_General.js";
 
 export function initUpdateAccount() {
 	avatarButtonFunction() //TO CHANGE
@@ -60,13 +60,16 @@ function Handle2FaToggle(checkbox) {
 		}
 		document.querySelector("#app").lastElementChild.insertAdjacentHTML("afterend", texted)
 		const doc = document.querySelector("#app").lastElementChild
+		document.querySelector('.TFA_submit .cancel_BTN').addEventListener('click', () => {
+			ClosePopUp()
+		})
 		return doc
 	})
 	.then(doc => {
 		Effective2Fa(doc, TFARequestType)
 	})
 	.catch(error => {
-		// console.log(error)
+		console.log(error)
 	})
 }
 
@@ -88,12 +91,13 @@ function Effective2Fa(doc, TFARequestType) {
 		})
 		.then(texted => {
 			content.innerHTML = texted
-			content.querySelector('.submit_BTN').addEventListener('click', () => {
-				VerifyPass(content, TFARequestType)
-			})
-			content.querySelector('.cancel_BTN').addEventListener('click', () => {
-				ClosePopUp()
-			})
+      document.querySelector(".TFA_Content #Input_pwd").focus()
+      console.log('content:' + content + ', request type:' + TFARequestType) 
+			document.querySelector('.TFA_submit .submit_BTN').addEventListener('click', VerifyPass.bind(null, content, TFARequestType))
+			document.querySelector('.TFA_Content #Input_pwd').addEventListener('keypress', (e) => {
+        if (e.key == 'Enter')
+          VerifyPass(content, TFARequestType)
+      })
 		})
 		.catch(error => {
 			console.error(error)
@@ -101,12 +105,11 @@ function Effective2Fa(doc, TFARequestType) {
 }
 
 function VerifyPass(content, TFARequestType) {
-
 	const crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
 	var header = new Headers()
 	header.append('Content-Type', 'application/json')
 	header.append('X-CSRFToken', crsf_token)
-	const data = { password: content.querySelector('#Input_pwd').value }
+	const data = { password: document.querySelector('.TFA_PopUp #Input_pwd').value }
 	content.querySelector('#messageError').text = ""
 	fetch(document.location.origin + "/authApp/TFA/CheckPass",
 		{
@@ -171,7 +174,10 @@ function Disable2FARequest(content, text)
 
 function Select2FA(content)
 {
-	content.querySelector('.submit_BTN').removeEventListener('click', VerifyPass)
+  var btn = document.querySelector('.TFA_submit .submit_BTN')
+  var btnClone = btn.cloneNode(true)
+  btn.parentNode.replaceChild(btnClone, btn)
+	document.querySelector('.TFA_submit .submit_BTN').removeEventListener('click', VerifyPass)
 	fetch(window.location.origin + "/authApp/TFA/ChooseType")
 	.then(Response => {
 		if (!Response.ok) {
@@ -179,132 +185,126 @@ function Select2FA(content)
 		}
 		return Response.text()
 	})
-	.then(texted => {
-		content.innerHTML = texted
-		selected = undefined
-		const list = content.querySelectorAll(".selector_button")
-		list.forEach(Element =>{
-			Element.addEventListener("click", () => {
-				SelectorButtonBehavior(list, Element, content)
-			})
-		})
-		content.querySelector('.submit_BTN').addEventListener('click', () => {
-			ChooseAuth(content)
-		})
-		content.querySelector('.cancel_BTN').addEventListener('click', () => {
-			ClosePopUp()
-		})
-	})
-	.catch(error => {
-		console.error(error)
-	})
+    .then(texted => {
+      content.innerHTML = texted
+      const list = content.querySelectorAll(".selector_button")
+      list.forEach(Element =>{
+        Element.addEventListener("click", () => {
+          SelectorButtonBehavior(list, Element, content)
+        })
+      })
+      document.querySelector('.TFA_submit .submit_BTN').addEventListener('click', ChooseAuth.bind(null, content))
+    })
+    .catch(error => {
+      console.error(error)
+    })
 }
 
 function SelectorButtonBehavior(list, self, content)
 {
-	if (self.classList.contains("selected_BTN") == false)
-	{
-		selected = self.id
-		self.classList.add("selected_BTN")
-		list.forEach(Element => {
-			if (Element != self && Element.classList.contains("selected_BTN") == true)
-			{
-				Element.classList.remove("selected_BTN")
-			}
-		})
-	}
-	if (selected != undefined)
-		content.querySelector('.submit_BTN').removeAttribute("disabled")
-	else
-		content.querySelector('.submit_BTN').addAttribute("disabled")
+  if (self.classList.contains("selected_BTN") == false)
+  {
+    selected = self.id
+    self.classList.add("selected_BTN")
+    list.forEach(Element => {
+      if (Element != self && Element.classList.contains("selected_BTN") == true)
+        Element.classList.remove("selected_BTN")
+    })
+  }
+  if (selected != undefined)
+    document.querySelector('.TFA_PopUp .submit_BTN').removeAttribute("disabled")
+  else
+    document.querySelector('.TFA_PopUp .submit_BTN').addAttribute("disabled")
 }
 
 function ChooseAuth(content)
 {
-	if (selected == undefined)
-		return
-	const crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
-	var header = new Headers()
-	header.append('Content-Type', 'application/json')
-	header.append('X-CSRFToken', crsf_token)
-	const data = { selectedAuth: selected }
-	fetch(document.location.origin + "/authApp/TFA/Selected",
-	{
-		method: 'POST',
-		headers: header,
-		body: JSON.stringify(data)
-	})
-	.then(Response => {
-		if (!Response.ok)
-		{
-			throw new Error('Network response was not okay')
-		}
-		return Response.text()
-	})
-	.then(data => {
-		content.innerHTML = data
-		if (selected == 0)
-		{
-			QrAuth(content)
-		}
-	})
+  if (selected == undefined)
+    return
+  const crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
+  var header = new Headers()
+  header.append('Content-Type', 'application/json')
+  header.append('X-CSRFToken', crsf_token)
+  const data = { selectedAuth: selected }
+  fetch(document.location.origin + "/authApp/TFA/Selected",
+    {
+      method: 'POST',
+      headers: header,
+      body: JSON.stringify(data)
+    })
+    .then(Response => {
+      if (!Response.ok)
+      {
+        throw new Error('Network response was not okay')
+      }
+      return Response.text()
+    })
+    .then(data => {
+      content.innerHTML = data
+      if (selected == 0)
+      {
+        QrAuth(content)
+      }
+    })
 }
 
 function QrAuth(content)
 {
-	document.querySelector(".TFA_PopUp_Container .TFA_PopUp").classList.add("TFA_qrContent")
-	fetch(window.location.origin + "/authApp/TFA/RequestQR")
-	.then(Response => {
-		if (!Response.ok) {
-			throw new Error('Network response was not okay')
-		}
-		return Response.json()
-	})
-	.then(data => {
-		content.querySelector(".qrDisplayer").src = data.qr
-		content.querySelector(".submit_BTN").addEventListener("click", () => {
-			SendQrAnswer(content, content.querySelector("#Input_code"))
-		})
-		content.querySelector('.cancel_BTN').addEventListener('click', () => {
-			ClosePopUp()
-		})
-	})
+  document.querySelector(".TFA_PopUp_Container .TFA_PopUp").classList.add("TFA_qrContent")
+  document.querySelector("#Input_code").focus()
+  fetch(window.location.origin + "/authApp/TFA/RequestQR")
+    .then(Response => {
+      if (!Response.ok) {
+        throw new Error('Network response was not okay')
+      }
+      return Response.json()
+    })
+    .then(data => {
+      content.querySelector(".qrDisplayer").src = data.qr
+      document.querySelector(".TFA_submit .submit_BTN").addEventListener("click", () => {
+        SendQrAnswer(content, content.querySelector("#Input_code"))
+      })
+      document.querySelector('#Input_code').addEventListener('keypress', (e) => {
+        if (e.key == 'Enter')
+          SendQrAnswer(content, content.querySelector('#Input_code'))
+      })
+    })
 }
 
 function SendQrAnswer(content, codeInput)
 {
-	if (selected == undefined)
-		return
-	const crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
-	var header = new Headers()
-	header.append('Content-Type', 'application/json')
-	header.append('X-CSRFToken', crsf_token)
-	const data = { TFACode : codeInput.value }
-	fetch(document.location.origin + "/authApp/TFA/SendCode",
-	{
-		method: 'POST',
-		headers: header,
-		body: JSON.stringify(data)
-	})
-	.then(Response => {
-		if (!Response.ok)
-		{
-			throw new Error('Network response was not okay')
-		}
-		return Response.json()
-	})
-	.then(data => {
-		if (data.error != undefined)
-			throw new Error(data.error)
-		content.querySelector('#messageError').textContent = data.success
+  if (selected == undefined)
+    return
+  const crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
+  var header = new Headers()
+  header.append('Content-Type', 'application/json')
+  header.append('X-CSRFToken', crsf_token)
+  const data = { TFACode : codeInput.value }
+  fetch(document.location.origin + "/authApp/TFA/SendCode",
+    {
+      method: 'POST',
+      headers: header,
+      body: JSON.stringify(data)
+    })
+    .then(Response => {
+      if (!Response.ok)
+      {
+        throw new Error('Network response was not okay')
+      }
+      return Response.json()
+    })
+    .then(data => {
+      if (data.error != undefined)
+        throw new Error(data.error)
+      content.querySelector('#messageError').textContent = data.success
 
-		initProfileButton(false)
-		initChat()
-		navto('/')
-	})
-	.catch(error => {
-		content.querySelector('#messageError').textContent = error
-	})
+      initProfileButton(false)
+      initChat()
+      navto('/')
+    })
+    .catch(error => {
+      content.querySelector('#messageError').textContent = error
+    })
 }
 
 let imgFile = undefined
@@ -335,65 +335,65 @@ function avatarButtonFunction() {
 }
 
 function updateAccount(event) {
-	event.preventDefault()
+  event.preventDefault()
 
-	let formData = new FormData();
-	formData.append('newUsername', document.getElementById('Input_new_usr').value);
-	formData.append('newEmail', document.getElementById('Input_new_mail').value);
-	formData.append('newPassword', document.getElementById('Input_new_pwd').value);
-	formData.append('newPasswordConfirmation', document.getElementById('Input_new_confirm_pwd').value);
-	formData.append('password', document.getElementById('Input_pwd').value);
+  let formData = new FormData();
+  formData.append('newUsername', document.getElementById('Input_new_usr').value);
+  formData.append('newEmail', document.getElementById('Input_new_mail').value);
+  formData.append('newPassword', document.getElementById('Input_new_pwd').value);
+  formData.append('newPasswordConfirmation', document.getElementById('Input_new_confirm_pwd').value);
+  formData.append('password', document.getElementById('Input_pwd').value);
 
-	if (imgFile != undefined) {
-		formData.append('newAvatar', dataURItoBlob(imgFile));
-	}
+  if (imgFile != undefined) {
+    formData.append('newAvatar', dataURItoBlob(imgFile));
+  }
 
-	var crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
-	let feedback = document.querySelector('.feedback')
-	var headers = new Headers()
-	headers.append('X-CSRFToken', crsf_token)
+  var crsf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value
+  let feedback = document.querySelector('.feedback')
+  var headers = new Headers()
+  headers.append('X-CSRFToken', crsf_token)
 
-	fetch(document.location.origin + "/userManagement/updateAccount",
-		{
-			method: 'POST',
-			headers: headers,
-			body: formData,
-		})
-		.then(Response => {
-			if (!Response.ok) {
-				throw new Error('Network response was not okay')
-			}
-			return Response.json()
-		})
-		.then(data => {
-			if (data.message) {
-				feedback.style.color = "green"
-				feedback.innerHTML = data.message
-				if (data.reload == true)
-				{
-					unsetChatbox()
-					initProfileButton(false)
-				}
-					navto("/")
-			}
-			else {
-				feedback.style.color = "red"
-				feedback.innerHTML = data.error
-			}
-		})
-		.catch(error => {
-			console.error('Error:', error)
-			return
-		})
+  fetch(document.location.origin + "/userManagement/updateAccount",
+    {
+      method: 'POST',
+      headers: headers,
+      body: formData,
+    })
+    .then(Response => {
+      if (!Response.ok) {
+        throw new Error('Network response was not okay')
+      }
+      return Response.json()
+    })
+    .then(data => {
+      if (data.message) {
+        feedback.style.color = "green"
+        feedback.innerHTML = data.message
+        if (data.reload == true)
+        {
+          unsetChatbox()
+          initProfileButton(false)
+        }
+        navto("/")
+      }
+      else {
+        feedback.style.color = "red"
+        feedback.innerHTML = data.error
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error)
+      return
+    })
 }
 
 function dataURItoBlob(dataURI) {
-	const byteString = atob(dataURI.split(',')[1]);
-	const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-	const ab = new ArrayBuffer(byteString.length);
-	const ia = new Uint8Array(ab);
-	for (let i = 0; i < byteString.length; i++) {
-		ia[i] = byteString.charCodeAt(i);
-	}
-	return new Blob([ab], { type: mimeString });
+  const byteString = atob(dataURI.split(',')[1]);
+  const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+  const ab = new ArrayBuffer(byteString.length);
+  const ia = new Uint8Array(ab);
+  for (let i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i);
+  }
+  return new Blob([ab], { type: mimeString });
 }

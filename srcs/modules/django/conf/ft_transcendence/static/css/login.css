@@ -98,3 +98,8 @@
   text-decoration: underline;
   color: var(--third) !important;
 }
+
+.login_container .TFA {
+  width: 100%;
+  margin: 20px auto;
+}

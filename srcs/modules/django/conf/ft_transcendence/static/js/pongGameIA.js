@@ -3,8 +3,9 @@ import { Reflector } from "../threejs_addons/Reflector.js";
 import { TrailRenderer } from "../threejs_addons/TrailRenderer.js";
 import { CSS2DRenderer, CSS2DObject } from "../threejs_addons/CSS2DRenderer.js";
 import * as THREE from 'https://threejs.org/build/three.module.js';
+import { getProfilePicture } from "./chatApp/CA_General.js";
 
-let WIDTH = document.body.clientWidth * 0.75;
+let WIDTH = document.body.clientWidth * 0.62;
 let HEIGHT = WIDTH * (9. / 16.);
 var frames_to_shake = 0;
 var BcameraShake = false;
@@ -313,13 +314,16 @@ function doKeyUp(e)
 
 function LaunchGame()
 {
+	getNameAndPPAI();
+
 	init_objects();
-	canvas = document.getElementById("app");
+	canvas = document.querySelector(".pongWindow");
 	three_box = document.createElement("div");
 	three_box.style.width = WIDTH + 8 + "px";
 	three_box.style.height = HEIGHT + 8 + "px";
-	three_box.style.border = '4px solid #ccc';
+	//three_box.style.border = '4px solid #ccc';
 	three_box.style.position = "relative";
+	three_box.setAttribute("id", 'pongGame')
 	three_box.appendChild(renderer.domElement);
 	canvas.appendChild(three_box);
 	textElement = document.createElement("div");
@@ -351,7 +355,7 @@ function LaunchGame()
 	three_box.appendChild(textElement);
 	console.log('Pong Game vs ia is launch');
 	window.onresize = function () {
-		WIDTH = document.body.clientWidth * 0.75;
+		WIDTH = document.body.clientWidth * 0.62;
 		HEIGHT = WIDTH * (9. / 16.);
 		three_box.style.width = WIDTH + 8 + "px";
 		three_box.style.height = HEIGHT + 8 + "px";
@@ -364,6 +368,31 @@ function LaunchGame()
 
 	};
 	animate();
+}
+
+async function getNameAndPPAI()
+{
+	let profilePicture = await getProfilePicture({ 'type': 'user', 'id': 'self' })
+	let ppUrl
+	if (profilePicture.type == 'image/null')
+		ppUrl = "../static/assets/logo/user.png"
+	else
+		ppUrl = URL.createObjectURL(profilePicture)
+	if (document.getElementById('ppPlayer1') == undefined)
+		return
+	document.getElementById('ppPlayer1').src = ppUrl;
+
+	profilePicture = await getProfilePicture({ 'type': 'user', 'id': '5' })
+	ppUrl
+	if (profilePicture.type == 'image/null')
+		ppUrl = "../static/assets/logo/user.png"
+	else
+		ppUrl = URL.createObjectURL(profilePicture)
+	if (document.getElementById('ppPlayer1') == undefined)
+		return
+	document.getElementById('ppPlayer2').src = ppUrl;
+
+	console.log(document.getElementById('gamePlayer1').innerHTML += document.querySelectorAll('.profile_dropdown')[0].querySelectorAll('.nav__link')[0].textContent)
 }
 
 function FinishGame()
@@ -394,6 +423,8 @@ function FinishGameByScore(data)
 function OnMessage(e)
 {
 	const data = JSON.parse(e.data)
+
+	//console.log(data)s
 
 	if (data.type == 'game_data')
 	{

@@ -71,9 +71,17 @@ class PongGameSocket(WebsocketConsumer):
 		n_ball_touch_player2 = event['number_ball_touch_player2']
 
 		if self.isTournament is False:
+			if winner == self.scope['user'].nickname + '-' + str(self.scope['user'].id):
+				winner = 'you'
+			if event['playerone_username'] == self.scope['user'].nickname + '-' + str(self.scope['user'].id):
+				youare = 'p1'
+			else:
+				youare = 'p2'
+
 			self.send(text_data=json.dumps({
     				'type': 'game_ending',
 					'winner': winner,
+					'youare': youare,
 					'reason': 'score',
 					'playerone_score': str(playerone_score),
 					'playertwo_score': str(playertwo_score),
