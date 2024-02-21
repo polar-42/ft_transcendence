@@ -357,7 +357,6 @@ input:checked + .slider:before {
   }
 
   input:checked + .slider:before {
-    webkit-transform: translateX(40px);
     -ms-transform: translateX(40px);
     transform: translateX(40px);
   }
