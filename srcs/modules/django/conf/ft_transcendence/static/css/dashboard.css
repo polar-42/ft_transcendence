@@ -83,7 +83,7 @@
 
 .dashboard #dash_listClassicMatch,
 .dashboard #dash_listTournaments {
-  height: 90%;
+  height: 80%;
 	overflow-y: scroll;
 }
 
@@ -119,7 +119,7 @@
 }
 
 .dashboard .dash_classicMatch .players {
-  width: 250px;
+  width: 340px;
 }
 
 .dashboard .dash_classicMatch .score {
@@ -266,7 +266,7 @@
 }
 
 .dashboard .otherStatRow p:last-child {
-  width: 86px;
+  width: 95px;
   text-align: end;
   border-bottom: 1px solid var(--fourth);
 }
@@ -440,48 +440,46 @@
   cursor: pointer;
 }
 
-@media (max-width: 1285px) {
-  .dashboard 	.piechartStatGame,
-  .dashboard 	.piechartStatTournament {
-    font-size: 1em;
+@media (max-width: 1700px) {
+  .dashboard .dashboardInformation {
+    width: 1400px;
+  }
+
+  .dashboard .dash_stats {
+    grid-gap: unset;
+    grid-template-rows: auto;
+  }
+
+  .dash_stats .otherStat {
+    height: 50%;
+  }
+
+  .dash_stats .otherStatLine {
+    columns: unset;
+    width: 80%;
+    height: 100%;
+    margin: auto;
+    overflow: scroll;
   }
 }
 
-@media (max-width: 900px) {
-  .dashboard .piechartStatGame,
-  .dashboard .piechartStatTournament {
-    font-size: 0.9em;
+@media (max-width: 1430px) {
+  .dashboard .dashboardInformation {
+    display: flex;
+    flex-direction: column;
+    width: 80%; 
+    margin: 20px auto;
   }
-  .dashboard #otherStatLine {
-    font-size: 2vh ;
-  }
-}
 
-@media (max-width: 800px) {
-  .dashboard .piechartStatGame,
-  .dashboard .piechartStatTournament {
-    font-size: 0.9em;
+  .dashboard .results_wrapper {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
   }
-}
 
-@media (max-width: 700px) {
-  .dashboard .piechartStatGame,
-  .dashboard .piechartStatTournament {
-    font-size: 2.5vw;
-  }
-  .dashboard #otherStatLine {
-    font-size: 1.7vh;
-  }
-}
-
-@media (max-width: 600px) {
-  .dashboard #otherStatLine {
-    font-size: 75%;
-  }
-}
-
-@media (max-width: 500px) {
-  .dashboard #otherStatLine {
-    font-size: 65%;
+  .dashboard .classicMatchs_wrapper,
+  .dashboard .tournaments_wrapper {
+    grid-column: unset;
+    margin: auto;
+    width: 100%;
   }
 }
