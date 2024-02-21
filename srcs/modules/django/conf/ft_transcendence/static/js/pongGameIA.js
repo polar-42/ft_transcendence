@@ -371,7 +371,7 @@ function LaunchGame()
 	textElement.style.padding = "10px"; // Example padding for better visualization
 
 	three_box.appendChild(textElement);
-	console.log('Pong Game vs ia is launch');
+	// console.log('Pong Game vs ia is launch');
 	window.onresize = function () {
 		WIDTH = document.body.clientWidth * 0.62;
 		HEIGHT = WIDTH * (9. / 16.);
@@ -410,7 +410,7 @@ async function getNameAndPPAI()
 		return
 	document.getElementById('ppPlayer2').src = ppUrl;
 
-	console.log(document.getElementById('gamePlayer1').innerHTML += document.querySelectorAll('.profile_dropdown')[0].querySelectorAll('.nav__link')[0].textContent)
+	// console.log(document.getElementById('gamePlayer1').innerHTML += document.querySelectorAll('.profile_dropdown')[0].querySelectorAll('.nav__link')[0].textContent)
 }
 
 function FinishGame()
@@ -418,12 +418,12 @@ function FinishGame()
 	isCountingDown = false
 	scoreDisplay.remove()
 	renderer.domElement.style.filter = "blur(5px)"
-	console.log('Pong game is finish');
+	// console.log('Pong game is finish');
 }
 
 function FinishGameByScore(data)
 {
-	console.log(data)
+	// console.log(data)
 	if (data.playerone_score >= 3 || data.playertwo_score >= 3)
 	{
 		scoreDisplay.textContent = data.playerone_score + " - " + data.playertwo_score;

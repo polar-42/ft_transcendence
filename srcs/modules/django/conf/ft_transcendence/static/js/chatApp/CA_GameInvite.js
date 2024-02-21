@@ -136,7 +136,13 @@ function sendGameInvitation(usrList) {
 	if (checkboxes[0].checked === false && checkboxes[1].checked === false) {
 		feedback.innerHTML = "No game selected"
 		return
-	} else if (checkboxes[0].checked === true) {
+	}
+	else if (user == undefined || user.id == undefined)
+	{
+		feedback.innerHTML = "No user select"
+		return
+	}
+	else if (checkboxes[0].checked === true) {
 		chatSocket.send(JSON.stringify({
 			'type': 'invite_pong',
 			'target': user.id
@@ -154,7 +160,7 @@ export async function receivePongInvitation(data) {
 	if (document.querySelector(".main_box_header .contact_wrapper") == undefined || data.sender_id !== parseInt(document.querySelector(".main_box_header .contact_wrapper").getAttribute("userid")))
 	{
 		openChatbox()
-		console.log(data)
+		// console.log(data)
 		goToConv(data.sender_id)
 		await sleep(100)
 	}
@@ -215,7 +221,7 @@ export async function receiveBattleshipInvitation(data) {
 	if (document.querySelector(".main_box_header .contact_wrapper") == undefined || data.sender_id !== parseInt(document.querySelector(".main_box_header .contact_wrapper").getAttribute("userid")))
 	{
 		openChatbox()
-		console.log(data)
+		// console.log(data)
 		goToConv(data.sender_id)
 		await sleep(100)
 	}

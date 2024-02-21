@@ -15,7 +15,7 @@ function gameSelectorOnClick(seflEl, otherEl) {
     seflEl.classList.remove('selected')
   } else {
     seflEl.classList.add('selected')
-    if (otherEl.classList.contains('selected')) 
+    if (otherEl.classList.contains('selected'))
       otherEl.classList.remove('selected')
   }
 }
@@ -31,36 +31,36 @@ function createTournaments()
   } else if (document.querySelector(".battleship_selection_wrapper button").classList.contains('selected')) {
     typeGame = 'Battleship'
   } else {
-    document.getElementById("messageCreationTournaments").textContent = 'No game type chosen'   
+    document.getElementById("messageCreationTournaments").textContent = 'No game type chosen'
     return
   }
   if (tournamentsName == '') {
-    document.getElementById("messageCreationTournaments").textContent = "Tournament's Name needed"   
+    document.getElementById("messageCreationTournaments").textContent = "Tournament's Name needed"
     return
   }
   if (tournamentsDescription == '') {
-    document.getElementById("messageCreationTournaments").textContent = "Tournament's description needed"   
+    document.getElementById("messageCreationTournaments").textContent = "Tournament's description needed"
     return
   }
 
   switch (numberOfPlayers) {
     case '1':
-      numberOfPlayers = '4' 
+      numberOfPlayers = '4'
       break;
     case '2':
-      numberOfPlayers = '8' 
+      numberOfPlayers = '8'
       break;
     case '3':
-      numberOfPlayers = '16' 
+      numberOfPlayers = '16'
       break;
     case '4':
-      numberOfPlayers = '32' 
+      numberOfPlayers = '32'
       break;
     case '5':
-      numberOfPlayers = '64' 
+      numberOfPlayers = '64'
       break;
     default:
-      document.getElementById("messageCreationTournaments").textContent = "Wrong number of players"   
+      document.getElementById("messageCreationTournaments").textContent = "Wrong number of players"
       return
 
   }

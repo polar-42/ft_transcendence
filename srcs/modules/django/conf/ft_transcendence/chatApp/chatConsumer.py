@@ -1011,7 +1011,7 @@ class chatSocket(WebsocketConsumer):
 				password = None
 			print(channelName, channelDescription, privacyStatus, password,  adminId)
 			import re
-			if (re.search(r"[\<\>\'\"\{\}\[\]\\\|\(\)\/]", channelName) != None):
+			if (re.search(r"[\<\>\'\"\{\}\[\]\\\|\(\)\/]", channelName) != None or ' ' in channelName):
 				return
 			elif (re.search(r"[\<\>\'\"\{\}\[\]\\\|\(\)\/]", channelDescription) != None):
 				return

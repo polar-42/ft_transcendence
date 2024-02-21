@@ -178,7 +178,7 @@ function leaveTournament()
 function OnMessageTournament(e)
 {
 	const data = JSON.parse(e.data)
-  console.log(data)
+  // console.log(data)
 	switch (data.type) {
 		case 'MSG_UpdateUserList':
 			PrintPlayers(data)
@@ -260,9 +260,9 @@ async function PrintMatchs(matchList)
   let selfId
   if (matchList == 'None' || isBracketInit == false)
     return
-  console.log(matchList)
+  // console.log(matchList)
   let lastRound = matchList[matchList.length - 1].X
-  console.log(lastRound)
+  // console.log(lastRound)
   const bracket = document.querySelector('.bracket')
   if (bracket === undefined || bracket.children.length < matchList.slice(-1)[0].X + 1)
     return
@@ -275,7 +275,7 @@ async function PrintMatchs(matchList)
   else
     throw new Error('Error when fetching user datas')
   matchList.forEach(async (element) => {
-    console.log(element)
+    // console.log(element)
     const matchupEl = bracket.children[element.X].children[element.Y + 1]
     if (matchupEl === undefined)
       return
@@ -300,7 +300,7 @@ async function PrintMatchs(matchList)
     }
   })
   document.querySelector(".waiting_screen").style.display = 'none'
-  console.log(lostStage)
+  // console.log(lostStage)
   if (lostStage != '')
     lostTournament(lostStage)
   else if (matchList[matchList.length - 1].Winner == -1) {
@@ -350,7 +350,7 @@ async function displayMatchPlayerHTML(userNb, userData, matchupEl, selfId) {
 }
 
 function lostTournament(lostRound) {
-  console.log('fsdfdsdfas')
+  // console.log('fsdfdsdfas')
   let lostElm  = document.querySelector(".next_match_wrapper")
   lostElm.style.display = 'flex'
   lostElm.querySelector('p').textContent = "You lost in " + lostRound
@@ -376,6 +376,6 @@ async function displayTournamentResult(lastMatch) {
     else
       winnerPP = URL.createObjectURL(winnerPP)
   winnerElm.querySelector('img').src = winnerPP
-  console.log(winnerElm)
+  // console.log(winnerElm)
   resultElm.style.display = 'flex'
 }

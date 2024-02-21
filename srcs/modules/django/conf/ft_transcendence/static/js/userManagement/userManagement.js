@@ -69,7 +69,7 @@ function Handle2FaToggle(checkbox) {
 		Effective2Fa(doc, TFARequestType)
 	})
 	.catch(error => {
-		console.log(error)
+		// console.log(error)
 	})
 }
 
@@ -92,7 +92,7 @@ function Effective2Fa(doc, TFARequestType) {
 		.then(texted => {
 			content.innerHTML = texted
       document.querySelector(".TFA_Content #Input_pwd").focus()
-      console.log('content:' + content + ', request type:' + TFARequestType) 
+      // console.log('content:' + content + ', request type:' + TFARequestType)
 			document.querySelector('.TFA_submit .submit_BTN').addEventListener('click', VerifyPass.bind(null, content, TFARequestType))
 			document.querySelector('.TFA_Content #Input_pwd').addEventListener('keypress', (e) => {
         if (e.key == 'Enter')

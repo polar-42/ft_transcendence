@@ -239,7 +239,7 @@ export async function receiveMsg(data) {
 			}))
 		} else {
 			document.getElementById('pop_up_unread_chatbox').style.display = 'block'
-			console.log('1')
+			// console.log('1')
 		}
 	}
 }

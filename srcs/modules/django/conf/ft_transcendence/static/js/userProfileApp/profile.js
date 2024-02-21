@@ -13,7 +13,7 @@ export async function initProfile()
 		return;
 	}
 	fetch(window.location.origin + '/authApp/GET/userID')
-	.then(Response => 
+	.then(Response =>
 	{
 		if (Response.ok)
 			return Response.json()

@@ -191,7 +191,7 @@ function FP_UnLoad()
 	canvas.removeEventListener('click', FP_mouseClick)
 	document.removeEventListener('mousedown', FP_mouseDown)
 	document.removeEventListener('mousemove', FP_mouseMove)
-	console.log("42 omg")
+	// console.log("42 omg")
 	if (curInterval != undefined)
 		clearInterval(curInterval)
 	curInterval = undefined
@@ -455,7 +455,7 @@ function placeBoat(x, y) {
 	  return;
 	}
 	boatToPlace.pos = [x, y];
-	console.log(boatToPlace.pos);
+	// console.log(boatToPlace.pos);
 	boatToPlace.position.x = boat_x;
 	boatToPlace.position.z = boat_y;
 	boatToPlace.self.ArrayX = boat_x;

@@ -111,7 +111,7 @@ const router = async () =>
 		actualRoute = match.route.path
 	if (Prev_match != undefined && Prev_match.route.unload != null)
 		Prev_match.route.unload()
-	console.log(actualRoute)
+	// console.log(actualRoute)
 	if (actualRoute.includes('/?') == false)
 		actualRoute += '/?Valid=true'
 	else if (actualRoute.endsWith('/') == true)

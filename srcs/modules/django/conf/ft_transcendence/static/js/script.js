@@ -142,7 +142,7 @@ function socket_function() {
                                 socket.onmessage = function(e) {
                                         const data = JSON.parse(e.data);
                                         // console.log(data.message);
-                                
+
                                         if (data.type === 'chat') {
                                                 let message_send_back = document.getElementById('message_send_back');
                                                 message_send_back.innerHTML = data.message;
@@ -152,7 +152,7 @@ function socket_function() {
                                 socket.onclose = function(e) {
                                         console.error('Chat socket closed');
                                 }
-                        
+
                                 let socket_test = document.getElementById('socket_test');
                                 socket_test.addEventListener('submit', (e) => {
                                         e.preventDefault();
@@ -199,7 +199,7 @@ function startGame(playerToPlayAgainst) {
                 .catch(error => {
                         console.error('Error:', error);
                 });
-        
+
                 fetch('/transcendence/create_game/', {
                         method: 'POST',
                         headers: headers,

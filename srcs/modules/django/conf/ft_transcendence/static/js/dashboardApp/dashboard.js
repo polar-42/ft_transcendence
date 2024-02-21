@@ -76,9 +76,9 @@ export function addPongClassicMatch()
             elem.appendChild(document.createElement('p'))
             elem.lastChild.textContent = element.date
             elem.addEventListener('click', popUpPongGameStat.bind(null, element.id))
-            matchList.appendChild(elem)	
+            matchList.appendChild(elem)
           })
-          if (matchs.length == 0) 
+          if (matchs.length == 0)
             document.getElementById('dash_listClassicMatch').innerHTML = '<li class="no_data">No Data</li>'
         })
       .catch(error => {
@@ -129,7 +129,7 @@ export function addPongTournamentStat()
             elem.appendChild(document.createElement('p'))
             elem.lastChild.textContent = element.date
             elem.addEventListener('click', popUpTournamentStat.bind(null, element.id))
-            matchList.appendChild(elem)	
+            matchList.appendChild(elem)
           })
           if (tournament.length == 0)
             document.getElementById('dash_listTournaments').innerHTML = '<li class="no_data">No Data</li>'
@@ -244,11 +244,11 @@ export async function addOtherPongStat()
       currentStreakSuffix = ' loses'
   } else if (data.currentStreak > 0) {
     if (data.currentStreak == 1)
-      currentStreakSuffix = ' win' 
+      currentStreakSuffix = ' win'
     else
       currentStreakSuffix = ' wins'
   }
-  else 
+  else
     currentStreakSuffix = ''
 
   document.querySelector('.otherStat').innerHTML = statList
@@ -271,7 +271,7 @@ export function addBattleshipClassicMatch()
   {
     url.searchParams.append('userid', window.location.search.substring(window.location.search.indexOf('=') + 1));
   }
-  console.log(url)
+  // console.log(url)
 
   fetch(url, {
     method: 'GET'
@@ -286,7 +286,7 @@ export function addBattleshipClassicMatch()
       })
       .then(data =>
         {
-          console.log(data)
+          // console.log(data)
           let matchs = JSON.parse(data).classicMatchs
           let matchList = document.getElementById('dash_listClassicMatch')
 
@@ -313,7 +313,7 @@ export function addBattleshipClassicMatch()
             elem.appendChild(document.createElement('p'))
             elem.lastChild.textContent = element.date
             elem.addEventListener('click', popUpBattleshipGameStat.bind(null, element.id))
-            matchList.appendChild(elem)	
+            matchList.appendChild(elem)
           })
           if (matchs.length == 0)
             document.getElementById('dash_listClassicMatch').innerHTML = '<li class="no_data">No Data</li>'
@@ -366,7 +366,7 @@ export function addBattleshipTournamentStat()
             elem.appendChild(document.createElement('p'))
             elem.lastChild.textContent = element.date
             elem.addEventListener('click', popUpTournamentStat.bind(null, element.id))
-            matchList.appendChild(elem)	
+            matchList.appendChild(elem)
           })
           if (tournament.length == 0)
             document.getElementById('dash_listTournaments').innerHTML = '<li class="no_data">No Data</li>'
@@ -483,11 +483,11 @@ export async function addOtherBattleshipStat()
       currentStreakSuffix = ' loses'
   } else if (data.currentStreak > 0) {
     if (data.currentStreak == 1)
-      currentStreakSuffix = ' win' 
+      currentStreakSuffix = ' win'
     else
       currentStreakSuffix = ' wins'
   }
-  else 
+  else
     currentStreakSuffix = ''
   document.querySelector('.otherStat').innerHTML = statList
   document.getElementById('currentStreak').children[1].textContent = Math.abs(data.currentStreak).toString() + currentStreakSuffix
@@ -541,7 +541,7 @@ export async function popUpPongGameStat(gameId)
           player2_id = data.player2_id
 
           document.querySelector('#boxTime p').textContent = data.date
-          document.querySelector('.players_score').children[0].textContent = data.player1_score 
+          document.querySelector('.players_score').children[0].textContent = data.player1_score
           document.querySelector('.players_score').children[2].textContent = data.player2_score
           document.querySelector('.players_touched').children[1].textContent = 'Touched balls'
           document.querySelector('.players_touched').children[0].textContent = data.player1_number_ball_touch
@@ -637,7 +637,7 @@ export async function popUpBattleshipGameStat(gameId)
 					document.querySelector('#player1_name').textContent = player1
 					document.querySelector('#player2_name').textContent = player2
 					document.querySelector('#boxTime p').textContent = data.date
-					document.querySelector('.players_score').children[0].textContent = data.player1_score 
+					document.querySelector('.players_score').children[0].textContent = data.player1_score
 					document.querySelector('.players_score').children[2].textContent = data.player2_score
 					document.querySelector('.players_touched').children[1].textContent = 'Accuracy'
 					document.querySelector('.players_touched').children[0].textContent = data.player1_accuracy + '%'
@@ -803,7 +803,7 @@ async function displayPlayerList(players) {
 		elem.children[1].textContent = players[i].name
 		playerList.appendChild(elem)
 	}
-} 
+}
 
 export function cleanStats() {
 	let lists = document.querySelectorAll('ul')
