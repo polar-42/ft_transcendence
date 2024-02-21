@@ -32,6 +32,7 @@ let bGravity;
 let bPlayerOne;
 let bPlayerTwo;
 let gameStarted = false;
+var isCountingDown = false;
 
 class Element {
 	constructor(options) {
@@ -76,22 +77,25 @@ const Dball = new Element({
 export function countdown()
 {
 	isCountingDown = true;
-	textElement.textContent = "3";
+	if (isCountingDown == true)
+		textElement.textContent = "3";
 	setTimeout(function(){
-		textElement.textContent = "2";
+		if (isCountingDown == true)
+			textElement.textContent = "2";
 	}, 1000);
 	setTimeout(function(){
-		textElement.textContent = "1";
+		if (isCountingDown == true)
+			textElement.textContent = "1";
 	}, 2000);
 	setTimeout(function(){
-		textElement.textContent = "GO!";
+		if (isCountingDown == true)
+			textElement.textContent = "GO!";
 	}, 3000);
 	setTimeout(function(){
-		textElement.textContent = "";
+		if (isCountingDown == true)
+			textElement.textContent = "";
 	}, 4000);
 	setTimeout(function(){
-		Dball.dx = bSpeed;
-		Dball.dy = bGravity;
 		isCountingDown = false;
 	}, 4000);
 }
@@ -103,7 +107,6 @@ export function exitPongLocal()
 	{
 		while (scene.children.length > 0)
 			scene.remove(scene.children[0])
-		console.log('Unload')
 		renderer.setAnimationLoop(null);
 		if (animationid != undefined)
 		{
@@ -160,7 +163,7 @@ export function init_objects()
 	console.warn = originalWarning;
 
 	var wallGeometry = new THREE.BoxGeometry(22, 3);
-// 
+//
 	// var wallUp = new Reflector( wallGeometry, {
 		// textureWidth: 250 ,
 		// textureHeight: 50 ,
@@ -402,7 +405,6 @@ export function animate() {
 	}
 	trail.update()
     renderer.render(scene, camera);
-	console.log("Number of Triangles :", renderer.info.render.triangles);
 }
 
 export function cameraShake() {
@@ -418,7 +420,6 @@ export function initLocalGamePong()
 {
 	if (gameStarted == true)
 	{
-    	console.log('here')
 		gameStarted = false
 		navto('/games');
 		return;
@@ -577,4 +578,5 @@ function finishGame(c) {
 		renderer.renderLists.dispose();
 		renderer.dispose()
 	}, 1000);
+	isCountingDown = false
 }
