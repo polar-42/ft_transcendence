@@ -14,6 +14,9 @@ const boxSize = 1;
 const offsetX = 10
 const offsetY = 100
 
+//TODO fix titles
+// select only orange cases when second part and make red stay on selection only
+
 let mouse = new THREE.Vector2();
 
 const FP_BTN_Validate =
@@ -221,42 +224,42 @@ let INTERSECTED = null;
 
 function boatCreate() {
 	BoatList = [
-	//   {
-	// 	name: "Carrier",
-	// 	x: 0,
-	// 	y: 0,
-	// 	ArrayX: 0,
-	// 	ArrayY: 11,
-	// 	size: 5,
-	// 	horizontal: true,
-	//   },
-	//   {
-	// 	name: "BattleShip",
-	// 	x: 0,
-	// 	y: 0,
-	// 	ArrayX: 8,
-	// 	ArrayY: 11,
-	// 	size: 4,
-	// 	horizontal: true,
-	//   },
-	//   {
-	// 	name: "Destroyer",
-	// 	x: 0,
-	// 	y: 0,
-	// 	ArrayX: 4,
-	// 	ArrayY: 13,
-	// 	size: 3,
-	// 	horizontal: true,
-	//   },
-	//   {
-	// 	name: "Submarine",
-	// 	x: 0,
-	// 	y: 0,
-	// 	ArrayX: 0,
-	// 	ArrayY: 13,
-	// 	size: 3,
-	// 	horizontal: true,
-	//   },
+	  {
+		name: "Carrier",
+		x: 0,
+		y: 0,
+		ArrayX: 0,
+		ArrayY: 11,
+		size: 5,
+		horizontal: true,
+	  },
+	  {
+		name: "BattleShip",
+		x: 0,
+		y: 0,
+		ArrayX: 8,
+		ArrayY: 11,
+		size: 4,
+		horizontal: true,
+	  },
+	  {
+		name: "Destroyer",
+		x: 0,
+		y: 0,
+		ArrayX: 4,
+		ArrayY: 13,
+		size: 3,
+		horizontal: true,
+	  },
+	  {
+		name: "Submarine",
+		x: 0,
+		y: 0,
+		ArrayX: 0,
+		ArrayY: 13,
+		size: 3,
+		horizontal: true,
+	  },
 	  {
 		name: "PatrolBoat",
 		x: 0,
@@ -508,10 +511,10 @@ function placeBoat(x, y) {
 	boatToPlace.pos = [x, y];
 	boatToPlace.position.x = boat_x;
 	boatToPlace.position.z = boat_y;
-	boatToPlace.self.ArrayX = boat_x;
-	boatToPlace.self.ArrayY = boat_y;
-	boatToPlace.self.x = boat_x;
-	boatToPlace.self.y = boat_y;
+	boatToPlace.self.ArrayX = x;
+	boatToPlace.self.ArrayY = y;
+	boatToPlace.self.x = x;
+	boatToPlace.self.y = y;
 	if (!boatToPlace.orientation)
 	{
 		for (let i = 0; i < boatToPlace.width; i++)
@@ -600,17 +603,10 @@ function placeBoat(x, y) {
 	if (!boatToPlace.orientation) {
 	  boatToPlace.position.x -= offset_center;
 	  boatToPlace.position.z += offset_center;
-	  boatToPlace.self.ArrayX -= offset_center
-	  boatToPlace.self.ArrayY += offset_center;
-	  boatToPlace.self.x -= offset_center;
-	  boatToPlace.self.y += offset_center;
+
 	} else {
 	  boatToPlace.position.x += offset_center;
 	  boatToPlace.position.z -= offset_center;
-	  boatToPlace.self.ArrayX += offset_center;
-	  boatToPlace.self.ArrayY -= offset_center;
-	  boatToPlace.self.x += offset_center;
-	  boatToPlace.self.y -= offset_center;
 	}
 	boatToPlace.rotation.y += 1.57;
 	if (!boatToPlace.orientation)
@@ -765,7 +761,6 @@ function SP_mouseClick(event)
 		if (CURRENT_SELECTION != null) {
 		}
 		CURRENT_SELECTION = INTERSECTED;
-		INTERSECTED = null;
 	}
 	const mouseX = event.clientX - canvas.getBoundingClientRect().left
 	const mouseY = event.clientY - canvas.getBoundingClientRect().top
@@ -802,42 +797,42 @@ function SP_Load()
 	curInterval = setInterval(SP_Timer, 1000)
 	controls.target.set( 5, 0 , 5 + 20);
 	BoatList = [
-		// {
-		//   name: "Carrier",
-		//   x: 0,
-		//   y: 0,
-		//   ArrayX: 0,
-		//   ArrayY: 11,
-		//   size: 5,
-		//   horizontal: true,
-		// },
-		// {
-		//   name: "BattleShip",
-		//   x: 0,
-		//   y: 0,
-		//   ArrayX: 8,
-		//   ArrayY: 11,
-		//   size: 4,
-		//   horizontal: true,
-		// },
-		// {
-		//   name: "Destroyer",
-		//   x: 0,
-		//   y: 0,
-		//   ArrayX: 4,
-		//   ArrayY: 13,
-		//   size: 3,
-		//   horizontal: true,
-		// },
-		// {
-		//   name: "Submarine",
-		//   x: 0,
-		//   y: 0,
-		//   ArrayX: 0,
-		//   ArrayY: 13,
-		//   size: 3,
-		//   horizontal: true,
-		// },
+		{
+		  name: "Carrier",
+		  x: 0,
+		  y: 0,
+		  ArrayX: 0,
+		  ArrayY: 11,
+		  size: 5,
+		  horizontal: true,
+		},
+		{
+		  name: "BattleShip",
+		  x: 0,
+		  y: 0,
+		  ArrayX: 8,
+		  ArrayY: 11,
+		  size: 4,
+		  horizontal: true,
+		},
+		{
+		  name: "Destroyer",
+		  x: 0,
+		  y: 0,
+		  ArrayX: 4,
+		  ArrayY: 13,
+		  size: 3,
+		  horizontal: true,
+		},
+		{
+		  name: "Submarine",
+		  x: 0,
+		  y: 0,
+		  ArrayX: 0,
+		  ArrayY: 13,
+		  size: 3,
+		  horizontal: true,
+		},
 		{
 		  name: "PatrolBoat",
 		  x: 0,
