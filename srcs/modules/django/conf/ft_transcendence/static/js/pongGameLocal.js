@@ -96,9 +96,49 @@ export function countdown()
 	}, 4000);
 }
 
-export function exit()
+export function exitPongLocal()
 {
-	// gameStarted = false
+	gameStarted = false
+	if (scene != undefined)
+	{
+		while (scene.children.length > 0)
+			scene.remove(scene.children[0])
+		console.log('Unload')
+		renderer.setAnimationLoop(null);
+		if (animationid != undefined)
+		{
+			cancelAnimationFrame(animationid)
+			animationid = undefined
+		}
+		three_box = null;
+		isRendering = false;
+		frames_to_shake = 0;
+		BcameraShake = false;
+		canvas = null;
+		scene = undefined;
+		camera = undefined;
+		renderer = undefined;
+		paddle1 = undefined;
+		paddle2 = undefined;
+		ball = undefined;
+		trail = undefined;
+		textElement = undefined;
+		scoreDisplay = undefined;
+		isCountingDown = false;
+		scoreOne = undefined;
+		scoreTwo = undefined;
+		isGameRunning = undefined;
+		isGamePause = undefined;
+		bSpeed = undefined;
+		bGravity = undefined;
+		bPlayerOne = undefined;
+		bPlayerTwo = undefined;
+		Dball.x = 0
+		Dball.y = 0
+		Dball.dx = 0
+		Dball.dy = 0
+		Dball.speed = .1
+	}
 }
 
 export function init_objects()
@@ -260,10 +300,12 @@ export function randomDir() {
     return [dx, dy];
 }
 
+var animationid = undefined
+
 export function animate() {
 	if (isRendering == false)
 		return ;
-    requestAnimationFrame(animate);
+	animationid = requestAnimationFrame(animate);
 	if (scoreOne >= 3 || scoreTwo >= 3)
 	{
 		scoreDisplay.textContent = "";
@@ -376,7 +418,7 @@ export function initLocalGamePong()
 {
 	if (gameStarted == true)
 	{
-    console.log('here')
+    	console.log('here')
 		gameStarted = false
 		navto('/games');
 		return;

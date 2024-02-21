@@ -1,6 +1,6 @@
 import { checkConnexion, initLogin, initRegister, logout } from "./authApp.js"
 import { initGames } from "./games.js"
-import { exit, initLocalGamePong } from "./pongGameLocal.js"
+import { exitPongLocal, initLocalGamePong } from "./pongGameLocal.js"
 import { initGamePongIA, unloadGamePongIA } from './pongGameIA.js'
 import { initDashboard } from "./dashboardApp/dashboard.js"
 import { initHomePage} from "./homepage.js"
@@ -40,7 +40,7 @@ function getRoute(RoutePath)
     { path: "/games", init: initGames, unload: null, title:"Games", LogStatus: 1},
     { path: "/battleship/", init: initGame, unload: CP_Unload, title:"Battleship", LogStatus: 1},
     { path: "/pongGame/Remote/", init: initGamePong, unload: unLoadGamePong, title:"pongGame", LogStatus: 1},
-    { path: "/pongGame/Local", init: initLocalGamePong, unload: null, title:"pongGame", LogStatus: 1},
+    { path: "/pongGame/Local", init: initLocalGamePong, unload: exitPongLocal, title:"pongGame", LogStatus: 1},
     { path: "/pongGame/IA", init: initGamePongIA, unload: unloadGamePongIA, title:"pongGame", LogStatus: 1},
     { path: "/tournaments/Create", init: initTournamentsCreation, unload: null, title:"initTournaments", LogStatus: 1},
     { path: "/tournaments/Join", init: initTournamentsJoinPage, unload: null, title:"Join Tournaments", LogStatus: 1},
@@ -49,7 +49,7 @@ function getRoute(RoutePath)
     { path: "/authApp/login", init: initLogin, unload: null, title:"Login", LogStatus: 0},
     { path: "/authApp/register", init: initRegister, unload: null, title:"Register", LogStatus: 0},
     { path: "/userManagement", init: initUpdateAccount, unload: null, title:"userManagement", LogStatus: 1},
-    { path: "/profile/", init: initProfile, unload: exit, title:"profile", LogStatus: 1},
+    { path: "/profile/", init: initProfile, unload: exitPongLocal, title:"profile", LogStatus: 1},
   ]
 
   const Potentialroutes = routes.map(route =>
