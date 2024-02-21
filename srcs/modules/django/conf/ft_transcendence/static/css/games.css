@@ -5,11 +5,11 @@
 }
 
 .games_page .wrapper {
-  margin: 30px 20% 90px 20%;
+  margin: 30px 20% 30px 20%;
   display: flex;
   justify-content: space-evenly;
   font-size: 1.4rem;
-  min-height: 70vh;
+  min-height: 620px;
 }
 
 .games_page .games_selection {
@@ -93,11 +93,12 @@
 
 .games_page .selection_wrapper input[type="checkbox"] {
   cursor: pointer;
+  position: relative;
   transform:
-  rotate(45deg)
-  translateY(4px);
-  width: 1.5em;
-  height: 1.5em;
+    rotate(45deg)
+    translateY(4px);
+  width: 20px;
+  height: 20px;
   border: 2px solid var(--main-color);
   background: var(--secondary-bg-color);
   appearance: none;
@@ -105,19 +106,18 @@
 }
 
 .games_page .selection_wrapper label span {
-  display: block;
   width: 1px;
   height: 1px;
-  position: absolute;
+  position: relative;
 }
 
 .games_page .selection_wrapper label span::after {
   content: '';
   position: absolute;
-  top: -20px;
-  left: 13px;
-  width: 7px;
-  height: 7px;
+  top: 9px;
+  left: -19px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   border: solid 1px white;
   background: white;
@@ -199,7 +199,7 @@
 
 .games_page .games_selection .cancel_btn {
   position: relative;
-  top: 17px;
+  top: -9px;
   border-radius: 50%;
   width: 40px;
   height: 40px;
@@ -209,8 +209,9 @@
 .games_page .games_selection .cancel_btn img {
   width: 20px;
   height: auto;
-  position: relative;
-  top: -18px;
+  position: absolute;
+  top: 9px;
+  left: 8px;
 }
 
 .games_page .tournament_btn_wrapper {

@@ -1,13 +1,15 @@
-h2 {
+.join_tournament_wrapper h2 {
 	text-align: center;
+  margin-top: 30px;
 }
 
-.join_tournament_wrapper {
+.join_tournament_box {
 	background: var(--fourth);
 	padding: 20px 0;
+  min-height: 75vh;
 }
 
-.join_tournament_wrapper .tournament_list {
+.join_tournament_box .tournament_list {
 	display: block;
 	width: 50%;
 	height: 600px;
@@ -20,7 +22,7 @@ h2 {
 	padding: 20px 10px;
 }
 
-.join_tournament_wrapper .tournament_list li {
+.join_tournament_box .tournament_list li {
 	display: grid;
 	grid-template-columns: 1fr 3fr 1fr 1fr;
 	grid-gap: 10px;
@@ -32,7 +34,7 @@ h2 {
   height: fit-content;
 }
 
-.join_tournament_wrapper .tournament_list li:not(:last-child):after {
+.join_tournament_box .tournament_list li:not(:last-child):after {
   content: "";
   position: absolute;
   top: 104%;
@@ -41,40 +43,40 @@ h2 {
   border-top: 1px solid var(--fourth);
 }
 
-.join_tournament_wrapper .tournament_list .tournament_data {
+.join_tournament_box .tournament_list .tournament_data {
   width: 100%;
   overflow: hidden;
   margin: auto;
 }
 
-.join_tournament_wrapper .tournament_list .tournament_data p {
+.join_tournament_box .tournament_list .tournament_data p {
   margin: 5px;
   font-size: 0.8em;
 }
 
-.join_tournament_wrapper .tournament_list .tournament_description {
+.join_tournament_box .tournament_list .tournament_description {
   overflow-wrap: break-word;
   overflow: scroll;
   max-height: 4em;
 }
 
-.join_tournament_wrapper .tournament_list .tournament_data .tournament_name {
+.join_tournament_box .tournament_list .tournament_data .tournament_name {
   font-size: 1.2em;
   font-weight: bolder;
 }
 
-.join_tournament_wrapper .tournament_list .tournament_description {
+.join_tournament_box .tournament_list .tournament_description {
   font-style: italic;
 }
 
-.join_tournament_wrapper .tournament_list li img {
+.join_tournament_box .tournament_list li img {
 	display: block;
 	margin: auto;
 	width: 80px;
 	height: 80px;
 }
 
-.join_tournament_wrapper .tournament_list li button {
+.join_tournament_box .tournament_list li button {
   border-radius: 2px;
   margin: 0;
   padding: 0.5em;
@@ -90,7 +92,7 @@ h2 {
   cursor: pointer;
 }
 
-.join_tournament_wrapper .tournament_list li button:hover {
+.join_tournament_box .tournament_list li button:hover {
   background: var(--main-bg-color);
   border: 2px solid var(--fourth);
   box-shadow:

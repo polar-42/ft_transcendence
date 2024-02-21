@@ -1,5 +1,5 @@
 import { navto } from "../index.js"
-import { initDashboard, addPongClassicMatch, addPongTournamentStat, addPongGlobalStat, addOtherPongStat, addBattleshipClassicMatch, addBattleshipTournamentStat, addBattleshipGlobalStat, addOtherBattleshipStat } from "../dashboardApp/dashboard.js"
+import { initDashboard, addPongClassicMatch, addPongTournamentStat, addPongGlobalStat, addOtherPongStat, addBattleshipClassicMatch, addBattleshipTournamentStat, addBattleshipGlobalStat, addOtherBattleshipStat, cleanStats } from "../dashboardApp/dashboard.js"
 
 let userid = undefined;
 
@@ -102,6 +102,7 @@ function getPongStat()
 {
     document.getElementById('buttonGamePong').style.background = 'var(--fourth)'
     document.getElementById('buttonGameBattleship').style.background = 'transparent'
+    cleanStats()
     addPongClassicMatch(userid);
     addPongTournamentStat(userid);
     addPongGlobalStat(userid);
@@ -112,6 +113,7 @@ function getBattleshipStat()
 {
     document.getElementById('buttonGameBattleship').style.background = 'var(--fourth)'
     document.getElementById('buttonGamePong').style.background = 'transparent'
+    cleanStats()
     addBattleshipClassicMatch(userid)
     addBattleshipTournamentStat(userid)
     addBattleshipGlobalStat(userid)

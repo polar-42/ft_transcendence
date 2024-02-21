@@ -1,11 +1,7 @@
 .login_container {
   max-width: 700px;
   height: 340px;
-  margin:
-  80px    
-  calc((100vw - 500px) / 2)
-  80px
-  calc((100vw - 500px) / 2);
+  margin: 200px auto;
   padding: 30px;
   background: var(--main-color);
   box-shadow: 
