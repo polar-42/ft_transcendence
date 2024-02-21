@@ -13,6 +13,7 @@ class PongGameSocket(WebsocketConsumer):
 	channel_layer = get_channel_layer()
 
 	def connect(self):
+		self.canSend = True
 		self.pongGameId = self.scope['url_route']['kwargs']['gameId']
 		self.isTournament = self.pongGameId.startswith('Tournament')
 		self.user = self.scope['user']
@@ -35,7 +36,7 @@ class PongGameSocket(WebsocketConsumer):
 		self.players_game.append(p2)
 
 	def disconnect(self, close_code):
-
+		self.canSend = False
 		async_to_sync(self.channel_layer.group_discard)(
 			self.pongGameId,
 			self.channel_name

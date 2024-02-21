@@ -253,16 +253,18 @@ class pongGame():
         player2_score = player2.get_score()
         number_ball_touch_player1 = player1.get_ball_touch()
         number_ball_touch_player2 = player2.get_ball_touch()
-
-        self.socket.send(text_data=json.dumps({
-   			'type': 'game_data',
-   			'ball_pos_x': ball_pos_x,
-               'ball_pos_y': ball_pos_y,
-               'playerone_pos_y': player1_pos_y,
-               'playertwo_pos_y': player2_pos_y,
-               'playerone_score': player1_score,
-               'playertwo_score': player2_score,
-   		}))
+        try:
+            self.socket.send(text_data=json.dumps({
+   		    	'type': 'game_data',
+   		    	'ball_pos_x': ball_pos_x,
+                   'ball_pos_y': ball_pos_y,
+                   'playerone_pos_y': player1_pos_y,
+                   'playertwo_pos_y': player2_pos_y,
+                   'playerone_score': player1_score,
+                   'playertwo_score': player2_score,
+   		    }))
+        except:
+            pass
 
         if player1_score >= 3 or player2_score >= 3:
             print(player1.player_id)

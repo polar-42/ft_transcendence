@@ -283,15 +283,18 @@ class pongGame():
         number_ball_touch_player2 = player2.get_ball_touch()
 
         for x in self.users:
-            x.socket.send(text_data=json.dumps({
-    			'type': 'game_data',
-    			'ball_pos_x': ball_pos_x,
-                'ball_pos_y': ball_pos_y,
-                'playerone_pos_y': player1_pos_y,
-                'playertwo_pos_y': player2_pos_y,
-                'playerone_score': player1_score,
-                'playertwo_score': player2_score,
-    		}))
+            try:
+                x.socket.send(text_data=json.dumps({
+    		    	'type': 'game_data',
+    		    	'ball_pos_x': ball_pos_x,
+                    'ball_pos_y': ball_pos_y,
+                    'playerone_pos_y': player1_pos_y,
+                    'playertwo_pos_y': player2_pos_y,
+                    'playerone_score': player1_score,
+                    'playertwo_score': player2_score,
+    		    }))
+            except:
+                pass
 
         if player1_score >= 3 or player2_score >= 3:
             if player1_score >= 3:
@@ -381,14 +384,17 @@ class pongGame():
 
             self.winner.socket.close()
         else:
-            self.winner.socket.send(text_data=json.dumps({
-                'type': 'game_ending',
-                'youare': youare,
-				'winner': 'you',
-				'reason': 'disconnexion',
-				'playerone_score': p1_score,
-				'playertwo_score': p2_score,
-				'playerone_username': self.users[0].username,
-				'playertwo_username': self.users[1].username,
-            }))
+            try:
+                self.winner.socket.send(text_data=json.dumps({
+                    'type': 'game_ending',
+                    'youare': youare,
+			    	'winner': 'you',
+			    	'reason': 'disconnexion',
+			    	'playerone_score': p1_score,
+			    	'playertwo_score': p2_score,
+			    	'playerone_username': self.users[0].username,
+			    	'playertwo_username': self.users[1].username,
+                }))
+            except:
+                pass 
 

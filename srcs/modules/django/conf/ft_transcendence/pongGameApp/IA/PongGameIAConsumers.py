@@ -9,7 +9,7 @@ from authApp.models import User
 
 class PongGameIASocket(WebsocketConsumer):
 	def connect(self):
-
+		self.canSend = True
 		self.user = self.scope['user']
 		self.id = self.user.id
 
@@ -25,9 +25,10 @@ class PongGameIASocket(WebsocketConsumer):
 		self.pongGameThread.launchGame("PongGameVsIA_" + str(self.id), self)
 
 	def disconnect(self, close_code):
+		self.canSend = False
 		if self.pongGameThread is None:
 			return
-
+		self.canSend = True
 		async_to_sync(self.channel_layer.group_discard)(
 			"PongGameVsIA_" + str(self.id),
 			self.channel_name
@@ -39,8 +40,6 @@ class PongGameIASocket(WebsocketConsumer):
 		AI_id = User.objects.get(nickname='AI').id
 
 		addToDb(self.id, AI_id, 0, 3, AI_id, 0, 3, 'disconnexion')
-
-		self.close()
 
 	def receive(self, text_data):
 		if self.pongGameThread is None:
@@ -59,7 +58,7 @@ class PongGameIASocket(WebsocketConsumer):
 
 		print('Game is win by', winner)
 
-		self.channel_layer.group_discard(
+		async_to_sync(self.channel_layer.group_discard)(
 			"PongGameVsIA_" + str(self.id),
 			self.channel_name
 		)

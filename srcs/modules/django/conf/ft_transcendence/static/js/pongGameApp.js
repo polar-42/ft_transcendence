@@ -43,9 +43,21 @@ export function JoinMatchmaking()
 {
 	if(matchmakingPongGame != null)
 		return
-		matchmakingPongGame = new WebSocket("wss://" + window.location.host + "/pongGame/matchmaking/")
+	matchmakingPongGame = new WebSocket("wss://" + window.location.host + "/pongGame/matchmaking/")
 		// matchmakingPongGame = new WebSocket("ws://" + window.location.host + "/pongGame/matchmaking/")
 	matchmakingPongGame.onmessage = e => OnMessage(e)
+	matchmakingPongGame.onclose = e => OnCloseSocket(e)
+}
+
+function OnCloseSocket(event)
+{
+	console.log(event)
+	if (event.code == 1006)
+	{
+		matchmakingPongGame = null
+		return
+	}
+
 }
 
 export function LeaveMatchmaking()

@@ -71,7 +71,7 @@ const Dball = new Element({
 	height: 0.15,
 	dx: 0,
 	dy: 0,
-	speed: .1,
+	speed: 0.1,
 });
 
 export function countdown()
@@ -96,6 +96,8 @@ export function countdown()
 			textElement.textContent = "";
 	}, 4000);
 	setTimeout(function(){
+		Dball.dx = bSpeed;
+		Dball.dy = bGravity;
 		isCountingDown = false;
 	}, 4000);
 }
@@ -140,7 +142,7 @@ export function exitPongLocal()
 		Dball.y = 0
 		Dball.dx = 0
 		Dball.dy = 0
-		Dball.speed = .1
+		Dball.speed = 0.1
 	}
 }
 
@@ -162,47 +164,36 @@ export function init_objects()
 	scene.background = texture;
 	console.warn = originalWarning;
 
-	var wallGeometry = new THREE.BoxGeometry(22, 3);
-//
-	// var wallUp = new Reflector( wallGeometry, {
-		// textureWidth: 250 ,
-		// textureHeight: 50 ,
-		// color: new THREE.Color(0x7f7f7f)
-	// } );
+	var wallGeometry = new THREE.PlaneGeometry(22, 3);
 
-	var wall_m = new THREE.MeshPhysicalMaterial({
-		reflectivity : 0.3,
-		transmission : 1.0,
-		roughness : 0.8,
-		clearcoat : 0.3,
-		clearcoatRoughness : 0.25,
-		ior : 1.2,
-		thickness : 10.0,
-		side : THREE.BackSide,
-		color : new THREE.Color(0x1000000),
-	});
+	var wallUp = new Reflector( wallGeometry, {
+		textureWidth: 250 ,
+		textureHeight: 50 ,
+		color: new THREE.Color(0x7f7f7f)
+	} );
 
-	var wallUp = new THREE.Mesh(wallGeometry, wall_m)
+	// var wall_m = new THREE.MeshPhysicalMaterial({
+	// 	reflectivity : 0.3,
+	// 	transmission : 1.0,
+	// 	roughness : 0.8,
+	// 	clearcoat : 0.3,
+	// 	clearcoatRoughness : 0.25,
+	// 	ior : 1.2,
+	// 	thickness : 10.0,
+	// 	side : THREE.BackSide,
+	// 	color : new THREE.Color(0x1000000),
+	// });
+
+	// var wallUp = new THREE.Mesh(wallGeometry, wall_m)
 	wallUp.position.y = 3.8;
 	wallUp.rotation.x = Math.PI / 180 * 90 ;
 	wallUp.renderOrder = 1
-	// var wallDown = new Reflector( wallGeometry, {
-		// textureWidth: 250 ,
-		// textureHeight: 50 ,
-		// color: new THREE.Color(0x7f7f7f)
-	// } );
-	// var wallDown_m = new THREE.MeshPhysicalMaterial({
-		// reflectivity : 0.3,
-		// transmission : 1.0,
-		// roughness : 0.8,
-		// clearcoat : 0.3,
-		// clearcoatRoughness : 0.25,
-		// ior : 1.2,
-		// thickness : 10.0,
-		// side : THREE.BackSide,
-		// color : new THREE.Color(0xff0000),
-	// });
-	var wallDown = new THREE.Mesh(wallGeometry, wall_m)
+	var wallDown = new Reflector( wallGeometry, {
+		textureWidth: 250 ,
+		textureHeight: 50 ,
+		color: new THREE.Color(0x7f7f7f)
+	} );
+	// var wallDown = new THREE.Mesh(wallGeometry, wall_m)
 	wallDown.renderOrder = 1
 	wallDown.position.y = -3.8;
 	wallDown.rotation.x = Math.PI / 180 * -90 ;
@@ -215,7 +206,7 @@ export function init_objects()
 	var g_paddle1 = new THREE.BoxGeometry(0.2, 2., 2.);
 	var g_paddle2 = new THREE.BoxGeometry(0.2, 2., 2.);
 	var m_paddle1 = new THREE.MeshPhysicalMaterial({
-		// reflectivity : 0.3,
+		reflectivity : 0.3,
 		transmission : 1.0,
 		roughness : 0.8,
 		clearcoat : 0.3,
@@ -232,7 +223,7 @@ export function init_objects()
 	scene.add(paddle1);
 
 	var m_paddle2 = 	new THREE.MeshPhysicalMaterial({
-		// reflectivity : 0.3,
+		reflectivity : 0.3,
 		side : THREE.BackSide,
 		transmission : 1.0,
 		roughness : 0.8,
@@ -478,7 +469,7 @@ export function initLocalGamePong()
 	three_box.appendChild(textElement);
 
 	window.onresize = function () {
-		//WIDTH = document.body.clientWidth * 0.75;
+		//WIDTH = document.body.clientWidth * 0.75;	
 		WIDTH = document.body.clientWidth * 0.62;
 		HEIGHT = WIDTH * (9. / 16.);
 		three_box.style.width = WIDTH + 8 + "px";

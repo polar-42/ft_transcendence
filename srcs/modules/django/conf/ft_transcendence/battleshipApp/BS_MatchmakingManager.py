@@ -45,6 +45,9 @@ def addToDb(battleshipGame: BattleshipMatch):
 	if battleshipGame.TournamentGame is None:
 		battleshipGame.TournamentGame = -1
 
+	if battleshipGame.Winner == None:
+		return
+
 	for user in battleshipGame.Users:
 		if User.objects.filter(id=user.sock_user.id).exists() is False:
 			ColorPrint.prRed("Error! User {userId} don't exist in the db".format(userId=user.sock_user.id))
