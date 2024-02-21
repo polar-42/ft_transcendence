@@ -115,12 +115,15 @@ class chatSocket(WebsocketConsumer):
 				self.channel_name
 		)
 
-		if self.id in self.allUsers.keys():
+
+		if self.UserModel.connexionStatus == connexionStatus.Disconnected and self.id in self.allUsers.keys():
 			self.allUsers.pop(self.id)
 
 		self.updateConnexionStatus()
 		global UsersSockets
-		del UsersSockets[self.id]
+		if self.id in UsersSockets and self.UserModel.connexionStatus == connexionStatus.Disconnected:
+			del UsersSockets[self.id]
+
 		ColorPrint.prBlue(UsersSockets)
 		self.close()
 
