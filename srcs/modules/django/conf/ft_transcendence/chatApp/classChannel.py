@@ -55,6 +55,7 @@ class ChannelChat():
 			obj = ChannelModels.objects.create(
 					channelName=self.channelName,
 					privacyStatus = channelPrivacy.Public,
+					description = self.description,
 					)
 
 		obj.save()

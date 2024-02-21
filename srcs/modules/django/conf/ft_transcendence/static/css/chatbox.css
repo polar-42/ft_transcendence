@@ -514,6 +514,7 @@
 
 .main_box_header.channel .contact_wrapper .leave_channel {
 	width: 25px;
+	height: auto;
 }
 
 .main_box_header.channel .contact_wrapper.general .leave_channel {
