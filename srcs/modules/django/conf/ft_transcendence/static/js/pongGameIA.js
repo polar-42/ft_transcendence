@@ -26,18 +26,23 @@ var isCountingDown = false;
 export function countdown()
 {
 	isCountingDown = true;
-	textElement.textContent = "3";
+	if (isCountingDown == true)
+		textElement.textContent = "3";
 	setTimeout(function(){
-		textElement.textContent = "2";
+		if (isCountingDown == true)
+			textElement.textContent = "2";
 	}, 1000);
 	setTimeout(function(){
-		textElement.textContent = "1";
+		if (isCountingDown == true)
+			textElement.textContent = "1";
 	}, 2000);
 	setTimeout(function(){
-		textElement.textContent = "GO!";
+		if (isCountingDown == true)
+			textElement.textContent = "GO!";
 	}, 3000);
 	setTimeout(function(){
-		textElement.textContent = "";
+		if (isCountingDown == true)
+			textElement.textContent = "";
 	}, 4000);
 	setTimeout(function(){
 		isCountingDown = false;
@@ -397,6 +402,7 @@ async function getNameAndPPAI()
 
 function FinishGame()
 {
+	isCountingDown = false
 	scoreDisplay.remove()
 	renderer.domElement.style.filter = "blur(5px)"
 	console.log('Pong game is finish');
@@ -418,17 +424,15 @@ function FinishGameByScore(data)
 			three_box.style.border = '4px solid #ff0000';
 		}
 	}
+	isCountingDown = false
 }
 
 function OnMessage(e)
 {
 	const data = JSON.parse(e.data)
 
-	//console.log(data)s
-
 	if (data.type == 'game_data')
 	{
-		// console.log('game_data is received');
 		updateGameData(data);
 	}
 	else if (data.type == 'countdown')
@@ -443,9 +447,5 @@ function OnMessage(e)
 	else if (data.type == 'game_ending')
 	{
 		FinishGameByScore(data);
-	}
-	else if (data.type == 'return_to_tournament')
-	{
-		returnToTournament(data.id)
 	}
 }

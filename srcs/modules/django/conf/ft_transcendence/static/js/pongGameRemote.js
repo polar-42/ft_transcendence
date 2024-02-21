@@ -77,11 +77,8 @@ export function initGamePong()
 		}
 		navto('/games')
 	}
-	// console.log("GameID = " + gameId);
-	// console.log("ws://" + window.location.host + '/pongGame/RemoteGame/' + arg);
 	pongGameSocket = new WebSocket("wss://" + window.location.host + '/pongGame/RemoteGame/' + arg);
 	// pongGameSocket = new WebSocket("ws://" + window.location.host + '/pongGame/RemoteGame/' + arg);
-	// console.log(pongGameSocket);
 
 	document.addEventListener('keydown', doKeyDown);
 	document.addEventListener('keyup', doKeyUp);
@@ -112,14 +109,11 @@ function init_objects()
 
 	renderer = new THREE.WebGLRenderer();
 	renderer.setSize(WIDTH, HEIGHT);
-	var originalWarning = console.warn; // back up the original method
-	console.warn = function(){};
 	var loader = new THREE.TextureLoader();
 	var texture = loader.load("../../static/js/sounds/corona_bk.png");
 	texture.minFilter = THREE.LinearMipmapLinearFilter;
 	texture.generateMipmaps = true;
 	scene.background = texture;
-	console.warn = originalWarning;
 
 
 	var wallGeometry = new THREE.PlaneGeometry(22, 3);
@@ -366,7 +360,6 @@ function LaunchGame()
 	textElement.style.padding = "10px"; // Example padding for better visualization
 
 	three_box.appendChild(textElement);
-	console.log('Pong Game vs ia is launch');
 	window.onresize = function () {
 		WIDTH = document.body.clientWidth * 0.62;
 		HEIGHT = WIDTH * (9. / 16.);
@@ -422,7 +415,6 @@ async function getPlayersData(player1, player2)
 	if (res.ok)
     {
         var vari = await res.json()
-		console.log(vari.userName)
 		if (document.getElementById('gamePlayer1') == undefined)
 			return
 		document.getElementById('gamePlayer1').innerHTML += vari.userName;
@@ -436,7 +428,6 @@ async function getPlayersData(player1, player2)
 	if (res.ok)
     {
         var vari = await res.json()
-		console.log(vari.userName)
 		if (document.getElementById('gamePlayer2') == undefined)
 			return
 		document.getElementById('gamePlayer2').innerHTML += vari.userName;
@@ -447,7 +438,6 @@ async function FinishGame(event)
 {
 	scoreDisplay.remove()
 	renderer.domElement.style.filter = "blur(5px)"
-	console.log('Pong game is finish');
 	if (event.code == 3001)
 	{
 		pongGameSocket = null;
@@ -461,7 +451,6 @@ async function FinishGame(event)
 
 function FinishGameByScore(data)
 {
-	console.log(data)
 	isCountingDown = false
 	if (data.playerone_score >= 3 || data.playertwo_score >= 3)
 	{
@@ -492,6 +481,7 @@ function returnToTournament(id)
 {
 	pongGameSocket = null
 	navto("/tournaments/Play/?id=" + id)
+	isCountingDown = false
 }
 
 function OnMessage(e)
@@ -500,7 +490,6 @@ function OnMessage(e)
 
 	if (data.type == 'game_data')
 	{
-		// console.log('game_data is received');
 		updateGameData(data);
 	}
 	else if (data.type == 'countdown')

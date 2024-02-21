@@ -211,7 +211,6 @@ export function displayChannel(data) {
 						kick.addEventListener("click", () => {
 							kickUser(data.name, users[i].id)
 						})
-					console.log(users[i])
 					sidebar.lastChild.addEventListener("click", () => {
 						navto("/profile/?id=" + users[i].id)
 					  })
@@ -242,17 +241,12 @@ export async function displayChannelHistory(data, isStillUnreadMessage) {
 			received = ""
 			sender = data[i].sender
 		}
-		let profilePicture = await getProfilePicture({ 'type': 'user', 'id': data[i].senderID })
-		let ppUrl
-		if (profilePicture.type == 'image/null')
-			ppUrl = "/static/assets/logo/user.png"
-		else
-			ppUrl = URL.createObjectURL(profilePicture)
-
-		let item =
+		let item;
+		if (received == 'own')
+		{
+			item =
 			'<li class="message_item ' + received + '" msgId="' + data[i].id + '">' +
 			'<div class="sender">' +
-			'<img src=' + ppUrl + ' alt="sender profile picture" class="profile_id_chan_' + data[i].senderID + '">' +
 			'<p>' + sender + '</p>' +
 			'</div>' +
 			'<div class="message_wrapper">' +
@@ -260,6 +254,28 @@ export async function displayChannelHistory(data, isStillUnreadMessage) {
 			'<p class="timestamp">' + data[i].time.substring(0, 19) + '</p>' +
 			'</div>' +
 			'</li>'
+		}
+		else
+		{
+			let profilePicture = await getProfilePicture({ 'type': 'user', 'id': data[i].senderID })
+			let ppUrl
+			if (profilePicture.type == 'image/null')
+				ppUrl = "/static/assets/logo/user.png"
+			else
+				ppUrl = URL.createObjectURL(profilePicture)
+
+			item =
+				'<li class="message_item ' + received + '" msgId="' + data[i].id + '">' +
+				'<div class="sender">' +
+				'<img src=' + ppUrl + ' alt="sender profile picture" class="profile_id_chan_' + data[i].senderID + '">' +
+				'<p>' + sender + '</p>' +
+				'</div>' +
+				'<div class="message_wrapper">' +
+				'<p class="message">' + data[i].message + '</p>' +
+				'<p class="timestamp">' + data[i].time.substring(0, 19) + '</p>' +
+				'</div>' +
+				'</li>'
+		}
 
 		html += item
 	}
@@ -276,7 +292,6 @@ export async function displayChannelHistory(data, isStillUnreadMessage) {
 			})
 		tabid.push(data[i].senderID)
 	}
-	// console.log(isStillUnreadMessage)
 	if (isStillUnreadMessage == true) {
 		document.getElementById('pop_up_unread_chatbox').style.display = 'block'
 	} else {
@@ -308,7 +323,6 @@ function channelMessage(message, targetChannel) {
 }
 
 function joinChannel(channelName, privacyStatus, password) {
-	// console.log('channelName:', channelName, ' privacyStatus:', privacyStatus, ' password:', password)
 	if (privacyStatus === false) {
 		chatSocket.send(JSON.stringify({
 			'type': 'channel_join',
@@ -375,27 +389,46 @@ export async function receiveChanMsg(data) {
 		received = ""
 		sender = data.sender
 	}
-	let profilePicture = await getProfilePicture({ 'type': 'user', 'id': data.senderID })
-	let ppUrl
-	if (profilePicture.type == 'image/null')
-		ppUrl = "/static/assets/logo/user.png"
-	else
-		ppUrl = URL.createObjectURL(profilePicture)
 
-	let item =
-		'<li class="message_item ' + received + '" msgid="' + '">' +
-		'<div class="sender">' +
-		'<img src="' + ppUrl + '" alt="sender profile picture" id="new_message_from_' + data.senderID + '">' +
-		'<p>' + sender + '<p>' +
-		'</div>' +
-		'<div class="messGage_wrapper">' +
-		'<p class="message">' + data.message + '</p>' +
-		'<p class="timestamp">' + data.time.substring(0, 19) + '</p>' +
-		'</div>' +
-		'</li>'
+	let item
+	if (received == 'own')
+	{
+		item =
+			'<li class="message_item ' + received + '" msgid="' + '">' +
+			'<div class="sender">' +
+			'<p>' + sender + '<p>' +
+			'</div>' +
+			'<div class="messGage_wrapper">' +
+			'<p class="message">' + data.message + '</p>' +
+			'<p class="timestamp">' + data.time.substring(0, 19) + '</p>' +
+			'</div>' +
+			'</li>'
+	}
+	else
+	{
+
+		let profilePicture = await getProfilePicture({ 'type': 'user', 'id': data.senderID })
+		let ppUrl
+		if (profilePicture.type == 'image/null')
+			ppUrl = "/static/assets/logo/user.png"
+		else
+			ppUrl = URL.createObjectURL(profilePicture)
+
+		item =
+			'<li class="message_item ' + received + '" msgid="' + '">' +
+			'<div class="sender">' +
+			'<img src="' + ppUrl + '" alt="sender profile picture" id="new_message_from_' + data.senderID + '">' +
+			'<p>' + sender + '<p>' +
+			'</div>' +
+			'<div class="messGage_wrapper">' +
+			'<p class="message">' + data.message + '</p>' +
+			'<p class="timestamp">' + data.time.substring(0, 19) + '</p>' +
+			'</div>' +
+			'</li>'
+	}
+
 	if (conversation != undefined)
 	{
-		console.log(data)
 	  if (conversation.children.length > 0) {
 		conversation.lastChild.insertAdjacentHTML("afterend", item)
 	  } else {
@@ -403,11 +436,13 @@ export async function receiveChanMsg(data) {
 	  }
 	  conversation.scrollTo(0, conversation.scrollHeight)
 
-	  document.getElementById('new_message_from_' + data.senderID).addEventListener('click', () => {
-		navto("/profile/?id=" + data.senderID)
-	  })
+	  if (document.getElementById('new_message_from_' + data.senderID) != undefined)
+	  {
+	  	document.getElementById('new_message_from_' + data.senderID).addEventListener('click', () => {
+			navto("/profile/?id=" + data.senderID)
+	  	})
+	  }
 
-	  // console.log(data)
 	  chatSocket.send(JSON.stringify({
 		'type': 'msg_read',
 		'sender': data.senderID,
@@ -600,7 +635,6 @@ async function createChannel() {
 		return
 	}
 
-	// console.log(pwd)
 	chatSocket.send(JSON.stringify({
 		'type': 'create_channel',
 		'channel_name': channelName,
