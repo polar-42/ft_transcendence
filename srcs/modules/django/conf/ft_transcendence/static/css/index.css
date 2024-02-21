@@ -11,6 +11,27 @@
   list-style: none;
 }
 
+::-webkit-scrollbar {
+  width: 3px;
+  height: 1px;
+  opacity: 0;
+}
+
+::-webkit-scrollbar-track {
+  opacity: 0;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #BDBDBD;
+  border-radius: 10rem;
+  opacity: 0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  /*background: #6E6E6E;*/
+  opacity: 0;
+}
+
 html {
   color: white;
   font-size: 20px;
@@ -111,7 +132,7 @@ header a:visited {
   background: var(--main-color);
   border-radius: 20px;
   border: 2px solid var(--main-color);
-  width: fit-content; 
+  width: fit-content;
   display: flex;
   justify-content: space-around;
   align-items: center;

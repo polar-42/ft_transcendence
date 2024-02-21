@@ -569,7 +569,7 @@ class chatSocket(WebsocketConsumer):
 					}))
 
 	def getHistoryChat(self, chatTarget, msgId):
-		if userModels.User.objects.filter(id=chatTarget).exists() is False:
+		if userModels.User.objects.filter(id=chatTarget).exists() is False or chatTarget is None or msgId is None:
 			return
 
 		print('conv between ', self.id, ' and ', chatTarget)
@@ -630,7 +630,7 @@ class chatSocket(WebsocketConsumer):
 			)
 
 	def getHistoryChannel(self, channelTarget, msgId):
-		if ChannelModels.objects.filter(channelName=channelTarget).exists() is False:
+		if ChannelModels.objects.filter(channelName=channelTarget).exists() is False or channelTarget is None or msgId is None:
 			return
 
 		print('msgId =', msgId)
