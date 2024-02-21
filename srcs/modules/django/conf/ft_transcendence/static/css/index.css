@@ -100,6 +100,7 @@ header a:visited {
 
 .profile_dropdown {
   width: 100%;
+  position: relative;
 }
 
 .profile_button {
@@ -246,22 +247,26 @@ nav .profile_menu {
   cursor: pointer;
 }
 
+#app {
+  min-height: 70%;
+}
+
 footer {
   background:
     var(--secondary-bg-color),
     linear-gradient(to bottom, var(--main-bg-color) 0%, var(--secondary-bg-color) 50%);
-  top: 100%;
-  height: auto;
+  height: 80px;
   width: 100%;
-  padding: 3% 30% 3% 30%;
+  margin: 30px auto;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
   color: white;
 }
 
 footer a {
   font-weight: 700;
   text-align: center;
+  margin: auto;
 }
 
 
@@ -342,6 +347,11 @@ footer a:hover::before {
   .profile_button {
     margin-left: auto;
     margin-right: auto;
+  }
+
+  .profile_dropdown .profile_menu {
+    position: unset;
+    margin: 10px auto;
   }
 }
 

@@ -9,8 +9,7 @@
   box-shadow: 
   -2px -2px 5px var(--fourth),
   2px 2px 5px var(--fourth);
-  border-radius: 5px;
-  margin-top: 50px;
+  margin: 110px auto;
 }
 
 .settings_container label {
