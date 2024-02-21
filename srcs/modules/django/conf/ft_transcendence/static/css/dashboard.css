@@ -313,8 +313,8 @@
 .dashboard #player_2_avatar {
   border-radius: 50%;
   cursor: pointer;
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
   transition: .3s ease;
 }
 
@@ -329,7 +329,6 @@
 
 
 .dashboard #player_1, #player_2 {
-  display: flex;
   justify-content: center;
 }
 
