@@ -76,12 +76,23 @@ export function initGamePongIA()
 
 export function unloadGamePongIA()
 {
-	// console.log('unloadGamePongIA');
 	renderer.domElement.style.filter = "blur(5px)"
 	renderer.dispose();
 	if (socketPongIA != null)
 	{
 		socketPongIA.close();
+	}
+	if (scene != undefined)
+	{
+		while (scene.children.length > 0)
+			scene.remove(scene.children[0])
+		renderer.setAnimationLoop(null);
+		if (animationid != undefined)
+		{
+			cancelAnimationFrame(animationid)
+			animationid = undefined
+		}
+		scene = undefined
 	}
 	socketPongIA = null;
 	document.removeEventListener('keydown', doKeyDown);
@@ -214,8 +225,10 @@ function init_objects()
 	// countdown();
 }
 
+var animationid = undefined
+
 function animate() {
-    requestAnimationFrame(animate);
+    animationid = requestAnimationFrame(animate);
 	if (BcameraShake == true)
 	{
 		frames_to_shake = 10;

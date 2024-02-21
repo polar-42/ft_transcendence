@@ -95,6 +95,18 @@ export function unLoadGamePong()
 	{
 		pongGameSocket.close()
 	}
+	if (scene != undefined)
+	{
+		while (scene.children.length > 0)
+			scene.remove(scene.children[0])
+		renderer.setAnimationLoop(null);
+		if (animationid != undefined)
+		{
+			cancelAnimationFrame(animationid)
+			animationid = undefined
+		}
+		scene = undefined
+	}
 	pongGameSocket = null;
 	document.removeEventListener('keydown', doKeyDown);
 	document.removeEventListener('keyup', doKeyUp);
@@ -221,8 +233,10 @@ function init_objects()
 	// countdown();
 }
 
+var animationid = undefined
+
 function animate() {
-    requestAnimationFrame(animate);
+    animationid = requestAnimationFrame(animate);
 	if (BcameraShake == true)
 	{
 		frames_to_shake = 10;

@@ -1,5 +1,5 @@
 import { navto } from "../index.js"
-import { chatSocket, closeChatbox, openChatbox, sleep, getProfilePicture } from "./CA_General.js"
+import { chatSocket, closeChatbox, openChatbox, sleep, getProfilePicture, cleanMainBox, initChatHomepage } from "./CA_General.js"
 import { goToConv } from "./CA_Private.js"
 import { initCreateChannel } from './CA_Channels.js'
 import { initFriendsPage } from './CA_Friends.js'
@@ -289,6 +289,10 @@ export function receiveRefusedInvitation(data) {
 export function showTMatchRequest(tId)
 {
 	openChatbox()
+	document.querySelector(".main_box_header").classList.remove("channel")
+	document.querySelector(".main_box_body").classList.remove("channel")
+	cleanMainBox()
+	initChatHomepage()
 	let conversation = document.querySelector(".conversation_list")
 	conversation.querySelectorAll('.TournamentInvit').forEach(element => {
 		element.parentElement.removeChild(element)
