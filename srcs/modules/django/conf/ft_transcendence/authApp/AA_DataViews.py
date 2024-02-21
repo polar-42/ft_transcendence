@@ -31,7 +31,6 @@ def getAvatarImage(request):
     if request.user.is_authenticated:
         paramType = request.GET.get('type', None)
         if paramType == 'channel':
-            print('TO DO')
             channelName = request.GET.get('userId', None)
             if ChannelModels.objects.filter(channelName=channelName).exists() is False:
                 return HttpResponse(None, content_type='image/null')

@@ -31,7 +31,8 @@ while [ ! -f "/var/blockchain/contract_address.txt" ]; do
 done
 
 export CONTRACT_ADDRESS=$(cat /var/blockchain/contract_address.txt)
-
+var=$(ping container_nginx -qc 1 | grep PING | awk '{print $3}'); echo ${var:1:-2}
+export NGINXIP=${var:1:-2};
 #BLOCKCHAIN
 
 

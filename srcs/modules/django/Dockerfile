@@ -15,7 +15,7 @@ RUN mkdir -p /var/log/gunicorn/
 
 WORKDIR /usr/src/app
 
-COPY conf/ ./conf
+COPY ./conf/ /var/conf
 COPY ft_transcendence.sh .
 COPY gunicornConf.py .
 

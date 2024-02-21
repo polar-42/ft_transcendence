@@ -30,7 +30,6 @@ services:
     restart: on-failure
     volumes:
       - db:/var/db
-      - django_v:/var/conf
       - blockchain:/var/blockchain
     ports:
       - 8000
@@ -92,12 +91,6 @@ volumes:
       type: 'none'
       o: 'bind'
       device: '~/data/db'
-  django_v:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: './modules/django/conf'
   static_v:
     driver: local
     driver_opts:
