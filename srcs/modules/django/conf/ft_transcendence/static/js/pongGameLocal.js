@@ -369,7 +369,7 @@ export function initLocalGamePong()
 	playerTwo.gravity = 0.;
 	playerTwo.y = 0;
 	init_objects();
-	canvas = document.querySelector(".pongWindow");
+	canvas = document.querySelector(".canvas_wrapper");
 	three_box = document.createElement("div");
 	three_box.setAttribute("id", 'pongGame')
 	three_box.style.width = WIDTH + 8 + "px";

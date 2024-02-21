@@ -331,12 +331,12 @@ function doKeyUp(e)
 function LaunchGame()
 {
 	init_objects();
-	canvas = document.querySelector(".pongWindow");
+	canvas = document.querySelector(".canvas_wrapper");
 	three_box = document.createElement("div");
 	three_box.style.width = WIDTH + 8 + "px";
 	three_box.style.height = HEIGHT + 8 + "px";
-	//three_box.style.border = '4px solid #ccc';
 	three_box.style.position = "relative";
+	three_box.setAttribute("id", 'pongGame')
 	three_box.appendChild(renderer.domElement);
 	canvas.appendChild(three_box);
 	textElement = document.createElement("div");

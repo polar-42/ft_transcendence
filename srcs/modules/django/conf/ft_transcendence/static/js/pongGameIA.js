@@ -317,7 +317,7 @@ function LaunchGame()
 	getNameAndPPAI();
 
 	init_objects();
-	canvas = document.querySelector(".pongWindow");
+	canvas = document.querySelector(".canvas_wrapper");
 	three_box = document.createElement("div");
 	three_box.style.width = WIDTH + 8 + "px";
 	three_box.style.height = HEIGHT + 8 + "px";
