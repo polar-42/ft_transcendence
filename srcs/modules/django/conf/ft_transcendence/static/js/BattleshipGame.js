@@ -83,7 +83,7 @@ export function initGame()
 function OnMessage(e)
 {
 	const data = JSON.parse(e.data)
-  console.log(data)
+//   console.log(data)
 	switch (data.function) {
 		case 'initGame':
       getPlayersData(data.player_1, data.player_2)
@@ -1227,13 +1227,13 @@ function initText()
 }
 
 async function getPlayersData(player1, player2) {
-  console.log(battleshipSocket)
-  console.log(battleshipSocket.readyState)
-  console.log(player1)
-  console.log(player2)
+//   console.log(battleshipSocket)
+//   console.log(battleshipSocket.readyState)
+//   console.log(player1)
+//   console.log(player2)
   if (battleshipSocket == undefined || battleshipSocket.readyState !== WebSocket.OPEN || player1 == undefined || player2 == undefined)
   {
-    console.log('pardon!!!!')
+    // console.log('pardon!!!!')
     return
   }
 

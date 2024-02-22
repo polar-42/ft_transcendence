@@ -10,7 +10,7 @@ import { initTournamentsCreation } from "./tournaments/tournamentsCreation.js"
 import { initTournamentsJoinPage } from "./tournaments/tournamentsJoinPage.js"
 import { GoingAway, initTournaments } from "./tournaments/tournament.js"
 import { initChat, unsetChatbox } from "./chatApp/CA_General.js"
-import { initTournamentView } from "./tournaments/tournamentSpectate.js"
+import { LeaveSpectate, initTournamentView } from "./tournaments/tournamentSpectate.js"
 import { initUpdateAccount } from "./userManagement/userManagement.js"
 import { initProfile } from "./userProfileApp/profile.js"
 import { initNeedLogPage } from "./needlog.js"
@@ -45,7 +45,7 @@ function getRoute(RoutePath)
     { path: "/tournaments/Create", init: initTournamentsCreation, unload: null, title:"initTournaments", LogStatus: 1},
     { path: "/tournaments/Join", init: initTournamentsJoinPage, unload: null, title:"Join Tournaments", LogStatus: 1},
     { path: "/tournaments/Play/", init: initTournaments, unload: GoingAway, title:"Tournament", LogStatus: 1},
-    { path: "/tournaments/View/", init: initTournamentView, unload: null, title:"Tournament", LogStatus: 1},
+    { path: "/tournaments/View/", init: initTournamentView, unload: LeaveSpectate, title:"Tournament", LogStatus: 1},
     { path: "/authApp/login", init: initLogin, unload: null, title:"Login", LogStatus: 0},
     { path: "/authApp/register", init: initRegister, unload: null, title:"Register", LogStatus: 0},
     { path: "/userManagement", init: initUpdateAccount, unload: null, title:"userManagement", LogStatus: 1},

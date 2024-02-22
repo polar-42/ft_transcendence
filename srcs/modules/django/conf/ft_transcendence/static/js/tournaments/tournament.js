@@ -26,7 +26,7 @@ export function initTournaments()
 	tournamentSocket.onclose = e => quitTournamentSocket(e)
 	tournamentSocket.onmessage = e => OnMessageTournament(e)
 	document.querySelector('.BTN_Ready').addEventListener('click', ReadyBehavior)
-  document.querySelector('.BTN_Ready').disabled = true
+	document.querySelector('.BTN_Ready').disabled = true
 }
 
 function initTournamentsStatus(data) {
@@ -109,7 +109,7 @@ async function queryMatchList() {
 
 export function GoingAway()
 {
-	// console.log(tournamentSocket)
+	console.log(tournamentSocket)
 	if (tournamentSocket == undefined)
 		return
 	if (tournamentSocket.readyState == WebSocket.CLOSED)

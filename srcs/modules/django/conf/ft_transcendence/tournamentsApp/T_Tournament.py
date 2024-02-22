@@ -250,11 +250,11 @@ class Tournament():
 			return
 		elif self.Status is TournamentState.Created:
 			self.PlayersList.remove(user)
-			# ColorPrint.prGreen("Tournament {tournamentId} : User {username} deleted.".format(tournamentId=self.TournamentId, username=user.Username))
+			ColorPrint.prGreen("Tournament {tournamentId} : User {username} deleted.".format(tournamentId=self.TournamentId, username=user.Username))
 			self.SendUsers(None)
 		elif self.Status is TournamentState.Ongoing:
 			user.Status = UserState.GivedUp
-			# ColorPrint.prGreen("Tournament {tournamentId} : User {username} giveUp.".format(tournamentId=self.TournamentId, username=user.Username))
+			ColorPrint.prGreen("Tournament {tournamentId} : User {username} giveUp.".format(tournamentId=self.TournamentId, username=user.Username))
 			pass
 		else:
 			pass

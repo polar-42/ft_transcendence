@@ -9,6 +9,7 @@ let isFinish = false
 
 export function initTournamentView()
 {
+	tournamentId = undefined
 	if (window.location.search != '')
 		tournamentId = window.location.search.substring(window.location.search.indexOf('=') + 1)
 	if (tournamentId == undefined)
@@ -19,6 +20,7 @@ export function initTournamentView()
 	if (document.querySelector('.tournament_page') == undefined)
 		return
 	isBracketInit = false
+	isFinish = false
 	roundCounter = 0
 	launchTournamentSocket();
 	actuliaseData();
@@ -294,4 +296,9 @@ async function displayTournamentResult(lastMatch) {
   winnerElm.querySelector('img').src = winnerPP
   // console.log(winnerElm)
   resultElm.style.display = 'flex'
+}
+
+export function LeaveSpectate()
+{
+	isFinish = true
 }
