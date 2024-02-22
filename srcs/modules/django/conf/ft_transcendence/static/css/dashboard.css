@@ -338,7 +338,7 @@
 	display: flex;
 	flex-flow: row;
 	justify-content: space-between;
-	width: 270px;
+	width: 300px;
 	margin: 25px auto;
   border-bottom: 1px solid;
   border-image: linear-gradient(to right, #6f58f0 6%, var(--fourth)) 1;
