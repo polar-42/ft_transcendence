@@ -66,7 +66,7 @@ export function LeaveMatchmaking()
 		return
 	matchmakingPongGame.close()
 
-matchmakingPongGame = null
+	matchmakingPongGame = null
 	// console.log('Matchmaking disconnect');
 }
 
