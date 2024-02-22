@@ -866,17 +866,6 @@ function SP_Load()
 	camera.position.x = 8;
 	camera.position.y = 12;
 	BoatList = [
-<<<<<<< HEAD
-		{ name : 'PatrolBoat', x : 700, y : 500, size : 2, status : true},
-		// { name : 'Destroyer', x : 700, y : 300, size : 3, status : true},
-		// { name : 'Submarine', x : 700, y : 400, size : 3, status : true},
-		// { name : 'BattleShip', x : 700, y : 200, size : 4, status : true},
-		// { name : 'Carrier', x : 700, y : 100, size : 5, status : true},
-
-	]
-	SP_drawEnemyBoats()
-	SP_Draw()
-=======
 		{
 		  name: "Carrier",
 		  x: 0,
@@ -923,7 +912,6 @@ function SP_Load()
 		  horizontal: true,
 		},
 	  ];
->>>>>>> Gab
 }
 
 function SP_Timer()
@@ -1034,8 +1022,6 @@ function animate() {
 	  INTERSECTED = null;
 	}
   }
-<<<<<<< HEAD
-=======
 
 
 function CreateABox(x, y, hello)
@@ -1132,4 +1118,3 @@ function initText()
 			SP_mouseClick(e)
 	}) 
 }
->>>>>>> Gab
