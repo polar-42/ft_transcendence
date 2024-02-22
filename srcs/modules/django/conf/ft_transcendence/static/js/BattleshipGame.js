@@ -15,8 +15,8 @@ const boxSize = 1;
 const offsetX = 10
 const offsetY = 100
 
-// properly quit game
-
+// add control help
+// unselect boat after first phase
 
 
 let mouse = new THREE.Vector2();
@@ -161,6 +161,7 @@ function GameEndMessage(message)
 	endingText = document.createElement("div");
 	renderer.domElement.style.filter = "blur(5px)"
 	endingText.textContent = message;
+	endingText.style.userSelect = "none"
 	endingText.style.whiteSpace = "pre";
 	endingText.style.textAlign = "center";
 	endingText.style.fontSize = HEIGHT / 10 + "px";
@@ -870,7 +871,6 @@ function SP_SendSelected()
 function SP_mouseClick(event)
 {
 	if (event.which == 3) {
-		rotateBoat();
 	  }
 	  if (event.which == 1 && INTERSECTED && INTERSECTED != CURRENT_SELECTION) {
 		if (INTERSECTED.type == "ennemy_cube") {
@@ -1170,10 +1170,12 @@ function initText()
 	counter.style.transform = "translate(-50%, -50%)"; // Adjust position to center properly
 	counter.style.zIndex = "1"; // Ensure it's above other content
 	counter.style.padding = "10px"; // Example padding for better visualization
+	counter.style.userSelect = "none"
 
 	title = document.createElement("div");
 	title.textContent = "";
 	title.style.whiteSpace = "pre";
+	title.style.userSelect = "none"
 	title.style.textAlign = "center";
 	title.style.fontSize = HEIGHT / 20 + "px";
 	title.style.position = "absolute"; // Set position to absolute
@@ -1186,6 +1188,7 @@ function initText()
 
 
 	cool_button = document.createElement("button");
+	cool_button.style.userSelect = "none"
 	const button_css = "outline: none;cursor: pointer;line-height: 1;border-radius: 500px;transition-property: background-color,border-color,color,box-shadow,filter;transition-duration: .3s;border: 1px solid transparent;letter-spacing: 2px;min-width: 80px;text-transform: uppercase;white-space: normal;font-weight: 700;text-align: center;padding: 17px 48px 17px 48px;color: #fff;background-color: #1EC760;"
 	cool_button.setAttribute("style", button_css);
 	cool_button.textContent = "Confirm";
