@@ -15,7 +15,6 @@ const offsetX = 10
 const offsetY = 100
 
 // properly quit game
-// if time css button update
 
 
 
@@ -42,6 +41,7 @@ let CURRENT_SELECTION = null;
 let CURRENT_COLOR = null;
 let LOOKINGATENNEMY = false;
 let TURNPHASE = false;
+
 
 export function initGame()
 {
@@ -151,6 +151,8 @@ function OnMessage(e)
 function GameEndMessage(message)
 {
 	counter.textContent = "";
+	document.removeEventListener('mousemove', SP_mouseMove)
+	window.onresize = (event) => {};
 	cool_button.style.display = "none";
 	title.textContent = "";
 	endingText = document.createElement("div");
@@ -173,7 +175,7 @@ function GameEndMessage(message)
 
 function RP_GameStop(message, id)
 {
-
+	document.removeEventListener('mousemove', FP_mouseMove)
 	if (curInterval != undefined)
 		clearInterval(curInterval)
 	curInterval = undefined
@@ -296,7 +298,7 @@ function boatCreate() {
 	];
 	for (let i = 0; i < BoatList.length; i++) {
 	  const geometry = new THREE.BoxGeometry(BoatList[i].size, 1, 1);
-	  const material = new THREE.MeshBasicMaterial({ color: 0x550055 });
+	  const material = new THREE.MeshLambertMaterial({ color: 0x550055 });
 	  const boat = new THREE.Mesh(geometry, material);
 	  boat.self = BoatList[i];
 	  Boatm.push(boat);
@@ -307,13 +309,15 @@ function boatCreate() {
 	  boat.type = "boat";
 	  boat.pos = [-1, -1];
 	  boat.orientation = BoatList[i].horizontal;
+	  boat.castShadow = true;
+	  boat.receiveShadow = true;
 	  scene.add(boat);
 	}
   }
 
 function FP_Init()
 {
-	
+	mouse = new THREE.Vector2();
 	scene = new THREE.Scene();
 	camera = new THREE.PerspectiveCamera(
 		75,
@@ -327,7 +331,9 @@ function FP_Init()
 	renderer = new THREE.WebGLRenderer({ antialiasing: true });
 	raycaster = new THREE.Raycaster()
 	renderer.setSize(WIDTH, HEIGHT);
+	renderer.shadowMap.enabled = true
 	controls = new OrbitControls(camera, renderer.domElement);
+
 
 	controls.target.set(5, 0, 5);
 	controls.minDistance = 10;
@@ -362,10 +368,11 @@ function FP_Init()
 	for (let y = 0; y < boardSizeY; y++) {
 		for (let x = 0; x < boardSizeX; x++) {
 		const geometry = new THREE.BoxGeometry(boxSize, boxSize, boxSize);
-		const material = new THREE.MeshBasicMaterial({ color: 0xfcc26f });
+		const material = new THREE.MeshLambertMaterial({ color: 0xfcc26f });
 		const cube = new THREE.Mesh(geometry, material);
 		cube.position.set(x + boardOffsetX, 0, y + boardOffsetY + 20);
 		cube.type = "ennemy_cube";
+		cube.receiveShadow = true;
 		scene.add(cube);
 		const edges = new THREE.EdgesGeometry(geometry);
 		const lineMaterial = new THREE.LineBasicMaterial({
@@ -381,10 +388,11 @@ function FP_Init()
 	for (let y = 0; y < boardSizeY; y++) {
 		for (let x = 0; x < boardSizeX; x++) {
 		const geometry = new THREE.BoxGeometry(boxSize, boxSize, boxSize);
-		const material = new THREE.MeshBasicMaterial({ color: 0x6fc2fc });
+		const material = new THREE.MeshLambertMaterial({ color: 0x6fc2fc });
 		const cube = new THREE.Mesh(geometry, material);
 		cube.position.set(x + boardOffsetX, 0, y + boardOffsetY);
 		cube.type = "cube";
+		cube.receiveShadow = true;
 		scene.add(cube);
 		const edges = new THREE.EdgesGeometry(geometry);
 		const lineMaterial = new THREE.LineBasicMaterial({
@@ -397,7 +405,24 @@ function FP_Init()
 		}
 	}
 	scene.add(boardGroup);
-
+	const dlight = new THREE.DirectionalLight(0xffffff, 5);
+	dlight.position.set(20, 20, 20);
+	dlight.castShadow = true;
+	dlight.shadow.mapSize.width = 1024; // Shadow map width\
+	const d = 20;
+	const lightTarget = new THREE.Object3D(); 
+	scene.add(lightTarget);
+	dlight.shadow.camera.left = - d;
+	dlight.shadow.camera.right = d;
+	dlight.shadow.camera.top = d;
+	dlight.shadow.camera.bottom = - d;
+	dlight.target = lightTarget
+	dlight.shadow.mapSize.height = 2048; // Shadow map height
+	dlight.shadow.camera.near = 0.5; // Near shadow camera distance
+	dlight.shadow.camera.far = 50; // Far shadow camera distance
+	scene.add(dlight);
+	const alight = new THREE.AmbientLight( 0x404040 ); // soft white light
+	scene.add( alight );
 	validated = false
 	canvas = document.getElementById("app")
 	initText()
@@ -425,7 +450,8 @@ function FP_Init()
 
 function FP_drawTitle()
 {
-
+	if (!title)
+		return
 	let placedBoat = 0
 	BoatList.forEach(element => {
 		if (element.ArrayY < 10)
@@ -463,6 +489,8 @@ function FP_mouseDown(e)
 }
 
 function FP_mouseMove(e) {
+	if (!renderer)
+		return;
 	const rect = renderer.domElement.getBoundingClientRect();
 	const x = e.clientX - rect.left;
 	const y = e.clientY - rect.top;
@@ -724,7 +752,6 @@ function FP_draw()
 //#region SecondPart
 
 var SP_selected = undefined
-var SP_hovered = undefined
 
 function SP_HitCase(Tcase, result, boat)
 {
@@ -736,11 +763,13 @@ function SP_HitCase(Tcase, result, boat)
 			if (element.status == -1)
 			{
 				element.object.material.color.setHex(0xffffff)
+				element.object.type = "hit_cube"
 				CURRENT_COLOR = 0xffffff;
 			}
 			else if (element.status == 1)
 			{
 				element.object.material.color.setHex(0xffaaaa)
+				element.object.type = "miss_cube"
 				CURRENT_COLOR = 0xffaaaa;
 			}
 		}
@@ -782,6 +811,8 @@ function SP_boardSwitch(event)
 
 function SP_mouseMove(event)
 {
+	if (!renderer)
+		return
 	const rect = renderer.domElement.getBoundingClientRect();
 	const x = event.clientX - rect.left;
 	const y = event.clientY - rect.top;
@@ -944,14 +975,6 @@ function drawTimer()
 }
 
 
-function CP_getArrayPos(mouseX, mouseY)
-{
-	const BoardLimitX = offsetX + 2 + gridSizeX * boxSize
-	const BoardLimitY = offsetY + 2 + gridSizeY * boxSize
-	if (mouseX < offsetX || mouseX > BoardLimitX || mouseY < offsetY || mouseY > BoardLimitY)
-		return {x : -1, y : -1}
-	return {x : Math.floor((mouseX - (offsetX + 2)) / boxSize), y : Math.floor((mouseY - (offsetY + 2)) / boxSize)}
-}
 
 export function CP_Unload()
 {
@@ -963,18 +986,56 @@ export function CP_Unload()
 	if (curInterval != undefined)
 		clearInterval(curInterval)
 	curInterval = undefined
+	if (scene != undefined)
+	{
+		while (scene.children.length > 0)
+			scene.remove(scene.children[0])
+		renderer.setAnimationLoop(null);
+		if (animationid != undefined)
+		{
+			cancelAnimationFrame(animationid)
+			animationid = undefined
+		}
+		three_box = null;
+		mouse = undefined;
+		BoardCases = []
+		BoatList = []
+		Boatm = []
+		BoardArray = []
+		validated = false
+		battleshipSocket = null
+		gameId = null
+		curInterval = undefined
+		CURRENT_SELECTION = null;
+		CURRENT_COLOR = null;
+		LOOKINGATENNEMY = false;
+		TURNPHASE = false;
+		boatToPlace = null;
+		scene = undefined;
+		camera = undefined;
+		renderer = undefined;
+		controls = undefined;
+		raycaster = undefined
+		INTERSECTED = null;
+		title = null
+		counter = null
+		cool_button = null;
+		endingText = null
+		SP_selected = undefined
+	}
 }
 
 //#endregion
+let animationid = undefined
 
 function animate() {
-	requestAnimationFrame(animate);
+	animationid = requestAnimationFrame(animate);
 	controls.update();
 	intersect();
 	renderer.render(scene, camera);
 }
 
-  function intersect() {
+function intersect() {
 	raycaster.setFromCamera(mouse, camera);
 	const intersects = raycaster.intersectObjects(scene.children, false);
 	if (TURNPHASE == true)
@@ -985,6 +1046,8 @@ function animate() {
 				INTERSECTED.material.color.setHex(INTERSECTED.currentHex);
 				INTERSECTED.scale.set(1, 1, 1);
 			  }
+			  if (intersects[0].object.type != "ennemy_cube")
+			  	return ;
 			  INTERSECTED = intersects[0].object;
 			  INTERSECTED.currentHex = INTERSECTED.material.color.getHex();
 			  INTERSECTED.currentScale = INTERSECTED.scale.x;
@@ -1107,7 +1170,14 @@ function initText()
 		cool_button.style.transform = "translate(-50%, -50%) scale(1.0)"
 		cool_button.style.backgroundColor = "#1EC760"
 	  });
+	  
 	cool_button.addEventListener('click', e => {
+		cool_button.style.transform = "translate(-50%, -50%) scale(0.9)"
+		cool_button.style.backgroundColor = "#1EA760"
+		setTimeout(() => {
+			cool_button.style.backgroundColor = "#1EC760";
+			cool_button.style.transform = "translate(-50%, -50%) scale(1.0)";
+		}, 100);
 		buttonState = true;
 		if (TURNPHASE == false)
 		{
