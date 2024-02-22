@@ -765,6 +765,8 @@ async function displayPlayerList(players) {
 	let playerList = document.querySelector('.players_list')
 
 	for (let i in players) {
+		if (isAlreadyInList(players[i].id) == true)
+			break
 		let avatar = await getProfilePicture({'type': 'user', 'id': players[i].id})
 		if (avatar.type == 'image/null')
 			avatar = 'static/assets/logo/user.png'
@@ -772,6 +774,7 @@ async function displayPlayerList(players) {
 			avatar = URL.createObjectURL(avatar)
 
 		let elem = document.createElement('li')
+		elem.setAttribute('id', players[i].id)
 		elem.appendChild(document.createElement('img'))
 		elem.children[0].src = avatar
 		elem.children[0].alt = 'Player avatar'
@@ -780,6 +783,15 @@ async function displayPlayerList(players) {
 		playerList.appendChild(elem)
 	}
 } 
+
+function isAlreadyInList(id) {
+	let list = document.querySelector('.players_list').children
+	for (const child of list) {
+		if (child.getAttribute('id') == id)
+			return true
+	}
+	return false
+}
 
 export function cleanStats() {
 	let lists = document.querySelectorAll('ul')
