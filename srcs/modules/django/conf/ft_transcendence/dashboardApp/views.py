@@ -93,7 +93,7 @@ def getPongTournamentStats(request):
 
 		winnerId = contract.functions.getWinnerTournament(str(tournament.id)).call()
 
-		winner = User.objects.get(id=tournament.winner)
+		winner = User.objects.get(id=int(winnerId))
 		win = False
 		if winner.id == userId:
 			win = True
@@ -308,7 +308,7 @@ def getBattleshipTournamentStats(request):
 
 		winnerId = contract.functions.getWinnerTournament(str(tournament.id)).call()
 
-		winner = User.objects.get(id=int(tournament.winner))
+		winner = User.objects.get(id=int(winnerId))
 		win = False
 		if winner.id == userId:
 			win = True
@@ -512,7 +512,7 @@ def getBattleshipSpecificGame(request):
 
 def getPlayerImage(request):
 	if request.method == "POST":
-		data = json.loads(request.body)	
+		data = json.loads(request.body)
 		if data['typeGame'] == '0':
 			game = PongGameModels.objects.get(id=data['gameId'])
 		elif data['typeGame'] == '1':

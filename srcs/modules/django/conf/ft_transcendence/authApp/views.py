@@ -5,7 +5,7 @@ from .models import User
 from django.contrib.auth.hashers import make_password, check_password
 import json, re
 from authApp.models import User
-
+from chatApp.enumChat import connexionStatus
 from ft_transcendence import ColorPrint
 from ft_transcendence.decorators import isValidLoading
 
