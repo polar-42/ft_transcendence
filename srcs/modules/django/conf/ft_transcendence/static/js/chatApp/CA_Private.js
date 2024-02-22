@@ -34,8 +34,14 @@ export function displayChatHistory(data, isStillUnreadMessage) {
 }
 
 export function goToConv(id) {
+
 	let mainBoxBody = document.querySelector(".main_box_body")
 	let mainBoxHeader = document.querySelector(".main_box_header")
+	if (mainBoxBody.classList.contains('channel'))
+	{
+		mainBoxBody.classList.remove("channel")
+		mainBoxHeader.classList.remove("channel")
+	}
 	cleanMainBox()
 	mainBoxBody.classList.add("private_message")
 	mainBoxHeader.classList.add("private_message")

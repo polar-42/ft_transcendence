@@ -304,6 +304,11 @@ export async function displayChannelHistory(data, isStillUnreadMessage) {
 export function goToChan(name) {
 	let mainBoxBody = document.querySelector(".main_box_body")
 	let mainBoxHeader = document.querySelector(".main_box_header")
+	if (mainBoxBody.classList.contains('private_message'))
+	{
+		mainBoxBody.classList.remove("private_message")
+		mainBoxHeader.classList.remove("private_message")
+	}
 	cleanMainBox()
 	mainBoxBody.classList.add("channel")
 	mainBoxHeader.classList.add("channel")
@@ -364,6 +369,8 @@ export async function receiveChanMsg(data) {
 
 	if (conversation == undefined || conversation.parentElement == undefined || conversation.parentElement.parentElement == undefined) {
 		let divConv = document.getElementById('conv_' + data.channel)
+		if (divConv == undefined)
+			return
 		divConv.querySelector('.pop_up_unread').style.display = 'block'
 		divConv.querySelector('.conversation_text').querySelector('.last_msg').innerHTML = data.sender + ': ' + data.message
 		document.getElementById('pop_up_unread_chatbox').style.display = 'block'

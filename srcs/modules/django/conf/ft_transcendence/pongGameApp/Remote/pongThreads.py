@@ -250,16 +250,19 @@ class pongGame():
         player2_score = player2.get_score()
 
         for x in self.users:
-            x.socket.send(text_data=json.dumps({
-                'type': 'game_timer',
-                'ball_pos_x': ball_pos_x,
-                'ball_pos_y': ball_pos_y,
-                'playerone_pos_y': player1_pos_y,
-                'playertwo_pos_y': player2_pos_y,
-                'playerone_score': player1_score,
-                'playertwo_score': player2_score,
-                'second_left': secondLeft,
-            }))
+            try:
+                x.socket.send(text_data=json.dumps({
+                    'type': 'game_timer',
+                    'ball_pos_x': ball_pos_x,
+                    'ball_pos_y': ball_pos_y,
+                    'playerone_pos_y': player1_pos_y,
+                    'playertwo_pos_y': player2_pos_y,
+                    'playerone_score': player1_score,
+                    'playertwo_score': player2_score,
+                    'second_left': secondLeft,
+                }))
+            except:
+                pass
 
     def sendCountdown(self, pongGame):
         for x in self.users:
@@ -323,12 +326,14 @@ class pongGame():
                 self.stat.idTournament = self.tournament.TournamentId
                 self.tournament.HandleResult(self.winner.sock_user.id)
                 for x in self.users:
-                    x.socket.send(text_data=json.dumps({
-                        'type': 'return_to_tournament',
-                        'id': self.tournament.TournamentId,
-                    }))
-                    x.socket.close()
-                    x.socket.close()
+                    try:
+                        x.socket.send(text_data=json.dumps({
+                            'type': 'return_to_tournament',
+                            'id': self.tournament.TournamentId,
+                        }))
+                        x.socket.close()
+                    except:
+                        pass
 
             if self.Status is GameState.Ending:
                 return

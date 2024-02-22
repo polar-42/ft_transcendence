@@ -45,6 +45,8 @@ python manage.py db_check
 python manage.py create_user
 
 # daphne ft_transcendence.asgi:application --host 0.0.0.0 --port 8000 --reload
-uvicorn ft_transcendence.asgi:application --host 0.0.0.0 --port 8000 --reload --access-log --use-colors
+gunicorn -c /usr/src/app/gunicornConf.py ft_transcendence.asgi:application
+
+# uvicorn ft_transcendence.asgi:application --host 0.0.0.0 --port 8000 --reload --access-log --use-colors
 
 # python3 manage.py runserver 0.0.0.0:8000

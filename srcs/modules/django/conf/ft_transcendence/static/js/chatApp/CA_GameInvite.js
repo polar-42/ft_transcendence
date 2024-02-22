@@ -160,7 +160,6 @@ export async function receivePongInvitation(data) {
 	if (document.querySelector(".main_box_header .contact_wrapper") == undefined || data.sender_id !== parseInt(document.querySelector(".main_box_header .contact_wrapper").getAttribute("userid")))
 	{
 		openChatbox()
-		// console.log(data)
 		goToConv(data.sender_id)
 		await sleep(100)
 	}
@@ -280,6 +279,8 @@ async function refuseBattleshipInvitation(senderName, senderId) {
 }
 
 export function receiveRefusedInvitation(data) {
+	if (document.querySelector(".private_message .contact_wrapper") == undefined)
+		return
 	if (parseInt(document.querySelector(".private_message .contact_wrapper").getAttribute("userid")) !== data.sender_id)
 		return
 
