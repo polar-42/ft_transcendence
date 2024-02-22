@@ -97,7 +97,6 @@ const router = async () =>
 	}
 	else if (match.route.LogStatus == 1 && await checkConnexion() == false)
 	{
-		// console.log('hello')
 		match = getRoute(document.location.origin + "/needlog")
 	}
 	else if (match.route.LogStatus == 0 && await checkConnexion() == true)
@@ -111,7 +110,6 @@ const router = async () =>
 		actualRoute = match.route.path
 	if (Prev_match != undefined && Prev_match.route.unload != null)
 		Prev_match.route.unload()
-	// console.log(actualRoute)
 	if (actualRoute.includes('/?') == false)
 		actualRoute += '/?Valid=true'
 	else if (actualRoute.endsWith('/') == true)

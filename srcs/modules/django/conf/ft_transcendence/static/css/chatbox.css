@@ -1,827 +1,843 @@
 .chatbox_wrapper {
-	position: fixed;
-	bottom: 0;
-	right: 30px;
-	box-shadow:
-	1px 1px 5px rgba(255, 255, 255, 0.2),
-	-1px -1px 5px rgba(255, 255, 255, 0.2);
-	width: 350px;
+  position: fixed;
+  bottom: 0;
+  right: 30px;
+  box-shadow:
+  1px 1px 5px rgba(255, 255, 255, 0.2),
+  -1px -1px 5px rgba(255, 255, 255, 0.2);
+  width: 350px;
 }
 
 .chatbox_wrapper p {
-	overflow: hidden;
+  overflow: hidden;
 }
 
 .chatbox_header_wrapper {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	border-top-right-radius: 2px;
-	border-top-left-radius: 2px;
-	background: radial-gradient(ellipse at bottom, #4c77e6 5%, #7f4af5);
-	border: 1px solid var(--third);
-	border-bottom: none;
-	font-size: 1.2em;
-	height: 0;
-	cursor: pointer;
-	overflow: hidden;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top-right-radius: 2px;
+  border-top-left-radius: 2px;
+  background: radial-gradient(ellipse at bottom, #4c77e6 5%, #7f4af5);
+  border: 1px solid var(--third);
+  border-bottom: none;
+  font-size: 1.2em;
+  height: 0;
+  cursor: pointer;
+  overflow: hidden;
+  transition: .3s ease;
 }
 
 .chatbox_header_wrapper.connected {
-	height: 3.2ch;
+  height: 3.2ch;
 }
 
 .chatbox_header_wrapper:hover {
-	background: radial-gradient(ellipse at bottom, var(--main-color) , var(--third));
-	border-bottom: none;
-	box-shadow:
-	1px 1px 2px white,
-	-1px -1px 2px white;
+  background: radial-gradient(ellipse at bottom, var(--main-color) , var(--third));
+  border-bottom: none;
+  box-shadow:
+  1px 1px 2px white,
+  -1px -1px 2px white;
 }
 
 .chatbox_header {
-	display: grid;
-	grid-template-areas: "a b";
-	gap: 10px;
+  display: grid;
+  grid-template-areas: "a b";
+  gap: 10px;
 }
 
 .chatbox_header img {
-	display: block;
-	margin: auto;
-	margin-left: 5px;
+  display: block;
+  margin: auto;
+  margin-left: 5px;
 }
 
 .notification_wrapper.active {
-	display: flex;
-	flex-direction: column;
-	align-content: center;
-	justify-content: center;
-	border-radius: 50%;
-	background: var(--secondary-bg-color);
-	color: white;
-	font-size: 0.6em;
-	font-weight: 900;
-	width: 30px;
-	height: 30px;
-	margin: auto 5px auto 0;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--secondary-bg-color);
+  color: white;
+  font-size: 0.6em;
+  font-weight: 900;
+  width: 30px;
+  height: 30px;
+  margin: auto 5px auto 0;
 }
 
 .notification_wrapper p {
-	height: auto;
-	text-align: center;
-	margin-top:auto;
-	margin-bottom:auto;
+  height: auto;
+  text-align: center;
+  margin-top:auto;
+  margin-bottom:auto;
 }
 
 .chatbox_wrapper .open_chatbox_wrapper {
-	height: 0;
-	transition: height .3s ease;
+  height: 0;
+  transition: height .3s ease;
 }
 
 .chatbox_wrapper.open .open_chatbox_wrapper {
-	height: 400px;
+  height: 400px;
 }
 
 .main_box {
-	background: var(--main-bg-color);
+  background: var(--main-bg-color);
 }
 
 .main_box_header.homepage {
-	background: var(--secondary-bg-color);
-	color: white;
-	height: 40px;
-	display: flex;
-	justify-content: space-evenly;
-	align-content: start;
-	padding: 10px 5px 10px 5px;
+  background: var(--secondary-bg-color);
+  color: white;
+  height: 40px;
+  display: flex;
+  justify-content: space-evenly;
+  align-content: start;
+  padding: 10px 5px 10px 5px;
 }
 
 .main_box_header.homepage input {
-	width: 80%;
+  width: 80%;
+}
+
+.main_box_header.homepage img,
+.main_box_header.friendpage img {
+  height: 24px;
+  width: 24px;
+  margin: auto;
 }
 
 .main_box_header.homepage img.back_arrow {
-	cursor: pointer;
+  cursor: pointer;
 }
 
 .main_box_body.homepage {
-	background: var(--main-bg-color);
-	position: relative;
-	top: 0;
-	height: 360px;
+  background: var(--main-bg-color);
+  position: relative;
+  top: 0;
+  height: 360px;
 }
 
 .main_box_body.homepage h2 {
-	font-size: 31px;
-	text-align: center;
-	height: 38px;
+  font-size: 31px;
+  text-align: center;
+  height: 38px;
 }
 
 .main_box_body.homepage .conversation_list,
 .main_box_body.friendpage .conversation_list {
-	height: 75%;
-	overflow-y: scroll;
-	scrollbar-color: var(--third) transparent;
+  height: 75%;
+  overflow-y: scroll;
+  scrollbar-color: var(--third) transparent;
 }
 
 -webkit-scrollbar {
-	width: 5px;
+  width: 5px;
 }
 
 -webkit-scrollbar-thumb {
-	background: var(--second);
-	border-radius: 5px;
+  background: var(--second);
+  border-radius: 5px;
 }
 
 -webkit-scrollbar-thumb:hover {
-	background: var(--third);
+  background: var(--third);
 }
 
 .main_box_body.homepage .conversation_list li,
 .main_box_body.friendpage .conversation_list li {
-	border-radius: 5px;
-	border: 1px solid var(--secondary-bg-color);
-	background: var(--secondary-bg-color);
-	box-shadow: 2px 2px 4px var(--secondary);
-	margin: 8px 11px 15px 8px;
-	display: grid;
-	grid-template-columns: 1fr 5fr 1fr 1fr;
-	grid-gap: 10px;
-	padding: 5px;
-	position: relative;
+  border-radius: 5px;
+  border: 1px solid var(--secondary-bg-color);
+  background: var(--secondary-bg-color);
+  box-shadow: 2px 2px 4px var(--secondary);
+  margin: 8px 11px 15px 8px;
+  display: grid;
+  grid-template-columns: 1fr 5fr 1fr 1fr;
+  grid-gap: 10px;
+  padding: 5px;
+  position: relative;
 }
 
 .main_box_body.homepage .conversation_list li:hover,
 .main_box_body.friendpage .conversation_list li:hover {
-	box-shadow: 2px 2px 4px var(--fourth);
-	background: var(--main-bg-color);
-	border: 1px solid var(--fourth);
+  box-shadow: 2px 2px 4px var(--fourth);
+  background: var(--main-bg-color);
+  border: 1px solid var(--fourth);
 }
 
 .main_box_body.homepage .conversation_list img,
 .main_box_body.friendpage .conversation_list img {
-	width: 30px;
-	height: 30px;
-	display: block;
-	border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: block;
+  border-radius: 50%;
+  margin: auto;
 }
 
 .main_box_body.homepage .conversation_list img.join_btn,
 .main_box_body.friendpage .conversation_list img.join_btn {
-	display: none
+  display: none
 }
 
 .main_box_body.friendpage .conversation_list .not_member img.join_btn,
 .main_box_body.homepage .conversation_list .not_member img.join_btn {
-	display: inline-block;
-	cursor: pointer;
+  display: inline-block;
+  cursor: pointer;
 }
 
 
 
 .main_box_body.homepage .conversation_list .conversation_name,
 .main_box_body.friendpage .conversation_list .conversation_name {
-	display: flex;
+  display: flex;
 }
 
 .main_box_body.homepage .conversation_list .join_channel_box,
 .main_box_body.friendpage .conversation_list .join_channel_box {
-	grid-column: 1 / 5;
-	display: flex;
-	justify-content: space-between;
+  grid-column: 1 / 5;
+  display: flex;
+  justify-content: space-between;
 }
 
 .main_box_body.homepage .conversation_list .join_channel_box label,
 .main_box_body.friendpage .conversation_list .join_channel_box label {
-	font-size: 0.9em;
+  font-size: 0.9em;
 }
 
 .main_box_body.homepage .conversation_list .join_channel_box .join_input_wrapper,
 .main_box_body.friendpage .conversation_list .join_channel_box .join_input_wrapper {
-	display: flex;
+  display: flex;
 }
 
 .main_box_body.homepage .conversation_list .join_channel_box input,
 .main_box_body.friendpage .conversation_list .join_channel_box input{
-	width: 85%;
+  width: 85%;
 }
 
 .main_box_body.homepage .conversation_list .join_channel_box img,
 .main_box_body.friendpage .conversation_list .join_channel_box img {
-	width: 20px;
-	height: 20px;
+  width: 20px;
+  height: 20px;
 }
 
 .feedback {
-	color: red;
-	font-weight: bolder;
-	font-size: 0.9em;
+  color: red;
+  font-weight: bolder;
+  font-size: 0.9em;
 }
 
 .connection_point {
-	border-radius: 50%;
-	width: 5px;
-	height: 5px;
-	margin-top: 5px;
-	margin-left: 3px;
+  border-radius: 50%;
+  width: 5px;
+  height: 5px;
+  margin-top: 5px;
+  margin-left: 3px;
 }
 
 .connection_point.connected {
-	background: green;
+  background: green;
 }
 
 .connection_point.disconnected {
-	background: red;
+  background: red;
 }
 
 .conversation_text .last_msg {
-	font-size: 0.7em;
-	max-width: calc(350px - ((350px / 5) * 2) - 20px);
-	color: rgba(255, 255, 255, 0.7);
-	text-overflow: ellipsis;
+  font-size: 0.7em;
+  max-width: calc(350px - ((350px / 5) * 2) - 20px);
+  color: rgba(255, 255, 255, 0.7);
+  text-overflow: ellipsis;
 }
 
 .conversation_list .notification_wrapper.active {
-	background: var(--secondary);
+  background: var(--secondary);
 }
 
 .main_box_body.homepage .chatbox_homepage_navbar {
-	height: 15%;
-	background: var(--secondary-bg-color);
-	display: flex;
-	justify-content: space-evenly;
-	padding-top: 8px;
-	padding-bottom: 8px;
-	border-top: 1px solid var(--main-bg-color);
+  height: 15%;
+  background: var(--secondary-bg-color);
+  display: flex;
+  justify-content: space-evenly;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  border-top: 1px solid var(--main-bg-color);
 }
 
 .main_box_body.homepage .chatbox_homepage_navbar button,
 .main_box_body.homepage .conversation_list .TournamentInvit button  {
-	border-radius: 3px;
-	margin: 0;
-	padding-left: 0.5em;
-	padding-right: 0.5em;
-	width: 80px;
-	transition: .3s ease;
-	background: transparent;
-	border: 1px solid var(--fourth);
-	color: var(--fourth);
-	cursor: pointer;
+  border-radius: 3px;
+  margin: 0;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  width: 80px;
+  transition: .3s ease;
+  background: transparent;
+  border: 1px solid var(--fourth);
+  color: var(--fourth);
+  cursor: pointer;
 }
 
 .main_box_body.homepage .chatbox_homepage_navbar button:hover,
 .main_box_body.homepage .conversation_list .TournamentInvit button:hover  {
-	background: var(--fourth);
-	border: 1px solid var(--main-bg-color);
-	color: var(--main-bg-color);
+  background: var(--fourth);
+  border: 1px solid var(--main-bg-color);
+  color: var(--main-bg-color);
 }
 
 .main_box_body.homepage .invitation_box,
 .main_box_body.friendpage .invitation_box {
-	position: absolute;
-	bottom: 50px;
-	left: 10px;
-	width: 90%;
-	background: var(--fourth);
-	border-radius: 5px;
-	padding: 5px;
+  position: absolute;
+  bottom: 50px;
+  left: 10px;
+  width: 90%;
+  background: var(--fourth);
+  border-radius: 5px;
+  padding: 5px;
+  text-align: center;
 }
 
 .main_box_body.homepage .invitation_box .feedback,
 .main_box_body.friendpage .invitation_box .feedback {
-	font-size: 0.7em;
-	color: red;
-	text-align: center;
+  font-size: 0.7em;
+  color: red;
+  text-align: center;
 }
 
 .main_box_body.homepage .invitation_box h2,
 .main_box_body.friendpage .invitation_box h2 {
-	font-size: 1.4em
+  font-size: 1.4em
 }
 
 .main_box_body.homepage .invitation_box h3,
 .main_box_body.friendpage .invitation_box h3 {
-	margin: 10px auto 5px auto;
+  margin: 10px auto 5px auto;
 }
 
 .main_box_body.homepage .invitation_box .game_choice_box,
 .main_box_body.friendpage .invitation_box .game_choice_box {
-	display: flex;
-	justify-content: space-evenly;
+  display: flex;
+  justify-content: space-evenly;
 }
 
 .main_box_body.homepage .invitation_box .input_box,
 .main_box_body.friendpage .invitation_box .input_box {
-	margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 .main_box_body.homepage .invitation_box .input_box input,
 .main_box_body.friendpage .invitation_box .input_box input {
-	display: block;
-	margin: auto;
+  display: block;
+  margin: auto;
 }
 
 .main_box_body.homepage .invitation_box .opponent_selection_box,
 .main_box_body.friendpage .invitation_box .opponent_selection_box {
-	width: 80%;
-	display: flex;
-	flex-direction: column;
-	margin: auto;
-	text-align: center;
-	position: relative;
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+  text-align: center;
+  position: relative;
 }
 
 .main_box_body.homepage .invitation_box .autocomplete-list,
 .main_box_body.friendpage .invitation_box .autocomplete-list{
-	text-align: left;
-	position: absolute;
-	top: 42px;
-	width: 100%;
-	max-height: 140px;
+  text-align: left;
+  position: absolute;
+  top: 42px;
+  width: 100%;
+  max-height: 140px;
 }
 .main_box_body.homepage .invitation_box .autocomplete-list li,
 .main_box_body.friendpage .invitation_box .autocomplete-list li {
-	border: 1px solid var(--main-bg-color);
-	background: var(--secondary-bg-color);
-	border-top: unset;
+  border: 1px solid var(--main-bg-color);
+  background: var(--secondary-bg-color);
+  border-top: unset;
 }
 
 .main_box_body.homepage .invitation_box .autocomplete-list button,
 .main_box_body.friendpage .invitation_box .autocomplete-list button {
-	border: unset;
-	background: unset;
-	margin: 0;
-	padding: 2px;
-	width: 100%;
-	text-align: left;
-	font-size: 0.9em;
+  border: unset;
+  background: unset;
+  margin: 0;
+  padding: 2px;
+  width: 100%;
+  text-align: left;
+  font-size: 0.9em;
 }
 
 .main_box_body.homepage .invitation_box .autocomplete-list button:hover,
 .main_box_body.friendpage .invitation_box .autocomplete-list button:hover {
-	border: unset;
-	background: var(--main-bg-color);
-	color: white;
-	font-weight: bolder;
+  border: unset;
+  background: var(--main-bg-color);
+  color: white;
+  font-weight: bolder;
 }
 
 .main_box_body.homepage .invitation_box button,
-.main_box_body.friendpage .invitation_box button {
-	display: block;
-	background:
-	linear-gradient(135deg, var(--secondary-bg-color),  var(--main-bg-color)),
-	var(--main-bg-color);
-	color: white;
-	border: 1px solid var(--main-bg-color);
-	width: 70%;
-	margin: 10px auto 0 auto;
-	font-size: 1.3em;
+.main_box_body.homepage .channel_creation_box button,
+.main_box_body.friendpage .invitation_box button, 
+.main_box_body.friendpage .channel_creation_box button{
+  display: block;
+  background:
+  linear-gradient(135deg, var(--secondary-bg-color),  var(--main-bg-color)),
+  var(--main-bg-color);
+  color: white;
+  border: 1px solid var(--main-bg-color);
+  width: 70%;
+  margin: 10px auto 0 auto;
+  font-size: 1.3em;
 }
 
 .main_box_body.homepage .invitation_box button:hover,
-.main_box_body.friendpage .invitation_box button:hover {
-	background:
-	linear-gradient(135deg, rgba(0, 155, 217, 0.1), rgba(0, 155, 217, 0.4)),
-	white;
-	color: var(--main-bg-color);
-	cursor: pointer;
+.main_box_body.homepage .channel_creation_box button:hover,
+.main_box_body.friendpage .invitation_box button:hover,
+.main_box_body.friendpage .channel_creation_box button:hover {
+  background:
+  linear-gradient(135deg, rgba(0, 155, 217, 0.1), rgba(0, 155, 217, 0.4)),
+  white;
+  color: var(--main-bg-color);
+  cursor: pointer;
 }
 
 .main_box_body.homepage .channel_creation_box {
-	position: relative;
-	bottom: 500px;
-	width: 80%;
-	height: 440px;
-	background: var(--fourth);
-	border-radius: 2px;
-	margin: auto;
-	box-shadow: 0px 0px 5px var(--main-color);
+  position: relative;
+  bottom: 500px;
+  width: 80%;
+  height: 440px;
+  background: var(--fourth);
+  border-radius: 2px;
+  margin: auto;
+  box-shadow: 0px 0px 5px var(--main-color);
 }
 
 .main_box_body.homepage .channel_creation_box h2{
-	font-size: 1.3em;
+  font-size: 1.3em;
 }
 
 .main_box_body.homepage .channel_creation_box div {
-	width: 70%;
-	margin-left: auto;
-	margin-right: auto;
-	margin-bottom: 10px;
-	text-align: center;
+  width: 70%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 10px;
+  text-align: center;
 }
 
 .main_box_body.homepage .channel_creation_box input[type='text'] {
-	outline: none;
-	border-radius: 2px;
-	border: 1px solid #ccc;
-	border-bottom-width: 2px;
-	padding-left: 10px;
+  outline: none;
+  border-radius: 2px;
+  border: 1px solid #ccc;
+  border-bottom-width: 2px;
+  padding-left: 10px;
 }
 
 .main_box_body.homepage .channel_creation_box .privacy_checkbox_wrapper {
-	display: flex;
-	justify-content: space-evenly;
-	margin-bottom: 5px;
+  display: flex;
+  justify-content: space-evenly;
+  margin-bottom: 5px;
 }
 
 .main_box_body.homepage .channel_creation_box .privacy_checkbox_wrapper div {
-	margin-bottom: 0;
-	width: 40%;
+  margin-bottom: 0;
+  width: 40%;
 }
 
 .main_box_body.homepage .channel_creation_box .privacy_checkbox_wrapper .checkbox_wrapper input {
-	display: inline-block;
-	margin-left: 5px;
-	margin-right: 5px;
+  display: inline-block;
+  margin-left: 5px;
+  margin-right: 5px;
 }
 
 .main_box_body.homepage .channel_creation_box .privacy_checkbox_wrapper .checkbox_wrapper label {
-	font-size: 0.8em;
+  font-size: 0.8em;
 }
 
 .main_box_body.homepage .channel_creation_box .privacy_checkbox_wrapper .checkbox_wrapper button {
-	width: 100px;
-	padding: 3px 7px 3px 7px;
-	font-size: 1em;
-	color: white;
-	background:
-	linear-gradient(135deg, var(--secondary-bg-color),  var(--main-bg-color)),
-	var(--main-bg-color);
-	border: 1px solid var(--main-bg-color);
-	border-radius: 2px;
-	transition: all .3s ease;
-	cursor: pointer;
+  width: 100px;
+  padding: 3px 7px 3px 7px;
+  font-size: 1em;
+  color: white;
+  background:
+  linear-gradient(135deg, var(--secondary-bg-color),  var(--main-bg-color)),
+  var(--main-bg-color);
+  border: 1px solid var(--main-bg-color);
+  border-radius: 2px;
+  transition: all .3s ease;
+  cursor: pointer;
 }
 
 .main_box_body.homepage .channel_creation_box .privacy_checkbox_wrapper .checkbox_wrapper button:hover {
-	background:
-	linear-gradient(135deg, rgba(0, 155, 217, 0.1), rgba(0, 155, 217, 0.4)),
-	white;
-	color: var(--main-bg-color);
-	cursor: pointer;
+  background:
+  linear-gradient(135deg, rgba(0, 155, 217, 0.1), rgba(0, 155, 217, 0.4)),
+  white;
+  color: var(--main-bg-color);
+  cursor: pointer;
 }
 
 .main_box_body.homepage .channel_creation_box .submit_wrapper .feedback {
-	font-size: 0.7em;
-	font-family: radjhanibold;
-	color: red;
+  font-size: 0.7em;
+  font-family: radjhanibold;
+  color: red;
 }
 
 .main_box_header.private_message ,
 .main_box_header.channel {
-	background: var(--secondary-bg-color);
-	display: flex;
-	justify-content: space-between;
-	height: 50px;
-	padding: 0 5px;
+  background: var(--secondary-bg-color);
+  display: flex;
+  justify-content: space-between;
+  height: 50px;
+  padding: 0 5px;
 }
 
 .main_box_body.channel .conversation_body {
-	display: grid;
-	grid-template-columns: 1fr 4fr;
+  display: grid;
+  grid-template-columns: 1fr 4fr;
 }
 
 .main_box_header.private_message .contact_wrapper,
 .main_box_header.channel .contact_wrapper {
-	display: grid;
-	grid-template-areas: "a b c";
-	gap: 10px;
+  display: grid;
+  grid-template-areas: "a b c";
+  gap: 10px;
+  margin: auto 0;
 }
 
 .main_box_header.channel .contact_wrapper .description_wrapper {
-	display: flex;
+  display: flex;
 }
 
 .main_box_header.channel .contact_wrapper .description_wrapper img {
-	width: 15px;
+  width: 15px;
 }
 
 .main_box_header.channel .contact_wrapper .description_wrapper p {
-	max-width: 125px;
-	height: 1em;
-	word-wrap: break-word;
-	overflow: scroll;
+  max-width: 125px;
+  height: 1em;
+  word-wrap: break-word;
+  overflow: scroll;
 }
 
 .main_box_header.private_message .contact_wrapper img ,
 .main_box_header.channel .contact_wrapper img {
-	border-radius: 50%;
-	width: 40px;
-	height: 40px;
-	margin-left: 10px;
-	border-radius: 50%;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  margin-left: 10px;
+  border-radius: 50%;
 }
 
 .main_box_header.channel .contact_wrapper .leave_channel {
-	width: 25px;
-	height: auto;
+  width: 25px;
+  height: auto;
 }
 
 .main_box_header.channel .contact_wrapper.general .leave_channel {
-	display: none;
+  display: none;
 }
 
 .main_box_header.private_message .contact_name_wrapper,
 .main_box_header.channel .contact_name_wrapper {
-	font-size: 1.2em;
-	height: 100%;
-	align-self: center;
+  font-size: 1.2em;
+  height: 100%;
+  align-self: center;
 }
 
 .main_box_header.private_message .contact_name_wrapper {
-	display: flex;
-	padding-top: 10px;
+  display: flex;
+  padding-top: 10px;
 }
 
 .main_box_header.channel .contact_name_wrapper .channel_description {
-	font-size: 0.7em
+  font-size: 0.7em
 }
 
 .main_box_header.channel img {
-	height: 40px;
-	width: auto;
-	display: block;
-	margin-top: auto;
-	margin-bottom: auto;
-	margin-right: 10px;
-	cursor: pointer;
+  height: 40px;
+  width: auto;
+  display: block;
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-right: 10px;
+  cursor: pointer;
 }
 
 .edit_description_box {
-	position: absolute;
-	background: var(--third);
-	width: 100%;
-	display: flex;
-	justify-content: space-between;
-	z-index: 3;
-	padding: 5px;
-	transition: height .3s ease;
+  position: absolute;
+  background: var(--third);
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  z-index: 3;
+  padding: 5px;
+  transition: height .3s ease;
 }
 
 .edit_description_box input {
-	width: 250px;
-	height: 30px;
+  width: 250px;
+  height: 30px;
 }
 
 .edit_description_box label {
-	display: block;
-	font-size: .9em;
+  display: block;
+  font-size: .9em;
 }
 
 .edit_description_box img {
-	width: 30px;
-	height: 30px;
-	cursor: pointer;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
 }
 
 .edit_description_box .input_wrapper img {
-	display: inline-block;
-	width: 20px;
-	height: auto;
-	vertical-align: middle;
+  display: inline-block;
+  width: 20px;
+  height: auto;
+  vertical-align: middle;
 }
 
 .main_box_body.private_message .conversation_body,
 .main_box_body.channel .conversation_body {
-	height: 300px;
+  height: 300px;
 }
 
 .main_box_body.private_message .conversation,
 .main_box_body.channel .conversation {
-	padding: 10px 5px 5px 5px;
-	overflow: scroll;
-	height: 300px;
+  padding: 10px 5px 5px 5px;
+  overflow: scroll;
+  height: 100%;
 }
 
 .main_box_body.private_message .conversation .top_point,
 .main_box_body.channel .conversation .top_point {
-	border-radius: 50%;
-	background: #6d5af0;
-	height: 10px;
-	width: 10px;
-	margin: 10px auto 15px auto;
+  border-radius: 50%;
+  background: #6d5af0;
+  height: 10px;
+  width: 10px;
+  margin: 10px auto 15px auto;
 }
 
 .main_box_body.private_message .conversation .message_item,
 .main_box_body.channel .conversation .message_item {
-	border-radius: 8px;
-	background: linear-gradient(to bottom, #585858, var(--secondary-bg-color));
-	width: 70%;
-	margin-top: 10px;
-	padding: 5px;
-	float: left;
+  border-radius: 8px;
+  background: linear-gradient(to bottom, #585858, var(--secondary-bg-color));
+  width: 70%;
+  margin-top: 10px;
+  padding: 5px;
+  float: left;
 }
 
 .main_box_body.private_message .conversation .sender,
 .main_box_body.channel .conversation .sender {
-	display: flex;
-	align-content: space-between;
-	margin-bottom: 5px;
+  display: flex;
+  align-content: space-between;
+  margin-bottom: 5px;
 }
 
 .main_box_body.private_message .conversation .sender img,
 .main_box_body.channel .conversation .sender img {
-	width: 25px;
-	height: 25px;
-	margin-right: 10px;
-	border-radius: 50%;
-	cursor: pointer;
+  width: 25px;
+  height: 25px;
+  margin-right: 10px;
+  border-radius: 50%;
+  cursor: pointer;
 }
 
 .main_box_body.private_message .conversation .sender p,
 .main_box_body.channel .conversation .sender p {
-	font-weight: 1000;
-	font-size: 0.9em;
+  font-weight: 1000;
+  font-size: 0.9em;
 }
 
 .main_box_body.private_message .conversation .message,
 .main_box_body.channel .conversation .message {
-	overflow-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .main_box_body.private_message .conversation .timestamp,
 .main_box_body.channel .conversation .timestamp {
-	font-size: 0.7em;
-	font-style: italic;
-	text-align: right;
+  font-size: 0.7em;
+  font-style: italic;
+  text-align: right;
+  padding-right: 2px;
 }
 
 .main_box_body.private_message .conversation .message_item.own,
 .main_box_body.channel .conversation .message_item.own {
-	background: linear-gradient(to bottom, #4c77e6 5%, #7f4af5);
-	float: right;
+  background: linear-gradient(to bottom, #4c77e6 5%, #7f4af5);
+  float: right;
 }
 
 .main_box_body.private_message .conversation .sender .message_item.own img,
 .main_box_body.channel .conversation .sender .message_item.own img {
-	display: none;
+  display: none;
 }
 
 .main_box_body.private_message .conversation .loading,
 .main_box_body.channel .conversation .sender .loading {
-	display: inline-block;
-	margin-left: 152px;
+  display: inline-block;
+  margin-left: 152px;
 }
 
 .main_box_body.private_message .conversation .game_invitation,
 .main_box_body.channel .conversation .sender .game_invitation {
-	width: 80%;
-	margin-left: 10%;
-	padding: 10px;
+  width: 80%;
+  margin-left: 10%;
+  padding: 10px;
 }
 
 .main_box_body.private_message .conversation .game_invitation .acceptation_wrapper,
 .main_box_body.channel .conversation .sender .game_invitation .acceptation_wrapper {
-	display: flex;
-	justify-content: space-evenly;
+  display: flex;
+  justify-content: space-evenly;
 }
 
 .main_box_body.private_message .conversation .game_invitation button,
 .main_box_body.channel .conversation .sender .game_invitation button {
-	display: block;
-	color: var(--main-bg-color);
-	border: none;
-	margin: 5px auto 0 auto;
-	padding: 2px 5px 2px 5px;
-	font-size: 0.9em;
-	transition: .3s ease;
+  display: block;
+  color: var(--main-bg-color);
+  border: none;
+  margin: 5px auto 0 auto;
+  padding: 2px 5px 2px 5px;
+  font-size: 0.9em;
+  transition: .3s ease;
 }
 
 .main_box_body.private_message .conversation .game_invitation .accept_btn,
 .main_box_body.channel .conversation .sender .game_invitation .accept_btn {
-	background: #63AB24;
+  background: #63AB24;
 }
 
 .main_box_body.private_message .conversation .game_invitation .refuse_btn
 .main_box_body.channel .conversation .sender .game_invitation .refuse_btn {
-	background: #CF331F;
+  background: #CF331F;
 }
 
 .main_box_body.private_message .conversation .game_invitation button:hover,
 .main_box_body.channel .conversation .sender .game_invitation button:hover {
-	background: var(--main-bg-color);
-	color: var(--fourth);
-	cursor: pointer;
+  background: var(--main-bg-color);
+  color: var(--fourth);
+  cursor: pointer;
 }
 
 .main_box_body.private_message .sendbox,
 .main_box_body.channel .sendbox {
-	height: 50px;
-	background: linear-gradient(to bottom, #4c77e6 5%, #7f4af5);
-	display: flex;
-	justify-content: space-between;
+  height: 50px;
+  background: linear-gradient(to bottom, #4c77e6 5%, #7f4af5);
+  display: flex;
+  justify-content: space-between;
 }
 
 .main_box_body.private_message .sendbox img,
 .main_box_body.channel .sendbox img {
-	height: 30px;
-	width: auto;
-	display: block;
-	margin: auto;
-	margin-right: 15px;
+  height: 30px;
+  width: auto;
+  display: block;
+  margin: auto;
+  margin-right: 15px;
 }
 
 .main_box_body.private_message .sendbox input,
 .main_box_body.channel .sendbox input {
-	width: 80%;
-	height: 70%;
-	background: white;
-	border: none;
-	border-radius: 10px;
-	color: black;
-	font-size: 0.9em;
-	padding-right: 5px;
-	padding-left: 5px;
-	margin: 2% 10px 2% 10px;
-	overflow-y: scroll;
+  width: 80%;
+  height: 70%;
+  background: white;
+  border: none;
+  border-radius: 10px;
+  color: black;
+  font-size: 0.9em;
+  padding-right: 5px;
+  padding-left: 5px;
+  margin: 2% 10px 2% 10px;
+  overflow-y: scroll;
 }
 
 .main_box_body.private_message .sendbox input:focus-visible,
 .main_box_body.channel .sendbox input:focus-visible {
-	border: none;
-	outline: none;
+  border: none;
+  outline: none;
 }
 
 .main_box_body.channel .sidebar {
-	height: 300px;
-	min-width: 70px;
-	overflow: scroll;
-	border-right: 1px solid var(--secondary-bg-color);
-	box-shadow: 1px 0 2px var(--secondary-bg-color);
-	padding-top: 10px;
-	text-align: center;
+  height: 100%;
+  min-width: 70px;
+  overflow: scroll;
+  border-right: 1px solid var(--secondary-bg-color);
+  box-shadow: 1px 0 2px var(--secondary-bg-color);
+  padding-top: 10px;
+  text-align: center;
 }
 
 .main_box_body.channel .sidebar img {
-	display: block;
-	width: 25px;
-	height: 25px;
-	margin: auto;
-	border-radius: 50%;
-	cursor: pointer;
+  display: block;
+  width: 25px;
+  height: 25px;
+  margin: auto;
+  border-radius: 50%;
+  cursor: pointer;
 }
 
 .main_box_body.channel .sidebar .user_wrapper {
-	font-size: 0.8em;
-	margin: 5px 5px 0 5px;
+  font-size: 0.8em;
+  margin: 5px 5px 0 5px;
 }
 
 .main_box_body.channel .sidebar .username {
-	text-overflow: ellipsis;
+  text-overflow: ellipsis;
 }
 
 .main_box_body.channel .sidebar .connection_point {
-	position: relative;
-	top: 0;
-	right: 0;
+  position: relative;
+  top: 0;
+  right: 0;
 }
 
 .main_box_body.channel .sidebar .kick_cross {
-	position: relative;
-	bottom: 50px;
-	left: 20px;
-	width: 8px;
-	cursor: pointer;
+  position: relative;
+  bottom: 50px;
+  left: 20px;
+  width: 8px;
+  cursor: pointer;
 }
 
 .AddToFriendContainer.unknown {
-	display: none;
+  display: none;
 }
 
 .pop_up_unread {
-	display: none;
-	position: absolute;
-	height: 13px;
-	width: 13px;
-	border-radius: 50%;
-	background: radial-gradient(ellipse at bottom, #4c77e6 5%, #7f4af5);
-	margin-left: 318px;
-	margin-top: -7px;
+  display: none;
+  position: absolute;
+  top: 5px;
+  right: 3px;
+  height: 13px;
+  width: 13px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at bottom, #4c77e6 5%, #7f4af5);
 }
 
 #pop_up_unread_chatbox {
-	display: none;
-	position: absolute;
-	height: 18px;
-	width: 18px;
-	border-radius: 50%;
-	background: red;
-	margin-left: 339px;
-	margin-top: -10px;
+  display: none;
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  height: 18px;
+  width: 18px;
+  border-radius: 50%;
+  background: red;
 }
 
 .unknown {
-	display: none;
+  display: none;
 }
 
 .main_box_header.friendpage {
-	background: var(--secondary-bg-color);
-	color: white;
-	height: 40px;
-	display: flex;
-	justify-content: space-evenly;
-	align-content: start;
-	padding: 10px 5px 10px 0px;
+  background: var(--secondary-bg-color);
+  color: white;
+  height: 40px;
+  display: flex;
+  justify-content: space-evenly;
+  align-content: start;
+  padding: 10px 5px 10px 0px;
 }
 
 .main_box_body.friendpage .conversation_list li.game_invitation {
@@ -952,6 +968,11 @@
   cursor: pointer;
 }
 
+.main_box_header.private_message .contact_option_wrapper {
+  display: flex;
+  margin-left: 30%;
+}
+
 .AddToFriendContainer {
   display: block;
   margin: auto 0;
@@ -969,4 +990,126 @@
   margin-top: 2px;
   margin-left: 2px;
   margin-right: 2px;
+}
+
+@media (max-width: 600px) {
+  .chatbox_header_wrapper.connected {
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    position: fixed;
+    bottom: 40px;
+    right: 20px;
+  }
+
+  .chatbox_header_wrapper.connected img {
+    margin: 12px;
+  }
+
+  .chatbox_header_wrapper.connected p {
+    display: none;
+  }
+
+  .chatbox_wrapper {
+    width: 80%;
+    right: 85px;
+  }
+
+  .chatbox_wrapper.open .open_chatbox_wrapper {
+    border: 2px solid #675fee;
+    border-bottom: none;
+    height: 80vh;
+  }
+
+  .main_box {
+    height: 100%;
+  }
+
+  .main_box_header.homepage ,
+  .main_box_header.channel,
+  .main_box_header.private_message ,
+  .main_box_header.friendpage {
+    height: 60px;
+  }
+
+  .main_box_header.homepage input ,
+  .main_box_header.friendpage input {
+    height: 60%;
+    margin: auto;
+  }
+
+  .main_box_body.channel,
+  .main_box_body.private_message,
+  .main_box_body.homepage,
+  .main_box_body.friendpage {
+    height: calc(100% - 60px);	
+  }
+
+  .main_box_body.homepage .conversation_list,
+  .main_box_body.friendpage .conversation_list {
+    height: calc(100% - 129px);
+  }
+
+  .main_box_body.channel .conversation_body,
+  .main_box_body.private_message .conversation_body {
+    height: calc(100% - 50px);
+  }
+
+  .main_box_body.homepage .chatbox_homepage_navbar ,
+  .main_box_body.friendpage .chatbox_homepage_navbar{
+    height: 90px;
+  }
+
+  .main_box_body.homepage .chatbox_homepage_navbar button,
+  .main_box_body.friendpage .chatbox_homepage_navbar button {
+    height: 80px;
+    font-size: 1em;
+    width: 100px;
+    height: 60px;
+  }
+
+  .main_box_body.homepage .invitation_box,
+  .main_box_body.friendpage .invitation_box {
+    bottom: 130px;
+    width: 96%;
+  }
+
+  .main_box_body.homepage .channel_creation_box {
+    bottom: 540px;
+    width: 95%;
+    font-size: 1.2em;
+  }
+
+  .main_box_body.homepage .conversation_list li {
+    font-size: 1.2em;
+  }
+
+  .main_box_body .message_item {
+    font-size: 1.3em;
+  }
+
+  .main_box_header.private_message .blockUser svg {
+    margin: 14px 0;
+  }
+
+  .main_box_body.channel .sidebar {
+    font-size: 1.2em;
+  }
+
+  .main_box_body.channel .sidebar img {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 440px) {
+  
+  .chatbox_wrapper {
+    width: 90%;
+    right: 5%;
+  } 
+
+  .chatbox_wrapper.open .chatbox_header_wrapper.connected {
+    bottom: 82vh;
+  }
 }

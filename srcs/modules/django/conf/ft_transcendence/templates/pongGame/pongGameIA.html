@@ -2,7 +2,7 @@
 {% load static %}
 <script type="module" src="{% static '/js/loading.js' %}"></script>
 <script type="importmap">
-    {
+  {
         "imports": {
             "three": "../build/three.module.js",
             "three/addons/": "./jsm/"
@@ -10,16 +10,22 @@
     }
 </script>
 <div class="pongWindow">
-
-	<div class="gameData">
-		<p id="gamePlayer1">
-            <img id="ppPlayer1" src="" alt="">
-        </p>
-		<p id="gameType">Pong</p>
-		<p id="gamePlayer2">
-            <img id="ppPlayer2" src="" alt="">
-            AI
-        </p>
-	</div>
-
+  <div class="gameData">
+    <div class='gameType_wrapper'>
+      <img src='/static/assets/logo/ping-pong.png' alt='Pong logo'>
+      <p id="gameType">Pong</p>
+    </div>
+    <div class='players_wrapper'>
+      <div class="player_wrapper">
+        <img id="ppPlayer1" src="" alt="Player 1 avatar">
+        <p id="gamePlayer1"></p>
+      </div>
+      <p>VS</p>
+      <div class="player_wrapper">
+        <p id="gamePlayer2">AI</p>
+        <img id="ppPlayer2" src="" alt="Player 2 avatar">
+      </div>
+    </div>
+  </div>
+  <div class='canvas_wrapper'></div>
 </div>

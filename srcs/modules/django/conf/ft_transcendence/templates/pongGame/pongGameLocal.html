@@ -3,10 +3,21 @@
 <script type="module" src="{% static '/js/loading.js' %}"></script>
 <div class="pongWindow">
 
-	<div class="gameData">
-		<p id="gamePlayer1">Player 1</p>
-		<p id="gameType">Pong</p>
-		<p id="gamePlayer2">Player 2</p>
-	</div>
+  <div class="gameData">
+    <div class='gameType_wrapper'>
+      <img src='/static/assets/logo/ping-pong.png' alt='Pong logo'>
+      <h1 id="gameType">PONG</h1>
+    </div>
+    <div class='players_wrapper'>
+      <div class="player_wrapper">
+        <p id="gamePlayer1">Player 1</p>
+      </div>
+      <p>VS</p>
+      <div class="player_wrapper">
+        <p id="gamePlayer2">Player 2</p>
+      </div>
+    </div>
+  </div>
+  <div class='canvas_wrapper'></div>
 
 </div>
