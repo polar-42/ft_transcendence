@@ -356,6 +356,11 @@ function LaunchGame()
 	window.onresize = function () {
 		WIDTH = document.body.clientWidth * 0.62;
 		HEIGHT = WIDTH * (9. / 16.);
+		if (HEIGHT > document.body.clientHeight * 0.75)
+		{
+			HEIGHT = document.body.clientHeight * 0.75
+			WIDTH = HEIGHT * (16. / 9.)
+		}
 		three_box.style.width = WIDTH + 8 + "px";
 		three_box.style.height = HEIGHT + 8 + "px";
 		scoreDisplay.style.fontSize = HEIGHT / 33 + "px";
