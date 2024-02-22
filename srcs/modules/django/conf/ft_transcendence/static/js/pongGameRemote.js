@@ -500,7 +500,6 @@ function OnMessage(e)
 
 	if (data.type == 'game_data')
 	{
-		// console.log('game_data is received');
 		updateGameData(data);
 	}
 	else if (data.type == 'countdown')

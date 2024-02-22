@@ -1,34 +1,34 @@
-.pongWindow {
+.battleshipWindow {
   margin-top: 80px;
   height: fit-content;
 }
 
-.pongWindow .gameData {
+.battleshipWindow .gameData {
   margin: auto;
   margin-bottom: 5px;
 }
 
-.pongWindow .gameType_wrapper {
+.battleshipWindow .gameType_wrapper {
   display: flex;
   margin: auto;
   margin-bottom: 50px;
   width: 250px
 }
 
-.pongWindow .gameType_wrapper img {
+.battleshipWindow .gameType_wrapper img {
   width: 100px;
   height: 100px;
   margin-right: 20px;
 }
 
-.pongWindow #gameType {
+.battleshipWindow #gameType {
 	font-weight: bolder;
   font-size: 3em;
   height: 100%;
   margin: auto;
 }
 
-.pongWindow .players_wrapper {
+.battleshipWindow .players_wrapper {
 	display: flex;
 	justify-content: space-around;
   width: 600px;
@@ -36,42 +36,43 @@
   font-size: 1.5em;
 }
 
-.pongWindow .player_wrapper {
+.battleshipWindow .player_wrapper {
   display: flex;
   height: 60px;
   border-bottom: 1px solid var(--fourth);
 }
-.pongWindow .players_wrapper p {
+.battleshipWindow .players_wrapper p {
   margin: auto;
 }
-.pongWindow .canvas_wrapper {
+.battleshipWindow .canvas_wrapper {
 	background-color: var(--fourth);
   max-height: 800px;
   padding: 1px;
 }
 
-.pongWindow #pongGame {
+.battleshipWindow #battleshipGame {
 	margin: 50px auto;
 	border: 4px solid var(--main-bg-color);
 	border-radius: 5px;
 }
 
-.pongWindow #ppPlayer1,
-.pongWindow  #ppPlayer2 {
+.battleshipWindow #ppPlayer1,
+.battleshipWindow  #ppPlayer2 {
 	height: 50px;
 	width: 50px;
 	border-radius: 50%;
   margin: auto;
 }
-.pongWindow #ppPlayer1 {
+.battleshipWindow #ppPlayer1 {
   margin-right: 10px;
 }
-.pongWindow #ppPlayer2 {
+.battleshipWindow #ppPlayer2 {
   margin-left: 10px;
 }
 
+
 @media (max-width: 700px) {
-  .pongWindow .players_wrapper {
+  .battleshipWindow .players_wrapper {
     width: 300px;
     display: grid;
     grid-template-rows: repeat(3, 1fr);

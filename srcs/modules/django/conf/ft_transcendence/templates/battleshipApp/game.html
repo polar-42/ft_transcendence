@@ -1,4 +1,24 @@
 <!-- game.html -->
 {% load static %}
 <script type="module" src="{% static '/js/loading.js' %}"></script>
-{% comment %} <script type="module" src="{% static '/js/game.js' %}"></script> {% endcomment %}
+
+<div class="battleshipWindow">
+  <div class="gameData">
+    <div class='gameType_wrapper'>
+      <img src='/static/assets/logo/battleship.png' alt='Battleship logo'>
+      <p id="gameType">Battleship</p>
+    </div>
+    <div class='players_wrapper'>
+      <div class="player_wrapper">
+        <img id="ppPlayer1" src="" alt="Player 1 avatar">
+        <p id="gamePlayer1"></p>
+      </div>
+      <p>VS</p>
+      <div class="player_wrapper">
+        <p id="gamePlayer2"></p>
+        <img id="ppPlayer2" src="" alt="Player 2 avatar">
+      </div>
+    </div>
+  </div>
+  <div class='canvas_wrapper'></div>
+</div>

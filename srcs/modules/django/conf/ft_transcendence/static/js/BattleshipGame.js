@@ -1,6 +1,7 @@
 import { navto } from "./index.js"
 import * as THREE from 'https://threejs.org/build/three.module.js';
 import { OrbitControls } from "../threejs_addons/OrbitControls.js";
+import { getProfilePicture, sleep } from "./chatApp/CA_General.js";
 
 let WIDTH = document.body.clientWidth * 0.75;
 let HEIGHT = WIDTH * (9. / 16.);
@@ -82,8 +83,10 @@ export function initGame()
 function OnMessage(e)
 {
 	const data = JSON.parse(e.data)
+  console.log(data)
 	switch (data.function) {
 		case 'initGame':
+      getPlayersData(data.player_1, data.player_2)
 			FP_Init()
 			FP_drawTitle()
 			TURNPHASE = false;
@@ -399,7 +402,7 @@ function FP_Init()
 	scene.add(boardGroup);
 
 	validated = false
-	canvas = document.getElementById("app")
+	canvas = document.querySelector(".canvas_wrapper")
 	initText()
 	canvas.appendChild(three_box);
 	three_box.appendChild(renderer.domElement);
@@ -1052,6 +1055,7 @@ let buttonState = false;
 function initText()
 {
 	three_box = document.createElement("div");
+  three_box.setAttribute('id', 'battleshipGame')
 	three_box.style.width = WIDTH + 8 + "px";
 	three_box.style.height = HEIGHT + 8 + "px";
 	three_box.style.border = '4px solid #ccc';
@@ -1117,4 +1121,38 @@ function initText()
 		else
 			SP_mouseClick(e)
 	}) 
+}
+
+async function getPlayersData(player1, player2) {
+  console.log(battleshipSocket)
+  console.log(battleshipSocket.readyState)
+  console.log(player1)
+  console.log(player2)
+  if (battleshipSocket == undefined || battleshipSocket.readyState !== WebSocket.OPEN || player1 == undefined || player2 == undefined)
+  {
+    console.log('pardon!!!!')
+    return
+  }
+
+  let profilePicture = await getProfilePicture({ 'type': 'user', 'id': player1.id })
+  let ppUrl
+  if (profilePicture.type == 'image/null')
+    ppUrl = "../static/assets/logo/user.png"
+  else
+    ppUrl = URL.createObjectURL(profilePicture)
+  if (document.getElementById('ppPlayer1') == undefined)
+    return
+  document.getElementById('ppPlayer1').src = ppUrl;
+
+  profilePicture = await getProfilePicture({ 'type': 'user', 'id': player2.id })
+  if (profilePicture.type == 'image/null')
+    ppUrl = "../static/assets/logo/user.png"
+  else
+    ppUrl = URL.createObjectURL(profilePicture)
+  if (document.getElementById('ppPlayer2') == undefined)
+    return
+  document.getElementById('ppPlayer2').src = ppUrl;
+
+  document.getElementById('gamePlayer1').textContent = player1.name;
+  document.getElementById('gamePlayer2').textContent = player2.name;
 }
