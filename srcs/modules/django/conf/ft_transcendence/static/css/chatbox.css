@@ -546,6 +546,12 @@
 .main_box_header.private_message .contact_name_wrapper {
   display: flex;
   padding-top: 10px;
+	overflow-x: scroll;
+	width: 150px;
+}
+
+.main_box_header.private_message .contact_name_wrapper p {
+	overflow-x: scroll;
 }
 
 .main_box_header.channel .contact_name_wrapper .channel_description {
@@ -970,7 +976,6 @@
 
 .main_box_header.private_message .contact_option_wrapper {
   display: flex;
-  margin-left: 30%;
 }
 
 .AddToFriendContainer {

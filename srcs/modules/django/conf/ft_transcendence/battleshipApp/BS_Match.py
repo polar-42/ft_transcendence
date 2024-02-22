@@ -59,6 +59,14 @@ class BattleshipMatch():
 		ColorPrint.prGreen("Debug! GAME {gID}: Starting.".format(gID=self.gameId))
 		msg = json.dumps({
 			'function': "initGame",
+			'player_1': {
+				'id': self.Users[0].Id,
+				'name': self.Users[0].Name
+				},
+			'player_2': {
+				'id': self.Users[1].Id,
+				'name': self.Users[1].Name
+				},
 			'timer': 60
 			})
 		self.Users[0].SendMessage(msg)
