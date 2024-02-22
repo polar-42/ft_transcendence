@@ -15,7 +15,10 @@ const offsetX = 10
 const offsetY = 100
 
 //TODO fix titles
-// select only orange cases when second part and make red stay on selection only
+//TODO select only orange cases when second part and make red stay on selection only
+//TODO not able to send two time same case
+//TODO check if case sent on right grid 
+//TODO see where got hit
 
 let mouse = new THREE.Vector2();
 
