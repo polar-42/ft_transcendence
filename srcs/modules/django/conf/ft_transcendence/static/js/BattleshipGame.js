@@ -1100,11 +1100,11 @@ function initText()
 	cool_button.style.padding = "10px"; // Example padding for better visualization
 	cool_button.addEventListener('mouseover', () => {
 		// Change the button's background color
-		cool_button.style.transform = "scale(1.04)"
+		cool_button.style.transform = "translate(-50%, -50%) scale(1.04)"
 		cool_button.style.backgroundColor = "#21F055";
 	  });
 	cool_button.addEventListener('mouseout', () => {
-		cool_button.style.transform = "scale(1.0)"
+		cool_button.style.transform = "translate(-50%, -50%) scale(1.0)"
 		cool_button.style.backgroundColor = "#1EC760"
 	  });
 	cool_button.addEventListener('click', e => {
