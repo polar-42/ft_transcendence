@@ -28,16 +28,6 @@ const navigateTo = url =>
 }
 
 initChat();
-//var scrollBarElement = document.createElement("style");
-//scrollBarElement.appendChild(document.createTextNode("::-webkit-scrollbar {width: 5px; height: 5px; display: none} ::-webkit-scrollbar-track {background: #F2F2F2;} ::-webkit-scrollbar-thumb {background: #BDBDBD;} ::-webkit-scrollbar-thumb:hover {background: #6E6E6E;}"))
-//document.getElementsByTagName("head")[0].appendChild(scrollBarElement);
-
-//onscroll = (event) => {
-//  scrollBarElement.innerHTML = "::-webkit-scrollbar {width: 5px; height: 5px;} ::-webkit-scrollbar-track {background: #F2F2F2;} ::-webkit-scrollbar-thumb {background: #BDBDBD;} ::-webkit-scrollbar-thumb:hover {background: #6E6E6E;}"
-
-//  setTimeout(function(){scrollBarElement.innerHTML = "::-webkit-scrollbar {width: 5px; height: 5px; display: none} ::-webkit-scrollbar-track {background: #F2F2F2;} ::-webkit-scrollbar-thumb {background: #BDBDBD;} ::-webkit-scrollbar-thumb:hover {background: #6E6E6E;}"
-//	}, 2000);
-//}
 
 function getRoute(RoutePath)
 {
@@ -131,6 +121,9 @@ const router = async () =>
 		Prev_match = match
 		// OnLogChange()
 	})
+  .catch(
+
+  )
 }
 
 const menuBtn = document.querySelector(".menu_btn")
