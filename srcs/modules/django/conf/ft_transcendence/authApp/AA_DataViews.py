@@ -43,6 +43,8 @@ def getAvatarImage(request):
             ColorPrint.prRed('userId {id}'.format(id=userId))
             if userId == 'self':
                 userId = request.user.id
+            elif userId == 'AI':
+                userId = User.objects.get(email='AI@test.com').id
             if User.objects.filter(id=userId).exists() is False:
                 return HttpResponse(None, content_type='image/null')
 

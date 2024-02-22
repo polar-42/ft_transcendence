@@ -224,16 +224,19 @@ class pongGame():
         player1_score = player1.get_score()
         player2_score = player2.get_score()
 
-        self.socket.send(text_data=json.dumps({
-            'type': 'game_timer',
-    		'ball_pos_x': ball_pos_x,
-            'ball_pos_y': ball_pos_y,
-            'playerone_pos_y': player1_pos_y,
-            'playertwo_pos_y': player2_pos_y,
-            'playerone_score': player1_score,
-            'playertwo_score': player2_score,
-            'second_left': secondLeft,
-        }))
+        try:
+            self.socket.send(text_data=json.dumps({
+                'type': 'game_timer',
+    	    	'ball_pos_x': ball_pos_x,
+                'ball_pos_y': ball_pos_y,
+                'playerone_pos_y': player1_pos_y,
+                'playertwo_pos_y': player2_pos_y,
+                'playerone_score': player1_score,
+                'playertwo_score': player2_score,
+                'second_left': secondLeft,
+            }))
+        except:
+            pass
 
     def sendCountdown(self, pongGame):
         self.socket.send(text_data=json.dumps({
@@ -267,7 +270,6 @@ class pongGame():
             pass
 
         if player1_score >= 3 or player2_score >= 3:
-            print(player1.player_id)
             if player1_score >= 3:
                 winner = player1.player_id.id
             else:

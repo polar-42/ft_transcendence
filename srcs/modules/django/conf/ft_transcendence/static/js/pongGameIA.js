@@ -3,7 +3,7 @@ import { Reflector } from "../threejs_addons/Reflector.js";
 import { TrailRenderer } from "../threejs_addons/TrailRenderer.js";
 import { CSS2DRenderer, CSS2DObject } from "../threejs_addons/CSS2DRenderer.js";
 import * as THREE from 'https://threejs.org/build/three.module.js';
-import { getProfilePicture } from "./chatApp/CA_General.js";
+import { getProfilePicture, sleep } from "./chatApp/CA_General.js";
 
 let WIDTH = document.body.clientWidth * 0.62;
 let HEIGHT = WIDTH * (9. / 16.);
@@ -49,7 +49,7 @@ export function countdown()
 	}, 4000);
 }
 
-export function initGamePongIA()
+export async function initGamePongIA()
 {
 	if (socketPongIA != undefined && socketPongIA.readyState != WebSocket.CLOSED)
 	{
@@ -400,8 +400,7 @@ async function getNameAndPPAI()
 		return
 	document.getElementById('ppPlayer1').src = ppUrl;
 
-	profilePicture = await getProfilePicture({ 'type': 'user', 'id': '5' })
-	ppUrl
+	profilePicture = await getProfilePicture({ 'type': 'user', 'id': 'AI' })
 	if (profilePicture.type == 'image/null')
 		ppUrl = "../static/assets/logo/user.png"
 	else
@@ -409,8 +408,6 @@ async function getNameAndPPAI()
 	if (document.getElementById('ppPlayer1') == undefined)
 		return
 	document.getElementById('ppPlayer2').src = ppUrl;
-
-	// console.log(document.getElementById('gamePlayer1').innerHTML += document.querySelectorAll('.profile_dropdown')[0].querySelectorAll('.nav__link')[0].textContent)
 }
 
 function FinishGame()
@@ -418,12 +415,10 @@ function FinishGame()
 	isCountingDown = false
 	scoreDisplay.remove()
 	renderer.domElement.style.filter = "blur(5px)"
-	// console.log('Pong game is finish');
 }
 
 function FinishGameByScore(data)
 {
-	// console.log(data)
 	if (data.playerone_score >= 3 || data.playertwo_score >= 3)
 	{
 		scoreDisplay.textContent = data.playerone_score + " - " + data.playertwo_score;
