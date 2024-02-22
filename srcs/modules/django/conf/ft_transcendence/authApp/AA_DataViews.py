@@ -40,7 +40,7 @@ def getAvatarImage(request):
             return HttpResponse(avatarChan, content_type='image/png')
         else:
             userId = request.GET.get('userId', None)
-            ColorPrint.prRed('userId {id}'.format(id=userId))
+            # ColorPrint.prRed('userId {id}'.format(id=userId))
             if userId == 'self':
                 userId = request.user.id
             elif userId == 'AI':

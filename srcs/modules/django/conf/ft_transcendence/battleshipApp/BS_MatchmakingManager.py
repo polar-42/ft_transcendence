@@ -9,9 +9,9 @@ class BattleShipGameManager():
 
 	def JoinGame(self, gameId, user, socket):
 		if (gameId not in self._MatchList.keys()):
-			ColorPrint.prRed("Error ! User {name} try to join non existing game : {game}.".format(name=user.nickname, game=gameId))
+			# ColorPrint.prRed("Error ! User {name} try to join non existing game : {game}.".format(name=user.nickname, game=gameId))
 			return None
-		ColorPrint.prRed("Error ! User {name} Socket : {Msocket}.".format(name=user.nickname, Msocket=socket))
+		# ColorPrint.prRed("Error ! User {name} Socket : {Msocket}.".format(name=user.nickname, Msocket=socket))
 		result =  self._MatchList[gameId].ConnectUser(user, socket)
 		if (result == False):
 			return None
@@ -35,9 +35,9 @@ class BattleShipGameManager():
 		if (id not in self._MatchList.keys()):
 			from .BS_Match import BattleshipMatch
 			self._MatchList[gameid] = BattleshipMatch(gameid, user1, user2, self, GType, _id)
-			ColorPrint.prGreen("DEBUG : Game {gameId} created.".format(gameId=gameid))
-		else:
-			ColorPrint.prRed("Error! Trying to create a game with duplicate id : " + gameid + ".")
+			# ColorPrint.prGreen("DEBUG : Game {gameId} created.".format(gameId=gameid))
+		# else:
+			# ColorPrint.prRed("Error! Trying to create a game with duplicate id : " + gameid + ".")
 
 from .BS_Match import BattleshipMatch
 def addToDb(battleshipGame: BattleshipMatch):
@@ -50,7 +50,8 @@ def addToDb(battleshipGame: BattleshipMatch):
 
 	for user in battleshipGame.Users:
 		if User.objects.filter(id=user.sock_user.id).exists() is False:
-			ColorPrint.prRed("Error! User {userId} don't exist in the db".format(userId=user.sock_user.id))
+			pass
+			# ColorPrint.prRed("Error! User {userId} don't exist in the db".format(userId=user.sock_user.id))
 		else:
 			PlayerModel = User.objects.get(id=user.sock_user.id)
 			PlayerModel.BS_Bullets = PlayerModel.BS_Bullets + user.HitTry

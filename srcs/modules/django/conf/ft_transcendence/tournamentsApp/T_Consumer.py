@@ -13,11 +13,13 @@ class TournamentSocket(WebsocketConsumer):
 		if (T_Manager.Manager.ConnectUser(self.scope['user'], self, self.TournamentId) is False):
 			self.close()
 			return
+		ColorPrint.prGreen(self.scope['user'])
 		self.Opened = True
 
 	def disconnect(self, code):
-		T_Manager.Manager.DisconnectUser(self.scope['user'], self.TournamentId, True if code == 3005 else False)
-		self.Opened = False
+		if code != 1006:
+			T_Manager.Manager.DisconnectUser(self.scope['user'], self.TournamentId, True if code == 3005 else False)
+			self.Opened = False
 		return
 
 	def receive(self, text_data):
@@ -28,7 +30,7 @@ class TournamentSocket(WebsocketConsumer):
 			case 'ReadyPressed':
 				tournament = T_Manager.Manager.GetTournament(self.TournamentId)
 				if (tournament is None):
-					ColorPrint.prRed("Error! Tournament is None")
+					# ColorPrint.prRed("Error! Tournament is None")
 					self.close()
 				tournament.ChangeReadyState(self.scope['user']) 
 				return

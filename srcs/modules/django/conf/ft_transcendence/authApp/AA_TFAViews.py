@@ -155,12 +155,12 @@ def LoginPage(request):
 
 def LoginCheck(request):
 	if request.user.is_authenticated == True:
-		ColorPrint.prGreen("1")
+		# ColorPrint.prGreen("1")
 		return JsonResponse({'error' : 'User already logged.'})
 	data = json.loads(request.body)
 	cookie = request.COOKIES.get('2FACookie')
 	if cookie == None:
-		ColorPrint.prGreen("3")
+		# ColorPrint.prGreen("3")
 		return JsonResponse({'error' : 'incorrect step.'})
 	readedCookie = jwt.decode(cookie, os.environ.get('DJANGO_KEY'), algorithms="HS256")
 	userModel = User.objects.get(email=readedCookie.get('email'))

@@ -65,7 +65,7 @@ class ChannelChat():
 
 		# self.joinChannel(self.admin)
 		from ft_transcendence import ColorPrint
-		ColorPrint.prBlue(self.usersSocket)
+		# ColorPrint.prBlue(self.usersSocket)
 		print('channel is', obj.channelName, 'with', obj.users)
 
 

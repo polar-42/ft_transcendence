@@ -11,7 +11,7 @@ def index_view(request):
 
 @isValidLoading
 def homepage_view(request):
-	ColorPrint.prRed("Request Homepage")
+	# ColorPrint.prRed("Request Homepage")
 	if (request.method == "GET"):
 		return render(request, 'homepage.html')
 	else:

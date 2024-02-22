@@ -351,7 +351,7 @@ def getWinrateBattleshipGames(request):
 	allBattleshipTournament = TournamentsModels.objects.filter(tournamentType=1).order_by('-id')
 	allTournamentInvolve = []
 	for tournament in allBattleshipTournament:
-		ColorPrint.prRed('tournament : {tour}'.format(tour=tournament))
+		# ColorPrint.prRed('tournament : {tour}'.format(tour=tournament))
 		if tournament.playersId is not None and str(userId) in tournament.playersId:
 			allTournamentInvolve.append(tournament)
 	win = 0
@@ -443,7 +443,7 @@ def getOtherBatlleshipStats(request):
 def getPongSpecificGame(request):
 	if request.method == "POST":
 		data = json.loads(request.body)
-		ColorPrint.prRed(data['gameId'])		
+		# ColorPrint.prRed(data['gameId'])		
 		game = PongGameModels.objects.get(id=data['gameId'])
 		player1 = User.objects.get(id=int(game.player1))
 		player2 = User.objects.get(id=int(game.player2))
@@ -558,7 +558,7 @@ def getTournamentStat(request):
 		return JsonResponse({'null': None})
 
 def getPongStatHtml(request):
-	ColorPrint.prRed(request.method)
+	# ColorPrint.prRed(request.method)
 	if (request.method == "GET"):
 		return render(request, 'dashboardApp/pongStats.html')
 	raise Exception('Invalid Request Method')

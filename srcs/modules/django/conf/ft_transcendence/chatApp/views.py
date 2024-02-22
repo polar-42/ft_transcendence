@@ -6,7 +6,7 @@ from django.http import HttpResponse, JsonResponse
 
 def getAllUsers(request):
 	if (request.method != "GET"):
-		ColorPrint.prRed("Error! Invalid request type")
+		# ColorPrint.prRed("Error! Invalid request type")
 		return JsonResponse({'error': 'Invalid request type.'})
 
 	query = User.objects.all().exclude(Q(id=5) | Q(id=request.user.id))

@@ -17,10 +17,10 @@ class User():
 
     def SendMessage(self, msg):
         if (self.ConnexionStatus != ConnexionState.Connected):
-            ColorPrint.prYellow("Warning! Trying to send message to not connected user : {username}.".format(username=self.Name))
+            # ColorPrint.prYellow("Warning! Trying to send message to not connected user : {username}.".format(username=self.Name))
             return
         if (self.socket == None):
-            ColorPrint.prRed("Error! Trying to send message to user : {username} with None socket.".format(username=self.Name) )
+            # ColorPrint.prRed("Error! Trying to send message to user : {username} with None socket.".format(username=self.Name) )
             return
         if self.socket.Connected == False:
             return
@@ -36,6 +36,8 @@ class User():
                 if (boat['ArrayX'] < 0 or boat['ArrayY'] < 0):
                     return False
                 self.BoatList.append(Boat(boat['name'], boat['size'], ori, boat['ArrayX'], boat['ArrayY']))
+            if (len(self.BoatList) != 5):
+                return False
         return True
 
     def Hit(self, case):

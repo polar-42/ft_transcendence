@@ -6,26 +6,26 @@ from enum import IntEnum
 from pongGameApp.pongGameClasses import randomDir
 
 class GameState(IntEnum):
-	RequestBoat = -1
-	Initialisation = 0
-	BoatPlacement = 1
-	Playing = 2
-	RequestHit = 4
-	Ending = 3
+    RequestBoat = -1
+    Initialisation = 0
+    BoatPlacement = 1
+    Playing = 2
+    RequestHit = 4
+    Ending = 3
 
 class ConnexionState(IntEnum):
-	NeverConnected = 0
-	Connected = 1
-	Disconnected = 2
+    NeverConnected = 0
+    Connected = 1
+    Disconnected = 2
 
 class GameType(IntEnum):
-	Normal = 0
-	Tournament = 1
+    Normal = 0
+    Tournament = 1
 
 class GameEndReason(IntEnum):
-	Disconnected = 0
-	GiveUp = 1
-	Win = 2
+    Disconnected = 0
+    GiveUp = 1
+    Win = 2
 
 class pongGameLoop(threading.Thread):
 
@@ -74,7 +74,7 @@ class pongGameLoop(threading.Thread):
                 player1_score = player1.get_score()
                 player2_score = player2.get_score()
 
-         	    #BALL CCOLISIONS WITH WALLS
+                 #BALL CCOLISIONS WITH WALLS
                 if not( 3.8 - 0.15 >= ball_pos_y + ball_dy * ball_speed >= -3.8 + 0.15) :
                     ball_dy *= -1
 
@@ -252,7 +252,7 @@ class pongGame():
         for x in self.users:
             x.socket.send(text_data=json.dumps({
                 'type': 'game_timer',
-    			'ball_pos_x': ball_pos_x,
+                'ball_pos_x': ball_pos_x,
                 'ball_pos_y': ball_pos_y,
                 'playerone_pos_y': player1_pos_y,
                 'playertwo_pos_y': player2_pos_y,
@@ -285,14 +285,14 @@ class pongGame():
         for x in self.users:
             try:
                 x.socket.send(text_data=json.dumps({
-    		    	'type': 'game_data',
-    		    	'ball_pos_x': ball_pos_x,
+                    'type': 'game_data',
+                    'ball_pos_x': ball_pos_x,
                     'ball_pos_y': ball_pos_y,
                     'playerone_pos_y': player1_pos_y,
                     'playertwo_pos_y': player2_pos_y,
                     'playerone_score': player1_score,
                     'playertwo_score': player2_score,
-    		    }))
+                }))
             except:
                 pass
 
@@ -375,25 +375,28 @@ class pongGame():
         pongGameManager.Manager.closeGame(self.channelName)
 
         if self.tournament is not None:
-            self.tournament.HandleResult(self.winner.sock_user.id)
+            try:
+                self.tournament.HandleResult(self.winner.sock_user.id)
 
-            self.winner.socket.send(text_data=json.dumps({
-                'type': 'return_to_tournament',
-                'id': self.tournament.TournamentId,
-            }))
+                self.winner.socket.send(text_data=json.dumps({
+                    'type': 'return_to_tournament',
+                    'id': self.tournament.TournamentId,
+                }))
 
-            self.winner.socket.close()
+                self.winner.socket.close()
+            except:
+                pass
         else:
             try:
                 self.winner.socket.send(text_data=json.dumps({
                     'type': 'game_ending',
                     'youare': youare,
-			    	'winner': 'you',
-			    	'reason': 'disconnexion',
-			    	'playerone_score': p1_score,
-			    	'playertwo_score': p2_score,
-			    	'playerone_username': self.users[0].username,
-			    	'playertwo_username': self.users[1].username,
+                    'winner': 'you',
+                    'reason': 'disconnexion',
+                    'playerone_score': p1_score,
+                    'playertwo_score': p2_score,
+                    'playerone_username': self.users[0].username,
+                    'playertwo_username': self.users[1].username,
                 }))
             except:
                 pass 

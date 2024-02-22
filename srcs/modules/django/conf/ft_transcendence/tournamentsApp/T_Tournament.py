@@ -69,7 +69,7 @@ class Tournament():
 			'newRound' : self.curStep
 			})
 		for match in self.Tree[self.curStep]:
-			ColorPrint.prBlue(match.Users)
+			# ColorPrint.prBlue(match.Users)
 			for user in match.Users:
 				user.SendMessage(msg)
 			match.startTimer()
@@ -85,7 +85,7 @@ class Tournament():
 						matchPos = 0 if PosY % 2 == 0 else 1
 						nextMatchPos = math.floor(PosY / 2)
 						self.Tree[PosX + 1][nextMatchPos].AddUser(Match2.Winner, matchPos)
-						ColorPrint.prGreen("Debug ! Winner = ".format(Match2.Winner.Username))
+						# ColorPrint.prGreen("Debug ! Winner = ".format(Match2.Winner.Username))
 						self.SendMatch(None)
 						self.CountStepEnd()
 						return

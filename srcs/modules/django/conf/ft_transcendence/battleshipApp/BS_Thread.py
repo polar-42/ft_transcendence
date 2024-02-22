@@ -12,7 +12,7 @@ class GameLoop(threading.Thread):
 		while not self.stopFlag.is_set():
 			if self.match.currentTimer != -1:
 				self.match.currentTimer -= 1
-				ColorPrint.prGreen("Debug! GAME {gID}: Timer : {curTime}.".format(gID=self.match.gameId, curTime=self.match.currentTimer))
+				# ColorPrint.prGreen("Debug! GAME {gID}: Timer : {curTime}.".format(gID=self.match.gameId, curTime=self.match.currentTimer))
 				if self.match.Gamestatus is GameState.Ending:
 					self.match.CloseGame()
 					return

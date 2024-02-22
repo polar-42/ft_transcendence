@@ -8,7 +8,7 @@ def isValidLoading(function):
 	@wraps(function)
 	def wrap(request, *args, **kwargs):
 		if request.GET.get('Valid') == 'true':
-			ColorPrint.prGreen(request)
+			# ColorPrint.prGreen(request)
 			return function(request, *args, **kwargs)
 		else:
 			return render(request, 'index.html')

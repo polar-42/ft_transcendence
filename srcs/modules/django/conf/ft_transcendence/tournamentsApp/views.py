@@ -32,7 +32,7 @@ def create_tournament(request):
 	data = json.loads(request.body)
 	tournamentName = data.get('tournamentsName')
 	tournamentsDescription = data.get('tournamentsDescription')
-	ColorPrint.prYellow(tournamentsDescription)
+	# ColorPrint.prYellow(tournamentsDescription)
 	numberOfPlayers = data.get('numberOfPlayers')
 	typeGame = data.get('typeGame')
 	if len(numberOfPlayers) <= 0:
@@ -91,15 +91,15 @@ def TournamentSpectateView(request):
 		if (request.method != "GET"):
 			raise Exception("Invalid Request Method.")
 		_id = request.GET.get('id')
-		ColorPrint.prBlue(_id)
+		# ColorPrint.prBlue(_id)
 		if _id == None:
 			raise Exception("No id given.")
 		if T_Manager.Manager._Tournaments.__contains__(int(_id)) == False:
-			ColorPrint.prBlue(T_Manager.Manager._Tournaments)
+			# ColorPrint.prBlue(T_Manager.Manager._Tournaments)
 			raise Exception("Tournament not found. : " + _id)
 		return render(request, 'tournaments/tournamentView.html')
 	except Exception as error:
-		ColorPrint.prRed(error)
+		# ColorPrint.prRed(error)
 		return redirect('/404/?Valid=true')
 
 def GetTournamentData(request):
@@ -114,8 +114,8 @@ def GetTournamentData(request):
 		return JsonResponse({'error': 'Invalid Tournament ID'})
 	UserMSG = Tournament.GetUsersList()
 	MatchMSG = Tournament.GetMatchList()
-	ColorPrint.prRed(Tournament.TournamentName)
-	ColorPrint.prRed(Tournament.Type)
+	# ColorPrint.prRed(Tournament.TournamentName)
+	# ColorPrint.prRed(Tournament.Type)
 	return JsonResponse({ "tournamentName" : Tournament.TournamentName,
 					  "tournamentType" : Tournament.Type,
 					  "tournamentDescription": Tournament.Description,
@@ -125,17 +125,17 @@ def GetTournamentData(request):
 					  })
 
 def GetMatchList(request):
-	ColorPrint.prGreen('Get match list')
+	# ColorPrint.prGreen('Get match list')
 	if request.method != "POST":
 		return JsonResponse({'error': 'Method is invalid'})
 	data = json.loads(request.body)
-	ColorPrint.prGreen(data)
+	# ColorPrint.prGreen(data)
 	tournamentId = int(data.get('tourId'))
 	Tournament = T_Manager.Manager.GetTournament(tournamentId)
 	if (Tournament is None):
 		return JsonResponse({'error': 'Invalid Tournament ID'})
 	MatchMSG = Tournament.GetMatchList()
-	ColorPrint.prRed('Match list : {MatchMSG}'.format(MatchMSG=MatchMSG))
+	# ColorPrint.prRed('Match list : {MatchMSG}'.format(MatchMSG=MatchMSG))
 	return JsonResponse({ "tournamentId" : tournamentId,
 					  "matchs" : 'None' if MatchMSG is None else MatchMSG
 					  })
@@ -189,11 +189,11 @@ def Tournament_view(request):
 		if _id == None:
 			raise Exception("No id given.")
 		if T_Manager.Manager._Tournaments.__contains__(int(_id)) == False:
-			ColorPrint.prBlue(T_Manager.Manager._Tournaments)
+			# ColorPrint.prBlue(T_Manager.Manager._Tournaments)
 			raise Exception("Tournament not found. : " + _id)
 		return render(request, 'tournaments/tournament.html')
 	except Exception as error:
-		ColorPrint.prRed(error)
+		# ColorPrint.prRed(error)
 		return redirect('/404/?Valid=true')
 
 def get_tournaments_manager():

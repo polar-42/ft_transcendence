@@ -24,10 +24,10 @@ def logPage(request):
 
 def UserConnexion(request):
 	if (request.method != "POST"):
-		ColorPrint.prRed("Error! Invalid request type")
+		# ColorPrint.prRed("Error! Invalid request type")
 		return JsonResponse({'error': 'Invalid request type.'})
 	if (request.user.is_authenticated == True):
-		ColorPrint.prYellow("Warning! User Already Connected")
+		# ColorPrint.prYellow("Warning! User Already Connected")
 		return JsonResponse({'error': 'Already connected.'})
 	data = json.loads(request.body)
 	email = data.get('email')
@@ -46,7 +46,7 @@ def UserConnexion(request):
 	if isPasswordValid:
 		if userModel.tfValidated == True:
 			token = jwt.encode({"email" : email, "status" : "2FA connexion"}, os.environ.get('DJANGO_KEY'), algorithm='HS256')
-			ColorPrint.prRed(token)
+			# ColorPrint.prRed(token)
 			response = JsonResponse({'TFA' : 'request'})
 			response.set_cookie('2FACookie', token, max_age=600, samesite="Strict")
 			return response
@@ -64,10 +64,10 @@ def registerPage(request):
 
 def UserRegistration(request):
 	if (request.method != "POST"):
-		ColorPrint.prRed("Error! Invalid request type")
+		# ColorPrint.prRed("Error! Invalid request type")
 		return JsonResponse({'error': 'Invalid request type.'})
 	if (request.user.is_authenticated == True):
-		ColorPrint.prYellow("Warning! User Already Connected")
+		# ColorPrint.prYellow("Warning! User Already Connected")
 		return JsonResponse({'error': 'Already connected.'})
 	username = request.POST.get('username')
 	email = request.POST.get('email')

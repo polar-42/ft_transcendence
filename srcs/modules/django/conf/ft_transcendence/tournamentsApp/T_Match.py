@@ -29,7 +29,7 @@ class TournamentMatch():
 		if (user in self.Users and user is not self.Tournament.UndefinedUser):
 			# ColorPrint.prYellow("Warning! Tournament[{TId}].Match[{gameId}] : Can't add user {username}, already in match.".format(TId=self.TournamentId, gameId=self.GameId, username=user.Username))
 			return False
-		ColorPrint.prYellow('User: {user}; Position : {pos}'.format(user=user, pos=position))
+		# ColorPrint.prYellow('User: {user}; Position : {pos}'.format(user=user, pos=position))
 		self.Users[position] = user
 		return True
 
