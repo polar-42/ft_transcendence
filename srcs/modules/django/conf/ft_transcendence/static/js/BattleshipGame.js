@@ -172,6 +172,7 @@ function GameEndMessage(message)
 	endingText.style.zIndex = "1"; // Ensure it's above other content
 	endingText.style.padding = "10px"; // Example padding for better visualization
 	three_box.appendChild(endingText)
+	document.removeEventListener('keydown', SP_boardSwitch)
 
 
 }
@@ -376,6 +377,7 @@ function FP_Init()
 		cube.position.set(x + boardOffsetX, 0, y + boardOffsetY + 20);
 		cube.type = "ennemy_cube";
 		cube.receiveShadow = true;
+		cube.castShadow = true;
 		scene.add(cube);
 		const edges = new THREE.EdgesGeometry(geometry);
 		const lineMaterial = new THREE.LineBasicMaterial({
@@ -384,6 +386,7 @@ function FP_Init()
 		});
 		const lines = new THREE.LineSegments(edges, lineMaterial);
 		lines.position.set(x + boardOffsetX, 0, y + boardOffsetY + 20);
+		cube.line = lines
 		boardGroup.add(lines);
 		BoardCases.push(CreateABox(x, y, cube))
 		}
@@ -396,6 +399,7 @@ function FP_Init()
 		cube.position.set(x + boardOffsetX, 0, y + boardOffsetY);
 		cube.type = "cube";
 		cube.receiveShadow = true;
+		cube.castShadow = true;
 		scene.add(cube);
 		const edges = new THREE.EdgesGeometry(geometry);
 		const lineMaterial = new THREE.LineBasicMaterial({
@@ -412,7 +416,7 @@ function FP_Init()
 	dlight.position.set(20, 20, 20);
 	dlight.castShadow = true;
 	dlight.shadow.mapSize.width = 1024; // Shadow map width\
-	const d = 20;
+	const d = 30;
 	const lightTarget = new THREE.Object3D(); 
 	scene.add(lightTarget);
 	dlight.shadow.camera.left = - d;
@@ -766,13 +770,42 @@ function SP_HitCase(Tcase, result, boat)
 			if (element.status == -1)
 			{
 				element.object.material.color.setHex(0xffffff)
-				element.object.type = "hit_cube"
+				element.object.scale.set(1, 0.8, 1);
+				element.object.position.y -= 0.1
+
+				boardGroup.remove(element.object.line)
+
+				const tedges = new THREE.EdgesGeometry(new THREE.BoxGeometry(1.,0.8,1.));
+				const tlineMaterial = new THREE.LineBasicMaterial({
+					color: 0x000000,
+					linewidth: 2,
+				});
+				const alines = new THREE.LineSegments(tedges, tlineMaterial);
+				alines.position.set(element.object.position.x, element.object.position.y, element.object.position.z );
+				element.object.line = alines
+				boardGroup.add(alines)
+
+				element.object.type = "miss_cube"
 				CURRENT_COLOR = 0xffffff;
 			}
 			else if (element.status == 1)
 			{
 				element.object.material.color.setHex(0xffaaaa)
-				element.object.type = "miss_cube"
+				element.object.scale.set(1, 2., 1);
+				element.object.position.y += 0.5
+				element.object.type = "hit_cube"
+				boardGroup.remove(element.object.line)
+
+				const tedges = new THREE.EdgesGeometry(new THREE.BoxGeometry(1.,2.,1.));
+				const tlineMaterial = new THREE.LineBasicMaterial({
+					color: 0x000000,
+					linewidth: 2,
+				});
+				const alines = new THREE.LineSegments(tedges, tlineMaterial);
+				alines.position.set(element.object.position.x, element.object.position.y, element.object.position.z );
+				element.object.line = alines
+				boardGroup.add(alines)
+				
 				CURRENT_COLOR = 0xffaaaa;
 			}
 		}
