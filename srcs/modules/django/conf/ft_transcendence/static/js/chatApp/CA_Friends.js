@@ -131,8 +131,10 @@ async function createConversation(conversation)
 		isConnected = ''
 	else if (conversation.connexionStatus === 0)
 		isConnected = 'disconnected'
+	else if (conversation.connexionStatus === 2)
+			isConnected = 'connected'
 	else
-		isConnected = 'connected'
+		isConnected = 'busy'
 	let profilePicture = await getProfilePicture(conversation)
 	let ppUrl
 	if (profilePicture.type == 'image/null')

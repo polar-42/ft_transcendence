@@ -181,6 +181,8 @@ export function displayChannel(data) {
 					isConnected = 'connected'
 				} else if (users[i].connexion_status === 0) {
 					isConnected = 'disconnected'
+				} else if (users[i].connexion_status === 0) {
+					isConnected = 'busy'
 				} else {
 					isConnected = ''
 				}

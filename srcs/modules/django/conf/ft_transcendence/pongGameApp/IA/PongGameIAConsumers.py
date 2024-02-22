@@ -5,6 +5,7 @@ from channels.db import database_sync_to_async
 from asgiref.sync import async_to_sync, sync_to_async
 from . import pongThreadsIA
 from authApp.models import User
+from chatApp.enumChat import connexionStatus
 
 
 class PongGameIASocket(WebsocketConsumer):
@@ -14,6 +15,10 @@ class PongGameIASocket(WebsocketConsumer):
 		self.id = self.user.id
 
 		self.accept()
+
+		obj = User.objects.get(id=int(self.id))
+		obj.connexionStatus = connexionStatus.Busy
+		obj.save()
 
 		async_to_sync(self.channel_layer.group_add)(
 			"PongGameVsIA_" + str(self.id),
@@ -36,6 +41,9 @@ class PongGameIASocket(WebsocketConsumer):
 
 		self.pongGameThread.quitGame(self)
 
+		obj = User.objects.get(id=int(self.id))
+		obj.connexionStatus = connexionStatus.Connected
+		obj.save()
 
 		AI_id = User.objects.get(nickname='AI').id
 

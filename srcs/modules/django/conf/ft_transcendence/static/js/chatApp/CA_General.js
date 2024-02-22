@@ -249,8 +249,10 @@ async function displayLastChats(data, isStillUnreadMessage) {
 			isConnected = ''
 		else if (data[i].connexionStatus === 0)
 			isConnected = 'disconnected'
-		else
+		else if (data[i].connexionStatus === 2)
 			isConnected = 'connected'
+		else
+			isConnected = 'busy'
 		let profilePicture = await getProfilePicture(data[i])
 		let ppUrl
 		if (profilePicture.type == 'image/null')
@@ -328,8 +330,8 @@ async function displaySearchResult(data) {
 			isConnected = 'connected'
 		} else if (data[i].connexion_status === 0) {
 			isConnected = 'disconnected'
-		} else {
-			isConnected = ''
+		} else if (data[i].connexion_status === 1) {
+			isConnected = 'busy'
 		}
 		if (data[i].member === false) {
 			member = 'not_member'
