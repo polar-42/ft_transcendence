@@ -6,7 +6,6 @@ let WIDTH = document.body.clientWidth * 0.75;
 let HEIGHT = WIDTH * (9. / 16.);
 
 let canvas = null
-let ctx = null
 
 const gridSizeX = 10
 const gridSizeY = 10
@@ -14,24 +13,13 @@ const boxSize = 1;
 const offsetX = 10
 const offsetY = 100
 
-//TODO fix titles
-//TODO select only orange cases when second part and make red stay on selection only
-//TODO not able to send two time same case
-//TODO check if case sent on right grid 
-//TODO see where got hit
+// properly quit game
+// if time css button update
+
+
 
 let mouse = new THREE.Vector2();
 
-const FP_BTN_Validate =
-{
-	x : (offsetX + boxSize * gridSizeX + 2) + ((1080 - (offsetX + boxSize * gridSizeX + 2)) / 2) - 100,
-	y : 600,
-	w : 200,
-	h : 50,
-	label : 'Confirme',
-	color : 'blue',
-	hoverColor : 'red'
-}
 
 let BoardCases = []
 
@@ -51,6 +39,8 @@ var curInterval = undefined
 
 let CURRENT_SELECTION = null;
 let CURRENT_COLOR = null;
+let LOOKINGATENNEMY = false;
+let TURNPHASE = false;
 
 export function initGame()
 {
@@ -94,25 +84,32 @@ function OnMessage(e)
 	switch (data.function) {
 		case 'initGame':
 			FP_Init()
+			FP_drawTitle()
+			TURNPHASE = false;
 			break
 		case 'StartGame':
 			FP_UnLoad()
-			ctx.clearRect(0, 0, canvas.width, canvas.height)
+			TURNPHASE = true;
+			document.addEventListener('keydown', SP_boardSwitch)
+			if (CURRENT_SELECTION != null) {
+				CURRENT_SELECTION.material.color.setHex(CURRENT_COLOR);
+			  }
 			SP_Load()
 			break
 		case 'StartTurn':
 			SP_drawTitle("Your Turn")
+			LOOKINGATENNEMY = true;
 			document.addEventListener('mousemove', SP_mouseMove)
 			document.addEventListener('mousedown', SP_mouseClick)
 			break
 		case 'StartEnemyTurn':
 			SP_drawTitle(data.playerName + " Turn")
-			SP_Draw()
 			document.removeEventListener('mousemove', SP_mouseMove)
 			document.removeEventListener('mousedown', SP_mouseClick)
 			break
 		case 'GameStop':
 			RP_GameStop(data.message, data.tournamentId)
+			document.removeEventListener('keydown', SP_boardSwitch)
 			break
 		case 'RetrieveBoat':
 			FP_SendBoats()
@@ -121,15 +118,18 @@ function OnMessage(e)
 			SP_SendSelected()
 			break
 		case 'GotHit':
+			hitMarker(data.case.ArrayPosX, data.case.ArrayPosY);
 			break
 		case 'HitResult':
 			SP_HitCase(data.case, data.result, data.destroyedboat)
 			break
 		case 'Loose':
 			RP_Loose(data.other, data.wAliveBoat)
+			document.removeEventListener('keydown', SP_boardSwitch)
 			break
 		case 'Win':
 			RP_Win(data.other, data.wAliveBoat, data.lAliveBoat)
+			document.removeEventListener('keydown', SP_boardSwitch)
 			break
 		case 'ReturnToMatchmaking':
 			if (data.Winner != 'None')
@@ -147,6 +147,29 @@ function OnMessage(e)
 }
 //#region ResultPart
 
+function GameEndMessage(message)
+{
+	counter.textContent = "";
+	cool_button.style.display = "none";
+	title.textContent = "";
+	endingText = document.createElement("div");
+	renderer.domElement.style.filter = "blur(5px)"
+	endingText.textContent = message;
+	endingText.style.whiteSpace = "pre";
+	endingText.style.textAlign = "center";
+	endingText.style.fontSize = HEIGHT / 10 + "px";
+	endingText.style.position = "absolute"; // Set position to absolute
+	endingText.style.textShadow = "1px 1px 1px #919191, 1px 2px 1px #919191, 1px 3px 1px #919191, 1px 4px 1px #919191, 1px 3px 1px #919191";
+	endingText.style.top = "50%"; // Center vertically
+	endingText.style.left = "50%"; // Center horizontally
+	endingText.style.transform = "translate(-50%, -50%)"; // Adjust position to center properly
+	endingText.style.zIndex = "1"; // Ensure it's above other content
+	endingText.style.padding = "10px"; // Example padding for better visualization
+	three_box.appendChild(endingText)
+
+
+}
+
 function RP_GameStop(message, id)
 {
 
@@ -155,10 +178,7 @@ function RP_GameStop(message, id)
 	curInterval = undefined
 	if (id == -1)
 	{
-		canvas.style.display = 'none'
-		var txtNode = document.createTextNode(message)
-		canvas.parentElement.appendChild(txtNode)
-		battleshipSocket = null
+		GameEndMessage(message)
 	}
 	else
 	{
@@ -172,9 +192,7 @@ function RP_Loose(other, otherBoat)
 	if (curInterval != undefined)
 		clearInterval(curInterval)
 	curInterval = undefined
-	canvas.style.display = 'none'
-	const txtNode = document.createTextNode("You loose! you destroyed only " + otherBoat + " " + other + " boats.")
-	canvas.parentElement.appendChild(txtNode)
+	GameEndMessage("You loose! you destroyed only " + otherBoat + " " + other + " boats.")
 	battleshipSocket = null
 }
 
@@ -183,9 +201,7 @@ function RP_Win(other, userBoat, otherBoat)
 	if (curInterval != undefined)
 		clearInterval(curInterval)
 	curInterval = undefined
-	canvas.style.display = 'none'
-	const txtNode = document.createTextNode("You win! you destroyed the " + otherBoat + " " + other + " boats when he detroyed only " + userBoat + " of yours")
-	canvas.parentElement.appendChild(txtNode)
+	GameEndMessage("You win! you destroyed the " + otherBoat + " " + other + " boats when he detroyed only " + userBoat + " of yours")
 	battleshipSocket = null
 }
 
@@ -195,7 +211,7 @@ function RP_Win(other, userBoat, otherBoat)
 
 function FP_UnLoad()
 {
-	canvas.removeEventListener('click', FP_mouseClick)
+	document.removeEventListener('click', FP_mouseClick)
 	document.removeEventListener('mousedown', FP_mouseDown)
 	document.removeEventListener('mousemove', FP_mouseMove)
 	if (curInterval != undefined)
@@ -223,7 +239,11 @@ let renderer;
 let controls;
 let raycaster;
 let INTERSECTED = null;
-
+let title;
+let counter;
+let three_box;
+let cool_button;
+let endingText = null;
 
 function boatCreate() {
 	BoatList = [
@@ -292,6 +312,7 @@ function boatCreate() {
 
 function FP_Init()
 {
+	
 	scene = new THREE.Scene();
 	camera = new THREE.PerspectiveCamera(
 		75,
@@ -306,6 +327,7 @@ function FP_Init()
 	raycaster = new THREE.Raycaster()
 	renderer.setSize(WIDTH, HEIGHT);
 	controls = new OrbitControls(camera, renderer.domElement);
+
 	controls.target.set(5, 0, 5);
 	controls.minDistance = 10;
 	controls.maxDistance = 42;
@@ -313,7 +335,28 @@ function FP_Init()
 	controls.update();
 	controls.enablePan = false;
 	controls.enableRotate = true;
-
+	window.onresize = function () {
+		WIDTH = document.body.clientWidth * 0.75;
+		HEIGHT = WIDTH * (9. / 16.);
+		if (HEIGHT > document.body.clientHeight * 0.75)
+		{
+			HEIGHT = document.body.clientHeight * 0.75
+			WIDTH = HEIGHT * (16. / 9.)
+		}
+		if (endingText)
+			endingText.style.fontSize = HEIGHT / 10 + "px";
+		three_box.style.width = WIDTH + 8 + "px";
+		three_box.style.height = HEIGHT + 8 + "px";
+		counter.style.fontSize = HEIGHT / 33 + "px";
+		title.style.fontSize = HEIGHT / 20 + "px";
+		cool_button.style.height = HEIGHT / 13 + "px";
+		cool_button.style.fontSize = HEIGHT / 33 + "px";
+		camera.aspect = WIDTH / HEIGHT;
+		camera.updateProjectionMatrix();
+	
+		renderer.setSize( WIDTH, HEIGHT );
+	
+	};
 	boatCreate();
 	for (let y = 0; y < boardSizeY; y++) {
 		for (let x = 0; x < boardSizeX; x++) {
@@ -356,10 +399,13 @@ function FP_Init()
 
 	validated = false
 	canvas = document.getElementById("app")
-	canvas.appendChild(renderer.domElement);
-	canvas = document.getElementById("myCanvas")
-	ctx = canvas.getContext("2d")
-	canvas.addEventListener('click', FP_mouseClick)
+	initText()
+	canvas.appendChild(three_box);
+	three_box.appendChild(renderer.domElement);
+	three_box.appendChild(counter);
+	three_box.appendChild(title);
+	three_box.appendChild(cool_button);
+	document.addEventListener('click', FP_mouseClick)
 	document.addEventListener('mousedown', FP_mouseDown)
 	document.addEventListener('mousemove', FP_mouseMove)
 	for ( let x = 0; x < gridSizeY; x++)
@@ -378,18 +424,16 @@ function FP_Init()
 
 function FP_drawTitle()
 {
-	ctx.font = "40px Arial"
-	ctx.textAlign = "center"
-	ctx.fillStyle = "#0095DD"
+
 	let placedBoat = 0
 	BoatList.forEach(element => {
 		if (element.ArrayY < 10)
 			placedBoat++
 	})
 	if (validated == false)
-		ctx.fillText(`Please, Place your navire (` + placedBoat + `/5)`, canvas.width / 2 , 65)
+		title.textContent = `Please, Place your navire (` + placedBoat + `/5)`
 	else
-		ctx.fillText(`Please, wait for your opponent`, canvas.width / 2 , 65)
+		title.textContent = `Please, wait for your opponent` 
 }
 
 function FP_mouseDown(e)
@@ -414,6 +458,7 @@ function FP_mouseDown(e)
 		CURRENT_SELECTION = INTERSECTED;
 		INTERSECTED = null;
 	}
+	FP_drawTitle()
 }
 
 function FP_mouseMove(e) {
@@ -446,7 +491,6 @@ function FP_SendBoats()
 		'function': 'sendBoats',
 		'input': BoatList
 	}))
-	console.log("a",BoatList)
 	return true
 }
 
@@ -489,6 +533,8 @@ function placeBoat(x, y) {
 		{
 			if (BoardArray[x][y + i] == 1)
 			{
+				if (boatToPlace.pos[0] == -1)
+					return
 				for (let i = 0; i < boatToPlace.width; i++)
 				{
 					BoardArray[boatToPlace.pos[0]][boatToPlace.pos[1] + i] = 1
@@ -503,6 +549,8 @@ function placeBoat(x, y) {
 		{
 			if (BoardArray[x + i][y] == 1)
 			{
+				if (boatToPlace.pos[0] == -1)
+					return
 				for (let j = 0; j < boatToPlace.width; j++)
 				{
 					BoardArray[boatToPlace.pos[0] + j][boatToPlace.pos[1]] = 1
@@ -652,35 +700,16 @@ function FP_mouseClick(e)
 	  }
 	if (e.button != 0)
 		return
-	const mouseX = e.clientX - canvas.getBoundingClientRect().left
-	const mouseY = e.clientY - canvas.getBoundingClientRect().top
-	if (mouseX > FP_BTN_Validate.x && mouseX < FP_BTN_Validate.x + FP_BTN_Validate.w && mouseY > FP_BTN_Validate.y && mouseY < FP_BTN_Validate.y + FP_BTN_Validate.h)
+	if (buttonState)
 	{
 		if (FP_SendBoats() == false)
-			return
-		validated = !validated
-		FP_draw()
-	}
-}
-
-function FP_drawValidateButton()
-{
-	let boatCount = 0
-	BoatList.forEach(element =>
 		{
-			if (element.ArrayX != -1)
-				boatCount++
-		})
-	if (boatCount == BoatList.length)
-	{
-		ctx.fillStyle = FP_BTN_Validate.color // Button color
-		ctx.fillRect(FP_BTN_Validate.x, FP_BTN_Validate.y, FP_BTN_Validate.w, FP_BTN_Validate.h)
-
-		ctx.fillStyle = '#fff' // Text color
-		ctx.font = '16px Arial'
-		ctx.textAlign = 'center'
-		ctx.textBaseline = 'middle'
-		ctx.fillText(FP_BTN_Validate.label, FP_BTN_Validate.x + FP_BTN_Validate.w / 2, FP_BTN_Validate.y + FP_BTN_Validate.h / 2)
+			buttonState = !buttonState
+			return
+		}
+		validated = !validated
+		buttonState = !buttonState
+		FP_draw()
 	}
 }
 
@@ -698,8 +727,7 @@ var SP_hovered = undefined
 
 function SP_HitCase(Tcase, result, boat)
 {
-	console.log("???")
-	console.log(Tcase);
+
 	BoardCases.forEach(element => {
 		if (element.ArrayPosX == Tcase.ArrayPosX && element.ArrayPosY == Tcase.ArrayPosY)
 		{
@@ -707,13 +735,16 @@ function SP_HitCase(Tcase, result, boat)
 			if (element.status == -1)
 			{
 				element.object.material.color.setHex(0xffffff)
+				CURRENT_COLOR = 0xffffff;
 			}
 			else if (element.status == 1)
 			{
 				element.object.material.color.setHex(0xffaaaa)
+				CURRENT_COLOR = 0xffaaaa;
 			}
 		}
 	})
+	CURRENT_SELECTION = null;
 	if (boat != "None")
 	{
 		BoatList.forEach(element => {
@@ -721,7 +752,31 @@ function SP_HitCase(Tcase, result, boat)
 				element.status = false
 		})
 	}
-	SP_drawEnemyBoats()
+	SP_selected = undefined;
+}
+
+
+function SP_boardSwitch(event)
+{
+	if (event.key == " ")
+	{
+		if (LOOKINGATENNEMY == true)
+		{
+			LOOKINGATENNEMY = !LOOKINGATENNEMY;
+			controls.target.set( 5, 0, 5 );
+			camera.position.z = 17;
+			camera.position.x = 8;
+			camera.position.y = 12;
+		}
+		else
+		{
+			LOOKINGATENNEMY = !LOOKINGATENNEMY;
+			controls.target.set( 5, 0 , 5 + 20 );
+			camera.position.z = 37;
+			camera.position.x = 8;
+			camera.position.y = 12;
+		}
+	}
 }
 
 function SP_mouseMove(event)
@@ -731,15 +786,12 @@ function SP_mouseMove(event)
 	const y = event.clientY - rect.top;
 	mouse.x = (x / WIDTH) * 2 - 1;
 	mouse.y = -(y / HEIGHT) * 2 + 1;
-	const mouseX = event.clientX - canvas.getBoundingClientRect().left
-	const mouseY = event.clientY - canvas.getBoundingClientRect().top
 }
 
 function SP_SendSelected()
 {
 	if (SP_selected == undefined)
 		return false
-	console.log(SP_selected);
 	battleshipSocket.send(JSON.stringify({
 		'function': 'HitCase',
 		'input': SP_selected
@@ -753,37 +805,43 @@ function SP_mouseClick(event)
 		rotateBoat();
 	  }
 	  if (event.which == 1 && INTERSECTED && INTERSECTED != CURRENT_SELECTION) {
-		if (INTERSECTED.type == "cube" && boatToPlace != null) {
-		  placeBoat(INTERSECTED.position.x, INTERSECTED.position.z);
+		if (INTERSECTED.type == "ennemy_cube") {
+			INTERSECTED.scale.set(1, 1, 1);
+			INTERSECTED.material.color.setHex(0xff0000);
 		}
-		if (INTERSECTED.type == "boat") {
-		  boatToPlace = INTERSECTED;
+		if (CURRENT_SELECTION != null && CURRENT_SELECTION.type == "ennemy_cube") {
+			CURRENT_SELECTION.material.color.setHex(CURRENT_COLOR);
 		}
-		INTERSECTED.scale.set(1, 1, 1);
-	
-		if (CURRENT_SELECTION != null) {
+		if (INTERSECTED.type == "ennemy_cube") {
+			CURRENT_COLOR = INTERSECTED.currentHex;
+			CURRENT_SELECTION = INTERSECTED;
 		}
-		CURRENT_SELECTION = INTERSECTED;
+		INTERSECTED = null;
 	}
-	const mouseX = event.clientX - canvas.getBoundingClientRect().left
-	const mouseY = event.clientY - canvas.getBoundingClientRect().top
 
 	const ArrayPos = getPos()
 
 
 
-	if (mouseX > FP_BTN_Validate.x && mouseX < FP_BTN_Validate.x + FP_BTN_Validate.w && mouseY > FP_BTN_Validate.y && mouseY < FP_BTN_Validate.y + FP_BTN_Validate.h)
+	if (buttonState == true)
 	{
+		buttonState = false;
+		if (SP_selected == undefined)
+			return 
 		SP_SendSelected()
+
 	}
+	if (ArrayPos.x == -1)
+		return;
 	BoardCases.forEach( element => {
 		if (element.ArrayPosX == ArrayPos.x && element.ArrayPosY == ArrayPos.y)
 		{
 			if (SP_selected != element)
 			{
 				if (element.status == 0)
+				{
 					SP_selected = element
-				SP_Draw()
+				}
 			}
 		}
 		return
@@ -792,6 +850,10 @@ function SP_mouseClick(event)
 
 function getPos()
 {
+	if (!CURRENT_SELECTION)
+	{
+		return {x: -1, y: -1}
+	}
 	return{x : CURRENT_SELECTION.position.x, y : CURRENT_SELECTION.position.z - 20}
 }
 
@@ -799,6 +861,9 @@ function SP_Load()
 {
 	curInterval = setInterval(SP_Timer, 1000)
 	controls.target.set( 5, 0 , 5 + 20);
+	camera.position.z = 37;
+	camera.position.x = 8;
+	camera.position.y = 12;
 	BoatList = [
 		{
 		  name: "Carrier",
@@ -846,8 +911,6 @@ function SP_Load()
 		  horizontal: true,
 		},
 	  ];
-	SP_drawEnemyBoats()
-	SP_Draw()
 }
 
 function SP_Timer()
@@ -857,55 +920,11 @@ function SP_Timer()
 	drawTimer()
 }
 
-function SP_Draw()
-{
-	ctx.clearRect(offsetX, offsetY, gridSizeX * boxSize, gridSizeY * boxSize)
-	SP_drawSendBTN()
-}
-
-function SP_drawEnemyBoats()
-{
-	ctx.clearRect(650, 150, 200, 500)
-	BoatList.forEach(element => {
-			ctx.beginPath()
-			ctx.rect(element.x, element.y, element.size * boxSize, boxSize)
-			if (element.status == false)
-				ctx.fillStyle = "red"
-			else
-				ctx.fillStyle = "blue"
-			ctx.fill()
-			ctx.closePath()
-	})
-
-}
-
 function SP_drawTitle(message)
 {
-	ctx.clearRect(canvas.width / 2 - 200, 25, 400, 70)
-	ctx.beginPath()
-	ctx.font = "40px Arial"
-	ctx.textAlign = "center"
-	ctx.fillStyle = "#0095DD"
-	ctx.fillText(message, canvas.width / 2 , 65)
-	ctx.closePath()
+	title.textContent = message
 }
 
-function SP_drawSendBTN()
-{
-	ctx.clearRect(FP_BTN_Validate.x, FP_BTN_Validate.y, FP_BTN_Validate.w, FP_BTN_Validate.h)
-	if (SP_selected == undefined)
-		return
-	ctx.beginPath()
-	ctx.fillStyle = FP_BTN_Validate.color // Button color
-	ctx.fillRect(FP_BTN_Validate.x, FP_BTN_Validate.y, FP_BTN_Validate.w, FP_BTN_Validate.h)
-
-	ctx.fillStyle = '#fff' // Text color
-	ctx.font = '16px Arial'
-	ctx.textAlign = 'center'
-	ctx.textBaseline = 'middle'
-	ctx.fillText("Send", FP_BTN_Validate.x + FP_BTN_Validate.w / 2, FP_BTN_Validate.y + FP_BTN_Validate.h / 2)
-	ctx.closePath()
-}
 
 //#endregion
 
@@ -918,14 +937,9 @@ function drawTimer()
 {
 	if (currentTimer == -1)
 		return
-	ctx.clearRect(canvas.width / 2 + canvas.width / 4 + canvas.width / 8 - 25, 50 - 25, 50, 50)
-	ctx.beginPath()
-	ctx.fillStyle = '#fff' // Text color
-	ctx.font = '16px Arial'
-	ctx.textAlign = 'center'
-	ctx.textBaseline = 'middle'
-	ctx.fillText(currentTimer.toString(), canvas.width / 2 + canvas.width / 4 + canvas.width / 8, 50)
-	ctx.closePath()
+
+	counter.textContent = currentTimer.toString()
+
 }
 
 
@@ -952,15 +966,38 @@ export function CP_Unload()
 function animate() {
 	requestAnimationFrame(animate);
 	controls.update();
-	FP_drawTitle()
 	intersect();
-	FP_drawValidateButton()
 	renderer.render(scene, camera);
 }
 
   function intersect() {
 	raycaster.setFromCamera(mouse, camera);
 	const intersects = raycaster.intersectObjects(scene.children, false);
+	if (TURNPHASE == true)
+	{
+		if (intersects.length > 0) {
+			if (INTERSECTED != intersects[0].object) {
+			  if (INTERSECTED) {
+				INTERSECTED.material.color.setHex(INTERSECTED.currentHex);
+				INTERSECTED.scale.set(1, 1, 1);
+			  }
+			  INTERSECTED = intersects[0].object;
+			  INTERSECTED.currentHex = INTERSECTED.material.color.getHex();
+			  INTERSECTED.currentScale = INTERSECTED.scale.x;
+			  if (INTERSECTED.type == "ennemy_cube")
+			  {
+			  	INTERSECTED.material.color.setHex(0xff0000);
+			  	INTERSECTED.scale.set(1.1, 1.1, 1.1);
+			  }
+			}
+		  } else {
+			if (INTERSECTED) {
+			  INTERSECTED.material.color.setHex(INTERSECTED.currentHex);
+			  INTERSECTED.scale.set(1, 1, 1);
+			}
+			INTERSECTED = null;
+		  }
+	}
 	if (intersects.length > 0) {
 	  if (INTERSECTED != intersects[0].object) {
 		if (INTERSECTED) {
@@ -992,4 +1029,88 @@ function CreateABox(x, y, hello)
 		object: hello
 	}
 	return Box
+}
+
+function hitMarker(x, y)
+{
+	const geometry = new THREE.BoxGeometry( 0.1, 2, 0.1 );
+	const material = new THREE.MeshBasicMaterial( {color: 0xff0000} ); 
+	const cube = new THREE.Mesh( geometry, material ); 
+	cube.position.y++;
+	cube.position.x = x
+	cube.position.z = y
+	scene.add( cube );	
+		
+}
+
+let buttonState = false;
+
+function initText()
+{
+	three_box = document.createElement("div");
+	three_box.style.width = WIDTH + 8 + "px";
+	three_box.style.height = HEIGHT + 8 + "px";
+	three_box.style.border = '4px solid #ccc';
+	three_box.style.position = "relative";
+
+
+	counter = document.createElement("div");
+	counter.textContent = "";
+	counter.style.whiteSpace = "pre";
+	counter.style.textAlign = "center";
+	counter.style.fontSize = HEIGHT / 28 + "px";
+	counter.style.position = "absolute"; // Set position to absolute
+	counter.style.textShadow = "1px 1px 1px #919191, 1px 2px 1px #919191, 1px 3px 1px #919191, 1px 4px 1px #919191, 1px 3px 1px #919191";
+	counter.style.top = "10%"; // Center vertically
+	counter.style.left = "50%"; // Center horizontally
+	counter.style.transform = "translate(-50%, -50%)"; // Adjust position to center properly
+	counter.style.zIndex = "1"; // Ensure it's above other content
+	counter.style.padding = "10px"; // Example padding for better visualization
+
+	title = document.createElement("div");
+	title.textContent = "";
+	title.style.whiteSpace = "pre";
+	title.style.textAlign = "center";
+	title.style.fontSize = HEIGHT / 20 + "px";
+	title.style.position = "absolute"; // Set position to absolute
+	title.style.textShadow = "1px 1px 1px #919191, 1px 2px 1px #919191, 1px 3px 1px #919191, 1px 4px 1px #919191, 1px 3px 1px #919191";
+	title.style.top = "90%"; // Center vertically
+	title.style.left = "50%"; // Center horizontally
+	title.style.transform = "translate(-50%, -50%)"; // Adjust position to center properly
+	title.style.zIndex = "1"; // Ensure it's above other content
+	title.style.padding = "10px"; // Example padding for better visualization
+
+
+	cool_button = document.createElement("button");
+	const button_css = "outline: none;cursor: pointer;line-height: 1;border-radius: 500px;transition-property: background-color,border-color,color,box-shadow,filter;transition-duration: .3s;border: 1px solid transparent;letter-spacing: 2px;min-width: 80px;text-transform: uppercase;white-space: normal;font-weight: 700;text-align: center;padding: 17px 48px 17px 48px;color: #fff;background-color: #1EC760;"
+	cool_button.setAttribute("style", button_css);
+	cool_button.textContent = "Confirm";
+	cool_button.style.height = HEIGHT / 13 + "px";
+	cool_button.style.fontSize = HEIGHT / 33 + "px";
+	cool_button.style.position = "absolute"; // Set position to absolute
+	cool_button.style.textShadow = "1px 1px 1px #919191, 1px 2px 1px #919191, 1px 3px 1px #919191, 1px 4px 1px #919191, 1px 3px 1px #919191";
+	cool_button.style.top = "90%"; // Center vertically
+	cool_button.style.left = "80%"; // Center horizontally
+	cool_button.style.transform = "translate(-50%, -50%)"; // Adjust position to center properly
+	cool_button.style.zIndex = "1"; // Ensure it's above other content
+	cool_button.style.padding = "10px"; // Example padding for better visualization
+	cool_button.addEventListener('mouseover', () => {
+		// Change the button's background color
+		cool_button.style.transform = "scale(1.04)"
+		cool_button.style.backgroundColor = "#21F055";
+	  });
+	cool_button.addEventListener('mouseout', () => {
+		cool_button.style.transform = "scale(1.0)"
+		cool_button.style.backgroundColor = "#1EC760"
+	  });
+	cool_button.addEventListener('click', e => {
+		buttonState = true;
+		if (TURNPHASE == false)
+		{
+			FP_mouseClick(e)
+			FP_drawTitle()
+		}
+		else
+			SP_mouseClick(e)
+	}) 
 }
