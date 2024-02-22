@@ -99,3 +99,29 @@
   width: 100%;
   margin: 20px auto;
 }
+
+@media (max-width: 800px) {
+  .login_container {
+    width: 400px;
+  }
+
+  .login_container form {
+    display: block;
+  }
+
+  .login_container .input-box {
+    width: 100%;
+    margin: 20px auto;
+  }
+}
+
+@media (max-width: 470px) {
+  .login_container {
+    width: 300px;
+  }
+
+  .submit p:last-child {
+    display: flex;
+    flex-direction:  column;
+  }
+}

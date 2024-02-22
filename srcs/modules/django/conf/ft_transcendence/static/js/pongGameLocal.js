@@ -431,7 +431,7 @@ export function initLocalGamePong()
 	playerTwo.gravity = 0.;
 	playerTwo.y = 0;
 	init_objects();
-	canvas = document.querySelector(".pongWindow");
+	canvas = document.querySelector(".canvas_wrapper");
 	three_box = document.createElement("div");
 	three_box.setAttribute("id", 'pongGame')
 	three_box.style.width = WIDTH + 8 + "px";
@@ -472,6 +472,11 @@ export function initLocalGamePong()
 		//WIDTH = document.body.clientWidth * 0.75;	
 		WIDTH = document.body.clientWidth * 0.62;
 		HEIGHT = WIDTH * (9. / 16.);
+		if (HEIGHT > document.body.clientHeight * 0.75)
+		{
+			HEIGHT = document.body.clientHeight * 0.75
+			WIDTH = HEIGHT * (16. / 9.)
+		}
 		three_box.style.width = WIDTH + 8 + "px";
 		three_box.style.height = HEIGHT + 8 + "px";
 		scoreDisplay.style.fontSize = HEIGHT / 33 + "px";

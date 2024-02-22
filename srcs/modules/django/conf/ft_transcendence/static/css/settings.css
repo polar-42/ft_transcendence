@@ -331,3 +331,64 @@ input:checked + .slider:before {
   border: 5px solid var(--fourth);
   box-shadow: 0px 0px 15px var(--fourth);
 }
+
+@media (max-width: 720px) {
+  .settings_container {
+    width: 400px;
+  }
+  
+  .settings_container form {
+    display: block;
+  }
+
+  .settings_container form .input-box {
+    width: 100%;
+    margin: 20px auto;
+  }
+
+  .settings_container .TFA_switch {
+    width: 100%;
+    margin: 20px auto;
+  }   
+
+  .settings_container .slider {
+    right: 0;
+    left: -30px;
+  }
+
+  input:checked + .slider:before {
+    -ms-transform: translateX(40px);
+    transform: translateX(40px);
+  }
+}
+
+@media (max-width: 650px) {
+  .TFA_PopUp_Container .TFA_PopUp {
+    width: auto;
+    height: 500px;
+    margin: 180px 3%;
+    padding: 10px;
+  }
+}
+
+@media (max-width: 450px) {
+  .settings_container {
+    width: 300px;
+  }
+
+  .settings_container .TFA_switch {
+    width: 95%;
+    margin: 20px 0;
+  }
+
+  .settings_container .slider {
+    right: 0;
+    left: -30px;
+  }
+
+  .TFA_submit button {
+    width: 120px;
+    font-size: 1.3em;
+    padding: 5px;
+  }
+}
