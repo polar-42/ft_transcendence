@@ -29,4 +29,4 @@ class MessageModels(models.Model):
     receiver = models.CharField(default='NULL')
     isRead = models.BooleanField(default=False)
     readBy = ArrayField(models.CharField(), blank=True, null=True)
-    timeCreation = models.DateTimeField(auto_now=True)
+    timeCreation = models.DateTimeField(default=timezone.now)
