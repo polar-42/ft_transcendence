@@ -90,6 +90,21 @@ button[name="LogIn"]:hover {
   font-weight: bolder;
 }
 
+.popup {
+  display: none;
+	border-radius: 20px;
+	background: #5EDF7C;
+	width: 300px;
+	text-align: center;
+	height: 1.5em;
+	justify-content: center;
+	align-content: center;
+	position: fixed;
+	top: 130px;
+	left: calc(50% - 150px);
+  opacity: 1;
+}
+
 #boat {
   max-width: 20%;
   height: auto;

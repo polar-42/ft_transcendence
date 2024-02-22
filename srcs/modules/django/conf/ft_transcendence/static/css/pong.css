@@ -4,7 +4,6 @@
 }
 
 .gameData {
-  width: 300px;
   margin: auto;
   margin-bottom: 5px;
 }
@@ -13,7 +12,7 @@
   display: flex;
   margin: auto;
   margin-bottom: 50px;
-
+  width: 250px
 }
 
 .gameType_wrapper img {
@@ -32,7 +31,7 @@
 .players_wrapper {
 	display: flex;
 	justify-content: space-around;
-  width: 100%;
+  width: 600px;
   margin: auto;
   font-size: 1.5em;
 }
