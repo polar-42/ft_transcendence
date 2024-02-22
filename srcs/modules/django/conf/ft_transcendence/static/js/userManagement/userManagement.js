@@ -261,6 +261,9 @@ function QrAuth(content)
     })
     .then(data => {
       content.querySelector(".qrDisplayer").src = data.qr
+	  var btn = document.querySelector(".TFA_submit .submit_BTN")
+	  var btnClone = btn.cloneNode(true)
+  	  btn.parentNode.replaceChild(btnClone, btn)
       document.querySelector(".TFA_submit .submit_BTN").addEventListener("click", () => {
         SendQrAnswer(content, content.querySelector("#Input_code"))
       })
