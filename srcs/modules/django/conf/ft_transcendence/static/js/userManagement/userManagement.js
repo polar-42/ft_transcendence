@@ -322,6 +322,10 @@ function avatarButtonFunction() {
     const file = event.target.files[0]
     if (file == undefined)
       return
+    if (file.size >= 31457280) {
+      document.querySelector('.feedback').textContent = 'Your file exceed 30Mb'
+      return
+    }
     const reader = new FileReader()
     reader.readAsDataURL(file)
 
