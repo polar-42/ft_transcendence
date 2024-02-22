@@ -7,6 +7,8 @@ from ..models import PongGameModels
 from asgiref.sync import async_to_sync
 from tournamentsApp import views
 from .pongGameManager import Manager
+from chatApp.enumChat import connexionStatus
+from authApp.models import User
 
 
 class PongGameSocket(WebsocketConsumer):
@@ -18,6 +20,10 @@ class PongGameSocket(WebsocketConsumer):
 		self.isTournament = self.pongGameId.startswith('Tournament')
 		self.user = self.scope['user']
 		self.id = self.user.id
+
+		obj = User.objects.get(id=int(self.id))
+		obj.connexionStatus = connexionStatus.Busy
+		obj.save()
 
 		self.accept()
 
@@ -43,6 +49,10 @@ class PongGameSocket(WebsocketConsumer):
 		)
 		if (self.pongGame is not None):
 			self.pongGame.quitGame(self)
+
+		obj = User.objects.get(id=int(self.id))
+		obj.connexionStatus = connexionStatus.Connected
+		obj.save()
 
 		print(f"Pong game user disconnected: {self.scope['user']}")
 

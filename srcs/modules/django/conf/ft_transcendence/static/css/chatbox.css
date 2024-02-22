@@ -243,6 +243,10 @@
   background: red;
 }
 
+.connection_point.busy {
+  background: orange;
+}
+
 .conversation_text .last_msg {
   font-size: 0.7em;
   max-width: calc(350px - ((350px / 5) * 2) - 20px);
@@ -377,7 +381,7 @@
 
 .main_box_body.homepage .invitation_box button,
 .main_box_body.homepage .channel_creation_box button,
-.main_box_body.friendpage .invitation_box button, 
+.main_box_body.friendpage .invitation_box button,
 .main_box_body.friendpage .channel_creation_box button{
   display: block;
   background:
@@ -1047,7 +1051,7 @@
   .main_box_body.private_message,
   .main_box_body.homepage,
   .main_box_body.friendpage {
-    height: calc(100% - 60px);	
+    height: calc(100% - 60px);
   }
 
   .main_box_body.homepage .conversation_list,
@@ -1108,11 +1112,11 @@
 }
 
 @media (max-width: 440px) {
-  
+
   .chatbox_wrapper {
     width: 90%;
     right: 5%;
-  } 
+  }
 
   .chatbox_wrapper.open .chatbox_header_wrapper.connected {
     bottom: 82vh;
