@@ -80,6 +80,18 @@ export function initGame()
 	battleshipSocket.onmessage = e => OnMessage(e)
 }
 
+function toggleHelp(e)
+{
+	if (e.key == 'h')
+	{
+		console.log('hello')
+		if (helpcontrols.textContent == "Press 'h' for help")
+			helpcontrols.textContent = "Left click - select / place / boat or case\nRight click - rotate boat\nspace - switch between boards"
+		else
+			helpcontrols.textContent = "Press 'h' for help"
+	}
+}
+
 function OnMessage(e)
 {
 	const data = JSON.parse(e.data)
@@ -88,6 +100,7 @@ function OnMessage(e)
 		case 'initGame':
       getPlayersData(data.player_1, data.player_2)
 			FP_Init()
+			document.addEventListener('keydown', toggleHelp)
 			FP_drawTitle()
 			TURNPHASE = false;
 			break
@@ -102,7 +115,6 @@ function OnMessage(e)
 			break
 		case 'StartTurn':
 			SP_drawTitle("Your Turn")
-			LOOKINGATENNEMY = true;
 			document.addEventListener('mousemove', SP_mouseMove)
 			document.addEventListener('mousedown', SP_mouseClick)
 			break
@@ -114,6 +126,7 @@ function OnMessage(e)
 		case 'GameStop':
 			RP_GameStop(data.message, data.tournamentId)
 			document.removeEventListener('keydown', SP_boardSwitch)
+			document.removeEventListener('keydown', toggleHelp)
 			break
 		case 'RetrieveBoat':
 			FP_SendBoats()
@@ -130,10 +143,12 @@ function OnMessage(e)
 		case 'Loose':
 			RP_Loose(data.other, data.wAliveBoat)
 			document.removeEventListener('keydown', SP_boardSwitch)
+			document.removeEventListener('keydown', toggleHelp)
 			break
 		case 'Win':
 			RP_Win(data.other, data.wAliveBoat, data.lAliveBoat)
 			document.removeEventListener('keydown', SP_boardSwitch)
+			document.removeEventListener('keydown', toggleHelp)
 			break
 		case 'ReturnToMatchmaking':
 			if (data.Winner != 'None')
@@ -174,6 +189,7 @@ function GameEndMessage(message)
 	endingText.style.padding = "10px"; // Example padding for better visualization
 	three_box.appendChild(endingText)
 	document.removeEventListener('keydown', SP_boardSwitch)
+	document.removeEventListener('keydown', toggleHelp)
 
 
 }
@@ -252,6 +268,7 @@ let counter;
 let three_box;
 let cool_button;
 let endingText = null;
+let helpcontrols;
 
 function boatCreate() {
 	BoatList = [
@@ -341,6 +358,7 @@ function FP_Init()
 
 
 	controls.target.set(5, 0, 5);
+	LOOKINGATENNEMY = true;
 	controls.minDistance = 10;
 	controls.maxDistance = 42;
 	controls.maxPolarAngle = 1.5; // radians
@@ -436,6 +454,7 @@ function FP_Init()
 	initText()
 	canvas.appendChild(three_box);
 	three_box.appendChild(renderer.domElement);
+	three_box.appendChild(helpcontrols);
 	three_box.appendChild(counter);
 	three_box.appendChild(title);
 	three_box.appendChild(cool_button);
@@ -1152,8 +1171,8 @@ function initText()
 {
 	three_box = document.createElement("div");
   three_box.setAttribute('id', 'battleshipGame')
-	three_box.style.width = WIDTH + 8 + "px";
-	three_box.style.height = HEIGHT + 8 + "px";
+	// three_box.style.width = WIDTH + 8 + "px";
+	// three_box.style.height = HEIGHT + 8 + "px";
 	three_box.style.border = '4px solid #ccc';
 	three_box.style.position = "relative";
 
@@ -1226,7 +1245,20 @@ function initText()
 		}
 		else
 			SP_mouseClick(e)
-	}) 
+	})
+
+	helpcontrols = document.createElement("div");
+	helpcontrols.style.textAlign = "left";
+	helpcontrols.textContent = "Press 'h' for help";
+	helpcontrols.style.whiteSpace = "pre";
+	helpcontrols.style.userSelect = "none"
+	helpcontrols.style.fontSize = HEIGHT / 45 + "px";
+	helpcontrols.style.position = "absolute"; // Set position to absolute
+	helpcontrols.style.top = "10%"; // Center vertically
+	helpcontrols.style.left = "10%"; // Center horizontally
+	helpcontrols.style.transform = "translate(-50%, -50%)"; // Adjust position to center properly
+	helpcontrols.style.zIndex = "1"; // Ensure it's above other content
+	helpcontrols.style.padding = "10px"; // Example padding for better visualization
 }
 
 async function getPlayersData(player1, player2) {
