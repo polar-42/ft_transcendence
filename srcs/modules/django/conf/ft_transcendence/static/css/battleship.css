@@ -46,7 +46,7 @@
 }
 .battleshipWindow .canvas_wrapper {
 	background-color: var(--fourth);
-  max-height: 800px;
+  max-height: 900px;
   padding: 1px;
 }
 

@@ -1171,8 +1171,8 @@ function initText()
 {
 	three_box = document.createElement("div");
   three_box.setAttribute('id', 'battleshipGame')
-	// three_box.style.width = WIDTH + 8 + "px";
-	// three_box.style.height = HEIGHT + 8 + "px";
+	three_box.style.width = WIDTH + 8 + "px";
+	three_box.style.height = HEIGHT + 8 + "px";
 	three_box.style.border = '4px solid #ccc';
 	three_box.style.position = "relative";
 
