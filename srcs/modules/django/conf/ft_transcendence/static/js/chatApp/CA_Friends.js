@@ -29,8 +29,9 @@ export function initFriendsPage()
 		mainBoxBody.children[1].removeChild(child);
 		child = mainBoxBody.children[1].lastElementChild;
 	}
-	if (mainBoxHeader.children.length === 2)
-		mainBoxHeader.insertAdjacentHTML("beforeend", '<img src="/static/assets/logo/arrow-back-regular-60.png" alt="return back button" class="back_arrow">')
+  if (mainBoxHeader.querySelector('.back_arrow'))
+    mainBoxHeader.querySelector('.back_arrow').remove()
+	mainBoxHeader.insertAdjacentHTML("beforeend", '<img src="/static/assets/logo/arrow-back-regular-60.png" alt="return back button" class="back_arrow">')
 	if (mainBoxBody.classList.contains('homepage'))
 	{
 		mainBoxBody.classList.remove('homepage')
