@@ -46,6 +46,8 @@ def updateAccount(request):
 
             if len(newUsername) > 0 and len(newUsername) < 3 or len(newUsername) > 16:
                 return JsonResponse({'error': 'Username length is too small or to big', 'reload' : False})
+            elif User.objects.filter(nickname=newUsername).exists():
+                return JsonResponse({'error': 'This username is already taken'})
             elif len(newUsername) != 0 and userModel.nickname != newUsername:
                 print('username has been updated to', newUsername)
                 userModel.nickname = newUsername
