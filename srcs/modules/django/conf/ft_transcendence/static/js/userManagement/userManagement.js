@@ -61,7 +61,7 @@ function Handle2FaToggle(checkbox) {
 		document.querySelector("#app").lastElementChild.insertAdjacentHTML("afterend", texted)
 		const doc = document.querySelector("#app").lastElementChild
 		document.querySelector('.TFA_submit .cancel_BTN').addEventListener('click', () => {
-			ClosePopUp()
+			ClosePopUp(TFARequestType)
 		})
 		return doc
 	})
@@ -73,11 +73,19 @@ function Handle2FaToggle(checkbox) {
 	})
 }
 
-function ClosePopUp()
+function ClosePopUp(TFARequestType)
 {
 	document.querySelector(".TFA_PopUp_Container").remove()
-	fetch(window.location.origin + "/authApp/TFA/Disable")
-	document.querySelector('input[type="checkbox"]').checked = false
+  if (TFARequestType == 1)
+  {
+	  fetch(window.location.origin + "/authApp/TFA/Disable")
+	  document.querySelector('input[type="checkbox"]').checked = false
+
+  }
+  else
+  {
+    document.querySelector('input[type="checkbox"]').checked = true
+  }
 }
 
 function Effective2Fa(doc, TFARequestType) {

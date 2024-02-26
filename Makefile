@@ -2,20 +2,20 @@ all: stop
 	@mkdir -p ~/data/blockchain
 	@mkdir -p ~/data/db
 	@echo Docker is launching...
-	@docker compose -f srcs/docker-compose.yml up --build
+	@docker compose -f docker-compose.yml up --build
 	@echo Docker is launch in detach mode
 
 detach:
 	@mkdir -p ~/data/blockchain
 	@mkdir -p ~/data/db
 	@echo Docker is launching...
-	@docker compose -f srcs/docker-compose.yml up --build -d
+	@docker compose -f docker-compose.yml up --build -d
 
 restart:
 	@mkdir -p ~/data/blockchain
 	@mkdir -p ~/data/db
 	@echo Docker is launching...
-	@docker compose -f srcs/docker-compose.yml up -d
+	@docker compose -f docker-compose.yml up -d
 	@echo Docker is launch in detach mode
 
 status:
@@ -27,7 +27,7 @@ info:
 	@docker network ls
 
 stop:
-	@docker compose -f srcs/docker-compose.yml down
+	@docker compose -f docker-compose.yml down
 	@echo All containers have been stopped
 
 clean:

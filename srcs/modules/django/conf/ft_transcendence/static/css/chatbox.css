@@ -108,7 +108,8 @@
   margin: auto;
 }
 
-.main_box_header.homepage img.back_arrow {
+.main_box_header.homepage img.back_arrow,
+.main_box_header.friendpage img.back_arrow {
   cursor: pointer;
 }
 

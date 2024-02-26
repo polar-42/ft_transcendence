@@ -165,7 +165,7 @@ export async function receivePongInvitation(data) {
 	}
 	if (document.querySelector(".game_invitation") != undefined)
 	{
-		return
+		document.querySelector(".game_invitation").remove()
 	}
 	let conversation = document.querySelector(".conversation")
 	let item = document.createElement("li")

@@ -3,7 +3,7 @@ version: '3'
 services:
   nginx:
     build:
-      context: modules/nginx
+      context: srcs/modules/nginx
       dockerfile: Dockerfile
     image: ft_transcendence_nginx:1.0
     container_name: container_nginx
@@ -18,7 +18,7 @@ services:
       - django
 
   django:
-    build: modules/django
+    build: srcs/modules/django
     container_name: container_django
     image: image_django
     env_file:
@@ -36,7 +36,7 @@ services:
       - 8000
 
   postgresql:
-    build: modules/postgresql
+    build: srcs/modules/postgresql
     container_name: container_postgresql
     image: image_postgresql
     env_file:
@@ -50,7 +50,7 @@ services:
       - "5432"
 
   ganache:
-   build: modules/blockchain/ganache
+   build: srcs/modules/blockchain/ganache
    container_name: container_ganache
    image: image_ganache
    env_file:
@@ -64,7 +64,7 @@ services:
      - "8545"
 
   contract_deployement:
-   build: modules/blockchain/contract_deployement
+   build: srcs/modules/blockchain/contract_deployement
    container_name: container_contract_deployement
    image: image_contract_deployement
    env_file:
@@ -85,7 +85,7 @@ volumes:
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: './modules/django/conf'
+      device: 'srcs/modules/django/conf'
   blockchain:
     driver: local
     driver_opts:
@@ -103,7 +103,7 @@ volumes:
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: './modules/django/conf/ft_transcendence/static'
+      device: 'srcs/modules/django/conf/ft_transcendence/static'
 
 networks:
   transcendence_network:

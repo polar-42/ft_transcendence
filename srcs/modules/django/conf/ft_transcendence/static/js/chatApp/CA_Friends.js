@@ -57,6 +57,7 @@ function returnArrow()
 	}
 	else
 	{
+		document.querySelector(".main_box_header").children[1].value = ''
 		searchFriend('')
 	}
 }
