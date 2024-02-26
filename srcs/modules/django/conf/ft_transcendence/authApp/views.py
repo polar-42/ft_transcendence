@@ -83,6 +83,7 @@ def UserRegistration(request):
 		new_img.save(img_buff, format='JPEG')
 		img_buff.seek(0)
 		avatarImage = img_buff
+
 	if len(username) == 0 or len(email) == 0 or len(password) == 0 or len(passwordConfirmation) == 0:
 		return JsonResponse({'error': 'One of the field is empty'})
 	if password != passwordConfirmation:
@@ -93,6 +94,8 @@ def UserRegistration(request):
 		return JsonResponse({'error': 'Username length is too small'})
 	elif len(username) > 16:
 		return JsonResponse({'error': 'Username length is too big'})
+	if User.objects.filter(nickname=username).exists():
+		return JsonResponse({'error': 'This username is already taken'})
 	if len(password) < 6:
 		return JsonResponse({'error': 'Password length is too small'})
 	if re.fullmatch(regex, email) is None:
@@ -101,11 +104,11 @@ def UserRegistration(request):
 		return JsonResponse({'error': 'Email is already taken'})
 	passwordHash = make_password(password)
 	new_obj = User.objects.create(
-		nickname=username,
-		email=email,
-		password=passwordHash,
-		avatarImage = avatarImage.read()
-	)
+			nickname=username,
+			email=email,
+			password=passwordHash,
+			avatarImage = avatarImage.read()
+			)
 
 	new_obj.save()
 	return JsonResponse({'message': 'You registered successfully'})
