@@ -6,3 +6,4 @@ __pycache__/
 *.pyc
 srcs/modules/django/conf/ft_transcendence/**/migrations/*.py
 chatApp.js
+.env

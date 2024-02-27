@@ -32,7 +32,6 @@ class pongMatchmaking():
 
     def AddUser(self, user):
         if user not in self.userList:
-            print("-----------------------------------------")
             self.userList.append(user)
             return True
         return False
