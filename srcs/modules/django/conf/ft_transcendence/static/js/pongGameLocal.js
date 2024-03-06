@@ -165,12 +165,12 @@ export function init_objects()
 	console.warn = originalWarning;
 
 	var wallGeometry = new THREE.PlaneGeometry(22, 3);
-
-	var wallUp = new Reflector( wallGeometry, {
-		textureWidth: 250 ,
-		textureHeight: 50 ,
-		color: new THREE.Color(0x7f7f7f)
-	} );
+	var wallUp = new THREE.Mesh(wallGeometry, new THREE.MeshBasicMaterial({color:0xaaaaaa}));
+	// var wallUp = new Reflector( wallGeometry, {
+	// 	textureWidth: 250 ,
+	// 	textureHeight: 50 ,
+	// 	color: new THREE.Color(0x7f7f7f)
+	// } );
 
 	// var wall_m = new THREE.MeshPhysicalMaterial({
 	// 	reflectivity : 0.3,
@@ -188,11 +188,12 @@ export function init_objects()
 	wallUp.position.y = 3.8;
 	wallUp.rotation.x = Math.PI / 180 * 90 ;
 	wallUp.renderOrder = 1
-	var wallDown = new Reflector( wallGeometry, {
-		textureWidth: 250 ,
-		textureHeight: 50 ,
-		color: new THREE.Color(0x7f7f7f)
-	} );
+	// var wallDown = new Reflector( wallGeometry, {
+	// 	textureWidth: 250 ,
+	// 	textureHeight: 50 ,
+	// 	color: new THREE.Color(0x7f7f7f)
+	// } );
+	var wallDown = new THREE.Mesh(wallGeometry, new THREE.MeshBasicMaterial({color:0xaaaaaa}));
 	// var wallDown = new THREE.Mesh(wallGeometry, wall_m)
 	wallDown.renderOrder = 1
 	wallDown.position.y = -3.8;
