@@ -125,7 +125,7 @@ function init_objects()
 	// 	textureHeight: 50 ,
 	// 	color: new THREE.Color(0x7f7f7f)
 	// } );
-	var wallUp = new THREE.Mesh(wallGeometry, new THREE.MeshBasicMaterial({color:0xaaaaaa}));
+	var wallUp = new THREE.Mesh(wallGeometry, new THREE.MeshBasicMaterial({color:0x6F435B}));
 	wallUp.position.y = 3.8;
 	wallUp.rotation.x = Math.PI / 180 * 90 ;
 
@@ -134,7 +134,7 @@ function init_objects()
 	// 	textureHeight: 50 ,
 	// 	color: new THREE.Color(0x7f7f7f)
 	// } );
-	var wallDown = new THREE.Mesh(wallGeometry, new THREE.MeshBasicMaterial({color:0xaaaaaa}));
+	var wallDown = new THREE.Mesh(wallGeometry, new THREE.MeshBasicMaterial({color:0x6F435B}));
 	wallDown.position.y = -3.8;
 	wallDown.rotation.x = Math.PI / 180 * -90 ;
 

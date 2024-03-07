@@ -165,7 +165,7 @@ export function init_objects()
 	console.warn = originalWarning;
 
 	var wallGeometry = new THREE.PlaneGeometry(22, 3);
-	var wallUp = new THREE.Mesh(wallGeometry, new THREE.MeshBasicMaterial({color:0xaaaaaa}));
+	var wallUp = new THREE.Mesh(wallGeometry, new THREE.MeshBasicMaterial({color:0x6F435B}));
 	// var wallUp = new Reflector( wallGeometry, {
 	// 	textureWidth: 250 ,
 	// 	textureHeight: 50 ,
@@ -193,7 +193,7 @@ export function init_objects()
 	// 	textureHeight: 50 ,
 	// 	color: new THREE.Color(0x7f7f7f)
 	// } );
-	var wallDown = new THREE.Mesh(wallGeometry, new THREE.MeshBasicMaterial({color:0xaaaaaa}));
+	var wallDown = new THREE.Mesh(wallGeometry, new THREE.MeshBasicMaterial({color:0x6F435B}));
 	// var wallDown = new THREE.Mesh(wallGeometry, wall_m)
 	wallDown.renderOrder = 1
 	wallDown.position.y = -3.8;
