@@ -1,7 +1,5 @@
 import { navto } from "./index.js";
-import { Reflector } from "../threejs_addons/Reflector.js";
 import { TrailRenderer } from "../threejs_addons/TrailRenderer.js";
-import { CSS2DRenderer, CSS2DObject } from "../threejs_addons/CSS2DRenderer.js";
 import * as THREE from 'https://threejs.org/build/three.module.js';
 import { getProfilePicture, sleep } from "./chatApp/CA_General.js";
 
@@ -18,6 +16,8 @@ var camera;
 var renderer;
 var paddle1;
 var paddle2;
+var line1;
+var line2;
 var ball;
 var trail;
 var three_box = null;
@@ -78,7 +78,6 @@ export function initGamePong()
 		navto('/games')
 	}
 	pongGameSocket = new WebSocket("wss://" + window.location.host + '/pongGame/RemoteGame/' + arg);
-	// pongGameSocket = new WebSocket("ws://" + window.location.host + '/pongGame/RemoteGame/' + arg);
 
 	document.addEventListener('keydown', doKeyDown);
 	document.addEventListener('keyup', doKeyUp);
@@ -95,6 +94,9 @@ export function unLoadGamePong()
 	{
 		pongGameSocket.close()
 	}
+	pongGameSocket = null;
+	document.removeEventListener('keydown', doKeyDown);
+	document.removeEventListener('keyup', doKeyUp);
 	if (scene != undefined)
 	{
 		while (scene.children.length > 0)
@@ -105,11 +107,23 @@ export function unLoadGamePong()
 			cancelAnimationFrame(animationid)
 			animationid = undefined
 		}
-		scene = undefined
+		three_box = null;
+		frames_to_shake = 0;
+		BcameraShake = false;
+		canvas = null;
+		scene = undefined;
+		camera = undefined;
+		renderer = undefined;
+		paddle1 = undefined;
+		paddle2 = undefined;
+		line1 = undefined;
+		line2 = undefined;
+		ball = undefined;
+		trail = undefined;
+		textElement = undefined;
+		scoreDisplay = undefined;
+		isCountingDown = false;
 	}
-	pongGameSocket = null;
-	document.removeEventListener('keydown', doKeyDown);
-	document.removeEventListener('keyup', doKeyUp);
 }
 
 function init_objects()
@@ -130,21 +144,13 @@ function init_objects()
 
 	var wallGeometry = new THREE.PlaneGeometry(22, 3);
 
-	// var wallUp = new Reflector( wallGeometry, {
-	// 	textureWidth: 250 ,
-	// 	textureHeight: 50 ,
-	// 	color: new THREE.Color(0x7f7f7f)
-	// } );
-	var wallUp = new THREE.Mesh(wallGeometry, new THREE.MeshBasicMaterial({color:0xaaaaaa}));
+
+	var wallUp = new THREE.Mesh(wallGeometry, new THREE.MeshBasicMaterial({color:0x6F435B}));
 	wallUp.position.y = 3.8;
 	wallUp.rotation.x = Math.PI / 180 * 90 ;
 
-	// var wallDown = new Reflector( wallGeometry, {
-	// 	textureWidth: 250 ,
-	// 	textureHeight: 50 ,
-	// 	color: new THREE.Color(0x7f7f7f)
-	// } );
-	var wallDown = new THREE.Mesh(wallGeometry, new THREE.MeshBasicMaterial({color:0xaaaaaa}));
+
+	var wallDown = new THREE.Mesh(wallGeometry, new THREE.MeshBasicMaterial({color:0x6F435B}));
 	wallDown.position.y = -3.8;
 	wallDown.rotation.x = Math.PI / 180 * -90 ;
 
@@ -155,35 +161,15 @@ function init_objects()
 
 	var g_paddle1 = new THREE.BoxGeometry(0.2, 2., 2.);
 	var g_paddle2 = new THREE.BoxGeometry(0.2, 2., 2.);
-	var m_paddle1 = 	new THREE.MeshPhysicalMaterial({
-		reflectivity : 0.3,
-		transmission : 1.0,
-		roughness : 0.8,
-		clearcoat : 0.3,
-		clearcoatRoughness : 0.25,
-		ior : 1.2,
-		thickness : 10.0,
-		side : THREE.BackSide,
-		color : new THREE.Color(0xff0000),
-	});
-	paddle1 = new THREE.Mesh(g_paddle1, m_paddle1);
+
+	paddle1 = new THREE.Mesh(g_paddle1, new THREE.MeshBasicMaterial({color: 0x0ff0000}));
 	paddle1.position.x -= 5;
 	paddle1.rotation.x = Math.PI / 180 * 90;
 	paddle1.renderOrder = 2;
 	scene.add(paddle1);
 
-	var m_paddle2 = 	new THREE.MeshPhysicalMaterial({
-		reflectivity : 0.3,
-		side : THREE.BackSide,
-		transmission : 1.0,
-		roughness : 0.8,
-		clearcoat : 0.3,
-		clearcoatRoughness : 0.25,
-		color : new THREE.Color(0x0000ff),
-		ior : 1.2,
-		thickness : 10.0,
-	  });
-	paddle2 = new THREE.Mesh(g_paddle2, m_paddle2);
+
+	paddle2 = new THREE.Mesh(g_paddle2,  new THREE.MeshBasicMaterial({color: 0x0000ff}));
 	paddle2.position.x += 5;
 	paddle2.renderOrder = 2;
 
@@ -193,18 +179,7 @@ function init_objects()
 
 
 	var g_ball = new THREE.SphereGeometry(0.15, 32, 16)
-	var m_ball = new THREE.MeshPhysicalMaterial({
-		reflectivity : 0.1,
-		transmission : 0.5,
-		roughness : 0.8,
-		clearcoat : 0.5,
-		clearcoatRoughness : 0.35,
-		ior : 1.2,
-		thickness : 10.0,
-		side : THREE.BackSide,
-		color : new THREE.Color(0xffaaff),
-	});
-	ball = new THREE.Mesh(g_ball, m_ball);
+	ball = new THREE.Mesh(g_ball,  new THREE.MeshBasicMaterial({color: 0xffaaff}));
 	ball.layers.enableAll();
 	scene.add(ball);
 
@@ -215,7 +190,7 @@ function init_objects()
 	const light = new THREE.PointLight(0xffffff, 1000)
 	light.position.set(10, 10, 10)
 	scene.add(light)
-	const alight = new THREE.AmbientLight( 0xF0F0F0 ); // soft white light
+	const alight = new THREE.AmbientLight( 0xF0F0F0 );
 	scene.add( alight );
 
 
@@ -232,7 +207,6 @@ function init_objects()
 	const trailLength = 10;
 	trail.initialize( trailMaterial, trailLength, false, 0, trailHeadGeometry, ball );
 	trail.activate();
-	// countdown();
 }
 
 var animationid = undefined
@@ -262,7 +236,7 @@ function animate() {
 }
 
 function cameraShake() {
-	const intensity = 0.3; // Adjust the intensity of the shake
+	const intensity = 0.3;
 
 	const originalPosition = camera.position.clone();
 	camera.position.x = originalPosition.x + Math.random() * intensity - intensity / 2;
@@ -355,25 +329,25 @@ function LaunchGame()
 	scoreDisplay.style.whiteSpace = "pre";
 	scoreDisplay.style.textAlign = "center";
 	scoreDisplay.style.fontSize = HEIGHT / 33 + "px";
-	scoreDisplay.style.position = "absolute"; // Set position to absolute
+	scoreDisplay.style.position = "absolute";
 	scoreDisplay.style.textShadow = "1px 1px 1px #919191, 1px 2px 1px #919191, 1px 3px 1px #919191, 1px 4px 1px #919191, 1px 3px 1px #919191";
-	scoreDisplay.style.top = "10%"; // Center vertically
-	scoreDisplay.style.left = "50%"; // Center horizontally
-	scoreDisplay.style.transform = "translate(-50%, -50%)"; // Adjust position to center properly
-	scoreDisplay.style.zIndex = "1"; // Ensure it's above other content
-	scoreDisplay.style.padding = "10px"; // Example padding for better visualization
+	scoreDisplay.style.top = "10%";
+	scoreDisplay.style.left = "50%";
+	scoreDisplay.style.transform = "translate(-50%, -50%)"; 
+	scoreDisplay.style.zIndex = "1"; 
+	scoreDisplay.style.padding = "10px";
 	three_box.appendChild(scoreDisplay);
 	textElement.textContent = "";
 	textElement.style.whiteSpace = "pre";
 	textElement.style.textAlign = "center";
 	textElement.style.fontSize = HEIGHT / 10 + "px";
-	textElement.style.position = "absolute"; // Set position to absolute
+	textElement.style.position = "absolute"; 
 	textElement.style.textShadow = "1px 1px 1px #919191, 1px 2px 1px #919191, 1px 3px 1px #919191, 1px 4px 1px #919191, 1px 3px 1px #919191";
-	textElement.style.top = "50%"; // Center vertically
-	textElement.style.left = "50%"; // Center horizontally
-	textElement.style.transform = "translate(-50%, -50%)"; // Adjust position to center properly
-	textElement.style.zIndex = "1"; // Ensure it's above other content
-	textElement.style.padding = "10px"; // Example padding for better visualization
+	textElement.style.top = "50%"; 
+	textElement.style.left = "50%"; 
+	textElement.style.transform = "translate(-50%, -50%)"; 
+	textElement.style.zIndex = "1"; 
+	textElement.style.padding = "10px"; 
 
 	three_box.appendChild(textElement);
 	window.onresize = function () {
@@ -452,8 +426,10 @@ async function getPlayersData(player1, player2)
 
 async function FinishGame(event)
 {
-	scoreDisplay.remove()
-	renderer.domElement.style.filter = "blur(5px)"
+	if (scoreDisplay)
+		scoreDisplay.remove()
+	if (renderer)
+		renderer.domElement.style.filter = "blur(5px)"
 	if (event.code == 3001)
 	{
 		pongGameSocket = null;
