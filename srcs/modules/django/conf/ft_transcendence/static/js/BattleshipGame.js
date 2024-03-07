@@ -15,8 +15,6 @@ const boxSize = 1;
 const offsetX = 10
 const offsetY = 100
 
-// add control help
-// unselect boat after first phase
 
 
 let mouse = new THREE.Vector2();
@@ -69,7 +67,6 @@ export function initGame()
 		navto('/games')
 	}
 	battleshipSocket = new WebSocket("wss://" + window.location.host + '/battleshipApp/Game/' + arg)
-	// battleshipSocket = new WebSocket("ws://" + window.location.host + '/battleshipApp/Game/' + arg)
 	battleshipSocket.onclose = (event) => {
 		if (event.code == 3001)
 		{
@@ -95,7 +92,6 @@ function toggleHelp(e)
 function OnMessage(e)
 {
 	const data = JSON.parse(e.data)
-//   console.log(data)
 	switch (data.function) {
 		case 'initGame':
       getPlayersData(data.player_1, data.player_2)
@@ -180,13 +176,13 @@ function GameEndMessage(message)
 	endingText.style.whiteSpace = "pre";
 	endingText.style.textAlign = "center";
 	endingText.style.fontSize = HEIGHT / 10 + "px";
-	endingText.style.position = "absolute"; // Set position to absolute
+	endingText.style.position = "absolute"; 
 	endingText.style.textShadow = "1px 1px 1px #919191, 1px 2px 1px #919191, 1px 3px 1px #919191, 1px 4px 1px #919191, 1px 3px 1px #919191";
-	endingText.style.top = "50%"; // Center vertically
-	endingText.style.left = "50%"; // Center horizontally
-	endingText.style.transform = "translate(-50%, -50%)"; // Adjust position to center properly
-	endingText.style.zIndex = "1"; // Ensure it's above other content
-	endingText.style.padding = "10px"; // Example padding for better visualization
+	endingText.style.top = "50%";
+	endingText.style.left = "50%"; 
+	endingText.style.transform = "translate(-50%, -50%)";
+	endingText.style.zIndex = "1"; 
+	endingText.style.padding = "10px";
 	three_box.appendChild(endingText)
 	document.removeEventListener('keydown', SP_boardSwitch)
 	document.removeEventListener('keydown', toggleHelp)
@@ -253,9 +249,8 @@ function FP_Timer()
 const boardGroup = new THREE.Group();
 const boardSizeX = 10;
 const boardSizeY = 10;
- // Adjust as needed
-const boardOffsetX = 0; // Adjust as needed
-const boardOffsetY = 0; // Adjust as needed
+const boardOffsetX = 0;
+const boardOffsetY = 0; 
 let boatToPlace = null;
 let scene;
 let camera;
@@ -361,7 +356,7 @@ function FP_Init()
 	LOOKINGATENNEMY = true;
 	controls.minDistance = 10;
 	controls.maxDistance = 42;
-	controls.maxPolarAngle = 1.5; // radians
+	controls.maxPolarAngle = 1.5;
 	controls.update();
 	controls.enablePan = false;
 	controls.enableRotate = true;
@@ -434,7 +429,7 @@ function FP_Init()
 	const dlight = new THREE.DirectionalLight(0xffffff, 5);
 	dlight.position.set(20, 20, 20);
 	dlight.castShadow = true;
-	dlight.shadow.mapSize.width = 1024; // Shadow map width\
+	dlight.shadow.mapSize.width = 1024;
 	const d = 30;
 	const lightTarget = new THREE.Object3D(); 
 	scene.add(lightTarget);
@@ -443,11 +438,11 @@ function FP_Init()
 	dlight.shadow.camera.top = d;
 	dlight.shadow.camera.bottom = - d;
 	dlight.target = lightTarget
-	dlight.shadow.mapSize.height = 2048; // Shadow map height
-	dlight.shadow.camera.near = 0.5; // Near shadow camera distance
-	dlight.shadow.camera.far = 50; // Far shadow camera distance
+	dlight.shadow.mapSize.height = 2048; 
+	dlight.shadow.camera.near = 0.5;
+	dlight.shadow.camera.far = 50;
 	scene.add(dlight);
-	const alight = new THREE.AmbientLight( 0x404040 ); // soft white light
+	const alight = new THREE.AmbientLight( 0x404040 );
 	scene.add( alight );
 	validated = false
 	canvas = document.querySelector(".canvas_wrapper")
@@ -485,7 +480,7 @@ function FP_drawTitle()
 			placedBoat++
 	})
 	if (validated == false)
-		title.textContent = `Please, Place your navire (` + placedBoat + `/5)`
+		title.textContent = `Please, Place your boats (` + placedBoat + `/5)`
 	else
 		title.textContent = `Please, wait for your opponent` 
 }
@@ -1181,14 +1176,14 @@ function initText()
 	counter.textContent = "";
 	counter.style.whiteSpace = "pre";
 	counter.style.textAlign = "center";
-	counter.style.fontSize = HEIGHT / 28 + "px";
-	counter.style.position = "absolute"; // Set position to absolute
+	counter.style.fontSize = HEIGHT / 28 + "px";//
+	counter.style.position = "absolute";
 	counter.style.textShadow = "1px 1px 1px #919191, 1px 2px 1px #919191, 1px 3px 1px #919191, 1px 4px 1px #919191, 1px 3px 1px #919191";
-	counter.style.top = "10%"; // Center vertically
-	counter.style.left = "50%"; // Center horizontally
-	counter.style.transform = "translate(-50%, -50%)"; // Adjust position to center properly
-	counter.style.zIndex = "1"; // Ensure it's above other content
-	counter.style.padding = "10px"; // Example padding for better visualization
+	counter.style.top = "10%";
+	counter.style.left = "50%"; 
+	counter.style.transform = "translate(-50%, -50%)"; 
+	counter.style.zIndex = "1";
+	counter.style.padding = "10px";
 	counter.style.userSelect = "none"
 
 	title = document.createElement("div");
@@ -1197,13 +1192,13 @@ function initText()
 	title.style.userSelect = "none"
 	title.style.textAlign = "center";
 	title.style.fontSize = HEIGHT / 20 + "px";
-	title.style.position = "absolute"; // Set position to absolute
+	title.style.position = "absolute";
 	title.style.textShadow = "1px 1px 1px #919191, 1px 2px 1px #919191, 1px 3px 1px #919191, 1px 4px 1px #919191, 1px 3px 1px #919191";
-	title.style.top = "90%"; // Center vertically
-	title.style.left = "50%"; // Center horizontally
-	title.style.transform = "translate(-50%, -50%)"; // Adjust position to center properly
-	title.style.zIndex = "1"; // Ensure it's above other content
-	title.style.padding = "10px"; // Example padding for better visualization
+	title.style.top = "90%"; 
+	title.style.left = "50%"; 
+	title.style.transform = "translate(-50%, -50%)"; 
+	title.style.zIndex = "1"; 
+	title.style.padding = "10px";
 
 
 	cool_button = document.createElement("button");
@@ -1213,15 +1208,14 @@ function initText()
 	cool_button.textContent = "Confirm";
 	cool_button.style.height = HEIGHT / 13 + "px";
 	cool_button.style.fontSize = HEIGHT / 33 + "px";
-	cool_button.style.position = "absolute"; // Set position to absolute
+	cool_button.style.position = "absolute"; 
 	cool_button.style.textShadow = "1px 1px 1px #919191, 1px 2px 1px #919191, 1px 3px 1px #919191, 1px 4px 1px #919191, 1px 3px 1px #919191";
-	cool_button.style.top = "90%"; // Center vertically
-	cool_button.style.left = "80%"; // Center horizontally
-	cool_button.style.transform = "translate(-50%, -50%)"; // Adjust position to center properly
-	cool_button.style.zIndex = "1"; // Ensure it's above other content
-	cool_button.style.padding = "10px"; // Example padding for better visualization
+	cool_button.style.top = "90%"; 
+	cool_button.style.left = "80%"; 
+	cool_button.style.transform = "translate(-50%, -50%)"; 
+	cool_button.style.zIndex = "1"; 
+	cool_button.style.padding = "10px";
 	cool_button.addEventListener('mouseover', () => {
-		// Change the button's background color
 		cool_button.style.transform = "translate(-50%, -50%) scale(1.04)"
 		cool_button.style.backgroundColor = "#21F055";
 	  });
@@ -1253,22 +1247,18 @@ function initText()
 	helpcontrols.style.whiteSpace = "pre";
 	helpcontrols.style.userSelect = "none"
 	helpcontrols.style.fontSize = HEIGHT / 45 + "px";
-	helpcontrols.style.position = "absolute"; // Set position to absolute
-	helpcontrols.style.top = "10%"; // Center vertically
-	helpcontrols.style.left = "10%"; // Center horizontally
-	helpcontrols.style.transform = "translate(-50%, -50%)"; // Adjust position to center properly
-	helpcontrols.style.zIndex = "1"; // Ensure it's above other content
-	helpcontrols.style.padding = "10px"; // Example padding for better visualization
+	helpcontrols.style.position = "absolute";
+	helpcontrols.style.top = "10%"; 
+	helpcontrols.style.left = "10%"; 
+	helpcontrols.style.transform = "translate(-50%, -50%)"; 
+	helpcontrols.style.zIndex = "1"; 
+	helpcontrols.style.padding = "10px"; 
 }
 
 async function getPlayersData(player1, player2) {
-//   console.log(battleshipSocket)
-//   console.log(battleshipSocket.readyState)
-//   console.log(player1)
-//   console.log(player2)
+
   if (battleshipSocket == undefined || battleshipSocket.readyState !== WebSocket.OPEN || player1 == undefined || player2 == undefined)
   {
-    // console.log('pardon!!!!')
     return
   }
 
